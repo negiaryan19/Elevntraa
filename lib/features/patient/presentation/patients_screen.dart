@@ -1,0 +1,417 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../data/repositories/patient_repository.dart';
+import '../../../data/repositories/visit_repository.dart';
+import '../../../domain/models/patient.dart';
+import '../../../domain/models/visit.dart';
+
+const _kBlue600 = Color(0xFF2563EB);
+const _kTeal500 = Color(0xFF14B8A6);
+
+class PatientsScreen extends ConsumerStatefulWidget {
+  const PatientsScreen({super.key});
+
+  @override
+  ConsumerState<PatientsScreen> createState() => _PatientsScreenState();
+}
+
+class _PatientsScreenState extends ConsumerState<PatientsScreen> {
+  List<_Entry> _entries = [];
+  List<_Entry> _filtered = [];
+  String _query = '';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final visits = await ref.read(visitRepositoryProvider).recent(limit: 50);
+    final patients = ref.read(patientRepositoryProvider);
+    final entries = <_Entry>[];
+    for (final v in visits) {
+      final p = await patients.byId(v.patientId);
+      entries.add(_Entry(visit: v, patient: p));
+    }
+    if (mounted) {
+      setState(() {
+        _entries = entries;
+        _filtered = entries;
+        _loading = false;
+      });
+    }
+  }
+
+  void _onSearch(String q) {
+    setState(() {
+      _query = q;
+      final lower = q.toLowerCase();
+      _filtered = q.isEmpty
+          ? _entries
+          : _entries
+              .where((e) =>
+                  (e.patient?.name ?? '').toLowerCase().contains(lower))
+              .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final today = _entries.where((e) => _isToday(e.visit.createdAt)).length;
+    final thisWeek = _entries.where((e) => _isThisWeek(e.visit.createdAt)).length;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
+      body: Column(
+        children: [
+          // Gradient header
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [_kBlue600, _kTeal500],
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.xl + AppSpacing.s,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Patient History',
+                      style: AppTypography.headlineLarge
+                          .copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      'View all consultations and records',
+                      style: AppTypography.bodySmall
+                          .copyWith(color: Colors.white70),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _StatPill(
+                            value: '${_entries.length}',
+                            label: 'Total',
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.m),
+                        Expanded(
+                          child: _StatPill(
+                            value: '$thisWeek',
+                            label: 'This Week',
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.m),
+                        Expanded(
+                          child: _StatPill(
+                            value: '$today',
+                            label: 'Today',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Search bar (pulled up)
+          Transform.translate(
+            offset: const Offset(0, -24),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: AppSpacing.radiusXl,
+                  border: Border.all(color: const Color(0xFFF3F4F6)),
+                  boxShadow: AppColors.cardShadow,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.m,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search_rounded,
+                        color: Color(0xFF9CA3AF), size: 20),
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(
+                      child: TextField(
+                        onChanged: _onSearch,
+                        decoration: InputDecoration(
+                          hintText: 'Search patients...',
+                          hintStyle: AppTypography.bodyMedium
+                              .copyWith(color: AppColors.textMuted),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          isDense: true,
+                        ),
+                        style: AppTypography.bodyMedium,
+                      ),
+                    ),
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: AppSpacing.radiusSm,
+                      ),
+                      child: const Icon(Icons.tune_rounded,
+                          color: _kBlue600, size: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // List
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _filtered.isEmpty
+                    ? _EmptyState(hasQuery: _query.isNotEmpty)
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          0,
+                          AppSpacing.lg,
+                          AppSpacing.xxl,
+                        ),
+                        itemCount: _filtered.length,
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: AppSpacing.m),
+                        itemBuilder: (context, i) {
+                          final entry = _filtered[i];
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: entry.patient == null
+                                ? null
+                                : () => context.push(
+                                      AppRoute.patient.build(params: {
+                                        'patientId': entry.patient!.id,
+                                      }),
+                                    ),
+                            child: _ConsultationCard(entry: entry),
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static bool _isToday(DateTime dt) {
+    final now = DateTime.now();
+    return dt.year == now.year &&
+        dt.month == now.month &&
+        dt.day == now.day;
+  }
+
+  static bool _isThisWeek(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    return diff.inDays < 7;
+  }
+}
+
+class _Entry {
+  const _Entry({required this.visit, required this.patient});
+  final VisitRecord visit;
+  final PatientProfile? patient;
+}
+
+class _StatPill extends StatelessWidget {
+  const _StatPill({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.m),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: AppSpacing.radiusMd,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(value,
+              style: AppTypography.headlineMedium
+                  .copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(label,
+              style:
+                  AppTypography.labelSmall.copyWith(color: Colors.white70)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConsultationCard extends StatelessWidget {
+  const _ConsultationCard({required this.entry});
+  final _Entry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final patient = entry.patient;
+    final visit = entry.visit;
+    final name = patient?.name ?? 'Unknown Patient';
+    final ageSex = [
+      if (patient?.age != null) '${patient!.age} years',
+      if (patient?.sex != null)
+        patient!.sex == Sex.male ? 'Male' : patient.sex == Sex.female ? 'Female' : 'Other',
+    ].join(' • ');
+    final diagnosis = visit.insight?.diagnosis ?? '';
+    final dateStr = _formatDate(visit.createdAt);
+    final timeStr =
+        '${visit.createdAt.hour.toString().padLeft(2, '0')}:${visit.createdAt.minute.toString().padLeft(2, '0')}';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppSpacing.radiusXl,
+        border: Border.all(color: const Color(0xFFF3F4F6)),
+        boxShadow: AppColors.cardShadow,
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [_kBlue600, _kTeal500],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(name,
+                          style: AppTypography.titleSmall,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                    const Icon(Icons.chevron_right_rounded,
+                        color: Color(0xFF9CA3AF), size: 20),
+                  ],
+                ),
+                if (ageSex.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(ageSex,
+                      style: AppTypography.bodySmall,
+                      overflow: TextOverflow.ellipsis),
+                ],
+                const SizedBox(height: AppSpacing.xs),
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_today_rounded,
+                        size: 12, color: Color(0xFF6B7280)),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(dateStr,
+                        style: AppTypography.labelSmall.copyWith(
+                            color: AppColors.textSecondary)),
+                    const SizedBox(width: AppSpacing.s),
+                    const Icon(Icons.access_time_rounded,
+                        size: 12, color: Color(0xFF6B7280)),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(timeStr,
+                        style: AppTypography.labelSmall.copyWith(
+                            color: AppColors.textSecondary)),
+                  ],
+                ),
+                if (diagnosis.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Row(
+                    children: [
+                      const Icon(Icons.description_rounded,
+                          size: 12, color: _kBlue600),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                        child: Text(diagnosis,
+                            style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textPrimary),
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _formatDate(DateTime dt) {
+    final now = DateTime.now();
+    final diff = DateTime(now.year, now.month, now.day)
+        .difference(DateTime(dt.year, dt.month, dt.day))
+        .inDays;
+    if (diff == 0) return 'Today';
+    if (diff == 1) return 'Yesterday';
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.hasQuery});
+  final bool hasQuery;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.person_search_rounded,
+              size: 48, color: Color(0xFFD1D5DB)),
+          const SizedBox(height: AppSpacing.m),
+          Text(
+            hasQuery ? 'No patients found' : 'No consultations yet',
+            style: AppTypography.bodyMedium
+                .copyWith(color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
