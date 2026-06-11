@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,11 +7,13 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/app_paths.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/medication.dart';
 import '../../../domain/models/patient.dart';
+import '../../../domain/models/report_attachment.dart';
 import '../../../domain/models/visit.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import '../data/prescription_pdf_service.dart';
@@ -107,6 +111,14 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
 
     final insight = _visit!.insight;
     final meds = insight?.medications ?? [];
+    final adviceList = (insight?.advice ?? const <String>[])
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
+    final instructionsList = (insight?.instructions ?? const <String>[])
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
+    final hasAdviceContent =
+        adviceList.isNotEmpty || instructionsList.isNotEmpty;
     final doctor = ref.watch(doctorProfileControllerProvider);
     final today = DateTime.now();
     const months = [
@@ -410,21 +422,46 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Additional Instructions',
+                                      Text('Advice & Instructions',
                                           style: AppTypography.titleSmall),
                                       const SizedBox(height: AppSpacing.s),
-                                      for (final instr in [
-                                        'Take medicines after meals',
-                                        'Drink plenty of fluids',
-                                        'Get adequate rest',
-                                        'Follow up if symptoms persist beyond 3 days',
-                                      ])
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: AppSpacing.xxs),
-                                          child: Text('• $instr',
-                                              style: AppTypography.bodySmall),
-                                        ),
+                                      if (adviceList.isNotEmpty) ...[
+                                        Text('Advice',
+                                            style: AppTypography.labelMedium),
+                                        for (final a in adviceList)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: AppSpacing.xxs),
+                                            child: Text('• $a',
+                                                style:
+                                                    AppTypography.bodySmall),
+                                          ),
+                                        const SizedBox(height: AppSpacing.xs),
+                                      ],
+                                      if (instructionsList.isNotEmpty) ...[
+                                        Text('Instructions',
+                                            style: AppTypography.labelMedium),
+                                        for (final ins in instructionsList)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: AppSpacing.xxs),
+                                            child: Text('• $ins',
+                                                style:
+                                                    AppTypography.bodySmall),
+                                          ),
+                                      ],
+                                      if (!hasAdviceContent)
+                                        for (final instr in [
+                                          'Take medicines after meals',
+                                          'Drink plenty of fluids and rest',
+                                        ])
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: AppSpacing.xxs),
+                                            child: Text('• $instr',
+                                                style:
+                                                    AppTypography.bodySmall),
+                                          ),
                                     ],
                                   ),
                                 ),
@@ -468,6 +505,11 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         ],
                       ),
                     ),
+                    if (_visit!.attachments.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      _PreviousReportsPreview(
+                          attachments: _visit!.attachments),
+                    ],
                     const SizedBox(height: AppSpacing.xl),
                     // Action buttons
                     _GradientCta(
@@ -669,6 +711,72 @@ class _TableRow extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+class _PreviousReportsPreview extends StatelessWidget {
+  const _PreviousReportsPreview({required this.attachments});
+  final List<ReportAttachment> attachments;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppSpacing.radiusXl,
+        border: Border.all(color: const Color(0xFFD1D5DB), width: 2),
+        boxShadow: AppColors.cardShadow,
+      ),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.attach_file_rounded, color: _kBlue600, size: 18),
+              const SizedBox(width: AppSpacing.xs),
+              Text('Previous Reports (${attachments.length})',
+                  style: AppTypography.titleMedium),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text('Attached to the prescription PDF as additional pages.',
+              style: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textMuted)),
+          const SizedBox(height: AppSpacing.md),
+          for (var i = 0; i < attachments.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${i + 1}. ${attachments[i].caption.trim().isEmpty ? 'Report ${i + 1}' : attachments[i].caption.trim()}',
+                    style: AppTypography.labelMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  ClipRRect(
+                    borderRadius: AppSpacing.radiusMd,
+                    child: Image.file(
+                      File(AppPaths.resolveAttachment(attachments[i].path)),
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        height: 120,
+                        color: const Color(0xFFF3F4F6),
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image_rounded,
+                            color: Color(0xFF9CA3AF)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 

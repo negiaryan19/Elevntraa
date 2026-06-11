@@ -45,9 +45,17 @@ class InsightService {
       'as a simple human-readable note, not a list. '
       '2) Extract structured fields: symptoms (patient-described or '
       'doctor-observed); diagnosis, medications, tests, followUpDays, '
-      'doctorNotes (ONLY from the Doctor\'s explicit words). '
+      'doctorNotes; '
+      'advice (general health guidance: rest, diet, hydration, lifestyle — NOT '
+      'tied to a specific medicine); '
+      'instructions (specific actionable directions the patient must follow: '
+      'how/when to take medicines, precautions, warning signs to return, when '
+      'to follow up). '
+      'Each advice/instruction is a short separate sentence in the list. '
+      'Extract these ONLY from the Doctor\'s explicit words. '
       'Write EVERY output field (consultationSummary, symptoms, diagnosis, '
-      'medications, tests, doctorNotes) in clear English. If the consultation '
+      'medications, tests, advice, instructions, doctorNotes) in clear English. '
+      'If the consultation '
       'is in Hindi or code-mixed Hindi/English, translate the meaning into '
       'English — never output Hindi or Devanagari script. Keep drug names in '
       'their standard Latin spelling. Translating the language is allowed, but '
@@ -67,9 +75,17 @@ class InsightService {
       'as a simple human-readable note, not a list. '
       '3) Extract structured fields: symptoms (patient-described or '
       'doctor-observed); diagnosis, medications, tests, followUpDays, '
-      'doctorNotes (ONLY from Doctor lines). '
+      'doctorNotes; '
+      'advice (general health guidance: rest, diet, hydration, lifestyle — NOT '
+      'tied to a specific medicine); '
+      'instructions (specific actionable directions the patient must follow: '
+      'how/when to take medicines, precautions, warning signs to return, when '
+      'to follow up). '
+      'Each advice/instruction is a short separate sentence in the list. '
+      'Extract these ONLY from Doctor lines. '
       'Write EVERY output field (consultationSummary, symptoms, diagnosis, '
-      'medications, tests, doctorNotes) in clear English. If the consultation '
+      'medications, tests, advice, instructions, doctorNotes) in clear English. '
+      'If the consultation '
       'is in Hindi or code-mixed Hindi/English, translate the meaning into '
       'English — never output Hindi or Devanagari script. Keep drug names in '
       'their standard Latin spelling. Translating the language is allowed, but '
@@ -244,6 +260,8 @@ class InsightService {
       'differentials': input['differentials'] ?? const <String>[],
       'medications': meds,
       'tests': input['tests'] ?? const <String>[],
+      'advice': input['advice'] ?? const <String>[],
+      'instructions': input['instructions'] ?? const <String>[],
       'followUpDays': input['followUpDays'] ?? input['follow_up_days'],
       'doctorNotes': input['doctorNotes'] ?? input['doctor_notes'] ?? '',
     };
@@ -336,6 +354,14 @@ class InsightService {
         'type': 'ARRAY',
         'items': {'type': 'STRING'},
       },
+      'advice': {
+        'type': 'ARRAY',
+        'items': {'type': 'STRING'},
+      },
+      'instructions': {
+        'type': 'ARRAY',
+        'items': {'type': 'STRING'},
+      },
       'followUpDays': {'type': 'INTEGER', 'nullable': true},
       'doctorNotes': {'type': 'STRING'},
     },
@@ -348,6 +374,8 @@ class InsightService {
       'differentials',
       'medications',
       'tests',
+      'advice',
+      'instructions',
       'doctorNotes',
     ],
   };
@@ -384,6 +412,14 @@ class InsightService {
         'type': 'ARRAY',
         'items': {'type': 'STRING'},
       },
+      'advice': {
+        'type': 'ARRAY',
+        'items': {'type': 'STRING'},
+      },
+      'instructions': {
+        'type': 'ARRAY',
+        'items': {'type': 'STRING'},
+      },
       'followUpDays': {'type': 'INTEGER', 'nullable': true},
       'doctorNotes': {'type': 'STRING'},
     },
@@ -394,6 +430,8 @@ class InsightService {
       'differentials',
       'medications',
       'tests',
+      'advice',
+      'instructions',
       'doctorNotes',
     ],
   };

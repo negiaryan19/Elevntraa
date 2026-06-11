@@ -6,6 +6,10 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>MedScribe needs microphone access so the doctor can dictate consultations.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>MedScribe needs camera access so the doctor can scan a patient's previous reports.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MedScribe needs photo access so the doctor can attach a patient's previous reports.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>

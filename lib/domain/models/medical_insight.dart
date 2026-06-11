@@ -17,6 +17,12 @@ class MedicalInsight with _$MedicalInsight {
     @Default([]) List<String> differentials,
     @Default([]) List<Medication> medications,
     @Default([]) List<String> tests,
+    /// General health guidance (rest, diet, hydration, lifestyle) — not tied
+    /// to a specific medicine. Doctor's words only.
+    @Default([]) List<String> advice,
+    /// Specific actionable directions the patient must follow (how/when to take
+    /// medicines, precautions, warning signs, when to return). Doctor's words only.
+    @Default([]) List<String> instructions,
     int? followUpDays,
     @Default('') String doctorNotes,
   }) = _MedicalInsight;

@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/medical_insight.dart';
+import '../../domain/models/report_attachment.dart';
 import '../../domain/models/visit.dart';
 import '../db/app_database.dart';
 import '../db/database_provider.dart';
@@ -38,6 +39,9 @@ class VisitRepository {
       languageCode: Value(v.languageCode),
       insightJson:
           Value(v.insight == null ? null : jsonEncode(v.insight!.toJson())),
+      attachmentsJson: Value(v.attachments.isEmpty
+          ? null
+          : jsonEncode(v.attachments.map((a) => a.toJson()).toList())),
       pdfPath: Value(v.pdfPath),
       signed: Value(v.signed),
       signedAt: Value(v.signedAt),
@@ -57,6 +61,19 @@ class VisitRepository {
         insight = null;
       }
     }
+
+    var attachments = const <ReportAttachment>[];
+    final rawAtt = row.attachmentsJson;
+    if (rawAtt != null && rawAtt.isNotEmpty) {
+      try {
+        attachments = (jsonDecode(rawAtt) as List)
+            .map((e) => ReportAttachment.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } catch (_) {
+        attachments = const [];
+      }
+    }
+
     return VisitRecord(
       id: row.id,
       patientId: row.patientId,
@@ -65,6 +82,7 @@ class VisitRepository {
       transcript: row.transcript,
       languageCode: row.languageCode,
       insight: insight,
+      attachments: attachments,
       pdfPath: row.pdfPath,
       signed: row.signed,
       signedAt: row.signedAt,

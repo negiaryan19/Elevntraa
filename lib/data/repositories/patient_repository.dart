@@ -28,6 +28,14 @@ class PatientRepository {
     return row == null ? null : _toProfile(row);
   }
 
+  /// Returns an existing patient with this exact WhatsApp number, or null.
+  Future<PatientProfile?> findByWhatsapp(String number) async {
+    final trimmed = number.trim();
+    if (trimmed.isEmpty) return null;
+    final rows = await _db.patientsByWhatsapp(trimmed);
+    return rows.isEmpty ? null : _toProfile(rows.first);
+  }
+
   Future<void> upsert(PatientProfile profile) {
     return _db.upsertPatient(PatientsCompanion(
       id: Value(profile.id),

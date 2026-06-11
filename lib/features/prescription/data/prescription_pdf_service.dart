@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../../../core/utils/app_paths.dart';
 import '../../../domain/models/doctor_profile.dart';
 import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/medication.dart';
@@ -70,7 +72,72 @@ class PrescriptionPdfService {
       ),
     );
 
+    // Previous-report pages: the prescription stays a single sheet; each
+    // attached report image becomes its own following page under a
+    // "Previous Reports" heading.
+    await _addAttachmentPages(doc, theme, visit, patient);
+
     return doc.save();
+  }
+
+  Future<void> _addAttachmentPages(
+    pw.Document doc,
+    pw.ThemeData theme,
+    VisitRecord visit,
+    PatientProfile? patient,
+  ) async {
+    final attachments = visit.attachments;
+    if (attachments.isEmpty) return;
+
+    for (var i = 0; i < attachments.length; i++) {
+      final att = attachments[i];
+      Uint8List? bytes;
+      try {
+        final file = File(AppPaths.resolveAttachment(att.path));
+        if (file.existsSync()) bytes = await file.readAsBytes();
+      } catch (_) {
+        bytes = null;
+      }
+      if (bytes == null) continue; // skip missing/unreadable files
+
+      final image = pw.MemoryImage(bytes);
+      final caption =
+          att.caption.trim().isEmpty ? 'Report ${i + 1}' : att.caption.trim();
+
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          theme: theme,
+          margin: const pw.EdgeInsets.fromLTRB(34, 30, 34, 26),
+          build: (context) => pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+            children: [
+              // The big section banner appears only on the first report page.
+              if (i == 0) ...[
+                pw.Text('PREVIOUS REPORTS',
+                    style: pw.TextStyle(
+                        fontSize: 14,
+                        fontWeight: pw.FontWeight.bold,
+                        color: _blue,
+                        letterSpacing: 0.8)),
+                pw.Text('Attached for ${patient?.name ?? 'patient'}',
+                    style: pw.TextStyle(fontSize: 9, color: _muted)),
+                pw.SizedBox(height: 6),
+                pw.Divider(color: _line, thickness: 0.5),
+                pw.SizedBox(height: 8),
+              ],
+              _subLabel('${i + 1}. $caption'),
+              pw.SizedBox(height: 6),
+              pw.Expanded(
+                child: pw.Center(
+                  child: pw.Image(image, fit: pw.BoxFit.contain),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   /// A safe download/share filename for this visit's prescription.
@@ -310,7 +377,14 @@ class PrescriptionPdfService {
 
   pw.Widget _adviceAndFollowUp(VisitRecord visit, MedicalInsight insight) {
     final notes = insight.doctorNotes.trim();
+    final advice = insight.advice.where((s) => s.trim().isNotEmpty).toList();
+    final instructions =
+        insight.instructions.where((s) => s.trim().isNotEmpty).toList();
     final followUp = _followUpLabel(visit.createdAt, insight.followUpDays);
+
+    // When the doctor gave no explicit advice/instructions, fall back to safe
+    // generic guidance so the prescription is never empty in this section.
+    final hasContent = advice.isNotEmpty || instructions.isNotEmpty;
 
     return pw.Container(
       width: double.infinity,
@@ -323,15 +397,28 @@ class PrescriptionPdfService {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          _sectionTitle('Advice & Follow-up'),
+          _sectionTitle('Advice & Instructions'),
           pw.SizedBox(height: 6),
+          if (advice.isNotEmpty) ...[
+            _subLabel('Advice'),
+            ...advice.map(_bullet),
+            pw.SizedBox(height: 4),
+          ],
+          if (instructions.isNotEmpty) ...[
+            _subLabel('Instructions'),
+            ...instructions.map(_bullet),
+            pw.SizedBox(height: 4),
+          ],
+          if (!hasContent) ...[
+            _bullet('Take medicines as prescribed, after meals.'),
+            _bullet('Drink plenty of fluids and take adequate rest.'),
+            pw.SizedBox(height: 4),
+          ],
           if (notes.isNotEmpty) ...[
             pw.Text(notes, style: pw.TextStyle(fontSize: 9.5, color: _ink)),
             pw.SizedBox(height: 4),
           ],
-          _bullet('Take medicines as prescribed, after meals.'),
-          _bullet('Drink plenty of fluids and take adequate rest.'),
-          pw.SizedBox(height: 6),
+          pw.SizedBox(height: 2),
           pw.Row(
             children: [
               pw.Text('Follow-up: ',
@@ -349,6 +436,13 @@ class PrescriptionPdfService {
       ),
     );
   }
+
+  pw.Widget _subLabel(String text) => pw.Padding(
+        padding: const pw.EdgeInsets.only(bottom: 2),
+        child: pw.Text(text,
+            style: pw.TextStyle(
+                fontSize: 9.5, fontWeight: pw.FontWeight.bold, color: _ink)),
+      );
 
   pw.Widget _signature(DoctorProfile d) {
     return pw.Row(

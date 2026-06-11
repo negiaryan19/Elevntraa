@@ -32,6 +32,9 @@ dependencies:
   just_audio: ^0.9.40
   permission_handler: ^11.3.1
 
+  # Camera / gallery (scan previous reports)
+  image_picker: ^1.1.2
+
   # PDF / sharing
   pdf: ^3.11.1
   printing: ^5.13.3

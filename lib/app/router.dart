@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
+import '../features/consultation/presentation/intake_choice_screen.dart';
 import '../features/consultation/presentation/intake_screen.dart';
 import '../features/consultation/presentation/recording_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/patient/presentation/existing_patient_screen.dart';
 import '../features/patient/presentation/patient_detail_screen.dart';
 import '../features/patient/presentation/patients_screen.dart';
 import '../features/prescription/presentation/pdf_preview_screen.dart';
@@ -25,6 +27,8 @@ enum AppRoute {
   patients('/patients'),
   settings('/settings'),
   intake('/intake'),
+  intakeForm('/intake/form'),
+  intakeExisting('/intake/existing'),
   recording('/recording/:visitId'),
   review('/review/:visitId'),
   pdf('/pdf/:visitId'),
@@ -74,7 +78,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.intake.path,
         name: AppRoute.intake.name,
-        builder: (context, state) => const IntakeScreen(),
+        builder: (context, state) => const IntakeChoiceScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.intakeForm.path,
+        name: AppRoute.intakeForm.name,
+        builder: (context, state) => IntakeScreen(
+          patientId: state.uri.queryParameters['patientId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoute.intakeExisting.path,
+        name: AppRoute.intakeExisting.name,
+        builder: (context, state) => const ExistingPatientScreen(),
       ),
       GoRoute(
         path: AppRoute.recording.path,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -123,6 +125,12 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
                     ),
                     children: [
                       _PatientHeader(patient: _patient!, visitCount: _visits.length),
+                      const SizedBox(height: AppSpacing.md),
+                      _StartConsultationButton(
+                        onTap: () => context.push(
+                          '${AppRoute.intakeForm.path}?patientId=${widget.patientId}',
+                        ),
+                      ),
                       const SizedBox(height: AppSpacing.lg),
                       Text('Consultation History',
                           style: AppTypography.titleMedium),
@@ -150,6 +158,41 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
                     ],
                   ),
                 ),
+    );
+  }
+}
+
+// ── Start new consultation CTA ────────────────────────────────────────────────
+
+class _StartConsultationButton extends StatelessWidget {
+  const _StartConsultationButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 52,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [_kBlue600, _kTeal500]),
+          borderRadius: AppSpacing.radiusLg,
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x4D2563EB), blurRadius: 14, offset: Offset(0, 6)),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.mic_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: AppSpacing.s),
+            Text('Start New Consultation',
+                style: AppTypography.titleSmall.copyWith(color: Colors.white)),
+          ],
+        ),
+      ),
     );
   }
 }

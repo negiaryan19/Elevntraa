@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'medical_insight.dart';
+import 'report_attachment.dart';
 
 part 'visit.freezed.dart';
 part 'visit.g.dart';
@@ -15,6 +16,7 @@ class VisitRecord with _$VisitRecord {
     String? transcript,
     @Default('unknown') String languageCode,
     MedicalInsight? insight,
+    @Default([]) List<ReportAttachment> attachments,
     String? pdfPath,
     @Default(false) bool signed,
     DateTime? signedAt,

@@ -1,20 +1,33 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:uuid/uuid.dart';
 
 import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/app_paths.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
+import '../../../domain/models/report_attachment.dart';
 import 'intake_controller.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kTeal500 = Color(0xFF14B8A6);
 
 class IntakeScreen extends ConsumerStatefulWidget {
-  const IntakeScreen({super.key});
+  const IntakeScreen({super.key, this.patientId});
+
+  /// When set, the form opens in "returning patient" mode: it prefills the
+  /// saved details and the new visit attaches to this existing patient instead
+  /// of creating a new record.
+  final String? patientId;
 
   @override
   ConsumerState<IntakeScreen> createState() => _IntakeScreenState();
@@ -31,12 +44,129 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
   bool _submitting = false;
   String? _error;
 
+  /// The patient this consultation attaches to. Starts as the routed
+  /// [widget.patientId] (returning patient) and can also get set if a duplicate
+  /// phone number is matched for a "new" patient.
+  String? _existingPatientId;
+  bool _loadingPatient = false;
+
+  /// Scanned/attached previous reports for this consultation.
+  List<ReportAttachment> _attachments = [];
+
+  bool get _isReturning => _existingPatientId != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _existingPatientId = widget.patientId;
+    if (widget.patientId != null) _prefill(widget.patientId!);
+  }
+
+  Future<void> _prefill(String patientId) async {
+    setState(() => _loadingPatient = true);
+    final patient =
+        await ref.read(patientRepositoryProvider).byId(patientId);
+    if (!mounted) return;
+    setState(() {
+      if (patient != null) {
+        _nameCtrl.text = patient.name;
+        _ageCtrl.text = patient.age?.toString() ?? '';
+        _whatsappCtrl.text = patient.whatsappNumber ?? '';
+        _sex = patient.sex;
+      }
+      _loadingPatient = false;
+    });
+  }
+
   @override
   void dispose() {
     _nameCtrl.dispose();
     _ageCtrl.dispose();
     _whatsappCtrl.dispose();
     super.dispose();
+  }
+
+  // ── Previous-report attachments ─────────────────────────────────────────────
+
+  Future<void> _addReport(ImageSource source) async {
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 2000,
+        imageQuality: 85,
+      );
+      if (picked == null) return;
+      // Copy into persistent app storage so the report survives after the
+      // picker's temp cache is cleared. We store only the relative file name
+      // (resolved against the documents dir at read time) so a reinstall or
+      // container-path change can't orphan it.
+      final attachDir = Directory(AppPaths.attachmentsDir);
+      if (!attachDir.existsSync()) attachDir.createSync(recursive: true);
+      final ext = p.extension(picked.path).isEmpty
+          ? '.jpg'
+          : p.extension(picked.path);
+      final fileName = '${const Uuid().v4()}$ext';
+      await File(picked.path).copy(p.join(attachDir.path, fileName));
+      if (!mounted) return;
+      setState(() =>
+          _attachments = [..._attachments, ReportAttachment(path: fileName)]);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add report: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickReportSource() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded, color: _kBlue600),
+              title: const Text('Take photo'),
+              onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded, color: _kBlue600),
+              title: const Text('Choose from gallery'),
+              onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source != null) await _addReport(source);
+  }
+
+  void _moveReport(int i, int delta) {
+    final j = i + delta;
+    if (j < 0 || j >= _attachments.length) return;
+    final list = [..._attachments];
+    final tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+    setState(() => _attachments = list);
+  }
+
+  void _removeReport(int i) {
+    final removed = _attachments[i];
+    setState(() => _attachments = [..._attachments]..removeAt(i));
+    // Best-effort cleanup of the orphaned file.
+    try {
+      final f = File(AppPaths.resolveAttachment(removed.path));
+      if (f.existsSync()) f.deleteSync();
+    } catch (_) {}
+  }
+
+  /// Updates a caption without setState so the text field keeps focus/cursor.
+  void _setCaption(int i, String caption) {
+    if (i < 0 || i >= _attachments.length) return;
+    _attachments[i] = _attachments[i].copyWith(caption: caption);
   }
 
   bool get _isFormValid =>
@@ -55,12 +185,34 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
       _error = null;
     });
     try {
-      final result = await ref.read(intakeControllerProvider).submit(
-            name: _nameCtrl.text,
-            age: int.tryParse(_ageCtrl.text.trim()),
-            sex: _sex,
-            whatsappNumber: _whatsappCtrl.text,
-          );
+      final controller = ref.read(intakeControllerProvider);
+
+      // For a brand-new patient, warn if the number already belongs to someone
+      // in history and offer to use that existing record instead of duplicating.
+      if (!_isReturning) {
+        final existing =
+            await controller.findByPhone(_whatsappCtrl.text.trim());
+        if (existing != null && mounted) {
+          final useExisting = await _confirmUseExisting(existing);
+          if (useExisting == null) {
+            // Dismissed — do nothing, let the doctor decide.
+            setState(() => _submitting = false);
+            return;
+          }
+          if (useExisting) {
+            _existingPatientId = existing.id;
+          }
+        }
+      }
+
+      final result = await controller.submit(
+        name: _nameCtrl.text,
+        age: int.tryParse(_ageCtrl.text.trim()),
+        sex: _sex,
+        whatsappNumber: _whatsappCtrl.text,
+        existingPatientId: _existingPatientId,
+        attachments: _attachments,
+      );
       if (!mounted) return;
       context.go(AppRoute.recording.build(params: {'visitId': result.visitId}));
     } catch (e) {
@@ -69,6 +221,36 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
         _error = 'Could not save patient: $e';
       });
     }
+  }
+
+  /// Returns true → reuse [existing]; false → create a new record anyway;
+  /// null → the doctor dismissed the dialog.
+  Future<bool?> _confirmUseExisting(PatientProfile existing) {
+    final meta = [
+      if (existing.age != null) '${existing.age} yrs',
+      if (existing.whatsappNumber != null) '+91 ${existing.whatsappNumber}',
+    ].join(' • ');
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Patient already exists'),
+        content: Text(
+          'A patient with this number is already in your records:\n\n'
+          '${existing.name}${meta.isEmpty ? '' : '\n$meta'}\n\n'
+          'Add this consultation to their existing history?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Create new'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Use existing'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -114,9 +296,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Patient Details',
+                          Text(_isReturning ? 'New Consultation' : 'Patient Details',
                               style: AppTypography.headlineMedium),
-                          Text('Enter basic patient information',
+                          Text(
+                              _isReturning
+                                  ? 'Confirm details & consent'
+                                  : 'Enter basic patient information',
                               style: AppTypography.bodySmall),
                         ],
                       ),
@@ -133,6 +318,11 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 // Form card
+                if (_loadingPatient)
+                  const Expanded(
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(
@@ -285,6 +475,33 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             style: AppTypography.bodySmall
                                 .copyWith(color: AppColors.textMuted),
                           ),
+                          const SizedBox(height: AppSpacing.lg),
+                          // Previous reports
+                          _FieldLabel(
+                            icon: Icons.description_outlined,
+                            label: 'Previous Reports (optional)',
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            'Scan or attach the patient\'s earlier reports — they '
+                            'are added to the prescription PDF.',
+                            style: AppTypography.bodySmall
+                                .copyWith(color: AppColors.textMuted),
+                          ),
+                          const SizedBox(height: AppSpacing.s),
+                          for (var i = 0; i < _attachments.length; i++)
+                            _ReportTile(
+                              key: ValueKey(_attachments[i].path),
+                              attachment: _attachments[i],
+                              isFirst: i == 0,
+                              isLast: i == _attachments.length - 1,
+                              onCaption: (c) => _setCaption(i, c),
+                              onUp: () => _moveReport(i, -1),
+                              onDown: () => _moveReport(i, 1),
+                              onDelete: () => _removeReport(i),
+                            ),
+                          const SizedBox(height: AppSpacing.s),
+                          _AddReportButton(onTap: _pickReportSource),
                           const SizedBox(height: AppSpacing.lg),
                           // Consent
                           GestureDetector(
@@ -488,6 +705,143 @@ class _IntakeTextField extends StatelessWidget {
         errorBorder: _errorBorder,
         focusedErrorBorder: _errorBorder,
         filled: false,
+      ),
+    );
+  }
+}
+
+class _ReportTile extends StatelessWidget {
+  const _ReportTile({
+    super.key,
+    required this.attachment,
+    required this.isFirst,
+    required this.isLast,
+    required this.onCaption,
+    required this.onUp,
+    required this.onDown,
+    required this.onDelete,
+  });
+
+  final ReportAttachment attachment;
+  final bool isFirst;
+  final bool isLast;
+  final ValueChanged<String> onCaption;
+  final VoidCallback onUp;
+  final VoidCallback onDown;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.s),
+      padding: const EdgeInsets.all(AppSpacing.s),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: AppSpacing.radiusMd,
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: AppSpacing.radiusSm,
+            child: Image.file(
+              File(AppPaths.resolveAttachment(attachment.path)),
+              width: 52,
+              height: 52,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Container(
+                width: 52,
+                height: 52,
+                color: const Color(0xFFE5E7EB),
+                child: const Icon(Icons.broken_image_rounded,
+                    color: Color(0xFF9CA3AF)),
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s),
+          Expanded(
+            child: TextFormField(
+              initialValue: attachment.caption,
+              style: AppTypography.bodySmall,
+              decoration: const InputDecoration(
+                hintText: 'Label (e.g. Blood test, 2 Jan)',
+                isDense: true,
+                border: InputBorder.none,
+              ),
+              onChanged: onCaption,
+            ),
+          ),
+          // Reorder
+          Column(
+            children: [
+              _IconBtn(
+                  icon: Icons.keyboard_arrow_up_rounded,
+                  onTap: isFirst ? null : onUp),
+              _IconBtn(
+                  icon: Icons.keyboard_arrow_down_rounded,
+                  onTap: isLast ? null : onDown),
+            ],
+          ),
+          _IconBtn(
+            icon: Icons.delete_outline_rounded,
+            color: const Color(0xFFDC2626),
+            onTap: onDelete,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconBtn extends StatelessWidget {
+  const _IconBtn({required this.icon, this.color, required this.onTap});
+  final IconData icon;
+  final Color? color;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final disabled = onTap == null;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: Icon(icon,
+            size: 20,
+            color: disabled
+                ? const Color(0xFFD1D5DB)
+                : (color ?? const Color(0xFF6B7280))),
+      ),
+    );
+  }
+}
+
+class _AddReportButton extends StatelessWidget {
+  const _AddReportButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: AppSpacing.radiusMd,
+          border: Border.all(color: const Color(0xFFBFDBFE), width: 1.5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.add_a_photo_rounded, color: _kBlue600, size: 20),
+            const SizedBox(width: AppSpacing.s),
+            Text('Add report',
+                style: AppTypography.titleSmall.copyWith(color: _kBlue600)),
+          ],
+        ),
       ),
     );
   }

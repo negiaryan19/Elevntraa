@@ -328,6 +328,27 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.md),
+                    _BulletField(
+                      title: 'Advice',
+                      icon: Icons.tips_and_updates_rounded,
+                      items: _draft.advice,
+                      hint: 'General guidance — one per line\n'
+                          'e.g. Take adequate rest\nAvoid oily food',
+                      onChanged: (v) => _draft = _draft.copyWith(advice: v),
+                      onSaved: _save,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _BulletField(
+                      title: 'Instructions',
+                      icon: Icons.checklist_rounded,
+                      items: _draft.instructions,
+                      hint: 'Things to follow — one per line\n'
+                          'e.g. Take medicine after food\nReturn if fever persists 3 days',
+                      onChanged: (v) =>
+                          _draft = _draft.copyWith(instructions: v),
+                      onSaved: _save,
+                    ),
                     if (_draft.followUpDays != null &&
                         _draft.followUpDays! > 0) ...[
                       const SizedBox(height: AppSpacing.md),
@@ -518,6 +539,87 @@ class _InfoField extends StatelessWidget {
         const SizedBox(height: AppSpacing.xxs),
         Text(value, style: AppTypography.titleSmall),
       ],
+    );
+  }
+}
+
+/// Editable list of short lines (one item per line). Used for Advice and
+/// Instructions. Holds its own controller so the parent rebuilding (e.g. when
+/// editing medicines) doesn't reset the cursor.
+class _BulletField extends StatefulWidget {
+  const _BulletField({
+    required this.title,
+    required this.icon,
+    required this.items,
+    required this.hint,
+    required this.onChanged,
+    required this.onSaved,
+  });
+
+  final String title;
+  final IconData icon;
+  final List<String> items;
+  final String hint;
+  final ValueChanged<List<String>> onChanged;
+  final VoidCallback onSaved;
+
+  @override
+  State<_BulletField> createState() => _BulletFieldState();
+}
+
+class _BulletFieldState extends State<_BulletField> {
+  late final TextEditingController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(text: widget.items.join('\n'));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  List<String> _parse(String raw) => raw
+      .split('\n')
+      .map((l) => l.trim())
+      .where((l) => l.isNotEmpty)
+      .toList();
+
+  @override
+  Widget build(BuildContext context) {
+    return _InfoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(widget.icon, color: _kBlue600, size: 20),
+              const SizedBox(width: AppSpacing.xs),
+              Text(widget.title, style: AppTypography.titleMedium),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s),
+          TextField(
+            controller: _ctrl,
+            style: AppTypography.bodyMedium,
+            minLines: 2,
+            maxLines: 6,
+            keyboardType: TextInputType.multiline,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              hintStyle: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textMuted),
+              isDense: true,
+            ),
+            onChanged: (v) => widget.onChanged(_parse(v)),
+            onEditingComplete: widget.onSaved,
+            onTapOutside: (_) => widget.onSaved(),
+          ),
+        ],
+      ),
     );
   }
 }

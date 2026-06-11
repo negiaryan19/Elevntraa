@@ -44,6 +44,9 @@ class Visits extends Table {
   /// Structured MedicalInsight encoded as JSON.
   TextColumn get insightJson => text().nullable()();
 
+  /// Attached previous-report images (list of {path, caption}) encoded as JSON.
+  TextColumn get attachmentsJson => text().nullable()();
+
   /// PDF path on device once generated and signed.
   TextColumn get pdfPath => text().nullable()();
 
@@ -67,7 +70,18 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          // v2: store attached previous-report images on the visit.
+          if (from < 2) {
+            await m.addColumn(visits, visits.attachmentsJson);
+          }
+        },
+      );
 
   // ── Patients ────────────────────────────────────────────────────────
   Future<List<Patient>> recentPatients({int limit = 20}) {
@@ -88,6 +102,13 @@ class AppDatabase extends _$AppDatabase {
 
   Future<Patient?> patientById(String id) {
     return (select(patients)..where((p) => p.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Patients whose WhatsApp number matches exactly — used to detect a
+  /// returning patient before creating a duplicate record.
+  Future<List<Patient>> patientsByWhatsapp(String number) {
+    return (select(patients)..where((p) => p.whatsappNumber.equals(number)))
+        .get();
   }
 
   Future<void> upsertPatient(PatientsCompanion row) {
