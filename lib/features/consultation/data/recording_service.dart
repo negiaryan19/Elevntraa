@@ -45,6 +45,14 @@ class RecordingService {
         bitRate: 64000,
         sampleRate: 16000,
         numChannels: 1,
+        // iOS only (Android ignores this). The package default also enables
+        // allowBluetooth/allowBluetoothA2DP, which lets iOS route capture to
+        // a paired Mac/AirPods/watch whose HFP channel can deliver zero
+        // frames — the recorder then writes a silent ~28-byte m4a. Keeping
+        // only defaultToSpeaker pins capture to the built-in microphone.
+        iosConfig: IosRecordConfig(
+          categoryOptions: [IosAudioCategoryOption.defaultToSpeaker],
+        ),
       ),
       path: path,
     );

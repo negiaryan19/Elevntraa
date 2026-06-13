@@ -54,6 +54,14 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   Duration _accumulated = Duration.zero;
   bool _isPaused = false;
 
+  /// Live mic health check. If the recorder runs but the amplitude stream
+  /// never rises above the noise floor, the OS is delivering no audio
+  /// (mic permission off in iOS Settings, or input routed elsewhere) and
+  /// the file will be silent — surface that while recording, not after.
+  StreamSubscription<double>? _ampWatch;
+  double _peakAmp = 0;
+  bool _silenceHint = false;
+
   late final AnimationController _pulse1;
   late final AnimationController _pulse2;
 
@@ -73,6 +81,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   @override
   void dispose() {
     _ticker?.cancel();
+    _ampWatch?.cancel();
     _pulse1.dispose();
     _pulse2.dispose();
     super.dispose();
@@ -107,6 +116,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
         ref.read(consultationControllerProvider(widget.visitId).notifier);
     await controller.startRecording();
 
+    _peakAmp = 0;
+    _silenceHint = false;
+    _ampWatch?.cancel();
+    _ampWatch = ref.read(recordingServiceProvider).amplitude.listen((a) {
+      if (a > _peakAmp) _peakAmp = a;
+    });
+
     _accumulated = Duration.zero;
     _segmentStartedAt = DateTime.now();
     _startPulse();
@@ -114,6 +130,14 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       if (_segmentStartedAt == null || _isPaused) return;
       final segment = DateTime.now().difference(_segmentStartedAt!);
       controller.tickElapsed(_accumulated + segment);
+
+      // 4s of recording without a single amplitude blip means no audio is
+      // reaching us — warn now so the doctor doesn't lose the consultation.
+      final silent = _accumulated + segment > const Duration(seconds: 4) &&
+          _peakAmp < 0.02;
+      if (silent != _silenceHint && mounted) {
+        setState(() => _silenceHint = silent);
+      }
     });
   }
 
@@ -139,8 +163,12 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
 
   Future<void> _onDone() async {
     _ticker?.cancel();
+    _ampWatch?.cancel();
     _stopPulse();
-    setState(() => _isPaused = false);
+    setState(() {
+      _isPaused = false;
+      _silenceHint = false;
+    });
 
     final controller =
         ref.read(consultationControllerProvider(widget.visitId).notifier);
@@ -354,7 +382,6 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) => SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
                     child: ConstrainedBox(
                       constraints:
                           BoxConstraints(minHeight: constraints.maxHeight),
@@ -474,6 +501,45 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                         ),
                       ],
                     ),
+                    // Live "mic is silent" warning — recording is running but
+                    // no audio is arriving, so the file will be empty.
+                    if (isActiveRecording && _silenceHint) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      GestureDetector(
+                        onTap: MicPermission.openSettings,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.lg),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.s,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF3C7),
+                            borderRadius: AppSpacing.radiusMd,
+                            border:
+                                Border.all(color: const Color(0xFFF59E0B)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.mic_off_rounded,
+                                  color: Color(0xFFD97706), size: 16),
+                              const SizedBox(width: AppSpacing.s),
+                              Expanded(
+                                child: Text(
+                                  'No audio detected. Check that Microphone '
+                                  'is ON for MediScribe in iPhone Settings, '
+                                  'and disconnect Bluetooth headphones. '
+                                  'Tap here to open Settings.',
+                                  style: AppTypography.labelSmall.copyWith(
+                                      color: const Color(0xFF92400E)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     // 55-minute soft warning (free-tier batch limit is 1 h)
                     if (isRecording &&
                         state.elapsed.inMinutes >= 55) ...[

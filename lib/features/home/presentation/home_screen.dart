@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,12 +40,18 @@ class HomeScreen extends ConsumerWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) => SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(minHeight: constraints.maxHeight),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        // On iOS the screen (e.g. iPhone 17 Pro) is much taller
+                        // than the Android test device, so centering left large
+                        // empty gaps above/below and pushed the CTA into dead
+                        // space. Top-align on iOS so content flows naturally;
+                        // Android keeps its original centered layout untouched.
+                        mainAxisAlignment: Platform.isIOS
+                            ? MainAxisAlignment.start
+                            : MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: AppSpacing.xl),
                           const _HeroIcon(),

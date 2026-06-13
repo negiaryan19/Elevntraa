@@ -4,17 +4,6 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>MedScribe needs microphone access so the doctor can dictate consultations.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>MedScribe needs camera access so the doctor can scan a patient's previous reports.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MedScribe needs photo access so the doctor can attach a patient's previous reports.</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>whatsapp</string>
-		<string>https</string>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -35,8 +24,19 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>whatsapp</string>
+		<string>https</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>MedScribe needs camera access so the doctor can scan a patient's previous reports.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>MedScribe needs microphone access so the doctor can dictate consultations.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MedScribe needs photo access so the doctor can attach a patient's previous reports.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -39,5 +39,18 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      # permission_handler defaults every permission macro to 0 (disabled) on
+      # iOS unless explicitly enabled here. Without this the microphone (and
+      # camera/photos) request silently returns "denied" and recording never
+      # starts — even though the Info.plist usage strings are present.
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_MICROPHONE=1',
+        'PERMISSION_CAMERA=1',
+        'PERMISSION_PHOTOS=1',
+      ]
+    end
   end
 end
