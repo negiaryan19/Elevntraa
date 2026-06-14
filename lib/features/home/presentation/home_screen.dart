@@ -128,22 +128,29 @@ class _AppHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.m),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'MediScribe',
-                style: AppTypography.titleMedium
-                    .copyWith(fontWeight: FontWeight.w700),
-              ),
-              Text(
-                'Smart Medical Documentation',
-                style: AppTypography.bodySmall,
-              ),
-            ],
+          // Flexible so a narrow device (≈320dp) doesn't overflow this row:
+          // the title block yields width to the trailing icon + name instead
+          // of pushing past the screen edge.
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'MediScribe',
+                  style: AppTypography.titleMedium
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  'Smart Medical Documentation',
+                  style: AppTypography.bodySmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: AppSpacing.s),
           const Icon(Icons.monitor_heart_rounded, color: _kTeal600, size: 20),
           const SizedBox(width: AppSpacing.xs),
           Text('Dr. Sharma', style: AppTypography.labelLarge),

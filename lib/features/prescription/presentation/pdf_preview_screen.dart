@@ -271,19 +271,25 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                     ],
                                   ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(doctor.name,
-                                        style: AppTypography.titleSmall
-                                            .copyWith(color: Colors.white)),
-                                    Text(doctor.qualifications,
-                                        style: AppTypography.bodySmall
-                                            .copyWith(color: Colors.white70)),
-                                    Text('Reg. No: ${doctor.regNo}',
-                                        style: AppTypography.bodySmall
-                                            .copyWith(color: Colors.white70)),
-                                  ],
+                                const SizedBox(width: AppSpacing.s),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(doctor.name,
+                                          textAlign: TextAlign.end,
+                                          style: AppTypography.titleSmall
+                                              .copyWith(color: Colors.white)),
+                                      Text(doctor.qualifications,
+                                          textAlign: TextAlign.end,
+                                          style: AppTypography.bodySmall
+                                              .copyWith(color: Colors.white70)),
+                                      Text('Reg. No: ${doctor.regNo}',
+                                          textAlign: TextAlign.end,
+                                          style: AppTypography.bodySmall
+                                              .copyWith(color: Colors.white70)),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

@@ -341,16 +341,22 @@ class _ConsultationCard extends StatelessWidget {
                     const Icon(Icons.calendar_today_rounded,
                         size: 12, color: Color(0xFF6B7280)),
                     const SizedBox(width: AppSpacing.xs),
-                    Text(dateStr,
-                        style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.textSecondary)),
+                    Flexible(
+                      child: Text(dateStr,
+                          style: AppTypography.labelSmall.copyWith(
+                              color: AppColors.textSecondary),
+                          overflow: TextOverflow.ellipsis),
+                    ),
                     const SizedBox(width: AppSpacing.s),
                     const Icon(Icons.access_time_rounded,
                         size: 12, color: Color(0xFF6B7280)),
                     const SizedBox(width: AppSpacing.xs),
-                    Text(timeStr,
-                        style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.textSecondary)),
+                    Flexible(
+                      child: Text(timeStr,
+                          style: AppTypography.labelSmall.copyWith(
+                              color: AppColors.textSecondary),
+                          overflow: TextOverflow.ellipsis),
+                    ),
                   ],
                 ),
                 if (diagnosis.isNotEmpty) ...[

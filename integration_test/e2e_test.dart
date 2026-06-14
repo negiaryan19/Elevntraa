@@ -9,8 +9,8 @@ import 'package:medscribe/main.dart' as app;
 ///
 /// Run on a booted simulator with mic permission pre-granted and speech
 /// audio playing near the host mic:
-///   xcrun simctl privacy <udid> grant microphone com.medscribe.varad
-///   flutter test integration_test/e2e_test.dart -d <udid>
+///   `xcrun simctl privacy <udid> grant microphone com.medscribe.varad`
+///   `flutter test integration_test/e2e_test.dart -d <udid>`
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 

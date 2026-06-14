@@ -109,12 +109,35 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
         if (mounted) _showPermissionSheet();
         return;
       }
-      if (result != MicPermissionResult.granted) return;
+      if (result != MicPermissionResult.granted) {
+        // Plain (non-permanent) denial — the OS will ask again next time, so
+        // don't deep-link to settings, just tell the doctor why nothing
+        // happened instead of failing silently.
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Microphone permission is needed to record the consultation.'),
+            ),
+          );
+        }
+        return;
+      }
     }
 
     final controller =
         ref.read(consultationControllerProvider(widget.visitId).notifier);
     await controller.startRecording();
+
+    // startRecording catches its own failures and parks the state in
+    // ConsultationStage.error. If the recorder never actually started, bail
+    // out before wiring up the timer/pulse so the UI doesn't pretend it's
+    // recording — the error banner is already shown by the build method.
+    if (!mounted ||
+        ref.read(consultationControllerProvider(widget.visitId)).stage !=
+            ConsultationStage.recording) {
+      return;
+    }
 
     _peakAmp = 0;
     _silenceHint = false;
@@ -267,22 +290,26 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Consultation Recording',
-                            style: AppTypography.headlineMedium),
-                        Text(
-                          isBusy
-                              ? 'Processing audio...'
-                              : isRecording
-                                  ? _isPaused
-                                      ? 'Paused'
-                                      : 'Recording conversation...'
-                                  : 'Doctor + Patient',
-                          style: AppTypography.bodySmall,
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Consultation Recording',
+                              style: AppTypography.headlineMedium,
+                              overflow: TextOverflow.ellipsis),
+                          Text(
+                            isBusy
+                                ? 'Processing audio...'
+                                : isRecording
+                                    ? _isPaused
+                                        ? 'Paused'
+                                        : 'Recording conversation...'
+                                    : 'Doctor + Patient',
+                            style: AppTypography.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -293,17 +293,24 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                         ),
                       ),
                       const SizedBox(width: AppSpacing.xs),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(_isReturning ? 'New Consultation' : 'Patient Details',
-                              style: AppTypography.headlineMedium),
-                          Text(
-                              _isReturning
-                                  ? 'Confirm details & consent'
-                                  : 'Enter basic patient information',
-                              style: AppTypography.bodySmall),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                _isReturning
+                                    ? 'New Consultation'
+                                    : 'Patient Details',
+                                style: AppTypography.headlineMedium,
+                                overflow: TextOverflow.ellipsis),
+                            Text(
+                                _isReturning
+                                    ? 'Confirm details & consent'
+                                    : 'Enter basic patient information',
+                                style: AppTypography.bodySmall,
+                                overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
                       ),
                     ],
                   ),

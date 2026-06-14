@@ -44,14 +44,18 @@ class IntakeChoiceScreen extends StatelessWidget {
                           color: Color(0xFF374151)),
                     ),
                     const SizedBox(width: AppSpacing.xs),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('New Consultation',
-                            style: AppTypography.headlineMedium),
-                        Text('Who is this consultation for?',
-                            style: AppTypography.bodySmall),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('New Consultation',
+                              style: AppTypography.headlineMedium,
+                              overflow: TextOverflow.ellipsis),
+                          Text('Who is this consultation for?',
+                              style: AppTypography.bodySmall,
+                              overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
                     ),
                   ],
                 ),
