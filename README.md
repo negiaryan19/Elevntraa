@@ -299,6 +299,3 @@ A quick map so you know where things live:
 - CocoaPods errors on iOS: from the `ios` folder run `pod install`, and if it still fails run `pod repo update` first.
 - General health check: `flutter doctor -v` prints a detailed report of what is missing.
 
-## License
-
-Add your license information here.
