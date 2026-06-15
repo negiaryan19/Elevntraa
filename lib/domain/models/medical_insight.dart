@@ -9,7 +9,7 @@ part 'medical_insight.g.dart';
 /// extractor MUST NOT invent fields — see system_instruction in
 /// insight_service.dart. Empty lists / null fields are valid and expected.
 @freezed
-class MedicalInsight with _$MedicalInsight {
+abstract class MedicalInsight with _$MedicalInsight {
   const factory MedicalInsight({
     @Default('') String consultationSummary,
     @Default([]) List<String> symptoms,

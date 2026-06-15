@@ -7,7 +7,7 @@ part 'report_attachment.g.dart';
 /// absolute file path of the saved image on the device; [caption] is an
 /// optional doctor-supplied label (e.g. "Blood test - 2 Jan").
 @freezed
-class ReportAttachment with _$ReportAttachment {
+abstract class ReportAttachment with _$ReportAttachment {
   const factory ReportAttachment({
     required String path,
     @Default('') String caption,
