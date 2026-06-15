@@ -39,7 +39,8 @@ class Visits extends Table {
   TextColumn get transcript => text().nullable()();
 
   /// Language hint used for transcription, e.g. 'or-IN' or 'unknown'.
-  TextColumn get languageCode => text().withDefault(const Constant('unknown'))();
+  TextColumn get languageCode =>
+      text().withDefault(const Constant('unknown'))();
 
   /// Structured MedicalInsight encoded as JSON.
   TextColumn get insightJson => text().nullable()();
@@ -55,7 +56,8 @@ class Visits extends Table {
   DateTimeColumn get signedAt => dateTime().nullable()();
 
   /// DPDP consent — must be true before recording.
-  BoolColumn get patientConsent => boolean().withDefault(const Constant(false))();
+  BoolColumn get patientConsent =>
+      boolean().withDefault(const Constant(false))();
   DateTimeColumn get consentAt => dateTime().nullable()();
 
   @override
@@ -74,14 +76,14 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          // v2: store attached previous-report images on the visit.
-          if (from < 2) {
-            await m.addColumn(visits, visits.attachmentsJson);
-          }
-        },
-      );
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      // v2: store attached previous-report images on the visit.
+      if (from < 2) {
+        await m.addColumn(visits, visits.attachmentsJson);
+      }
+    },
+  );
 
   // ── Patients ────────────────────────────────────────────────────────
   Future<List<Patient>> recentPatients({int limit = 20}) {
@@ -94,7 +96,9 @@ class AppDatabase extends _$AppDatabase {
   Future<List<Patient>> searchPatients(String query) {
     final q = '%${query.trim()}%';
     return (select(patients)
-          ..where((p) => p.name.like(q) | p.phone.like(q) | p.whatsappNumber.like(q))
+          ..where(
+            (p) => p.name.like(q) | p.phone.like(q) | p.whatsappNumber.like(q),
+          )
           ..orderBy([(p) => OrderingTerm.desc(p.updatedAt)])
           ..limit(50))
         .get();
@@ -107,8 +111,9 @@ class AppDatabase extends _$AppDatabase {
   /// Patients whose WhatsApp number matches exactly — used to detect a
   /// returning patient before creating a duplicate record.
   Future<List<Patient>> patientsByWhatsapp(String number) {
-    return (select(patients)..where((p) => p.whatsappNumber.equals(number)))
-        .get();
+    return (select(
+      patients,
+    )..where((p) => p.whatsappNumber.equals(number))).get();
   }
 
   Future<void> upsertPatient(PatientsCompanion row) {

@@ -44,7 +44,11 @@ class ErrorView extends StatelessWidget {
               ),
             ),
             AppSpacing.gapLg,
-            Text(title, textAlign: TextAlign.center, style: textTheme.titleLarge),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: textTheme.titleLarge,
+            ),
             if (message != null) ...[
               AppSpacing.gapS,
               Text(

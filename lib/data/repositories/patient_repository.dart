@@ -37,16 +37,18 @@ class PatientRepository {
   }
 
   Future<void> upsert(PatientProfile profile) {
-    return _db.upsertPatient(PatientsCompanion(
-      id: Value(profile.id),
-      name: Value(profile.name),
-      age: Value(profile.age),
-      sex: Value(profile.sex?.name),
-      whatsappNumber: Value(profile.whatsappNumber),
-      phone: Value(profile.phone),
-      createdAt: Value(profile.createdAt),
-      updatedAt: Value(profile.updatedAt),
-    ));
+    return _db.upsertPatient(
+      PatientsCompanion(
+        id: Value(profile.id),
+        name: Value(profile.name),
+        age: Value(profile.age),
+        sex: Value(profile.sex?.name),
+        whatsappNumber: Value(profile.whatsappNumber),
+        phone: Value(profile.phone),
+        createdAt: Value(profile.createdAt),
+        updatedAt: Value(profile.updatedAt),
+      ),
+    );
   }
 
   PatientProfile _toProfile(Patient row) {

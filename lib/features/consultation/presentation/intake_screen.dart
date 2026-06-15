@@ -64,8 +64,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
 
   Future<void> _prefill(String patientId) async {
     setState(() => _loadingPatient = true);
-    final patient =
-        await ref.read(patientRepositoryProvider).byId(patientId);
+    final patient = await ref.read(patientRepositoryProvider).byId(patientId);
     if (!mounted) return;
     setState(() {
       if (patient != null) {
@@ -108,13 +107,15 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
       final fileName = '${const Uuid().v4()}$ext';
       await File(picked.path).copy(p.join(attachDir.path, fileName));
       if (!mounted) return;
-      setState(() =>
-          _attachments = [..._attachments, ReportAttachment(path: fileName)]);
+      setState(
+        () =>
+            _attachments = [..._attachments, ReportAttachment(path: fileName)],
+      );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not add report: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not add report: $e')));
       }
     }
   }
@@ -132,7 +133,10 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
               onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_rounded, color: _kBlue600),
+              leading: const Icon(
+                Icons.photo_library_rounded,
+                color: _kBlue600,
+              ),
               title: const Text('Choose from gallery'),
               onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
             ),
@@ -190,8 +194,9 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
       // For a brand-new patient, warn if the number already belongs to someone
       // in history and offer to use that existing record instead of duplicating.
       if (!_isReturning) {
-        final existing =
-            await controller.findByPhone(_whatsappCtrl.text.trim());
+        final existing = await controller.findByPhone(
+          _whatsappCtrl.text.trim(),
+        );
         if (existing != null && mounted) {
           final useExisting = await _confirmUseExisting(existing);
           if (useExisting == null) {
@@ -284,9 +289,8 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                   child: Row(
                     children: [
                       IconButton(
-                        onPressed: () => context.canPop()
-                            ? context.pop()
-                            : context.go('/'),
+                        onPressed: () =>
+                            context.canPop() ? context.pop() : context.go('/'),
                         icon: const Icon(
                           Icons.arrow_back_rounded,
                           color: Color(0xFF374151),
@@ -298,17 +302,19 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                _isReturning
-                                    ? 'New Consultation'
-                                    : 'Patient Details',
-                                style: AppTypography.headlineMedium,
-                                overflow: TextOverflow.ellipsis),
+                              _isReturning
+                                  ? 'New Consultation'
+                                  : 'Patient Details',
+                              style: AppTypography.headlineMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             Text(
-                                _isReturning
-                                    ? 'Confirm details & consent'
-                                    : 'Enter basic patient information',
-                                style: AppTypography.bodySmall,
-                                overflow: TextOverflow.ellipsis),
+                              _isReturning
+                                  ? 'Confirm details & consent'
+                                  : 'Enter basic patient information',
+                              style: AppTypography.bodySmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
                       ),
@@ -330,247 +336,252 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      0,
-                      AppSpacing.lg,
-                      AppSpacing.xxl,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 24,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                        border: Border.all(color: const Color(0xFFF3F4F6)),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        0,
+                        AppSpacing.lg,
+                        AppSpacing.xxl,
                       ),
-                      padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Name
-                          _FieldLabel(
-                            icon: Icons.person_outline_rounded,
-                            label: 'Patient Name',
-                          ),
-                          const SizedBox(height: AppSpacing.s),
-                          _IntakeTextField(
-                            controller: _nameCtrl,
-                            hint: "Enter patient's full name",
-                            textInputAction: TextInputAction.next,
-                            validator: (v) =>
-                                (v == null || v.trim().isEmpty)
-                                    ? 'Name is required'
-                                    : null,
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          // Age + Gender
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    _FieldLabel(
-                                      icon: Icons.cake_outlined,
-                                      label: 'Age',
-                                    ),
-                                    const SizedBox(height: AppSpacing.s),
-                                    _IntakeTextField(
-                                      controller: _ageCtrl,
-                                      hint: 'Age',
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter
-                                            .digitsOnly,
-                                        LengthLimitingTextInputFormatter(3),
-                                      ],
-                                      textInputAction: TextInputAction.next,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    _FieldLabel(
-                                      icon: Icons.people_outline_rounded,
-                                      label: 'Gender',
-                                    ),
-                                    const SizedBox(height: AppSpacing.s),
-                                    _GenderDropdown(
-                                      value: _sex == null
-                                          ? null
-                                          : _sex == Sex.male
-                                              ? 'male'
-                                              : _sex == Sex.female
-                                                  ? 'female'
-                                                  : 'other',
-                                      onChanged: (v) => setState(() {
-                                        if (v == 'male') {
-                                          _sex = Sex.male;
-                                        } else if (v == 'female') {
-                                          _sex = Sex.female;
-                                        } else if (v == 'other') {
-                                          _sex = Sex.other;
-                                        } else {
-                                          _sex = null;
-                                        }
-                                      }),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          // WhatsApp
-                          _FieldLabel(
-                            icon: Icons.phone_outlined,
-                            label: 'WhatsApp Number',
-                          ),
-                          const SizedBox(height: AppSpacing.s),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 52,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.md,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF9FAFB),
-                                  borderRadius: AppSpacing.radiusMd,
-                                  border: Border.all(
-                                    color: const Color(0xFFD1D5DB),
-                                    width: 2,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text('+91',
-                                    style: AppTypography.titleSmall),
-                              ),
-                              const SizedBox(width: AppSpacing.s),
-                              Expanded(
-                                child: _IntakeTextField(
-                                  controller: _whatsappCtrl,
-                                  hint: '10-digit mobile number',
-                                  keyboardType: TextInputType.phone,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(10),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            'Prescription will be shared on this number',
-                            style: AppTypography.bodySmall
-                                .copyWith(color: AppColors.textMuted),
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          // Previous reports
-                          _FieldLabel(
-                            icon: Icons.description_outlined,
-                            label: 'Previous Reports (optional)',
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            'Scan or attach the patient\'s earlier reports — they '
-                            'are added to the prescription PDF.',
-                            style: AppTypography.bodySmall
-                                .copyWith(color: AppColors.textMuted),
-                          ),
-                          const SizedBox(height: AppSpacing.s),
-                          for (var i = 0; i < _attachments.length; i++)
-                            _ReportTile(
-                              key: ValueKey(_attachments[i].path),
-                              attachment: _attachments[i],
-                              isFirst: i == 0,
-                              isLast: i == _attachments.length - 1,
-                              onCaption: (c) => _setCaption(i, c),
-                              onUp: () => _moveReport(i, -1),
-                              onDown: () => _moveReport(i, 1),
-                              onDelete: () => _removeReport(i),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.08),
+                              blurRadius: 24,
+                              offset: const Offset(0, 8),
                             ),
-                          const SizedBox(height: AppSpacing.s),
-                          _AddReportButton(onTap: _pickReportSource),
-                          const SizedBox(height: AppSpacing.lg),
-                          // Consent
-                          GestureDetector(
-                            onTap: () =>
-                                setState(() => _consent = !_consent),
-                            behavior: HitTestBehavior.opaque,
-                            child: Row(
+                          ],
+                          border: Border.all(color: const Color(0xFFF3F4F6)),
+                        ),
+                        padding: const EdgeInsets.all(AppSpacing.xl),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name
+                            _FieldLabel(
+                              icon: Icons.person_outline_rounded,
+                              label: 'Patient Name',
+                            ),
+                            const SizedBox(height: AppSpacing.s),
+                            _IntakeTextField(
+                              controller: _nameCtrl,
+                              hint: "Enter patient's full name",
+                              textInputAction: TextInputAction.next,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Name is required'
+                                  : null,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            // Age + Gender
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AnimatedContainer(
-                                  duration:
-                                      const Duration(milliseconds: 150),
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    color: _consent
-                                        ? _kBlue600
-                                        : Colors.transparent,
-                                    borderRadius: AppSpacing.radiusSm,
-                                    border: Border.all(
-                                      color: _consent
-                                          ? _kBlue600
-                                          : const Color(0xFFD1D5DB),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: _consent
-                                      ? const Icon(Icons.check,
-                                          size: 14, color: Colors.white)
-                                      : null,
-                                ),
-                                const SizedBox(width: AppSpacing.s),
                                 Expanded(
-                                  child: Text(
-                                    'Patient has consented to be recorded (DPDP Act)',
-                                    style: AppTypography.bodySmall,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _FieldLabel(
+                                        icon: Icons.cake_outlined,
+                                        label: 'Age',
+                                      ),
+                                      const SizedBox(height: AppSpacing.s),
+                                      _IntakeTextField(
+                                        controller: _ageCtrl,
+                                        hint: 'Age',
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
+                                        textInputAction: TextInputAction.next,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _FieldLabel(
+                                        icon: Icons.people_outline_rounded,
+                                        label: 'Gender',
+                                      ),
+                                      const SizedBox(height: AppSpacing.s),
+                                      _GenderDropdown(
+                                        value: _sex == null
+                                            ? null
+                                            : _sex == Sex.male
+                                            ? 'male'
+                                            : _sex == Sex.female
+                                            ? 'female'
+                                            : 'other',
+                                        onChanged: (v) => setState(() {
+                                          if (v == 'male') {
+                                            _sex = Sex.male;
+                                          } else if (v == 'female') {
+                                            _sex = Sex.female;
+                                          } else if (v == 'other') {
+                                            _sex = Sex.other;
+                                          } else {
+                                            _sex = null;
+                                          }
+                                        }),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: AppSpacing.xl),
-                          if (_error != null) ...[
-                            Text(
-                              _error!,
-                              style: AppTypography.bodySmall
-                                  .copyWith(color: AppColors.error),
+                            const SizedBox(height: AppSpacing.lg),
+                            // WhatsApp
+                            _FieldLabel(
+                              icon: Icons.phone_outlined,
+                              label: 'WhatsApp Number',
                             ),
-                            const SizedBox(height: AppSpacing.md),
+                            const SizedBox(height: AppSpacing.s),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 52,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.md,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF9FAFB),
+                                    borderRadius: AppSpacing.radiusMd,
+                                    border: Border.all(
+                                      color: const Color(0xFFD1D5DB),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '+91',
+                                    style: AppTypography.titleSmall,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.s),
+                                Expanded(
+                                  child: _IntakeTextField(
+                                    controller: _whatsappCtrl,
+                                    hint: '10-digit mobile number',
+                                    keyboardType: TextInputType.phone,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(10),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              'Prescription will be shared on this number',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            // Previous reports
+                            _FieldLabel(
+                              icon: Icons.description_outlined,
+                              label: 'Previous Reports (optional)',
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              'Scan or attach the patient\'s earlier reports — they '
+                              'are added to the prescription PDF.',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.s),
+                            for (var i = 0; i < _attachments.length; i++)
+                              _ReportTile(
+                                key: ValueKey(_attachments[i].path),
+                                attachment: _attachments[i],
+                                isFirst: i == 0,
+                                isLast: i == _attachments.length - 1,
+                                onCaption: (c) => _setCaption(i, c),
+                                onUp: () => _moveReport(i, -1),
+                                onDown: () => _moveReport(i, 1),
+                                onDelete: () => _removeReport(i),
+                              ),
+                            const SizedBox(height: AppSpacing.s),
+                            _AddReportButton(onTap: _pickReportSource),
+                            const SizedBox(height: AppSpacing.lg),
+                            // Consent
+                            GestureDetector(
+                              onTap: () => setState(() => _consent = !_consent),
+                              behavior: HitTestBehavior.opaque,
+                              child: Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 150),
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      color: _consent
+                                          ? _kBlue600
+                                          : Colors.transparent,
+                                      borderRadius: AppSpacing.radiusSm,
+                                      border: Border.all(
+                                        color: _consent
+                                            ? _kBlue600
+                                            : const Color(0xFFD1D5DB),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: _consent
+                                        ? const Icon(
+                                            Icons.check,
+                                            size: 14,
+                                            color: Colors.white,
+                                          )
+                                        : null,
+                                  ),
+                                  const SizedBox(width: AppSpacing.s),
+                                  Expanded(
+                                    child: Text(
+                                      'Patient has consented to be recorded (DPDP Act)',
+                                      style: AppTypography.bodySmall,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+                            if (_error != null) ...[
+                              Text(
+                                _error!,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.error,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                            ],
+                            // Submit button
+                            _GradientCta(
+                              label: 'Continue to Recording',
+                              trailingIcon: Icons.arrow_forward_rounded,
+                              enabled: _isFormValid,
+                              loading: _submitting,
+                              onTap: _isFormValid ? _submit : null,
+                            ),
                           ],
-                          // Submit button
-                          _GradientCta(
-                            label: 'Continue to Recording',
-                            trailingIcon: Icons.arrow_forward_rounded,
-                            enabled: _isFormValid,
-                            loading: _submitting,
-                            onTap: _isFormValid ? _submit : null,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -602,8 +613,7 @@ class _StepProgressBar extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     gradient: i <= activeStep
-                        ? const LinearGradient(
-                            colors: [_kBlue600, _kTeal500])
+                        ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                         : null,
                     color: i <= activeStep ? null : const Color(0xFFE5E7EB),
                     borderRadius: BorderRadius.circular(4),
@@ -624,11 +634,9 @@ class _StepProgressBar extends StatelessWidget {
                 color: i == activeStep
                     ? _kBlue600
                     : i < activeStep
-                        ? const Color(0xFF0D9488)
-                        : const Color(0xFF9CA3AF),
-                fontWeight: i == activeStep
-                    ? FontWeight.w600
-                    : FontWeight.w400,
+                    ? const Color(0xFF0D9488)
+                    : const Color(0xFF9CA3AF),
+                fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ),
@@ -652,8 +660,9 @@ class _FieldLabel extends StatelessWidget {
         const SizedBox(width: AppSpacing.xs),
         Text(
           label,
-          style: AppTypography.labelMedium
-              .copyWith(color: const Color(0xFF374151)),
+          style: AppTypography.labelMedium.copyWith(
+            color: const Color(0xFF374151),
+          ),
         ),
       ],
     );
@@ -701,8 +710,9 @@ class _IntakeTextField extends StatelessWidget {
       style: AppTypography.bodyMedium,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle:
-            AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+        hintStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.textMuted,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: 14,
@@ -761,8 +771,10 @@ class _ReportTile extends StatelessWidget {
                 width: 52,
                 height: 52,
                 color: const Color(0xFFE5E7EB),
-                child: const Icon(Icons.broken_image_rounded,
-                    color: Color(0xFF9CA3AF)),
+                child: const Icon(
+                  Icons.broken_image_rounded,
+                  color: Color(0xFF9CA3AF),
+                ),
               ),
             ),
           ),
@@ -783,11 +795,13 @@ class _ReportTile extends StatelessWidget {
           Column(
             children: [
               _IconBtn(
-                  icon: Icons.keyboard_arrow_up_rounded,
-                  onTap: isFirst ? null : onUp),
+                icon: Icons.keyboard_arrow_up_rounded,
+                onTap: isFirst ? null : onUp,
+              ),
               _IconBtn(
-                  icon: Icons.keyboard_arrow_down_rounded,
-                  onTap: isLast ? null : onDown),
+                icon: Icons.keyboard_arrow_down_rounded,
+                onTap: isLast ? null : onDown,
+              ),
             ],
           ),
           _IconBtn(
@@ -814,11 +828,13 @@ class _IconBtn extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(2),
-        child: Icon(icon,
-            size: 20,
-            color: disabled
-                ? const Color(0xFFD1D5DB)
-                : (color ?? const Color(0xFF6B7280))),
+        child: Icon(
+          icon,
+          size: 20,
+          color: disabled
+              ? const Color(0xFFD1D5DB)
+              : (color ?? const Color(0xFF6B7280)),
+        ),
       ),
     );
   }
@@ -845,8 +861,10 @@ class _AddReportButton extends StatelessWidget {
           children: [
             const Icon(Icons.add_a_photo_rounded, color: _kBlue600, size: 20),
             const SizedBox(width: AppSpacing.s),
-            Text('Add report',
-                style: AppTypography.titleSmall.copyWith(color: _kBlue600)),
+            Text(
+              'Add report',
+              style: AppTypography.titleSmall.copyWith(color: _kBlue600),
+            ),
           ],
         ),
       ),
@@ -868,8 +886,9 @@ class _GenderDropdown extends StatelessWidget {
       style: AppTypography.bodyMedium,
       decoration: InputDecoration(
         hintText: 'Select',
-        hintStyle:
-            AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+        hintStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.textMuted,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: 14,
@@ -952,9 +971,7 @@ class _GradientCta extends StatelessWidget {
                     Text(
                       label,
                       style: AppTypography.titleSmall.copyWith(
-                        color: enabled
-                            ? Colors.white
-                            : const Color(0xFF9CA3AF),
+                        color: enabled ? Colors.white : const Color(0xFF9CA3AF),
                       ),
                     ),
                     if (trailingIcon != null) ...[
@@ -962,9 +979,7 @@ class _GradientCta extends StatelessWidget {
                       Icon(
                         trailingIcon,
                         size: 20,
-                        color: enabled
-                            ? Colors.white
-                            : const Color(0xFF9CA3AF),
+                        color: enabled ? Colors.white : const Color(0xFF9CA3AF),
                       ),
                     ],
                   ],

@@ -79,15 +79,18 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
 
   Future<void> _share() async {
     if (_visit == null || _patient == null) return;
-    final number =
-        (_patient!.whatsappNumber ?? '').replaceAll(RegExp(r'\D'), '');
+    final number = (_patient!.whatsappNumber ?? '').replaceAll(
+      RegExp(r'\D'),
+      '',
+    );
     final lines = [
       'Prescription for ${_patient!.name}',
       if (_draft.diagnosis.isNotEmpty) 'Diagnosis: ${_draft.diagnosis}',
       if (_draft.medications.isNotEmpty) ...[
         'Medications:',
         ..._draft.medications.map(
-          (m) => '• ${[m.name, m.dosage, m.frequency, m.duration].where((s) => s.trim().isNotEmpty).join(' · ')}',
+          (m) =>
+              '• ${[m.name, m.dosage, m.frequency, m.duration].where((s) => s.trim().isNotEmpty).join(' · ')}',
         ),
       ],
     ];
@@ -101,15 +104,15 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (_visit == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Review')),
         body: const EmptyState(
-            title: 'Visit not found', icon: Icons.search_off_rounded),
+          title: 'Visit not found',
+          icon: Icons.search_off_rounded,
+        ),
       );
     }
 
@@ -132,25 +135,34 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
               // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s, AppSpacing.md, AppSpacing.lg, 0),
+                  AppSpacing.s,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  0,
+                ),
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () => context.canPop()
-                          ? context.pop()
-                          : context.go('/'),
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: Color(0xFF374151)),
+                      onPressed: () =>
+                          context.canPop() ? context.pop() : context.go('/'),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Color(0xFF374151),
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Review Prescription',
-                              style: AppTypography.headlineMedium),
-                          Text('Verify and edit transcribed details',
-                              style: AppTypography.bodySmall),
+                          Text(
+                            'Review Prescription',
+                            style: AppTypography.headlineMedium,
+                          ),
+                          Text(
+                            'Verify and edit transcribed details',
+                            style: AppTypography.bodySmall,
+                          ),
                         ],
                       ),
                     ),
@@ -165,8 +177,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
               ),
               const SizedBox(height: AppSpacing.lg),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: _StepProgressBar(activeStep: 2),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -194,32 +205,41 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Patient Information',
-                                style: AppTypography.titleMedium),
+                            Text(
+                              'Patient Information',
+                              style: AppTypography.titleMedium,
+                            ),
                             const SizedBox(height: AppSpacing.md),
                             Row(
                               children: [
                                 Expanded(
-                                    child: _InfoField(
-                                        label: 'Name',
-                                        value: _patient!.name)),
+                                  child: _InfoField(
+                                    label: 'Name',
+                                    value: _patient!.name,
+                                  ),
+                                ),
                                 Expanded(
-                                    child: _InfoField(
-                                        label: 'Age',
-                                        value: _patient!.age != null
-                                            ? '${_patient!.age}'
-                                            : '—')),
+                                  child: _InfoField(
+                                    label: 'Age',
+                                    value: _patient!.age != null
+                                        ? '${_patient!.age}'
+                                        : '—',
+                                  ),
+                                ),
                                 Expanded(
-                                    child: _InfoField(
-                                        label: 'Gender',
-                                        value: _patient!.sex?.name ?? '—')),
+                                  child: _InfoField(
+                                    label: 'Gender',
+                                    value: _patient!.sex?.name ?? '—',
+                                  ),
+                                ),
                                 Expanded(
-                                    child: _InfoField(
-                                        label: 'WhatsApp',
-                                        value: _patient!.whatsappNumber !=
-                                                null
-                                            ? '+91 ${_patient!.whatsappNumber}'
-                                            : '—')),
+                                  child: _InfoField(
+                                    label: 'WhatsApp',
+                                    value: _patient!.whatsappNumber != null
+                                        ? '+91 ${_patient!.whatsappNumber}'
+                                        : '—',
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -235,9 +255,8 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         children: [
                           Text('Diagnosis', style: AppTypography.titleSmall),
                           const SizedBox(height: AppSpacing.s),
-                          TextField(
-                            controller: TextEditingController(
-                                text: _draft.diagnosis),
+                          TextFormField(
+                            initialValue: _draft.diagnosis,
                             style: AppTypography.bodyMedium,
                             maxLines: 3,
                             minLines: 1,
@@ -260,20 +279,27 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.medication_rounded,
-                                  color: _kBlue600, size: 20),
+                              const Icon(
+                                Icons.medication_rounded,
+                                color: _kBlue600,
+                                size: 20,
+                              ),
                               const SizedBox(width: AppSpacing.xs),
-                              Text('Prescribed Medicines',
-                                  style: AppTypography.titleMedium),
+                              Text(
+                                'Prescribed Medicines',
+                                style: AppTypography.titleMedium,
+                              ),
                               const Spacer(),
                               GestureDetector(
                                 onTap: () {
-                                  setState(() => _draft = _draft.copyWith(
-                                        medications: [
-                                          ..._draft.medications,
-                                          const Medication(name: ''),
-                                        ],
-                                      ));
+                                  setState(
+                                    () => _draft = _draft.copyWith(
+                                      medications: [
+                                        ..._draft.medications,
+                                        const Medication(name: ''),
+                                      ],
+                                    ),
+                                  );
                                   _save();
                                 },
                                 child: Container(
@@ -287,12 +313,17 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.add_rounded,
-                                          color: _kBlue600, size: 16),
+                                      const Icon(
+                                        Icons.add_rounded,
+                                        color: _kBlue600,
+                                        size: 16,
+                                      ),
                                       const SizedBox(width: AppSpacing.xs),
-                                      Text('Add',
-                                          style: AppTypography.labelSmall
-                                              .copyWith(color: _kBlue600)),
+                                      Text(
+                                        'Add',
+                                        style: AppTypography.labelSmall
+                                            .copyWith(color: _kBlue600),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -301,24 +332,34 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                           ),
                           const SizedBox(height: AppSpacing.md),
                           if (_draft.medications.isEmpty)
-                            Text('No medications recorded.',
-                                style: AppTypography.bodySmall),
-                          for (var i = 0;
-                              i < _draft.medications.length;
-                              i++) ...[
+                            Text(
+                              'No medications recorded.',
+                              style: AppTypography.bodySmall,
+                            ),
+                          for (
+                            var i = 0;
+                            i < _draft.medications.length;
+                            i++
+                          ) ...[
                             _MedicineRow(
                               med: _draft.medications[i],
                               onChanged: (m) {
                                 final next = [..._draft.medications]..[i] = m;
-                                setState(() => _draft =
-                                    _draft.copyWith(medications: next));
+                                setState(
+                                  () => _draft = _draft.copyWith(
+                                    medications: next,
+                                  ),
+                                );
                                 _save();
                               },
                               onDelete: () {
                                 final next = [..._draft.medications]
                                   ..removeAt(i);
-                                setState(() => _draft =
-                                    _draft.copyWith(medications: next));
+                                setState(
+                                  () => _draft = _draft.copyWith(
+                                    medications: next,
+                                  ),
+                                );
                                 _save();
                               },
                             ),
@@ -333,7 +374,8 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       title: 'Advice',
                       icon: Icons.tips_and_updates_rounded,
                       items: _draft.advice,
-                      hint: 'General guidance — one per line\n'
+                      hint:
+                          'General guidance — one per line\n'
                           'e.g. Take adequate rest\nAvoid oily food',
                       onChanged: (v) => _draft = _draft.copyWith(advice: v),
                       onSaved: _save,
@@ -343,7 +385,8 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       title: 'Instructions',
                       icon: Icons.checklist_rounded,
                       items: _draft.instructions,
-                      hint: 'Things to follow — one per line\n'
+                      hint:
+                          'Things to follow — one per line\n'
                           'e.g. Take medicine after food\nReturn if fever persists 3 days',
                       onChanged: (v) =>
                           _draft = _draft.copyWith(instructions: v),
@@ -355,16 +398,19 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       _InfoCard(
                         child: Row(
                           children: [
-                            const Icon(Icons.event_repeat_rounded,
-                                color: _kBlue600, size: 20),
+                            const Icon(
+                              Icons.event_repeat_rounded,
+                              color: _kBlue600,
+                              size: 20,
+                            ),
                             const SizedBox(width: AppSpacing.s),
-                            Text('Follow-up',
-                                style: AppTypography.titleSmall),
+                            Text('Follow-up', style: AppTypography.titleSmall),
                             const Spacer(),
                             Text(
                               'After ${_draft.followUpDays} day${_draft.followUpDays == 1 ? '' : 's'}',
-                              style: AppTypography.bodyMedium
-                                  .copyWith(color: AppColors.textPrimary),
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
                             ),
                           ],
                         ),
@@ -425,8 +471,7 @@ class _StepProgressBar extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     gradient: i <= activeStep
-                        ? const LinearGradient(
-                            colors: [_kBlue600, _kTeal500])
+                        ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                         : null,
                     color: i <= activeStep ? null : const Color(0xFFE5E7EB),
                     borderRadius: BorderRadius.circular(4),
@@ -447,11 +492,9 @@ class _StepProgressBar extends StatelessWidget {
                 color: i == activeStep
                     ? _kTeal600
                     : i < activeStep
-                        ? _kTeal600
-                        : const Color(0xFF9CA3AF),
-                fontWeight: i == activeStep
-                    ? FontWeight.w600
-                    : FontWeight.w400,
+                    ? _kTeal600
+                    : const Color(0xFF9CA3AF),
+                fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ),
@@ -487,8 +530,10 @@ class _SummaryCard extends StatelessWidget {
             children: [
               const Icon(Icons.summarize_rounded, color: _kBlue600, size: 18),
               const SizedBox(width: AppSpacing.xs),
-              Text('Consultation Summary',
-                  style: AppTypography.titleSmall.copyWith(color: _kBlue600)),
+              Text(
+                'Consultation Summary',
+                style: AppTypography.titleSmall.copyWith(color: _kBlue600),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.s),
@@ -582,11 +627,8 @@ class _BulletFieldState extends State<_BulletField> {
     super.dispose();
   }
 
-  List<String> _parse(String raw) => raw
-      .split('\n')
-      .map((l) => l.trim())
-      .where((l) => l.isNotEmpty)
-      .toList();
+  List<String> _parse(String raw) =>
+      raw.split('\n').map((l) => l.trim()).where((l) => l.isNotEmpty).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -610,8 +652,9 @@ class _BulletFieldState extends State<_BulletField> {
             keyboardType: TextInputType.multiline,
             decoration: InputDecoration(
               hintText: widget.hint,
-              hintStyle: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textMuted),
+              hintStyle: AppTypography.bodySmall.copyWith(
+                color: AppColors.textMuted,
+              ),
               isDense: true,
             ),
             onChanged: (v) => widget.onChanged(_parse(v)),
@@ -656,7 +699,9 @@ class _MedicineRow extends StatelessWidget {
                         initialValue: med.name,
                         style: AppTypography.bodySmall,
                         decoration: const InputDecoration(
-                            labelText: 'Medicine', isDense: true),
+                          labelText: 'Medicine',
+                          isDense: true,
+                        ),
                         onChanged: (v) => onChanged(med.copyWith(name: v)),
                       ),
                     ),
@@ -667,7 +712,9 @@ class _MedicineRow extends StatelessWidget {
                         initialValue: med.dosage,
                         style: AppTypography.bodySmall,
                         decoration: const InputDecoration(
-                            labelText: 'Dosage', isDense: true),
+                          labelText: 'Dosage',
+                          isDense: true,
+                        ),
                         onChanged: (v) => onChanged(med.copyWith(dosage: v)),
                       ),
                     ),
@@ -681,9 +728,10 @@ class _MedicineRow extends StatelessWidget {
                         initialValue: med.frequency,
                         style: AppTypography.bodySmall,
                         decoration: const InputDecoration(
-                            labelText: 'Frequency', isDense: true),
-                        onChanged: (v) =>
-                            onChanged(med.copyWith(frequency: v)),
+                          labelText: 'Frequency',
+                          isDense: true,
+                        ),
+                        onChanged: (v) => onChanged(med.copyWith(frequency: v)),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.s),
@@ -692,9 +740,10 @@ class _MedicineRow extends StatelessWidget {
                         initialValue: med.duration,
                         style: AppTypography.bodySmall,
                         decoration: const InputDecoration(
-                            labelText: 'Duration', isDense: true),
-                        onChanged: (v) =>
-                            onChanged(med.copyWith(duration: v)),
+                          labelText: 'Duration',
+                          isDense: true,
+                        ),
+                        onChanged: (v) => onChanged(med.copyWith(duration: v)),
                       ),
                     ),
                   ],
@@ -704,8 +753,11 @@ class _MedicineRow extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.s),
           IconButton(
-            icon: const Icon(Icons.close_rounded,
-                color: Color(0xFFDC2626), size: 20),
+            icon: const Icon(
+              Icons.close_rounded,
+              color: Color(0xFFDC2626),
+              size: 20,
+            ),
             onPressed: onDelete,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -741,14 +793,20 @@ class _GradientCta extends StatelessWidget {
           ),
           borderRadius: AppSpacing.radiusLg,
           boxShadow: const [
-            BoxShadow(color: _kBlueShadow, blurRadius: 16, offset: Offset(0, 6)),
+            BoxShadow(
+              color: _kBlueShadow,
+              blurRadius: 16,
+              offset: Offset(0, 6),
+            ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(label,
-                style: AppTypography.titleSmall.copyWith(color: Colors.white)),
+            Text(
+              label,
+              style: AppTypography.titleSmall.copyWith(color: Colors.white),
+            ),
             if (trailingIcon != null) ...[
               const SizedBox(width: AppSpacing.s),
               Icon(trailingIcon, color: Colors.white, size: 20),
@@ -761,7 +819,11 @@ class _GradientCta extends StatelessWidget {
 }
 
 class _OutlineButton extends StatelessWidget {
-  const _OutlineButton({required this.label, required this.icon, required this.onTap});
+  const _OutlineButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
   final String label;
   final IconData icon;
   final VoidCallback? onTap;
@@ -784,7 +846,12 @@ class _OutlineButton extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: AppColors.textSecondary),
             const SizedBox(width: AppSpacing.s),
-            Text(label, style: AppTypography.titleSmall.copyWith(color: AppColors.textSecondary)),
+            Text(
+              label,
+              style: AppTypography.titleSmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ],
         ),
       ),

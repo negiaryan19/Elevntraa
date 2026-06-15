@@ -90,8 +90,12 @@ class AppTheme {
           vertical: AppSpacing.md,
         ),
         hintStyle: textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
-        labelStyle: textTheme.labelLarge?.copyWith(color: AppColors.textSecondary),
-        floatingLabelStyle: textTheme.labelLarge?.copyWith(color: AppColors.primary),
+        labelStyle: textTheme.labelLarge?.copyWith(
+          color: AppColors.textSecondary,
+        ),
+        floatingLabelStyle: textTheme.labelLarge?.copyWith(
+          color: AppColors.primary,
+        ),
         border: OutlineInputBorder(
           borderRadius: AppSpacing.radiusMd,
           borderSide: const BorderSide(color: AppColors.outline),
@@ -122,7 +126,9 @@ class AppTheme {
           elevation: 0,
           minimumSize: const Size.fromHeight(52),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusMd),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppSpacing.radiusMd,
+          ),
           textStyle: textTheme.labelLarge,
         ),
       ),
@@ -132,7 +138,9 @@ class AppTheme {
           side: const BorderSide(color: AppColors.outlineStrong),
           minimumSize: const Size.fromHeight(52),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusMd),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppSpacing.radiusMd,
+          ),
           textStyle: textTheme.labelLarge,
         ),
       ),
@@ -159,7 +167,9 @@ class AppTheme {
         backgroundColor: AppColors.surfaceAlt,
         labelStyle: textTheme.labelMedium,
         side: const BorderSide(color: AppColors.outline),
-        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusPill),
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppSpacing.radiusPill,
+        ),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.m,
           vertical: AppSpacing.s,
@@ -167,7 +177,9 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: textTheme.bodyMedium?.copyWith(color: AppColors.textInverse),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(
+          color: AppColors.textInverse,
+        ),
         behavior: SnackBarBehavior.floating,
         shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusMd),
       ),

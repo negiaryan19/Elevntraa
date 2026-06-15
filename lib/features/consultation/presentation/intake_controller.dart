@@ -46,24 +46,30 @@ class IntakeController {
       if (existing != null) createdAt = existing.createdAt;
     }
 
-    await _patients.upsert(PatientProfile(
-      id: patientId,
-      name: name.trim(),
-      age: age,
-      sex: sex,
-      whatsappNumber: whatsappNumber.trim().isEmpty ? null : whatsappNumber.trim(),
-      createdAt: createdAt,
-      updatedAt: now,
-    ));
+    await _patients.upsert(
+      PatientProfile(
+        id: patientId,
+        name: name.trim(),
+        age: age,
+        sex: sex,
+        whatsappNumber: whatsappNumber.trim().isEmpty
+            ? null
+            : whatsappNumber.trim(),
+        createdAt: createdAt,
+        updatedAt: now,
+      ),
+    );
 
-    await _visits.upsert(VisitRecord(
-      id: visitId,
-      patientId: patientId,
-      createdAt: now,
-      attachments: attachments,
-      patientConsent: true,
-      consentAt: now,
-    ));
+    await _visits.upsert(
+      VisitRecord(
+        id: visitId,
+        patientId: patientId,
+        createdAt: now,
+        attachments: attachments,
+        patientConsent: true,
+        consentAt: now,
+      ),
+    );
 
     return IntakeResult(visitId: visitId, patientId: patientId);
   }

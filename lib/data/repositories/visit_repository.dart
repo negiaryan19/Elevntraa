@@ -30,24 +30,29 @@ class VisitRepository {
   }
 
   Future<void> upsert(VisitRecord v) {
-    return _db.upsertVisit(VisitsCompanion(
-      id: Value(v.id),
-      patientId: Value(v.patientId),
-      createdAt: Value(v.createdAt),
-      audioPath: Value(v.audioPath),
-      transcript: Value(v.transcript),
-      languageCode: Value(v.languageCode),
-      insightJson:
-          Value(v.insight == null ? null : jsonEncode(v.insight!.toJson())),
-      attachmentsJson: Value(v.attachments.isEmpty
-          ? null
-          : jsonEncode(v.attachments.map((a) => a.toJson()).toList())),
-      pdfPath: Value(v.pdfPath),
-      signed: Value(v.signed),
-      signedAt: Value(v.signedAt),
-      patientConsent: Value(v.patientConsent),
-      consentAt: Value(v.consentAt),
-    ));
+    return _db.upsertVisit(
+      VisitsCompanion(
+        id: Value(v.id),
+        patientId: Value(v.patientId),
+        createdAt: Value(v.createdAt),
+        audioPath: Value(v.audioPath),
+        transcript: Value(v.transcript),
+        languageCode: Value(v.languageCode),
+        insightJson: Value(
+          v.insight == null ? null : jsonEncode(v.insight!.toJson()),
+        ),
+        attachmentsJson: Value(
+          v.attachments.isEmpty
+              ? null
+              : jsonEncode(v.attachments.map((a) => a.toJson()).toList()),
+        ),
+        pdfPath: Value(v.pdfPath),
+        signed: Value(v.signed),
+        signedAt: Value(v.signedAt),
+        patientConsent: Value(v.patientConsent),
+        consentAt: Value(v.consentAt),
+      ),
+    );
   }
 
   VisitRecord _toRecord(Visit row) {
@@ -56,7 +61,8 @@ class VisitRepository {
     if (raw != null && raw.isNotEmpty) {
       try {
         insight = MedicalInsight.fromJson(
-            jsonDecode(raw) as Map<String, dynamic>);
+          jsonDecode(raw) as Map<String, dynamic>,
+        );
       } catch (_) {
         insight = null;
       }

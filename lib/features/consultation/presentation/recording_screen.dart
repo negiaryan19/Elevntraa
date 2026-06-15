@@ -117,7 +117,8 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'Microphone permission is needed to record the consultation.'),
+                'Microphone permission is needed to record the consultation.',
+              ),
             ),
           );
         }
@@ -125,8 +126,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       }
     }
 
-    final controller =
-        ref.read(consultationControllerProvider(widget.visitId).notifier);
+    final controller = ref.read(
+      consultationControllerProvider(widget.visitId).notifier,
+    );
     await controller.startRecording();
 
     // startRecording catches its own failures and parks the state in
@@ -156,7 +158,8 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
 
       // 4s of recording without a single amplitude blip means no audio is
       // reaching us — warn now so the doctor doesn't lose the consultation.
-      final silent = _accumulated + segment > const Duration(seconds: 4) &&
+      final silent =
+          _accumulated + segment > const Duration(seconds: 4) &&
           _peakAmp < 0.02;
       if (silent != _silenceHint && mounted) {
         setState(() => _silenceHint = silent);
@@ -165,8 +168,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   }
 
   Future<void> _onPauseResume() async {
-    final controller =
-        ref.read(consultationControllerProvider(widget.visitId).notifier);
+    final controller = ref.read(
+      consultationControllerProvider(widget.visitId).notifier,
+    );
     final willPause = !_isPaused;
     setState(() => _isPaused = willPause);
     if (willPause) {
@@ -193,14 +197,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       _silenceHint = false;
     });
 
-    final controller =
-        ref.read(consultationControllerProvider(widget.visitId).notifier);
+    final controller = ref.read(
+      consultationControllerProvider(widget.visitId).notifier,
+    );
     await controller.stopAndProcess();
 
     if (mounted &&
-        ref
-                .read(consultationControllerProvider(widget.visitId))
-                .stage ==
+        ref.read(consultationControllerProvider(widget.visitId)).stage ==
             ConsultationStage.done) {
       context.go(AppRoute.review.build(params: {'visitId': widget.visitId}));
     }
@@ -214,11 +217,16 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.mic_off_rounded,
-                size: 36, color: AppColors.warning),
+            const Icon(
+              Icons.mic_off_rounded,
+              size: 36,
+              color: AppColors.warning,
+            ),
             AppSpacing.gapMd,
-            Text('Microphone access needed',
-                style: Theme.of(ctx).textTheme.titleLarge),
+            Text(
+              'Microphone access needed',
+              style: Theme.of(ctx).textTheme.titleLarge,
+            ),
             AppSpacing.gapS,
             Text(
               'Enable microphone permission in settings to record.',
@@ -247,12 +255,12 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final state =
-        ref.watch(consultationControllerProvider(widget.visitId));
+    final state = ref.watch(consultationControllerProvider(widget.visitId));
     final recorder = ref.watch(recordingServiceProvider);
 
     final isRecording = state.stage == ConsultationStage.recording;
-    final isBusy = state.stage == ConsultationStage.transcribing ||
+    final isBusy =
+        state.stage == ConsultationStage.transcribing ||
         state.stage == ConsultationStage.extracting;
     final isActiveRecording = isRecording && !_isPaused;
 
@@ -273,15 +281,19 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
               // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s, AppSpacing.md, AppSpacing.lg, 0),
+                  AppSpacing.s,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  0,
+                ),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: isRecording
                           ? null
                           : () => context.canPop()
-                              ? context.pop()
-                              : context.go('/'),
+                                ? context.pop()
+                                : context.go('/'),
                       icon: Icon(
                         Icons.arrow_back_rounded,
                         color: isRecording
@@ -294,17 +306,19 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Consultation Recording',
-                              style: AppTypography.headlineMedium,
-                              overflow: TextOverflow.ellipsis),
+                          Text(
+                            'Consultation Recording',
+                            style: AppTypography.headlineMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           Text(
                             isBusy
                                 ? 'Processing audio...'
                                 : isRecording
-                                    ? _isPaused
-                                        ? 'Paused'
-                                        : 'Recording conversation...'
-                                    : 'Doctor + Patient',
+                                ? _isPaused
+                                      ? 'Paused'
+                                      : 'Recording conversation...'
+                                : 'Doctor + Patient',
                             style: AppTypography.bodySmall,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -317,8 +331,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
               const SizedBox(height: AppSpacing.lg),
               // Progress bar
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: _StepProgressBar(activeStep: 1),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -327,7 +340,8 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                 height: 36,
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg),
+                    horizontal: AppSpacing.lg,
+                  ),
                   scrollDirection: Axis.horizontal,
                   itemCount: _languages.length,
                   separatorBuilder: (_, _) =>
@@ -338,10 +352,12 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                     return GestureDetector(
                       onTap: (!isRecording && !isBusy)
                           ? () => ref
-                              .read(consultationControllerProvider(
-                                      widget.visitId)
-                                  .notifier)
-                              .setLanguage(lang.code)
+                                .read(
+                                  consultationControllerProvider(
+                                    widget.visitId,
+                                  ).notifier,
+                                )
+                                .setLanguage(lang.code)
                           : null,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
@@ -352,7 +368,8 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                         decoration: BoxDecoration(
                           gradient: isSelected
                               ? const LinearGradient(
-                                  colors: [_kBlue600, _kTeal500])
+                                  colors: [_kBlue600, _kTeal500],
+                                )
                               : null,
                           color: isSelected ? null : Colors.white,
                           borderRadius: AppSpacing.radiusPill,
@@ -379,10 +396,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
               if (!isRecording && !isBusy)
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg),
+                    horizontal: AppSpacing.lg,
+                  ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md, vertical: AppSpacing.m),
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.m,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEFF6FF),
                       borderRadius: AppSpacing.radiusLg,
@@ -390,14 +410,18 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline_rounded,
-                            color: _kBlue600, size: 18),
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          color: _kBlue600,
+                          size: 18,
+                        ),
                         const SizedBox(width: AppSpacing.s),
                         Expanded(
                           child: Text(
                             'Place phone on the desk between doctor and patient, then tap Start.',
-                            style: AppTypography.bodySmall
-                                .copyWith(color: _kBlue600),
+                            style: AppTypography.bodySmall.copyWith(
+                              color: _kBlue600,
+                            ),
                           ),
                         ),
                       ],
@@ -410,250 +434,275 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                 child: LayoutBuilder(
                   builder: (context, constraints) => SingleChildScrollView(
                     child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minHeight: constraints.maxHeight),
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                    // Large circle + pulse
-                    AnimatedBuilder(
-                      animation:
-                          Listenable.merge([_pulse1, _pulse2]),
-                      builder: (context, _) {
-                        return SizedBox(
-                          width: 240,
-                          height: 240,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              if (isActiveRecording) ...[
-                                _PulseRing(
-                                  progress: _pulse1.value,
-                                  baseSize: 192,
-                                  maxScale: 1.5,
-                                  color: const Color(0xFF60A5FA),
-                                ),
-                                _PulseRing(
-                                  progress: _pulse2.value,
-                                  baseSize: 192,
-                                  maxScale: 1.8,
-                                  color: _kTeal500,
-                                ),
-                              ],
-                              Container(
-                                width: 192,
-                                height: 192,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [_kBlue600, _kTeal500],
-                                  ),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isActiveRecording
-                                          ? _kBlueShadow
-                                          : const Color(0x1A000000),
-                                      blurRadius: isActiveRecording
-                                          ? 40
-                                          : 20,
+                          // Large circle + pulse
+                          AnimatedBuilder(
+                            animation: Listenable.merge([_pulse1, _pulse2]),
+                            builder: (context, _) {
+                              return SizedBox(
+                                width: 240,
+                                height: 240,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    if (isActiveRecording) ...[
+                                      _PulseRing(
+                                        progress: _pulse1.value,
+                                        baseSize: 192,
+                                        maxScale: 1.5,
+                                        color: const Color(0xFF60A5FA),
+                                      ),
+                                      _PulseRing(
+                                        progress: _pulse2.value,
+                                        baseSize: 192,
+                                        maxScale: 1.8,
+                                        color: _kTeal500,
+                                      ),
+                                    ],
+                                    Container(
+                                      width: 192,
+                                      height: 192,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [_kBlue600, _kTeal500],
+                                        ),
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: isActiveRecording
+                                                ? _kBlueShadow
+                                                : const Color(0x1A000000),
+                                            blurRadius: isActiveRecording
+                                                ? 40
+                                                : 20,
+                                          ),
+                                        ],
+                                      ),
+                                      child: isBusy
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 3,
+                                            )
+                                          : Icon(
+                                              isRecording
+                                                  ? Icons.mic_rounded
+                                                  : Icons
+                                                        .record_voice_over_rounded,
+                                              color: Colors.white,
+                                              size: 80,
+                                            ),
                                     ),
                                   ],
                                 ),
-                                child: isBusy
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white, strokeWidth: 3)
-                                    : Icon(
-                                        isRecording
-                                            ? Icons.mic_rounded
-                                            : Icons.record_voice_over_rounded,
-                                        color: Colors.white,
-                                        size: 80,
-                                      ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    // Waveform
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.lg),
-                      child: LiveWaveform(
-                        amplitudeStream: recorder.amplitude,
-                        active: isActiveRecording,
-                        barCount: 40,
-                        height: 80,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    // Timer
-                    Text(
-                      _fmt(state.elapsed),
-                      style: AppTypography.displayMedium.copyWith(
-                        color: isActiveRecording
-                            ? _kBlue600
-                            : AppColors.textSecondary,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.s),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isActiveRecording
-                                ? Colors.red
-                                : const Color(0xFFD1D5DB),
+                          const SizedBox(height: AppSpacing.xl),
+                          // Waveform
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.lg,
+                            ),
+                            child: LiveWaveform(
+                              amplitudeStream: recorder.amplitude,
+                              active: isActiveRecording,
+                              barCount: 40,
+                              height: 80,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          isRecording
-                              ? _isPaused
-                                  ? 'Paused'
-                                  : 'Recording conversation...'
-                              : isBusy
-                                  ? _busyLabel(state.stage)
-                                  : 'Ready — both voices will be captured',
-                          style: AppTypography.bodySmall,
-                        ),
-                      ],
-                    ),
-                    // Live "mic is silent" warning — recording is running but
-                    // no audio is arriving, so the file will be empty.
-                    if (isActiveRecording && _silenceHint) ...[
-                      const SizedBox(height: AppSpacing.md),
-                      GestureDetector(
-                        onTap: MicPermission.openSettings,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.lg),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.s,
+                          const SizedBox(height: AppSpacing.xl),
+                          // Timer
+                          Text(
+                            _fmt(state.elapsed),
+                            style: AppTypography.displayMedium.copyWith(
+                              color: isActiveRecording
+                                  ? _kBlue600
+                                  : AppColors.textSecondary,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                           ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFEF3C7),
-                            borderRadius: AppSpacing.radiusMd,
-                            border:
-                                Border.all(color: const Color(0xFFF59E0B)),
-                          ),
-                          child: Row(
+                          const SizedBox(height: AppSpacing.s),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.mic_off_rounded,
-                                  color: Color(0xFFD97706), size: 16),
-                              const SizedBox(width: AppSpacing.s),
-                              Expanded(
-                                child: Text(
-                                  'No audio detected. Check that Microphone '
-                                  'is ON for MediScribe in iPhone Settings, '
-                                  'and disconnect Bluetooth headphones. '
-                                  'Tap here to open Settings.',
-                                  style: AppTypography.labelSmall.copyWith(
-                                      color: const Color(0xFF92400E)),
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isActiveRecording
+                                      ? Colors.red
+                                      : const Color(0xFFD1D5DB),
                                 ),
                               ),
+                              const SizedBox(width: AppSpacing.xs),
+                              Text(
+                                isRecording
+                                    ? _isPaused
+                                          ? 'Paused'
+                                          : 'Recording conversation...'
+                                    : isBusy
+                                    ? _busyLabel(state.stage)
+                                    : 'Ready — both voices will be captured',
+                                style: AppTypography.bodySmall,
+                              ),
                             ],
                           ),
-                        ),
-                      ),
-                    ],
-                    // 55-minute soft warning (free-tier batch limit is 1 h)
-                    if (isRecording &&
-                        state.elapsed.inMinutes >= 55) ...[
-                      const SizedBox(height: AppSpacing.md),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.s,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF3C7),
-                          borderRadius: AppSpacing.radiusMd,
-                          border: Border.all(
-                              color: const Color(0xFFF59E0B)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.warning_amber_rounded,
-                                color: Color(0xFFD97706), size: 16),
-                            const SizedBox(width: AppSpacing.xs),
-                            Text(
-                              'Recording approaching limit',
-                              style: AppTypography.labelSmall.copyWith(
-                                  color: const Color(0xFF92400E)),
+                          // Live "mic is silent" warning — recording is running but
+                          // no audio is arriving, so the file will be empty.
+                          if (isActiveRecording && _silenceHint) ...[
+                            const SizedBox(height: AppSpacing.md),
+                            GestureDetector(
+                              onTap: MicPermission.openSettings,
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.lg,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.md,
+                                  vertical: AppSpacing.s,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFEF3C7),
+                                  borderRadius: AppSpacing.radiusMd,
+                                  border: Border.all(
+                                    color: const Color(0xFFF59E0B),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.mic_off_rounded,
+                                      color: Color(0xFFD97706),
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: AppSpacing.s),
+                                    Expanded(
+                                      child: Text(
+                                        'No audio detected. Check that Microphone '
+                                        'is ON for MediScribe in iPhone Settings, '
+                                        'and disconnect Bluetooth headphones. '
+                                        'Tap here to open Settings.',
+                                        style: AppTypography.labelSmall
+                                            .copyWith(
+                                              color: const Color(0xFF92400E),
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
-                    if (state.error != null) ...[
-                      const SizedBox(height: AppSpacing.md),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg),
-                        child: Text(
-                          state.error!,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.bodySmall
-                              .copyWith(color: AppColors.error),
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: AppSpacing.xxl),
-                    // Buttons
-                    if (!isRecording && !isBusy)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg),
-                        child: _GradientCta(
-                          label: 'Start Consultation',
-                          leadingIcon: Icons.record_voice_over_rounded,
-                          onTap: _onStartPressed,
-                        ),
-                      )
-                    else if (isRecording)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _OutlineButton(
-                            icon: _isPaused
-                                ? Icons.play_arrow_rounded
-                                : Icons.pause_rounded,
-                            label: _isPaused ? 'Resume' : 'Pause',
-                            onTap: _onPauseResume,
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          _GreenButton(
-                            icon: Icons.check_rounded,
-                            label: 'Done',
-                            enabled: state.elapsed.inSeconds >= 5,
-                            onTap:
-                                state.elapsed.inSeconds >= 5 ? _onDone : null,
-                          ),
-                        ],
-                      ),
-                    if (state.elapsed.inSeconds < 5 && isRecording)
-                      Padding(
-                        padding: const EdgeInsets.only(top: AppSpacing.md),
-                        child: Text(
-                          'Minimum 5 seconds required',
-                          style: AppTypography.bodySmall
-                              .copyWith(color: AppColors.textMuted),
-                        ),
-                      ),
+                          // 55-minute soft warning (free-tier batch limit is 1 h)
+                          if (isRecording && state.elapsed.inMinutes >= 55) ...[
+                            const SizedBox(height: AppSpacing.md),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.md,
+                                vertical: AppSpacing.s,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF3C7),
+                                borderRadius: AppSpacing.radiusMd,
+                                border: Border.all(
+                                  color: const Color(0xFFF59E0B),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Color(0xFFD97706),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: AppSpacing.xs),
+                                  Text(
+                                    'Recording approaching limit',
+                                    style: AppTypography.labelSmall.copyWith(
+                                      color: const Color(0xFF92400E),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          if (state.error != null) ...[
+                            const SizedBox(height: AppSpacing.md),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                              ),
+                              child: Text(
+                                state.error!,
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: AppSpacing.xxl),
+                          // Buttons
+                          if (!isRecording && !isBusy)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                              ),
+                              child: _GradientCta(
+                                label: 'Start Consultation',
+                                leadingIcon: Icons.record_voice_over_rounded,
+                                onTap: _onStartPressed,
+                              ),
+                            )
+                          else if (isRecording)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _OutlineButton(
+                                  icon: _isPaused
+                                      ? Icons.play_arrow_rounded
+                                      : Icons.pause_rounded,
+                                  label: _isPaused ? 'Resume' : 'Pause',
+                                  onTap: _onPauseResume,
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                _GreenButton(
+                                  icon: Icons.check_rounded,
+                                  label: 'Done',
+                                  enabled: state.elapsed.inSeconds >= 5,
+                                  onTap: state.elapsed.inSeconds >= 5
+                                      ? _onDone
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          if (state.elapsed.inSeconds < 5 && isRecording)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: AppSpacing.md,
+                              ),
+                              child: Text(
+                                'Minimum 5 seconds required',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -696,8 +745,7 @@ class _StepProgressBar extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     gradient: i <= activeStep
-                        ? const LinearGradient(
-                            colors: [_kBlue600, _kTeal500])
+                        ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                         : null,
                     color: i <= activeStep ? null : const Color(0xFFE5E7EB),
                     borderRadius: BorderRadius.circular(4),
@@ -718,11 +766,9 @@ class _StepProgressBar extends StatelessWidget {
                 color: i == activeStep
                     ? _kBlue600
                     : i < activeStep
-                        ? const Color(0xFF0D9488)
-                        : const Color(0xFF9CA3AF),
-                fontWeight: i == activeStep
-                    ? FontWeight.w600
-                    : FontWeight.w400,
+                    ? const Color(0xFF0D9488)
+                    : const Color(0xFF9CA3AF),
+                fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ),
@@ -756,10 +802,7 @@ class _PulseRing extends StatelessWidget {
         height: baseSize,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-            color: color.withValues(alpha: opacity),
-            width: 3,
-          ),
+          border: Border.all(color: color.withValues(alpha: opacity), width: 3),
         ),
       ),
     );
@@ -803,9 +846,10 @@ class _GradientCta extends StatelessWidget {
           children: [
             Icon(leadingIcon, color: Colors.white, size: 22),
             const SizedBox(width: AppSpacing.m),
-            Text(label,
-                style: AppTypography.titleSmall
-                    .copyWith(color: Colors.white)),
+            Text(
+              label,
+              style: AppTypography.titleSmall.copyWith(color: Colors.white),
+            ),
           ],
         ),
       ),
@@ -877,7 +921,8 @@ class _GreenButton extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: enabled
               ? const LinearGradient(
-                  colors: [Color(0xFF16A34A), Color(0xFF10B981)])
+                  colors: [Color(0xFF16A34A), Color(0xFF10B981)],
+                )
               : null,
           color: enabled ? null : const Color(0xFFE5E7EB),
           borderRadius: AppSpacing.radiusLg,
@@ -893,9 +938,11 @@ class _GreenButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon,
-                size: 22,
-                color: enabled ? Colors.white : const Color(0xFF9CA3AF)),
+            Icon(
+              icon,
+              size: 22,
+              color: enabled ? Colors.white : const Color(0xFF9CA3AF),
+            ),
             const SizedBox(width: AppSpacing.s),
             Text(
               label,

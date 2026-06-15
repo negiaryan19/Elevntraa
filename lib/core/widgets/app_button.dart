@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 
 enum AppButtonVariant { primary, secondary, ghost, danger }
+
 enum AppButtonSize { regular, large }
 
 /// Single button widget the whole app uses. Variants are purely cosmetic;
@@ -55,9 +56,9 @@ class AppButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   label,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: colors.foreground,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(color: colors.foreground),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

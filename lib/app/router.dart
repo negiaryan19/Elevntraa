@@ -83,9 +83,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.intakeForm.path,
         name: AppRoute.intakeForm.name,
-        builder: (context, state) => IntakeScreen(
-          patientId: state.uri.queryParameters['patientId'],
-        ),
+        builder: (context, state) =>
+            IntakeScreen(patientId: state.uri.queryParameters['patientId']),
       ),
       GoRoute(
         path: AppRoute.intakeExisting.path,
@@ -234,10 +233,7 @@ class _NavItem extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              label,
-              style: AppTypography.labelSmall.copyWith(color: color),
-            ),
+            Text(label, style: AppTypography.labelSmall.copyWith(color: color)),
           ],
         ),
       ),

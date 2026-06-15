@@ -101,7 +101,10 @@ class InsightService {
       throw const ApiFailure('Gemini API key is not configured.');
     }
     if (rawTranscript.trim().isEmpty) {
-      return InsightResult(transcript: rawTranscript, insight: MedicalInsight.empty);
+      return InsightResult(
+        transcript: rawTranscript,
+        insight: MedicalInsight.empty,
+      );
     }
 
     final isDiarized = _speakerPattern.hasMatch(rawTranscript);
@@ -112,23 +115,26 @@ class InsightService {
 
   // ── Diarized path (SPEAKER_X labels) ─────────────────────────────────────
 
-  Future<InsightResult> _extractDiarized(String rawTranscript, String key) async {
+  Future<InsightResult> _extractDiarized(
+    String rawTranscript,
+    String key,
+  ) async {
     final url =
         '${Env.geminiEndpointBase}/models/${Env.geminiModel}:generateContent?key=$key';
 
     final body = {
       'systemInstruction': {
         'parts': [
-          {'text': _diarizedInstruction}
-        ]
+          {'text': _diarizedInstruction},
+        ],
       },
       'contents': [
         {
           'role': 'user',
           'parts': [
-            {'text': rawTranscript}
-          ]
-        }
+            {'text': rawTranscript},
+          ],
+        },
       ],
       'generationConfig': {
         'temperature': 0.3,
@@ -195,16 +201,16 @@ class InsightService {
     final body = {
       'systemInstruction': {
         'parts': [
-          {'text': _plainInstruction}
-        ]
+          {'text': _plainInstruction},
+        ],
       },
       'contents': [
         {
           'role': 'user',
           'parts': [
-            {'text': transcript}
-          ]
-        }
+            {'text': transcript},
+          ],
+        },
       ],
       'generationConfig': {
         'temperature': 0.3,
@@ -242,7 +248,8 @@ class InsightService {
   // ── Shared helpers ────────────────────────────────────────────────────────
 
   Map<String, dynamic> _coerce(Map<String, dynamic> input) {
-    final meds = (input['medications'] as List?)?.map((m) {
+    final meds =
+        (input['medications'] as List?)?.map((m) {
           if (m is! Map) return Medication(name: m.toString()).toJson();
           return {
             'name': m['name'] ?? '',
@@ -254,7 +261,8 @@ class InsightService {
         }).toList() ??
         const <Map<String, dynamic>>[];
     return {
-      'consultationSummary': input['consultationSummary'] ?? input['consultation_summary'] ?? '',
+      'consultationSummary':
+          input['consultationSummary'] ?? input['consultation_summary'] ?? '',
       'symptoms': input['symptoms'] ?? const <String>[],
       'diagnosis': input['diagnosis'] ?? '',
       'differentials': input['differentials'] ?? const <String>[],
@@ -283,15 +291,18 @@ class InsightService {
       return ApiFailure('Gemini rejected the API key.', statusCode: code);
     }
     if (code != null && code >= 400) {
-      final reason = _readGeminiError(e.response?.data) ??
+      final reason =
+          _readGeminiError(e.response?.data) ??
           e.response?.statusMessage ??
           'Bad request';
       return ApiFailure('Gemini HTTP $code: $reason', statusCode: code);
     }
     if (e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.connectionError) {
-      return NetworkFailure('Could not reach Gemini — check your connection.',
-          cause: e);
+      return NetworkFailure(
+        'Could not reach Gemini — check your connection.',
+        cause: e,
+      );
     }
     return UnknownFailure('Extraction failed: ${e.message}', cause: e);
   }

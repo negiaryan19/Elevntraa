@@ -44,9 +44,9 @@ class StatusChip extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: palette.foreground,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: palette.foreground,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

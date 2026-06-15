@@ -67,10 +67,7 @@ class GeminiAudioSttService implements SttService {
                   'Output only the labeled transcript.',
             },
             {
-              'inline_data': {
-                'mime_type': mime,
-                'data': b64,
-              }
+              'inline_data': {'mime_type': mime, 'data': b64},
             },
           ],
         },
@@ -107,7 +104,8 @@ class GeminiAudioSttService implements SttService {
     if (data == null) return '';
     final candidates = data['candidates'] as List<dynamic>?;
     if (candidates == null || candidates.isEmpty) return '';
-    final parts = (candidates.first as Map)['content']?['parts'] as List<dynamic>?;
+    final parts =
+        (candidates.first as Map)['content']?['parts'] as List<dynamic>?;
     if (parts == null || parts.isEmpty) return '';
     return parts.map((p) => (p as Map)['text'] ?? '').join('').toString();
   }
@@ -128,17 +126,23 @@ class GeminiAudioSttService implements SttService {
       return ApiFailure('Gemini rejected the API key.', statusCode: code);
     }
     if (code != null && code >= 400) {
-      final detail = _readGeminiError(e.response?.data) ??
+      final detail =
+          _readGeminiError(e.response?.data) ??
           e.response?.statusMessage ??
           'Bad request';
       return ApiFailure('Gemini HTTP $code: $detail', statusCode: code);
     }
     if (e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.connectionError) {
-      return NetworkFailure('Could not reach Gemini — check your connection.',
-          cause: e);
+      return NetworkFailure(
+        'Could not reach Gemini — check your connection.',
+        cause: e,
+      );
     }
-    return UnknownFailure('Gemini transcription failed: ${e.message}', cause: e);
+    return UnknownFailure(
+      'Gemini transcription failed: ${e.message}',
+      cause: e,
+    );
   }
 
   String? _readGeminiError(dynamic data) {

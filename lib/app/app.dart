@@ -23,8 +23,10 @@ class MedScribeApp extends ConsumerWidget {
         final mq = MediaQuery.of(context);
         return MediaQuery(
           data: mq.copyWith(
-            textScaler: mq.textScaler
-                .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.1),
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 1.0,
+              maxScaleFactor: 1.1,
+            ),
           ),
           child: child!,
         );

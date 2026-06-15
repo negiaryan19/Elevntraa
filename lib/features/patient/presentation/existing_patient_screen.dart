@@ -72,11 +72,16 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
                   boxShadow: AppColors.cardShadow,
                 ),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs,
+                ),
                 child: Row(
                   children: [
-                    const Icon(Icons.search_rounded,
-                        color: Color(0xFF9CA3AF), size: 20),
+                    const Icon(
+                      Icons.search_rounded,
+                      color: Color(0xFF9CA3AF),
+                      size: 20,
+                    ),
                     const SizedBox(width: AppSpacing.m),
                     Expanded(
                       child: TextField(
@@ -84,8 +89,9 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
                         onChanged: _search,
                         decoration: InputDecoration(
                           hintText: 'Search by name or number…',
-                          hintStyle: AppTypography.bodyMedium
-                              .copyWith(color: AppColors.textMuted),
+                          hintStyle: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textMuted,
+                          ),
                           border: InputBorder.none,
                           isDense: true,
                         ),
@@ -100,16 +106,20 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
                   : _results.isEmpty
-                      ? _EmptyState(hasQuery: _query.trim().isNotEmpty)
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0,
-                              AppSpacing.lg, AppSpacing.xxl),
-                          itemCount: _results.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: AppSpacing.m),
-                          itemBuilder: (context, i) =>
-                              _PatientTile(patient: _results[i]),
-                        ),
+                  ? _EmptyState(hasQuery: _query.trim().isNotEmpty)
+                  : ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        0,
+                        AppSpacing.lg,
+                        AppSpacing.xxl,
+                      ),
+                      itemCount: _results.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.m),
+                      itemBuilder: (context, i) =>
+                          _PatientTile(patient: _results[i]),
+                    ),
             ),
           ],
         ),
@@ -132,8 +142,9 @@ class _PatientTile extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => context
-          .push(AppRoute.patient.build(params: {'patientId': patient.id})),
+      onTap: () => context.push(
+        AppRoute.patient.build(params: {'patientId': patient.id}),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -155,28 +166,38 @@ class _PatientTile extends StatelessWidget {
                 ),
                 shape: BoxShape.circle,
               ),
-              child:
-                  const Icon(Icons.person_rounded, color: Colors.white, size: 24),
+              child: const Icon(
+                Icons.person_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(patient.name,
-                      style: AppTypography.titleSmall,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    patient.name,
+                    style: AppTypography.titleSmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (meta.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.xxs),
-                    Text(meta,
-                        style: AppTypography.bodySmall,
-                        overflow: TextOverflow.ellipsis),
+                    Text(
+                      meta,
+                      style: AppTypography.bodySmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
-                color: Color(0xFF9CA3AF), size: 20),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFF9CA3AF),
+              size: 20,
+            ),
           ],
         ),
       ),
@@ -207,13 +228,17 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.person_search_rounded,
-              size: 48, color: Color(0xFFD1D5DB)),
+          const Icon(
+            Icons.person_search_rounded,
+            size: 48,
+            color: Color(0xFFD1D5DB),
+          ),
           const SizedBox(height: AppSpacing.m),
           Text(
             hasQuery ? 'No matching patients' : 'No patients yet',
-            style: AppTypography.bodyMedium
-                .copyWith(color: AppColors.textSecondary),
+            style: AppTypography.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

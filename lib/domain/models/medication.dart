@@ -10,6 +10,7 @@ class Medication with _$Medication {
     @Default('') String dosage,
     @Default('') String frequency,
     @Default('') String duration,
+
     /// Set by the LLM extractor when this medication line was uncertain.
     /// Surfaces a [needs review] chip in the UI.
     @Default(false) bool needsReview,

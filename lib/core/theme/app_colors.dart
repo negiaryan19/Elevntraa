@@ -45,15 +45,7 @@ class AppColors {
   /// Soft, single-direction shadow used by cards. Real depth, not Material's
   /// blurry default.
   static const List<BoxShadow> cardShadow = [
-    BoxShadow(
-      color: Color(0x14000000),
-      offset: Offset(0, 2),
-      blurRadius: 8,
-    ),
-    BoxShadow(
-      color: Color(0x0A000000),
-      offset: Offset(0, 8),
-      blurRadius: 24,
-    ),
+    BoxShadow(color: Color(0x14000000), offset: Offset(0, 2), blurRadius: 8),
+    BoxShadow(color: Color(0x0A000000), offset: Offset(0, 8), blurRadius: 24),
   ];
 }

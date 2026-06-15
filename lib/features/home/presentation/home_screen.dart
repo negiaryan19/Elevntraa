@@ -40,9 +40,13 @@ class HomeScreen extends ConsumerWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) => SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
                       child: Column(
                         // On iOS the screen (e.g. iPhone 17 Pro) is much taller
                         // than the Android test device, so centering left large
@@ -64,8 +68,9 @@ class HomeScreen extends ConsumerWidget {
                           const SizedBox(height: AppSpacing.m),
                           Text(
                             'Transform patient conversations into perfect prescriptions with AI-powered transcription',
-                            style: AppTypography.bodyLarge
-                                .copyWith(color: AppColors.textSecondary),
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: AppSpacing.xxl),
@@ -138,8 +143,9 @@ class _AppHeader extends StatelessWidget {
               children: [
                 Text(
                   'MediScribe',
-                  style: AppTypography.titleMedium
-                      .copyWith(fontWeight: FontWeight.w700),
+                  style: AppTypography.titleMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
@@ -176,11 +182,7 @@ class _HeroIcon extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [
-          BoxShadow(
-            color: _kBlueShadow,
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
+          BoxShadow(color: _kBlueShadow, blurRadius: 20, offset: Offset(0, 8)),
         ],
       ),
       child: const Icon(
@@ -280,11 +282,7 @@ class _CtaButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: AppSpacing.radiusLg,
         boxShadow: const [
-          BoxShadow(
-            color: _kBlueShadow,
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
+          BoxShadow(color: _kBlueShadow, blurRadius: 20, offset: Offset(0, 8)),
         ],
       ),
       child: Material(
@@ -349,4 +347,3 @@ class _HomeFooter extends StatelessWidget {
     );
   }
 }
-
