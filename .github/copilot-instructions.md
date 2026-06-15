@@ -15,8 +15,9 @@ doctors. Keep suggestions idiomatic to this codebase.
 - **Models:** `freezed` + `json_serializable`. Generated `*.freezed.dart` /
   `*.g.dart` files are committed-out (gitignored); regenerate with
   `dart run build_runner build --delete-conflicting-outputs`.
-- **Config:** `flutter_dotenv` reads keys from a `.env` asset; secrets via
-  `flutter_secure_storage`.
+- **Config / secrets:** Read API keys and secrets from the `.env` asset via
+  `flutter_dotenv` (see `lib/core/config/env.dart`); never hardcode them in
+  source. Document any new key in `.env.example`.
 
 ## Project structure
 
