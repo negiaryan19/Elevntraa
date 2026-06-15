@@ -46,6 +46,20 @@ app.*.map.json
 
 # Secrets — keys live in .env locally; commit .env.example only.
 .env
+.env.*
+!.env.example
+
+# Signing / keystores — never commit these.
+*.keystore
+*.jks
+key.properties
+**/key.properties
+
+# Google services config (may contain project identifiers / API keys)
+google-services.json
+**/google-services.json
+GoogleService-Info.plist
+**/GoogleService-Info.plist
 
 # Generated code
 **/*.g.dart

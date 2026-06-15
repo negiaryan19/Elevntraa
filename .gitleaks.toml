@@ -1,0 +1,65 @@
+# Gitleaks configuration for the MedScribe (EMR) Flutter project.
+# Extends the upstream default ruleset and adds project-specific rules for
+# the two third-party API keys this app uses: Sarvam AI and Google Gemini.
+#
+# Run locally:  gitleaks detect --config .gitleaks.toml --verbose
+# In CI this is enforced by .github/workflows/ci.yml (gitleaks job).
+
+title = "MedScribe gitleaks config"
+
+# Inherit all of gitleaks' built-in rules (AWS keys, generic tokens, etc.)
+# so our custom rules below are additive, not a replacement.
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Project-specific rules
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "sarvam-api-key"
+description = "Sarvam AI API key"
+# Sarvam keys are distributed as UUID-style subscription keys, often prefixed.
+regex = '''(?i)(sarvam[_-]?(?:api[_-]?)?key|sarvam[_-]?subscription[_-]?key)['"\s:=]{1,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})'''
+secretGroup = 2
+keywords = ["sarvam"]
+
+[[rules]]
+id = "sarvam-api-key-generic"
+description = "Sarvam AI API key (generic assignment)"
+regex = '''(?i)(sarvam[_-]?(?:api[_-]?)?key)['"\s:=]{1,5}['"]?([A-Za-z0-9\-_]{20,})['"]?'''
+secretGroup = 2
+keywords = ["sarvam"]
+
+[[rules]]
+id = "gemini-api-key"
+description = "Google Gemini / Generative Language API key"
+# Google API keys start with "AIza" followed by 35 url-safe chars.
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
+keywords = ["aiza", "gemini", "generativelanguage", "googleapis"]
+
+[[rules]]
+id = "gemini-api-key-assignment"
+description = "Gemini API key (named assignment)"
+regex = '''(?i)(gemini[_-]?(?:api[_-]?)?key)['"\s:=]{1,5}['"]?([A-Za-z0-9\-_]{20,})['"]?'''
+secretGroup = 2
+keywords = ["gemini"]
+
+# ---------------------------------------------------------------------------
+# Allowlist — keep placeholders and example files from tripping the scanner.
+# ---------------------------------------------------------------------------
+[allowlist]
+# Note: we deliberately do NOT allowlist .gitleaks.toml itself — a real key
+# accidentally committed into the scanner config should still be detected.
+# The rule regexes here contain regex metacharacters, so they don't match as
+# secrets, and any literal placeholders are covered by the regex allowlist below.
+description = "Global allowlist for example/placeholder values"
+paths = [
+  '''\.env\.example$''',
+]
+regexes = [
+  '''your_sarvam_key_here''',
+  '''your_gemini_key_here''',
+  '''your_key_here''',
+  '''ci_placeholder''',
+]
