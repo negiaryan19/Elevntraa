@@ -1,4 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// StateNotifier/StateNotifierProvider moved to the legacy library in
+// flutter_riverpod 3.x. Imported here to keep the existing controller working;
+// migrating to the Notifier API can be done as a follow-up.
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
