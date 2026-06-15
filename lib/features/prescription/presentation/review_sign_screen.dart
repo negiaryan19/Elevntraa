@@ -255,10 +255,8 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         children: [
                           Text('Diagnosis', style: AppTypography.titleSmall),
                           const SizedBox(height: AppSpacing.s),
-                          TextField(
-                            controller: TextEditingController(
-                              text: _draft.diagnosis,
-                            ),
+                          TextFormField(
+                            initialValue: _draft.diagnosis,
                             style: AppTypography.bodyMedium,
                             maxLines: 3,
                             minLines: 1,
