@@ -6,7 +6,7 @@ part 'patient.g.dart';
 enum Sex { male, female, other }
 
 @freezed
-class PatientProfile with _$PatientProfile {
+abstract class PatientProfile with _$PatientProfile {
   const factory PatientProfile({
     required String id,
     required String name,

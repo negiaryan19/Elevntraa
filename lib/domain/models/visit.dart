@@ -7,7 +7,7 @@ part 'visit.freezed.dart';
 part 'visit.g.dart';
 
 @freezed
-class VisitRecord with _$VisitRecord {
+abstract class VisitRecord with _$VisitRecord {
   const factory VisitRecord({
     required String id,
     required String patientId,
