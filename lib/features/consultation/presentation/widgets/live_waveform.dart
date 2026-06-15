@@ -30,8 +30,9 @@ class LiveWaveform extends StatefulWidget {
 
 class _LiveWaveformState extends State<LiveWaveform>
     with SingleTickerProviderStateMixin {
-  late final ListQueue<double> _bars =
-      ListQueue.from(List<double>.filled(widget.barCount, 0.04));
+  late final ListQueue<double> _bars = ListQueue.from(
+    List<double>.filled(widget.barCount, 0.04),
+  );
   late final Ticker _ticker;
   StreamSubscription<double>? _sub;
   double _current = 0.04;

@@ -65,13 +65,13 @@ class RecordingService {
     _ampSub = _recorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((a) {
-      // dBFS range is roughly -60..0. Normalize so silence ≈ 0 and loud ≈ 1.
-      final db = a.current;
-      final normalized = ((db + 50) / 50).clamp(0.0, 1.0);
-      if (!_amplitudeController.isClosed) {
-        _amplitudeController.add(normalized);
-      }
-    });
+          // dBFS range is roughly -60..0. Normalize so silence ≈ 0 and loud ≈ 1.
+          final db = a.current;
+          final normalized = ((db + 50) / 50).clamp(0.0, 1.0);
+          if (!_amplitudeController.isClosed) {
+            _amplitudeController.add(normalized);
+          }
+        });
 
     return path;
   }
@@ -82,7 +82,9 @@ class RecordingService {
       if (await _recorder.isRecording() && !(await _recorder.isPaused())) {
         await _recorder.pause();
       }
-    } catch (_) {/* best-effort */}
+    } catch (_) {
+      /* best-effort */
+    }
   }
 
   /// Resume after a [pause]. No-op if not paused.
@@ -91,7 +93,9 @@ class RecordingService {
       if (await _recorder.isPaused()) {
         await _recorder.resume();
       }
-    } catch (_) {/* best-effort */}
+    } catch (_) {
+      /* best-effort */
+    }
   }
 
   /// Stop recording. Returns the saved file path, or null on error.
@@ -129,7 +133,9 @@ class RecordingService {
         final f = File(path);
         if (f.existsSync()) await f.delete();
       }
-    } catch (_) {/* swallowed — cancel is best-effort */}
+    } catch (_) {
+      /* swallowed — cancel is best-effort */
+    }
     await _ampSub?.cancel();
     _ampSub = null;
     _currentPath = null;

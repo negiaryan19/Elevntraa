@@ -53,7 +53,8 @@ class SarvamSttService implements SttService {
 
     // Use REST for short clips; Batch for everything else.
     // If duration is unknown, default to Batch (safe for any length).
-    final useBatch = audioDuration == null ||
+    final useBatch =
+        audioDuration == null ||
         audioDuration.inSeconds >= _restThresholdSeconds;
 
     try {
@@ -72,7 +73,10 @@ class SarvamSttService implements SttService {
   // ── REST path (≤ 30 s) ────────────────────────────────────────────────────
 
   Future<String> _transcribeRest(
-      String key, String path, String languageCode) async {
+    String key,
+    String path,
+    String languageCode,
+  ) async {
     // codemix requires a specific language; fall back to transcribe for
     // auto-detect so the request doesn't 400.
     final mode = (languageCode == 'unknown') ? 'transcribe' : 'codemix';
@@ -94,10 +98,7 @@ class SarvamSttService implements SttService {
       '$_base/speech-to-text',
       data: form,
       options: Options(
-        headers: {
-          'API-Subscription-Key': key,
-          'Accept': 'application/json',
-        },
+        headers: {'API-Subscription-Key': key, 'Accept': 'application/json'},
         responseType: ResponseType.json,
       ),
     );
@@ -124,7 +125,10 @@ class SarvamSttService implements SttService {
   // ── Batch path (≥ 30 s) ───────────────────────────────────────────────────
 
   Future<String> _transcribeBatch(
-      String key, String path, String languageCode) async {
+    String key,
+    String path,
+    String languageCode,
+  ) async {
     final mode = (languageCode == 'unknown') ? 'transcribe' : 'codemix';
     final filename = path.split(Platform.pathSeparator).last;
 
@@ -154,13 +158,17 @@ class SarvamSttService implements SttService {
     final transcript = await _downloadTranscript(downloadUrl);
     if (transcript.trim().isEmpty) {
       throw const ApiFailure(
-          'Sarvam produced no transcript — likely silent audio.');
+        'Sarvam produced no transcript — likely silent audio.',
+      );
     }
     return transcript;
   }
 
   Future<String> _initiateJob(
-      String key, String languageCode, String mode) async {
+    String key,
+    String languageCode,
+    String mode,
+  ) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '$_base/speech-to-text/job/v1',
       data: {
@@ -181,15 +189,23 @@ class SarvamSttService implements SttService {
       ),
     );
     final jobId = res.data?['job_id'] as String?;
-    if (jobId == null) throw const ApiFailure('Sarvam did not return a job_id.');
+    if (jobId == null) {
+      throw const ApiFailure('Sarvam did not return a job_id.');
+    }
     return jobId;
   }
 
   Future<String> _getUploadUrl(
-      String key, String jobId, String filename) async {
+    String key,
+    String jobId,
+    String filename,
+  ) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '$_base/speech-to-text/job/v1/upload-files',
-      data: {'job_id': jobId, 'files': [filename]},
+      data: {
+        'job_id': jobId,
+        'files': [filename],
+      },
       options: Options(
         headers: {
           'API-Subscription-Key': key,
@@ -201,7 +217,9 @@ class SarvamSttService implements SttService {
     final urls = res.data?['upload_urls'] as Map<String, dynamic>?;
     final entry = urls?[filename] as Map<String, dynamic>?;
     final url = entry?['file_url'] as String?;
-    if (url == null) throw const ApiFailure('Sarvam did not return an upload URL.');
+    if (url == null) {
+      throw const ApiFailure('Sarvam did not return an upload URL.');
+    }
     return url;
   }
 
@@ -216,10 +234,7 @@ class SarvamSttService implements SttService {
       presignedUrl,
       data: bytes,
       options: Options(
-        headers: {
-          'Content-Type': 'audio/mp4',
-          'x-ms-blob-type': 'BlockBlob',
-        },
+        headers: {'Content-Type': 'audio/mp4', 'x-ms-blob-type': 'BlockBlob'},
         contentType: 'audio/mp4',
         // Use bytes so any error body is handled by _decodeBody below.
         responseType: ResponseType.bytes,
@@ -270,8 +285,8 @@ class SarvamSttService implements SttService {
       developer.log('Job state: $jobState', name: 'SarvamSTT');
 
       if (jobState == 'Completed') {
-        final details =
-            (body?['job_details'] as List?)?.cast<Map<String, dynamic>>();
+        final details = (body?['job_details'] as List?)
+            ?.cast<Map<String, dynamic>>();
         final outputs = (details?.firstOrNull?['outputs'] as List?)
             ?.cast<Map<String, dynamic>>();
         final outputFilename = outputs?.firstOrNull?['file_name'] as String?;
@@ -288,15 +303,20 @@ class SarvamSttService implements SttService {
       // Accepted / Pending / Running → keep polling
     }
 
-    throw const ApiFailure(
-        'Transcription timed out. Please try again.');
+    throw const ApiFailure('Transcription timed out. Please try again.');
   }
 
   Future<String> _getDownloadUrl(
-      String key, String jobId, String outputFilename) async {
+    String key,
+    String jobId,
+    String outputFilename,
+  ) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '$_base/speech-to-text/job/v1/download-files',
-      data: {'job_id': jobId, 'files': [outputFilename]},
+      data: {
+        'job_id': jobId,
+        'files': [outputFilename],
+      },
       options: Options(
         headers: {
           'API-Subscription-Key': key,
@@ -379,7 +399,10 @@ class SarvamSttService implements SttService {
     if (trimmed.startsWith('<')) {
       // XML error from cloud storage (Azure / GCS). Try common tags.
       for (final tag in ['Message', 'message', 'Error', 'error']) {
-        final m = RegExp('<$tag>(.*?)</$tag>', dotAll: true).firstMatch(rawBody);
+        final m = RegExp(
+          '<$tag>(.*?)</$tag>',
+          dotAll: true,
+        ).firstMatch(rawBody);
         if (m != null) return m.group(1)?.trim() ?? rawBody;
       }
       return 'Cloud storage error (see logs).';
@@ -410,25 +433,30 @@ class SarvamSttService implements SttService {
       } catch (_) {}
       if (errCode == 'invalid_api_key_error') {
         return const ApiFailure(
-            'Sarvam rejected the API key. Check it in onboarding.',
-            statusCode: 403);
+          'Sarvam rejected the API key. Check it in onboarding.',
+          statusCode: 403,
+        );
       }
-      return ApiFailure('Sarvam access denied: ${errCode ?? 'forbidden'}.',
-          statusCode: 403);
+      return ApiFailure(
+        'Sarvam access denied: ${errCode ?? 'forbidden'}.',
+        statusCode: 403,
+      );
     }
 
     if (code != null && code >= 400) {
       final detail = _extractErrorDetail(decoded);
-      final msg =
-          detail.isNotEmpty ? detail : (e.response?.statusMessage ?? 'Bad Request');
+      final msg = detail.isNotEmpty
+          ? detail
+          : (e.response?.statusMessage ?? 'Bad Request');
       return ApiFailure('Sarvam $code: $msg', statusCode: code);
     }
 
     if (e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.connectionError) {
       return NetworkFailure(
-          'Could not reach Sarvam — check your connection.',
-          cause: e);
+        'Could not reach Sarvam — check your connection.',
+        cause: e,
+      );
     }
     return UnknownFailure('Transcription failed: ${e.message}', cause: e);
   }

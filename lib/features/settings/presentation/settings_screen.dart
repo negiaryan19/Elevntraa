@@ -32,9 +32,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (updated != null) {
       await ref.read(doctorProfileControllerProvider.notifier).update(updated);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profile updated')));
       }
     }
   }
@@ -69,13 +69,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Settings',
-                        style: AppTypography.headlineLarge
-                            .copyWith(color: Colors.white)),
+                    Text(
+                      'Settings',
+                      style: AppTypography.headlineLarge.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text('Manage your app preferences',
-                        style: AppTypography.bodySmall
-                            .copyWith(color: Colors.white70)),
+                    Text(
+                      'Manage your app preferences',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: Colors.white70,
+                      ),
+                    ),
                     const SizedBox(height: AppSpacing.lg),
                     // Profile card (tap to edit)
                     GestureDetector(
@@ -96,24 +102,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 color: Colors.white,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.person_rounded,
-                                  color: _kBlue600, size: 32),
+                              child: const Icon(
+                                Icons.person_rounded,
+                                color: _kBlue600,
+                                size: 32,
+                              ),
                             ),
                             const SizedBox(width: AppSpacing.md),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(doctor.name,
-                                      style: AppTypography.titleMedium
-                                          .copyWith(color: Colors.white)),
+                                  Text(
+                                    doctor.name,
+                                    style: AppTypography.titleMedium.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                   const SizedBox(height: AppSpacing.xxs),
-                                  Text(doctor.qualifications,
-                                      style: AppTypography.bodySmall
-                                          .copyWith(color: Colors.white70)),
-                                  Text('Reg. No: ${doctor.regNo}',
-                                      style: AppTypography.labelSmall
-                                          .copyWith(color: Colors.white60)),
+                                  Text(
+                                    doctor.qualifications,
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Reg. No: ${doctor.regNo}',
+                                    style: AppTypography.labelSmall.copyWith(
+                                      color: Colors.white60,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -123,8 +141,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 color: Colors.white.withValues(alpha: 0.25),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.edit_rounded,
-                                  color: Colors.white, size: 18),
+                              child: const Icon(
+                                Icons.edit_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                             ),
                           ],
                         ),
@@ -150,7 +171,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onTap: () {},
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFEF2F2),
                       borderRadius: AppSpacing.radiusXl,
@@ -158,22 +181,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.logout_rounded,
-                            color: Color(0xFFDC2626), size: 20),
+                        const Icon(
+                          Icons.logout_rounded,
+                          color: Color(0xFFDC2626),
+                          size: 20,
+                        ),
                         const SizedBox(width: AppSpacing.s),
-                        Text('Logout',
-                            style: AppTypography.titleSmall
-                                .copyWith(color: const Color(0xFFDC2626))),
+                        Text(
+                          'Logout',
+                          style: AppTypography.titleSmall.copyWith(
+                            color: const Color(0xFFDC2626),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                Text('MediScribe v1.0.0',
-                    style: AppTypography.bodySmall, textAlign: TextAlign.center),
+                Text(
+                  'MediScribe v1.0.0',
+                  style: AppTypography.bodySmall,
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: AppSpacing.xs),
-                Text('© 2026 All rights reserved',
-                    style: AppTypography.bodySmall, textAlign: TextAlign.center),
+                Text(
+                  '© 2026 All rights reserved',
+                  style: AppTypography.bodySmall,
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: AppSpacing.xxl),
               ],
             ),
@@ -184,85 +219,84 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   List<_Group> _buildGroups() => [
-        _Group(
-          title: 'Account',
-          items: [
-            _GroupItem(
-              icon: Icons.person_outline_rounded,
-              label: 'Profile Settings',
-              description: 'Update your name and clinic details',
-              onTap: _openProfileEditor,
-            ),
-            _GroupItem(
-              icon: Icons.medical_services_outlined,
-              label: 'Medical Credentials',
-              description: 'Qualifications and registration number',
-              onTap: _openProfileEditor,
-            ),
-          ],
+    _Group(
+      title: 'Account',
+      items: [
+        _GroupItem(
+          icon: Icons.person_outline_rounded,
+          label: 'Profile Settings',
+          description: 'Update your name and clinic details',
+          onTap: _openProfileEditor,
         ),
-        _Group(
-          title: 'Preferences',
-          items: [
-            _GroupItem(
-              icon: Icons.notifications_outlined,
-              label: 'Notifications',
-              description: 'Manage notification preferences',
-              toggleValue: _notificationsEnabled,
-              onToggle: () =>
-                  setState(() => _notificationsEnabled = !_notificationsEnabled),
-            ),
-            _GroupItem(
-              icon: Icons.dark_mode_outlined,
-              label: 'Dark Mode',
-              description: 'Switch to dark theme',
-              toggleValue: _darkModeEnabled,
-              onToggle: () =>
-                  setState(() => _darkModeEnabled = !_darkModeEnabled),
-            ),
-            _GroupItem(
-              icon: Icons.language_rounded,
-              label: 'Language',
-              description: 'English (US)',
-            ),
-          ],
+        _GroupItem(
+          icon: Icons.medical_services_outlined,
+          label: 'Medical Credentials',
+          description: 'Qualifications and registration number',
+          onTap: _openProfileEditor,
         ),
-        _Group(
-          title: 'Data & Privacy',
-          items: [
-            _GroupItem(
-              icon: Icons.backup_outlined,
-              label: 'Data Backup',
-              description: 'Backup your consultation history',
-            ),
-            _GroupItem(
-              icon: Icons.download_outlined,
-              label: 'Export Data',
-              description: 'Download all your data',
-            ),
-            _GroupItem(
-              icon: Icons.shield_outlined,
-              label: 'Privacy & Security',
-              description: 'Manage your privacy settings',
-            ),
-          ],
+      ],
+    ),
+    _Group(
+      title: 'Preferences',
+      items: [
+        _GroupItem(
+          icon: Icons.notifications_outlined,
+          label: 'Notifications',
+          description: 'Manage notification preferences',
+          toggleValue: _notificationsEnabled,
+          onToggle: () =>
+              setState(() => _notificationsEnabled = !_notificationsEnabled),
         ),
-        _Group(
-          title: 'Support',
-          items: [
-            _GroupItem(
-              icon: Icons.description_outlined,
-              label: 'Terms & Conditions',
-              description: 'Read our terms of service',
-            ),
-            _GroupItem(
-              icon: Icons.help_outline_rounded,
-              label: 'Help & Support',
-              description: 'Get help or contact us',
-            ),
-          ],
+        _GroupItem(
+          icon: Icons.dark_mode_outlined,
+          label: 'Dark Mode',
+          description: 'Switch to dark theme',
+          toggleValue: _darkModeEnabled,
+          onToggle: () => setState(() => _darkModeEnabled = !_darkModeEnabled),
         ),
-      ];
+        _GroupItem(
+          icon: Icons.language_rounded,
+          label: 'Language',
+          description: 'English (US)',
+        ),
+      ],
+    ),
+    _Group(
+      title: 'Data & Privacy',
+      items: [
+        _GroupItem(
+          icon: Icons.backup_outlined,
+          label: 'Data Backup',
+          description: 'Backup your consultation history',
+        ),
+        _GroupItem(
+          icon: Icons.download_outlined,
+          label: 'Export Data',
+          description: 'Download all your data',
+        ),
+        _GroupItem(
+          icon: Icons.shield_outlined,
+          label: 'Privacy & Security',
+          description: 'Manage your privacy settings',
+        ),
+      ],
+    ),
+    _Group(
+      title: 'Support',
+      items: [
+        _GroupItem(
+          icon: Icons.description_outlined,
+          label: 'Terms & Conditions',
+          description: 'Read our terms of service',
+        ),
+        _GroupItem(
+          icon: Icons.help_outline_rounded,
+          label: 'Help & Support',
+          description: 'Get help or contact us',
+        ),
+      ],
+    ),
+  ];
 }
 
 /// Bottom-sheet form for editing the doctor / clinic identity. Pops with the
@@ -332,7 +366,11 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
@@ -353,8 +391,10 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 ),
                 Text('Edit Profile', style: AppTypography.headlineMedium),
                 const SizedBox(height: AppSpacing.xxs),
-                Text('This appears on the prescription letterhead and signature.',
-                    style: AppTypography.bodySmall),
+                Text(
+                  'This appears on the prescription letterhead and signature.',
+                  style: AppTypography.bodySmall,
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 _Field(
                   label: 'Doctor name',
@@ -404,11 +444,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                             color: Colors.white,
                             borderRadius: AppSpacing.radiusLg,
                             border: Border.all(
-                                color: const Color(0xFFD1D5DB), width: 1.5),
+                              color: const Color(0xFFD1D5DB),
+                              width: 1.5,
+                            ),
                           ),
-                          child: Text('Cancel',
-                              style: AppTypography.titleSmall
-                                  .copyWith(color: AppColors.textSecondary)),
+                          child: Text(
+                            'Cancel',
+                            style: AppTypography.titleSmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -421,12 +466,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                                colors: [_kBlue600, _kTeal500]),
+                              colors: [_kBlue600, _kTeal500],
+                            ),
                             borderRadius: AppSpacing.radiusLg,
                           ),
-                          child: Text('Save',
-                              style: AppTypography.titleSmall
-                                  .copyWith(color: Colors.white)),
+                          child: Text(
+                            'Save',
+                            style: AppTypography.titleSmall.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -473,16 +522,18 @@ class _Field extends StatelessWidget {
             keyboardType: keyboardType,
             style: AppTypography.bodyMedium,
             validator: required
-                ? (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null
+                ? (v) => (v == null || v.trim().isEmpty) ? 'Required' : null
                 : null,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle:
-                  AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+              hintStyle: AppTypography.bodyMedium.copyWith(
+                color: AppColors.textMuted,
+              ),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md, vertical: AppSpacing.m),
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.m,
+              ),
               filled: true,
               fillColor: const Color(0xFFF9FAFB),
               border: OutlineInputBorder(
@@ -541,7 +592,9 @@ class _SettingsGroup extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(
-                left: AppSpacing.s, bottom: AppSpacing.m),
+              left: AppSpacing.s,
+              bottom: AppSpacing.m,
+            ),
             child: Text(
               group.title.toUpperCase(),
               style: AppTypography.labelSmall.copyWith(
@@ -603,9 +656,11 @@ class _SettingsTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(item.label, style: AppTypography.titleSmall),
-                  Text(item.description,
-                      style: AppTypography.bodySmall,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    item.description,
+                    style: AppTypography.bodySmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -616,8 +671,11 @@ class _SettingsTile extends StatelessWidget {
                 child: _Toggle(value: item.toggleValue!),
               )
             else
-              const Icon(Icons.chevron_right_rounded,
-                  color: Color(0xFF9CA3AF), size: 20),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF9CA3AF),
+                size: 20,
+              ),
           ],
         ),
       ),

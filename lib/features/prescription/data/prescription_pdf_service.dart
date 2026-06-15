@@ -28,8 +28,18 @@ class PrescriptionPdfService {
   static final _softBg = PdfColor.fromInt(0xFFF9FAFB);
 
   static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   Future<Uint8List> build({
@@ -101,8 +111,9 @@ class PrescriptionPdfService {
       if (bytes == null) continue; // skip missing/unreadable files
 
       final image = pw.MemoryImage(bytes);
-      final caption =
-          att.caption.trim().isEmpty ? 'Report ${i + 1}' : att.caption.trim();
+      final caption = att.caption.trim().isEmpty
+          ? 'Report ${i + 1}'
+          : att.caption.trim();
 
       doc.addPage(
         pw.Page(
@@ -114,14 +125,19 @@ class PrescriptionPdfService {
             children: [
               // The big section banner appears only on the first report page.
               if (i == 0) ...[
-                pw.Text('PREVIOUS REPORTS',
-                    style: pw.TextStyle(
-                        fontSize: 14,
-                        fontWeight: pw.FontWeight.bold,
-                        color: _blue,
-                        letterSpacing: 0.8)),
-                pw.Text('Attached for ${patient?.name ?? 'patient'}',
-                    style: pw.TextStyle(fontSize: 9, color: _muted)),
+                pw.Text(
+                  'PREVIOUS REPORTS',
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                    color: _blue,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                pw.Text(
+                  'Attached for ${patient?.name ?? 'patient'}',
+                  style: pw.TextStyle(fontSize: 9, color: _muted),
+                ),
                 pw.SizedBox(height: 6),
                 pw.Divider(color: _line, thickness: 0.5),
                 pw.SizedBox(height: 8),
@@ -216,18 +232,23 @@ class PrescriptionPdfService {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(d.clinicName,
-                    style: pw.TextStyle(
-                        color: PdfColors.white,
-                        fontSize: 19,
-                        fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  d.clinicName,
+                  style: pw.TextStyle(
+                    color: PdfColors.white,
+                    fontSize: 19,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
                 pw.SizedBox(height: 2),
-                pw.Text(d.clinicAddress,
-                    style: pw.TextStyle(
-                        color: PdfColors.white, fontSize: 8.5)),
-                pw.Text('Tel: ${d.clinicPhone}',
-                    style: pw.TextStyle(
-                        color: PdfColors.white, fontSize: 8.5)),
+                pw.Text(
+                  d.clinicAddress,
+                  style: pw.TextStyle(color: PdfColors.white, fontSize: 8.5),
+                ),
+                pw.Text(
+                  'Tel: ${d.clinicPhone}',
+                  style: pw.TextStyle(color: PdfColors.white, fontSize: 8.5),
+                ),
               ],
             ),
           ),
@@ -235,16 +256,23 @@ class PrescriptionPdfService {
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
-              pw.Text(d.name,
-                  style: pw.TextStyle(
-                      color: PdfColors.white,
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold)),
-              pw.Text(d.qualifications,
-                  style: pw.TextStyle(color: PdfColors.white, fontSize: 8.5)),
+              pw.Text(
+                d.name,
+                style: pw.TextStyle(
+                  color: PdfColors.white,
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.Text(
+                d.qualifications,
+                style: pw.TextStyle(color: PdfColors.white, fontSize: 8.5),
+              ),
               pw.SizedBox(height: 2),
-              pw.Text('Reg. No: ${d.regNo}',
-                  style: pw.TextStyle(color: PdfColors.white, fontSize: 8.5)),
+              pw.Text(
+                'Reg. No: ${d.regNo}',
+                style: pw.TextStyle(color: PdfColors.white, fontSize: 8.5),
+              ),
             ],
           ),
         ],
@@ -292,8 +320,10 @@ class PrescriptionPdfService {
         if (hasTests)
           _labelledLine('Investigations advised', insight.tests.join(', ')),
         if (!hasSymptoms && !hasDiagnosis && !hasTests)
-          pw.Text('No clinical summary recorded.',
-              style: pw.TextStyle(fontSize: 10, color: _muted)),
+          pw.Text(
+            'No clinical summary recorded.',
+            style: pw.TextStyle(fontSize: 10, color: _muted),
+          ),
       ],
     );
   }
@@ -305,23 +335,31 @@ class PrescriptionPdfService {
         pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
-            pw.Text('Rx',
-                style: pw.TextStyle(
-                    fontSize: 24,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _blue)),
+            pw.Text(
+              'Rx',
+              style: pw.TextStyle(
+                fontSize: 24,
+                fontWeight: pw.FontWeight.bold,
+                color: _blue,
+              ),
+            ),
             pw.SizedBox(width: 8),
-            pw.Text('Medicines Prescribed',
-                style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _ink)),
+            pw.Text(
+              'Medicines Prescribed',
+              style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+                color: _ink,
+              ),
+            ),
           ],
         ),
         pw.SizedBox(height: 8),
         if (meds.isEmpty)
-          pw.Text('No medicines prescribed.',
-              style: pw.TextStyle(fontSize: 10, color: _muted))
+          pw.Text(
+            'No medicines prescribed.',
+            style: pw.TextStyle(fontSize: 10, color: _muted),
+          )
         else
           _medicinesTable(meds),
       ],
@@ -330,13 +368,16 @@ class PrescriptionPdfService {
 
   pw.Widget _medicinesTable(List<Medication> meds) {
     final headerStyle = pw.TextStyle(
-        fontSize: 8.5, fontWeight: pw.FontWeight.bold, color: PdfColors.white);
+      fontSize: 8.5,
+      fontWeight: pw.FontWeight.bold,
+      color: PdfColors.white,
+    );
     final cellStyle = pw.TextStyle(fontSize: 9.5, color: _ink);
 
     pw.Widget cell(String text, pw.TextStyle style) => pw.Padding(
-          padding: const pw.EdgeInsets.symmetric(horizontal: 7, vertical: 6),
-          child: pw.Text(text.isEmpty ? '—' : text, style: style),
-        );
+      padding: const pw.EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+      child: pw.Text(text.isEmpty ? '—' : text, style: style),
+    );
 
     return pw.Table(
       border: pw.TableBorder.all(color: _line, width: 0.5),
@@ -361,11 +402,14 @@ class PrescriptionPdfService {
         for (var i = 0; i < meds.length; i++)
           pw.TableRow(
             decoration: pw.BoxDecoration(
-                color: i.isEven ? PdfColors.white : _softBg),
+              color: i.isEven ? PdfColors.white : _softBg,
+            ),
             children: [
               cell('${i + 1}', cellStyle),
-              cell(meds[i].name,
-                  cellStyle.copyWith(fontWeight: pw.FontWeight.bold)),
+              cell(
+                meds[i].name,
+                cellStyle.copyWith(fontWeight: pw.FontWeight.bold),
+              ),
               cell(meds[i].dosage, cellStyle),
               cell(meds[i].frequency, cellStyle),
               cell(meds[i].duration, cellStyle),
@@ -378,8 +422,9 @@ class PrescriptionPdfService {
   pw.Widget _adviceAndFollowUp(VisitRecord visit, MedicalInsight insight) {
     final notes = insight.doctorNotes.trim();
     final advice = insight.advice.where((s) => s.trim().isNotEmpty).toList();
-    final instructions =
-        insight.instructions.where((s) => s.trim().isNotEmpty).toList();
+    final instructions = insight.instructions
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
     final followUp = _followUpLabel(visit.createdAt, insight.followUpDays);
 
     // When the doctor gave no explicit advice/instructions, fall back to safe
@@ -421,14 +466,19 @@ class PrescriptionPdfService {
           pw.SizedBox(height: 2),
           pw.Row(
             children: [
-              pw.Text('Follow-up: ',
-                  style: pw.TextStyle(
-                      fontSize: 10,
-                      fontWeight: pw.FontWeight.bold,
-                      color: _blue)),
+              pw.Text(
+                'Follow-up: ',
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.bold,
+                  color: _blue,
+                ),
+              ),
               pw.Expanded(
-                child: pw.Text(followUp,
-                    style: pw.TextStyle(fontSize: 10, color: _ink)),
+                child: pw.Text(
+                  followUp,
+                  style: pw.TextStyle(fontSize: 10, color: _ink),
+                ),
               ),
             ],
           ),
@@ -438,11 +488,16 @@ class PrescriptionPdfService {
   }
 
   pw.Widget _subLabel(String text) => pw.Padding(
-        padding: const pw.EdgeInsets.only(bottom: 2),
-        child: pw.Text(text,
-            style: pw.TextStyle(
-                fontSize: 9.5, fontWeight: pw.FontWeight.bold, color: _ink)),
-      );
+    padding: const pw.EdgeInsets.only(bottom: 2),
+    child: pw.Text(
+      text,
+      style: pw.TextStyle(
+        fontSize: 9.5,
+        fontWeight: pw.FontWeight.bold,
+        color: _ink,
+      ),
+    ),
+  );
 
   pw.Widget _signature(DoctorProfile d) {
     return pw.Row(
@@ -452,28 +507,43 @@ class PrescriptionPdfService {
         pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
-            pw.Text(_signatureName(d.name),
-                style: pw.TextStyle(
-                    fontSize: 18,
-                    fontStyle: pw.FontStyle.italic,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _blue)),
+            pw.Text(
+              _signatureName(d.name),
+              style: pw.TextStyle(
+                fontSize: 18,
+                fontStyle: pw.FontStyle.italic,
+                fontWeight: pw.FontWeight.bold,
+                color: _blue,
+              ),
+            ),
             pw.SizedBox(height: 2),
             pw.Container(width: 150, height: 0.8, color: _line),
             pw.SizedBox(height: 4),
-            pw.Text(d.name,
-                style: pw.TextStyle(
-                    fontSize: 10, fontWeight: pw.FontWeight.bold, color: _ink)),
-            pw.Text(d.qualifications,
-                style: pw.TextStyle(fontSize: 8.5, color: _muted)),
-            pw.Text('Reg. No: ${d.regNo}',
-                style: pw.TextStyle(fontSize: 8.5, color: _muted)),
+            pw.Text(
+              d.name,
+              style: pw.TextStyle(
+                fontSize: 10,
+                fontWeight: pw.FontWeight.bold,
+                color: _ink,
+              ),
+            ),
+            pw.Text(
+              d.qualifications,
+              style: pw.TextStyle(fontSize: 8.5, color: _muted),
+            ),
+            pw.Text(
+              'Reg. No: ${d.regNo}',
+              style: pw.TextStyle(fontSize: 8.5, color: _muted),
+            ),
             pw.SizedBox(height: 3),
-            pw.Text('Digitally signed',
-                style: pw.TextStyle(
-                    fontSize: 8,
-                    color: _teal,
-                    fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              'Digitally signed',
+              style: pw.TextStyle(
+                fontSize: 8,
+                color: _teal,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ],
@@ -491,9 +561,11 @@ class PrescriptionPdfService {
           textAlign: pw.TextAlign.center,
           style: pw.TextStyle(fontSize: 7.5, color: _muted),
         ),
-        pw.Text('Generated by MediScribe  •  Secure & Private',
-            textAlign: pw.TextAlign.center,
-            style: pw.TextStyle(fontSize: 7.5, color: _muted)),
+        pw.Text(
+          'Generated by MediScribe  •  Secure & Private',
+          textAlign: pw.TextAlign.center,
+          style: pw.TextStyle(fontSize: 7.5, color: _muted),
+        ),
       ],
     );
   }
@@ -501,26 +573,29 @@ class PrescriptionPdfService {
   // ── Small helpers ─────────────────────────────────────────────────────────
 
   pw.Widget _sectionTitle(String text) => pw.Text(
-        text.toUpperCase(),
-        style: pw.TextStyle(
-            fontSize: 10,
-            fontWeight: pw.FontWeight.bold,
-            color: _blue,
-            letterSpacing: 0.6),
-      );
+    text.toUpperCase(),
+    style: pw.TextStyle(
+      fontSize: 10,
+      fontWeight: pw.FontWeight.bold,
+      color: _blue,
+      letterSpacing: 0.6,
+    ),
+  );
 
   pw.Widget _kv(String label, String value, {bool big = false}) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(label,
-            style: pw.TextStyle(fontSize: 7.5, color: _muted)),
+        pw.Text(label, style: pw.TextStyle(fontSize: 7.5, color: _muted)),
         pw.SizedBox(height: 1),
-        pw.Text(value,
-            style: pw.TextStyle(
-                fontSize: big ? 11 : 9.5,
-                fontWeight: pw.FontWeight.bold,
-                color: _ink)),
+        pw.Text(
+          value,
+          style: pw.TextStyle(
+            fontSize: big ? 11 : 9.5,
+            fontWeight: pw.FontWeight.bold,
+            color: _ink,
+          ),
+        ),
       ],
     );
   }
@@ -532,14 +607,17 @@ class PrescriptionPdfService {
         text: pw.TextSpan(
           children: [
             pw.TextSpan(
-                text: '$label: ',
-                style: pw.TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _ink)),
+              text: '$label: ',
+              style: pw.TextStyle(
+                fontSize: 9.5,
+                fontWeight: pw.FontWeight.bold,
+                color: _ink,
+              ),
+            ),
             pw.TextSpan(
-                text: value,
-                style: pw.TextStyle(fontSize: 9.5, color: _ink)),
+              text: value,
+              style: pw.TextStyle(fontSize: 9.5, color: _ink),
+            ),
           ],
         ),
       ),
@@ -547,10 +625,9 @@ class PrescriptionPdfService {
   }
 
   pw.Widget _bullet(String text) => pw.Padding(
-        padding: const pw.EdgeInsets.only(bottom: 2),
-        child: pw.Text('•  $text',
-            style: pw.TextStyle(fontSize: 9, color: _ink)),
-      );
+    padding: const pw.EdgeInsets.only(bottom: 2),
+    child: pw.Text('•  $text', style: pw.TextStyle(fontSize: 9, color: _ink)),
+  );
 
   /// A cursive-style short signature, e.g. "Dr. Rajesh Sharma" → "Dr. R. Sharma".
   /// Defensive against single-word or empty names so it never throws.
@@ -566,8 +643,7 @@ class PrescriptionPdfService {
   String _formatDate(DateTime dt) =>
       '${dt.day.toString().padLeft(2, '0')} ${_months[dt.month - 1]} ${dt.year}';
 
-  String _ageLabel(PatientProfile? p) =>
-      p?.age != null ? '${p!.age} yrs' : '—';
+  String _ageLabel(PatientProfile? p) => p?.age != null ? '${p!.age} yrs' : '—';
 
   String _sexLabel(Sex? sex) {
     switch (sex) {

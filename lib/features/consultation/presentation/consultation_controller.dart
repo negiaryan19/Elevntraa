@@ -47,7 +47,8 @@ class ConsultationState {
 /// Per-visit notifier — created with `family` so each visit gets its own
 /// state and we don't leak between consultations.
 class ConsultationController extends StateNotifier<ConsultationState> {
-  ConsultationController(this._ref, this.visitId) : super(const ConsultationState());
+  ConsultationController(this._ref, this.visitId)
+    : super(const ConsultationState());
 
   final Ref _ref;
   final String visitId;
@@ -93,10 +94,9 @@ class ConsultationController extends StateNotifier<ConsultationState> {
       if (visit == null) {
         throw const StorageFailure('Visit record missing from local DB.');
       }
-      await _visits.upsert(visit.copyWith(
-        audioPath: path,
-        languageCode: state.languageCode,
-      ));
+      await _visits.upsert(
+        visit.copyWith(audioPath: path, languageCode: state.languageCode),
+      );
 
       // Probe the actual file duration — the UI timer (`state.elapsed`)
       // drifts under jank and pause/resume, so it can't be trusted to
@@ -140,7 +140,10 @@ class ConsultationController extends StateNotifier<ConsultationState> {
 
   Future<void> cancelRecording() async {
     await _recorder.cancel();
-    state = state.copyWith(stage: ConsultationStage.idle, elapsed: Duration.zero);
+    state = state.copyWith(
+      stage: ConsultationStage.idle,
+      elapsed: Duration.zero,
+    );
   }
 
   void tickElapsed(Duration d) {
@@ -152,7 +155,11 @@ class ConsultationController extends StateNotifier<ConsultationState> {
   void reset() => state = const ConsultationState();
 }
 
-final consultationControllerProvider = StateNotifierProvider.family<
-    ConsultationController, ConsultationState, String>((ref, visitId) {
-  return ConsultationController(ref, visitId);
-});
+final consultationControllerProvider =
+    StateNotifierProvider.family<
+      ConsultationController,
+      ConsultationState,
+      String
+    >((ref, visitId) {
+      return ConsultationController(ref, visitId);
+    });

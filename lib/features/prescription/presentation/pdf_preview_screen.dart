@@ -61,35 +61,42 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
   /// Generates the real PDF and opens the OS share sheet with it attached, so
   /// the doctor sends the patient a proper document (pick WhatsApp from the
   /// sheet) — not a plain-text message.
-  Future<void> _shareWhatsApp() => _runPdfAction((svc) => svc.shareAsFile(
-        visit: _visit!,
-        patient: _patient,
-        doctor: ref.read(doctorProfileControllerProvider),
-      ));
+  Future<void> _shareWhatsApp() => _runPdfAction(
+    (svc) => svc.shareAsFile(
+      visit: _visit!,
+      patient: _patient,
+      doctor: ref.read(doctorProfileControllerProvider),
+    ),
+  );
 
-  Future<void> _downloadPdf() => _runPdfAction((svc) => svc.shareAsFile(
-        visit: _visit!,
-        patient: _patient,
-        doctor: ref.read(doctorProfileControllerProvider),
-      ));
+  Future<void> _downloadPdf() => _runPdfAction(
+    (svc) => svc.shareAsFile(
+      visit: _visit!,
+      patient: _patient,
+      doctor: ref.read(doctorProfileControllerProvider),
+    ),
+  );
 
-  Future<void> _printPdf() => _runPdfAction((svc) => svc.printOrPreview(
-        visit: _visit!,
-        patient: _patient,
-        doctor: ref.read(doctorProfileControllerProvider),
-      ));
+  Future<void> _printPdf() => _runPdfAction(
+    (svc) => svc.printOrPreview(
+      visit: _visit!,
+      patient: _patient,
+      doctor: ref.read(doctorProfileControllerProvider),
+    ),
+  );
 
   Future<void> _runPdfAction(
-      Future<void> Function(PrescriptionPdfService svc) action) async {
+    Future<void> Function(PrescriptionPdfService svc) action,
+  ) async {
     if (_visit == null || _busy) return;
     setState(() => _busy = true);
     try {
       await action(ref.read(prescriptionPdfServiceProvider));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not generate PDF: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not generate PDF: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -105,7 +112,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       return Scaffold(
         appBar: AppBar(title: const Text('Prescription')),
         body: const EmptyState(
-            title: 'Visit not found', icon: Icons.search_off_rounded),
+          title: 'Visit not found',
+          icon: Icons.search_off_rounded,
+        ),
       );
     }
 
@@ -122,8 +131,18 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
     final doctor = ref.watch(doctorProfileControllerProvider);
     final today = DateTime.now();
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     final dateStr =
         '${today.day.toString().padLeft(2, '0')} ${months[today.month - 1]} ${today.year}';
@@ -145,25 +164,34 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
               // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s, AppSpacing.md, AppSpacing.lg, 0),
+                  AppSpacing.s,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  0,
+                ),
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () => context.canPop()
-                          ? context.pop()
-                          : context.go('/'),
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: Color(0xFF374151)),
+                      onPressed: () =>
+                          context.canPop() ? context.pop() : context.go('/'),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Color(0xFF374151),
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Prescription Ready',
-                              style: AppTypography.headlineMedium),
-                          Text('Review and share with patient',
-                              style: AppTypography.bodySmall),
+                          Text(
+                            'Prescription Ready',
+                            style: AppTypography.headlineMedium,
+                          ),
+                          Text(
+                            'Review and share with patient',
+                            style: AppTypography.bodySmall,
+                          ),
                         ],
                       ),
                     ),
@@ -177,8 +205,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: _StepProgressBar(activeStep: 3),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -186,7 +213,10 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xxl,
+                    AppSpacing.lg,
+                    0,
+                    AppSpacing.lg,
+                    AppSpacing.xxl,
                   ),
                   children: [
                     // Success banner
@@ -201,21 +231,28 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                       padding: const EdgeInsets.all(AppSpacing.md),
                       child: Row(
                         children: [
-                          const Icon(Icons.check_circle_rounded,
-                              color: Color(0xFF16A34A), size: 32),
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: Color(0xFF16A34A),
+                            size: 32,
+                          ),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Prescription Generated!',
-                                    style: AppTypography.titleSmall.copyWith(
-                                        color: const Color(0xFF14532D))),
+                                Text(
+                                  'Prescription Generated!',
+                                  style: AppTypography.titleSmall.copyWith(
+                                    color: const Color(0xFF14532D),
+                                  ),
+                                ),
                                 const SizedBox(height: AppSpacing.xxs),
                                 Text(
                                   'Your prescription is ready to share.',
                                   style: AppTypography.bodySmall.copyWith(
-                                      color: const Color(0xFF166534)),
+                                    color: const Color(0xFF166534),
+                                  ),
                                 ),
                               ],
                             ),
@@ -230,7 +267,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         color: Colors.white,
                         borderRadius: AppSpacing.radiusXl,
                         border: Border.all(
-                            color: const Color(0xFFD1D5DB), width: 2),
+                          color: const Color(0xFFD1D5DB),
+                          width: 2,
+                        ),
                         boxShadow: const [
                           BoxShadow(
                             color: Color(0x14000000),
@@ -261,13 +300,17 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(doctor.clinicName,
-                                          style: AppTypography.headlineLarge
-                                              .copyWith(color: Colors.white)),
-                                      Text(doctor.clinicAddress,
-                                          style: AppTypography.bodySmall
-                                              .copyWith(
-                                                  color: Colors.white70)),
+                                      Text(
+                                        doctor.clinicName,
+                                        style: AppTypography.headlineLarge
+                                            .copyWith(color: Colors.white),
+                                      ),
+                                      Text(
+                                        doctor.clinicAddress,
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -276,18 +319,26 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      Text(doctor.name,
-                                          textAlign: TextAlign.end,
-                                          style: AppTypography.titleSmall
-                                              .copyWith(color: Colors.white)),
-                                      Text(doctor.qualifications,
-                                          textAlign: TextAlign.end,
-                                          style: AppTypography.bodySmall
-                                              .copyWith(color: Colors.white70)),
-                                      Text('Reg. No: ${doctor.regNo}',
-                                          textAlign: TextAlign.end,
-                                          style: AppTypography.bodySmall
-                                              .copyWith(color: Colors.white70)),
+                                      Text(
+                                        doctor.name,
+                                        textAlign: TextAlign.end,
+                                        style: AppTypography.titleSmall
+                                            .copyWith(color: Colors.white),
+                                      ),
+                                      Text(
+                                        doctor.qualifications,
+                                        textAlign: TextAlign.end,
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Reg. No: ${doctor.regNo}',
+                                        textAlign: TextAlign.end,
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -302,8 +353,10 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                               children: [
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: Text('Date: $dateStr',
-                                      style: AppTypography.bodySmall),
+                                  child: Text(
+                                    'Date: $dateStr',
+                                    style: AppTypography.bodySmall,
+                                  ),
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
                                 // Patient details
@@ -312,24 +365,28 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                     color: const Color(0xFFF9FAFB),
                                     borderRadius: AppSpacing.radiusMd,
                                     border: Border.all(
-                                        color: const Color(0xFFE5E7EB),
-                                        width: 2),
+                                      color: const Color(0xFFE5E7EB),
+                                      width: 2,
+                                    ),
                                   ),
                                   padding: const EdgeInsets.all(AppSpacing.md),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Patient Details',
-                                          style: AppTypography.titleMedium),
+                                      Text(
+                                        'Patient Details',
+                                        style: AppTypography.titleMedium,
+                                      ),
                                       const SizedBox(height: AppSpacing.md),
                                       if (_patient != null)
                                         Row(
                                           children: [
                                             Expanded(
                                               child: _PdfField(
-                                                  label: 'Name',
-                                                  value: _patient!.name),
+                                                label: 'Name',
+                                                value: _patient!.name,
+                                              ),
                                             ),
                                             Expanded(
                                               child: _PdfField(
@@ -343,13 +400,15 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                               child: _PdfField(
                                                 label: 'Gender',
                                                 value: _genderLabel(
-                                                    _patient!.sex),
+                                                  _patient!.sex,
+                                                ),
                                               ),
                                             ),
                                             Expanded(
                                               child: _PdfField(
                                                 label: 'Contact',
-                                                value: _patient!.whatsappNumber !=
+                                                value:
+                                                    _patient!.whatsappNumber !=
                                                         null
                                                     ? '+91 ${_patient!.whatsappNumber}'
                                                     : '—',
@@ -362,19 +421,27 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
                                 if (insight?.symptoms.isNotEmpty ?? false) ...[
-                                  Text('Symptoms',
-                                      style: AppTypography.titleMedium),
+                                  Text(
+                                    'Symptoms',
+                                    style: AppTypography.titleMedium,
+                                  ),
                                   const SizedBox(height: AppSpacing.xs),
-                                  Text(insight!.symptoms.join(', '),
-                                      style: AppTypography.bodyMedium),
+                                  Text(
+                                    insight!.symptoms.join(', '),
+                                    style: AppTypography.bodyMedium,
+                                  ),
                                   const SizedBox(height: AppSpacing.lg),
                                 ],
                                 if (insight?.diagnosis.isNotEmpty ?? false) ...[
-                                  Text('Diagnosis',
-                                      style: AppTypography.titleMedium),
+                                  Text(
+                                    'Diagnosis',
+                                    style: AppTypography.titleMedium,
+                                  ),
                                   const SizedBox(height: AppSpacing.xs),
-                                  Text(insight!.diagnosis,
-                                      style: AppTypography.bodyMedium),
+                                  Text(
+                                    insight!.diagnosis,
+                                    style: AppTypography.bodyMedium,
+                                  ),
                                   const SizedBox(height: AppSpacing.lg),
                                 ],
                                 // Rx symbol
@@ -396,7 +463,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                           gradient: LinearGradient(
                                             colors: [
                                               _kBlue600,
-                                              Colors.transparent
+                                              Colors.transparent,
                                             ],
                                           ),
                                         ),
@@ -405,13 +472,17 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
-                                Text('Prescribed Medicines',
-                                    style: AppTypography.titleMedium),
+                                Text(
+                                  'Prescribed Medicines',
+                                  style: AppTypography.titleMedium,
+                                ),
                                 const SizedBox(height: AppSpacing.md),
                                 // Medicines table
                                 if (meds.isEmpty)
-                                  Text('No medicines prescribed.',
-                                      style: AppTypography.bodySmall)
+                                  Text(
+                                    'No medicines prescribed.',
+                                    style: AppTypography.bodySmall,
+                                  )
                                 else
                                   _MedicineTable(meds: meds),
                                 const SizedBox(height: AppSpacing.lg),
@@ -421,39 +492,50 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                     color: const Color(0xFFFFFBEB),
                                     borderRadius: AppSpacing.radiusMd,
                                     border: Border.all(
-                                        color: const Color(0xFFFDE68A)),
+                                      color: const Color(0xFFFDE68A),
+                                    ),
                                   ),
                                   padding: const EdgeInsets.all(AppSpacing.md),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Advice & Instructions',
-                                          style: AppTypography.titleSmall),
+                                      Text(
+                                        'Advice & Instructions',
+                                        style: AppTypography.titleSmall,
+                                      ),
                                       const SizedBox(height: AppSpacing.s),
                                       if (adviceList.isNotEmpty) ...[
-                                        Text('Advice',
-                                            style: AppTypography.labelMedium),
+                                        Text(
+                                          'Advice',
+                                          style: AppTypography.labelMedium,
+                                        ),
                                         for (final a in adviceList)
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                bottom: AppSpacing.xxs),
-                                            child: Text('• $a',
-                                                style:
-                                                    AppTypography.bodySmall),
+                                              bottom: AppSpacing.xxs,
+                                            ),
+                                            child: Text(
+                                              '• $a',
+                                              style: AppTypography.bodySmall,
+                                            ),
                                           ),
                                         const SizedBox(height: AppSpacing.xs),
                                       ],
                                       if (instructionsList.isNotEmpty) ...[
-                                        Text('Instructions',
-                                            style: AppTypography.labelMedium),
+                                        Text(
+                                          'Instructions',
+                                          style: AppTypography.labelMedium,
+                                        ),
                                         for (final ins in instructionsList)
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                bottom: AppSpacing.xxs),
-                                            child: Text('• $ins',
-                                                style:
-                                                    AppTypography.bodySmall),
+                                              bottom: AppSpacing.xxs,
+                                            ),
+                                            child: Text(
+                                              '• $ins',
+                                              style: AppTypography.bodySmall,
+                                            ),
                                           ),
                                       ],
                                       if (!hasAdviceContent)
@@ -463,10 +545,12 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                         ])
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                bottom: AppSpacing.xxs),
-                                            child: Text('• $instr',
-                                                style:
-                                                    AppTypography.bodySmall),
+                                              bottom: AppSpacing.xxs,
+                                            ),
+                                            child: Text(
+                                              '• $instr',
+                                              style: AppTypography.bodySmall,
+                                            ),
                                           ),
                                     ],
                                   ),
@@ -476,22 +560,25 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
                                         doctor.name,
                                         style: AppTypography.headlineMedium
                                             .copyWith(
-                                          color: _kBlue600,
-                                          fontStyle: FontStyle.italic,
-                                        ),
+                                              color: _kBlue600,
+                                              fontStyle: FontStyle.italic,
+                                            ),
                                       ),
                                       const SizedBox(height: AppSpacing.xs),
-                                      Text(doctor.qualifications,
-                                          style: AppTypography.bodySmall),
-                                      Text('Reg. No: ${doctor.regNo}',
-                                          style: AppTypography.bodySmall),
+                                      Text(
+                                        doctor.qualifications,
+                                        style: AppTypography.bodySmall,
+                                      ),
+                                      Text(
+                                        'Reg. No: ${doctor.regNo}',
+                                        style: AppTypography.bodySmall,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -503,7 +590,8 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                   'Generated by MediScribe AI | Secure • Private • HIPAA Compliant',
                                   textAlign: TextAlign.center,
                                   style: AppTypography.labelSmall.copyWith(
-                                      color: AppColors.textMuted),
+                                    color: AppColors.textMuted,
+                                  ),
                                 ),
                               ],
                             ),
@@ -513,15 +601,17 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                     ),
                     if (_visit!.attachments.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.lg),
-                      _PreviousReportsPreview(
-                          attachments: _visit!.attachments),
+                      _PreviousReportsPreview(attachments: _visit!.attachments),
                     ],
                     const SizedBox(height: AppSpacing.xl),
                     // Action buttons
                     _GradientCta(
                       label: _busy ? 'Preparing PDF…' : 'Share on WhatsApp',
                       icon: Icons.share_rounded,
-                      colors: [const Color(0xFF16A34A), const Color(0xFF10B981)],
+                      colors: [
+                        const Color(0xFF16A34A),
+                        const Color(0xFF10B981),
+                      ],
                       shadowColor: const Color(0x4D16A34A),
                       onTap: _busy ? null : _shareWhatsApp,
                     ),
@@ -602,7 +692,11 @@ class _StepProgressBar extends StatelessWidget {
             (i) => Text(
               _steps[i],
               style: AppTypography.labelSmall.copyWith(
-                color: i == activeStep ? _kTeal600 : i < activeStep ? _kTeal600 : const Color(0xFF9CA3AF),
+                color: i == activeStep
+                    ? _kTeal600
+                    : i < activeStep
+                    ? _kTeal600
+                    : const Color(0xFF9CA3AF),
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -624,9 +718,11 @@ class _PdfField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: AppTypography.bodySmall),
-        Text(value,
-            style: AppTypography.titleSmall,
-            overflow: TextOverflow.ellipsis),
+        Text(
+          value,
+          style: AppTypography.titleSmall,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }
@@ -652,11 +748,7 @@ class _MedicineTable extends StatelessWidget {
           // Header row
           Container(
             color: const Color(0xFFF3F4F6),
-            child: _TableRow(
-              cells: headers,
-              widths: widths,
-              isHeader: true,
-            ),
+            child: _TableRow(cells: headers, widths: widths, isHeader: true),
           ),
           for (var i = 0; i < meds.length; i++) ...[
             const Divider(height: 1),
@@ -690,33 +782,36 @@ class _TableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Row(
-        children: [
-          for (var i = 0; i < cells.length; i++) ...[
-            if (i > 0)
-              Container(width: 1, height: 40, color: const Color(0xFFD1D5DB)),
-            SizedBox(
-              width: constraints.maxWidth * widths[i],
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.s,
-                  vertical: AppSpacing.xs,
-                ),
-                child: Text(
-                  cells[i],
-                  style: isHeader
-                      ? AppTypography.labelSmall
-                      : AppTypography.bodySmall.copyWith(
-                          color: AppColors.textPrimary),
-                  overflow: TextOverflow.ellipsis,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Row(
+          children: [
+            for (var i = 0; i < cells.length; i++) ...[
+              if (i > 0)
+                Container(width: 1, height: 40, color: const Color(0xFFD1D5DB)),
+              SizedBox(
+                width: constraints.maxWidth * widths[i],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: Text(
+                    cells[i],
+                    style: isHeader
+                        ? AppTypography.labelSmall
+                        : AppTypography.bodySmall.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
-      );
-    });
+        );
+      },
+    );
   }
 }
 
@@ -741,14 +836,17 @@ class _PreviousReportsPreview extends StatelessWidget {
             children: [
               const Icon(Icons.attach_file_rounded, color: _kBlue600, size: 18),
               const SizedBox(width: AppSpacing.xs),
-              Text('Previous Reports (${attachments.length})',
-                  style: AppTypography.titleMedium),
+              Text(
+                'Previous Reports (${attachments.length})',
+                style: AppTypography.titleMedium,
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text('Attached to the prescription PDF as additional pages.',
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textMuted)),
+          Text(
+            'Attached to the prescription PDF as additional pages.',
+            style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+          ),
           const SizedBox(height: AppSpacing.md),
           for (var i = 0; i < attachments.length; i++)
             Padding(
@@ -772,8 +870,10 @@ class _PreviousReportsPreview extends StatelessWidget {
                         height: 120,
                         color: const Color(0xFFF3F4F6),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image_rounded,
-                            color: Color(0xFF9CA3AF)),
+                        child: const Icon(
+                          Icons.broken_image_rounded,
+                          color: Color(0xFF9CA3AF),
+                        ),
                       ),
                     ),
                   ),
@@ -810,7 +910,11 @@ class _GradientCta extends StatelessWidget {
           gradient: LinearGradient(colors: colors),
           borderRadius: AppSpacing.radiusLg,
           boxShadow: [
-            BoxShadow(color: shadowColor, blurRadius: 16, offset: const Offset(0, 6)),
+            BoxShadow(
+              color: shadowColor,
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
         child: Row(
@@ -818,7 +922,10 @@ class _GradientCta extends StatelessWidget {
           children: [
             Icon(icon, color: Colors.white, size: 22),
             const SizedBox(width: AppSpacing.m),
-            Text(label, style: AppTypography.titleSmall.copyWith(color: Colors.white)),
+            Text(
+              label,
+              style: AppTypography.titleSmall.copyWith(color: Colors.white),
+            ),
           ],
         ),
       ),
@@ -827,7 +934,11 @@ class _GradientCta extends StatelessWidget {
 }
 
 class _OutlineCta extends StatelessWidget {
-  const _OutlineCta({required this.label, required this.icon, required this.onTap});
+  const _OutlineCta({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
   final String label;
   final IconData icon;
   final VoidCallback? onTap;
@@ -849,7 +960,12 @@ class _OutlineCta extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: AppColors.textSecondary),
             const SizedBox(width: AppSpacing.s),
-            Text(label, style: AppTypography.titleSmall.copyWith(color: AppColors.textSecondary)),
+            Text(
+              label,
+              style: AppTypography.titleSmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ],
         ),
       ),

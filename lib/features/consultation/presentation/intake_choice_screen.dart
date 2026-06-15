@@ -34,26 +34,36 @@ class IntakeChoiceScreen extends StatelessWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s, AppSpacing.md, AppSpacing.lg, 0),
+                  AppSpacing.s,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  0,
+                ),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () =>
                           context.canPop() ? context.pop() : context.go('/'),
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: Color(0xFF374151)),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Color(0xFF374151),
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('New Consultation',
-                              style: AppTypography.headlineMedium,
-                              overflow: TextOverflow.ellipsis),
-                          Text('Who is this consultation for?',
-                              style: AppTypography.bodySmall,
-                              overflow: TextOverflow.ellipsis),
+                          Text(
+                            'New Consultation',
+                            style: AppTypography.headlineMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'Who is this consultation for?',
+                            style: AppTypography.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ],
                       ),
                     ),
@@ -64,7 +74,11 @@ class IntakeChoiceScreen extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xxl),
+                    AppSpacing.lg,
+                    0,
+                    AppSpacing.lg,
+                    AppSpacing.xxl,
+                  ),
                   child: Column(
                     children: [
                       _ChoiceCard(
@@ -73,8 +87,7 @@ class IntakeChoiceScreen extends StatelessWidget {
                         subtitle:
                             'Add name, age, gender and mobile number for a first-time patient.',
                         gradient: const [_kBlue600, _kTeal500],
-                        onTap: () =>
-                            context.push(AppRoute.intakeForm.path),
+                        onTap: () => context.push(AppRoute.intakeForm.path),
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       _ChoiceCard(
@@ -83,8 +96,7 @@ class IntakeChoiceScreen extends StatelessWidget {
                         subtitle:
                             'Search a patient from history, review their report, then start a new consultation.',
                         gradient: const [Color(0xFF0D9488), Color(0xFF2563EB)],
-                        onTap: () =>
-                            context.push(AppRoute.intakeExisting.path),
+                        onTap: () => context.push(AppRoute.intakeExisting.path),
                       ),
                     ],
                   ),
@@ -149,15 +161,21 @@ class _ChoiceCard extends StatelessWidget {
                 children: [
                   Text(title, style: AppTypography.titleMedium),
                   const SizedBox(height: AppSpacing.xxs),
-                  Text(subtitle,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    subtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: AppSpacing.s),
-            const Icon(Icons.chevron_right_rounded,
-                color: Color(0xFF9CA3AF), size: 22),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFF9CA3AF),
+              size: 22,
+            ),
           ],
         ),
       ),

@@ -22,8 +22,10 @@ class AppSpacing {
   static const SizedBox gapLg = SizedBox(height: lg, width: lg);
   static const SizedBox gapXl = SizedBox(height: xl, width: xl);
 
-  static const EdgeInsets screenPadding =
-      EdgeInsets.symmetric(horizontal: lg, vertical: md);
+  static const EdgeInsets screenPadding = EdgeInsets.symmetric(
+    horizontal: lg,
+    vertical: md,
+  );
   static const EdgeInsets cardPadding = EdgeInsets.all(md);
   static const EdgeInsets cardPaddingLg = EdgeInsets.all(lg);
 

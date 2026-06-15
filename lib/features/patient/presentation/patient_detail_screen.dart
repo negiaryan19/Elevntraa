@@ -44,10 +44,12 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
   }
 
   Future<void> _load() async {
-    final patient =
-        await ref.read(patientRepositoryProvider).byId(widget.patientId);
-    final visits =
-        await ref.read(visitRepositoryProvider).forPatient(widget.patientId);
+    final patient = await ref
+        .read(patientRepositoryProvider)
+        .byId(widget.patientId);
+    final visits = await ref
+        .read(visitRepositoryProvider)
+        .forPatient(widget.patientId);
     if (mounted) {
       setState(() {
         _patient = patient;
@@ -61,7 +63,9 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
     if (_busyVisitId != null) return;
     setState(() => _busyVisitId = visit.id);
     try {
-      await ref.read(prescriptionPdfServiceProvider).printOrPreview(
+      await ref
+          .read(prescriptionPdfServiceProvider)
+          .printOrPreview(
             visit: visit,
             patient: _patient,
             doctor: ref.read(doctorProfileControllerProvider),
@@ -81,7 +85,9 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
     if (_busyVisitId != null) return;
     setState(() => _busyVisitId = visit.id);
     try {
-      await ref.read(prescriptionPdfServiceProvider).shareAsFile(
+      await ref
+          .read(prescriptionPdfServiceProvider)
+          .shareAsFile(
             visit: visit,
             patient: _patient,
             doctor: ref.read(doctorProfileControllerProvider),
@@ -105,59 +111,66 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
         elevation: 0.5,
-        title: Text(_patient?.name ?? 'Patient',
-            style: AppTypography.titleMedium),
+        title: Text(
+          _patient?.name ?? 'Patient',
+          style: AppTypography.titleMedium,
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _patient == null
-              ? const EmptyState(
-                  title: 'Patient not found',
-                  icon: Icons.person_off_rounded,
-                )
-              : SafeArea(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.xxl,
-                    ),
-                    children: [
-                      _PatientHeader(patient: _patient!, visitCount: _visits.length),
-                      const SizedBox(height: AppSpacing.md),
-                      _StartConsultationButton(
-                        onTap: () => context.push(
-                          '${AppRoute.intakeForm.path}?patientId=${widget.patientId}',
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Text('Consultation History',
-                          style: AppTypography.titleMedium),
-                      const SizedBox(height: AppSpacing.m),
-                      if (_visits.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.only(top: AppSpacing.xl),
-                          child: EmptyState(
-                            title: 'No consultations yet',
-                            message:
-                                'Records from this patient\'s visits will appear here.',
-                            icon: Icons.timeline_rounded,
-                          ),
-                        )
-                      else
-                        for (final v in _visits) ...[
-                          _VisitCard(
-                            visit: v,
-                            busy: _busyVisitId == v.id,
-                            onView: () => _openPdf(v),
-                            onShare: () => _sharePdf(v),
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                        ],
-                    ],
-                  ),
+          ? const EmptyState(
+              title: 'Patient not found',
+              icon: Icons.person_off_rounded,
+            )
+          : SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
                 ),
+                children: [
+                  _PatientHeader(
+                    patient: _patient!,
+                    visitCount: _visits.length,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  _StartConsultationButton(
+                    onTap: () => context.push(
+                      '${AppRoute.intakeForm.path}?patientId=${widget.patientId}',
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'Consultation History',
+                    style: AppTypography.titleMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.m),
+                  if (_visits.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: AppSpacing.xl),
+                      child: EmptyState(
+                        title: 'No consultations yet',
+                        message:
+                            'Records from this patient\'s visits will appear here.',
+                        icon: Icons.timeline_rounded,
+                      ),
+                    )
+                  else
+                    for (final v in _visits) ...[
+                      _VisitCard(
+                        visit: v,
+                        busy: _busyVisitId == v.id,
+                        onView: () => _openPdf(v),
+                        onShare: () => _sharePdf(v),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                    ],
+                ],
+              ),
+            ),
     );
   }
 }
@@ -180,7 +193,10 @@ class _StartConsultationButton extends StatelessWidget {
           borderRadius: AppSpacing.radiusLg,
           boxShadow: const [
             BoxShadow(
-                color: Color(0x4D2563EB), blurRadius: 14, offset: Offset(0, 6)),
+              color: Color(0x4D2563EB),
+              blurRadius: 14,
+              offset: Offset(0, 6),
+            ),
           ],
         ),
         child: Row(
@@ -188,8 +204,10 @@ class _StartConsultationButton extends StatelessWidget {
           children: [
             const Icon(Icons.mic_rounded, color: Colors.white, size: 20),
             const SizedBox(width: AppSpacing.s),
-            Text('Start New Consultation',
-                style: AppTypography.titleSmall.copyWith(color: Colors.white)),
+            Text(
+              'Start New Consultation',
+              style: AppTypography.titleSmall.copyWith(color: Colors.white),
+            ),
           ],
         ),
       ),
@@ -237,33 +255,45 @@ class _PatientHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(patient.name,
-                    style: AppTypography.headlineMedium
-                        .copyWith(color: Colors.white)),
+                Text(
+                  patient.name,
+                  style: AppTypography.headlineMedium.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
                 if (ageSex.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.xxs),
-                  Text(ageSex,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: Colors.white70)),
+                  Text(
+                    ageSex,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: Colors.white70,
+                    ),
+                  ),
                 ],
                 if (patient.whatsappNumber != null) ...[
                   const SizedBox(height: AppSpacing.xxs),
                   Row(
                     children: [
-                      const Icon(Icons.phone_rounded,
-                          size: 12, color: Colors.white70),
+                      const Icon(
+                        Icons.phone_rounded,
+                        size: 12,
+                        color: Colors.white70,
+                      ),
                       const SizedBox(width: AppSpacing.xs),
-                      Text('+91 ${patient.whatsappNumber}',
-                          style: AppTypography.bodySmall
-                              .copyWith(color: Colors.white70)),
+                      Text(
+                        '+91 ${patient.whatsappNumber}',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: Colors.white70,
+                        ),
+                      ),
                     ],
                   ),
                 ],
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                    '$visitCount consultation${visitCount == 1 ? '' : 's'}',
-                    style: AppTypography.labelSmall
-                        .copyWith(color: Colors.white)),
+                  '$visitCount consultation${visitCount == 1 ? '' : 's'}',
+                  style: AppTypography.labelSmall.copyWith(color: Colors.white),
+                ),
               ],
             ),
           ),
@@ -320,29 +350,43 @@ class _VisitCard extends StatelessWidget {
           // Date + signed status
           Row(
             children: [
-              const Icon(Icons.calendar_today_rounded,
-                  size: 14, color: _kBlue600),
+              const Icon(
+                Icons.calendar_today_rounded,
+                size: 14,
+                color: _kBlue600,
+              ),
               const SizedBox(width: AppSpacing.xs),
-              Text(_formatDateTime(visit.createdAt),
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.textSecondary)),
+              Text(
+                _formatDateTime(visit.createdAt),
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
               const Spacer(),
               if (visit.signed)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s, vertical: 2),
+                    horizontal: AppSpacing.s,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0FDF4),
                     borderRadius: AppSpacing.radiusSm,
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified_rounded,
-                          size: 12, color: Color(0xFF16A34A)),
+                      const Icon(
+                        Icons.verified_rounded,
+                        size: 12,
+                        color: Color(0xFF16A34A),
+                      ),
                       const SizedBox(width: AppSpacing.xs),
-                      Text('Signed',
-                          style: AppTypography.labelSmall
-                              .copyWith(color: const Color(0xFF16A34A))),
+                      Text(
+                        'Signed',
+                        style: AppTypography.labelSmall.copyWith(
+                          color: const Color(0xFF16A34A),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -377,9 +421,12 @@ class _VisitCard extends StatelessWidget {
           Text('Medicines', style: AppTypography.titleSmall),
           const SizedBox(height: AppSpacing.xs),
           if (meds.isEmpty)
-            Text('No medicines recorded.',
-                style: AppTypography.bodySmall
-                    .copyWith(color: AppColors.textMuted))
+            Text(
+              'No medicines recorded.',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textMuted,
+              ),
+            )
           else
             for (final m in meds)
               Padding(
@@ -389,15 +436,19 @@ class _VisitCard extends StatelessWidget {
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(top: 2),
-                      child: Icon(Icons.medication_rounded,
-                          size: 14, color: _kTeal500),
+                      child: Icon(
+                        Icons.medication_rounded,
+                        size: 14,
+                        color: _kTeal500,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
                         _medLine(m.name, m.dosage, m.frequency, m.duration),
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textPrimary),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
                   ],
@@ -405,8 +456,10 @@ class _VisitCard extends StatelessWidget {
               ),
           if (insight.followUpDays != null && insight.followUpDays! > 0) ...[
             const SizedBox(height: AppSpacing.s),
-            _line('Follow-up',
-                'After ${insight.followUpDays} day${insight.followUpDays == 1 ? '' : 's'}'),
+            _line(
+              'Follow-up',
+              'After ${insight.followUpDays} day${insight.followUpDays == 1 ? '' : 's'}',
+            ),
           ],
           const SizedBox(height: AppSpacing.md),
           // Actions
@@ -442,10 +495,12 @@ class _VisitCard extends StatelessWidget {
           style: AppTypography.bodySmall.copyWith(color: AppColors.textPrimary),
           children: [
             TextSpan(
-                text: '$label: ',
-                style: AppTypography.bodySmall.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary)),
+              text: '$label: ',
+              style: AppTypography.bodySmall.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
             TextSpan(text: value),
           ],
         ),
@@ -454,15 +509,28 @@ class _VisitCard extends StatelessWidget {
   }
 
   static String _medLine(String name, String dosage, String freq, String dur) {
-    return [name, dosage, freq, dur]
-        .where((s) => s.trim().isNotEmpty)
-        .join(' · ');
+    return [
+      name,
+      dosage,
+      freq,
+      dur,
+    ].where((s) => s.trim().isNotEmpty).join(' · ');
   }
 
   static String _formatDateTime(DateTime dt) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final time =
         '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
@@ -493,7 +561,8 @@ class _PdfButton extends StatelessWidget {
         child: Container(
           height: 44,
           padding: EdgeInsets.symmetric(
-              horizontal: filled ? AppSpacing.md : AppSpacing.md),
+            horizontal: filled ? AppSpacing.md : AppSpacing.md,
+          ),
           decoration: BoxDecoration(
             gradient: filled
                 ? const LinearGradient(colors: [_kBlue600, _kTeal500])
@@ -507,14 +576,18 @@ class _PdfButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  size: 18,
-                  color: filled ? Colors.white : AppColors.textSecondary),
+              Icon(
+                icon,
+                size: 18,
+                color: filled ? Colors.white : AppColors.textSecondary,
+              ),
               const SizedBox(width: AppSpacing.s),
-              Text(label,
-                  style: AppTypography.titleSmall.copyWith(
-                      color:
-                          filled ? Colors.white : AppColors.textSecondary)),
+              Text(
+                label,
+                style: AppTypography.titleSmall.copyWith(
+                  color: filled ? Colors.white : AppColors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),

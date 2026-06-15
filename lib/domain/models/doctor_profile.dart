@@ -50,13 +50,13 @@ class DoctorProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'qualifications': qualifications,
-        'regNo': regNo,
-        'clinicName': clinicName,
-        'clinicAddress': clinicAddress,
-        'clinicPhone': clinicPhone,
-      };
+    'name': name,
+    'qualifications': qualifications,
+    'regNo': regNo,
+    'clinicName': clinicName,
+    'clinicAddress': clinicAddress,
+    'clinicPhone': clinicPhone,
+  };
 
   factory DoctorProfile.fromJson(Map<String, dynamic> json) {
     String s(String key, String fallback) {

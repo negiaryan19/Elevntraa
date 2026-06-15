@@ -36,8 +36,9 @@ class DoctorProfileRepository {
   }
 }
 
-final doctorProfileRepositoryProvider =
-    Provider<DoctorProfileRepository>((ref) => DoctorProfileRepository());
+final doctorProfileRepositoryProvider = Provider<DoctorProfileRepository>(
+  (ref) => DoctorProfileRepository(),
+);
 
 /// Holds the current profile in memory and persists edits. Screens read this
 /// (PDF letterhead, signature, Settings) so an edit propagates everywhere.
@@ -61,5 +62,7 @@ class DoctorProfileController extends StateNotifier<DoctorProfile> {
 
 final doctorProfileControllerProvider =
     StateNotifierProvider<DoctorProfileController, DoctorProfile>((ref) {
-  return DoctorProfileController(ref.watch(doctorProfileRepositoryProvider));
-});
+      return DoctorProfileController(
+        ref.watch(doctorProfileRepositoryProvider),
+      );
+    });

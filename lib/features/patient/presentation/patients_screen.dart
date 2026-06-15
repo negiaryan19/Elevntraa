@@ -57,16 +57,19 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
       _filtered = q.isEmpty
           ? _entries
           : _entries
-              .where((e) =>
-                  (e.patient?.name ?? '').toLowerCase().contains(lower))
-              .toList();
+                .where(
+                  (e) => (e.patient?.name ?? '').toLowerCase().contains(lower),
+                )
+                .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final today = _entries.where((e) => _isToday(e.visit.createdAt)).length;
-    final thisWeek = _entries.where((e) => _isThisWeek(e.visit.createdAt)).length;
+    final thisWeek = _entries
+        .where((e) => _isThisWeek(e.visit.createdAt))
+        .length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -95,14 +98,16 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                   children: [
                     Text(
                       'Patient History',
-                      style: AppTypography.headlineLarge
-                          .copyWith(color: Colors.white),
+                      style: AppTypography.headlineLarge.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       'View all consultations and records',
-                      style: AppTypography.bodySmall
-                          .copyWith(color: Colors.white70),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: Colors.white70,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Row(
@@ -122,10 +127,7 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                         ),
                         const SizedBox(width: AppSpacing.m),
                         Expanded(
-                          child: _StatPill(
-                            value: '$today',
-                            label: 'Today',
-                          ),
+                          child: _StatPill(value: '$today', label: 'Today'),
                         ),
                       ],
                     ),
@@ -152,16 +154,20 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.search_rounded,
-                        color: Color(0xFF9CA3AF), size: 20),
+                    const Icon(
+                      Icons.search_rounded,
+                      color: Color(0xFF9CA3AF),
+                      size: 20,
+                    ),
                     const SizedBox(width: AppSpacing.m),
                     Expanded(
                       child: TextField(
                         onChanged: _onSearch,
                         decoration: InputDecoration(
                           hintText: 'Search patients...',
-                          hintStyle: AppTypography.bodyMedium
-                              .copyWith(color: AppColors.textMuted),
+                          hintStyle: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textMuted,
+                          ),
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -177,8 +183,11 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                         color: const Color(0xFFEFF6FF),
                         borderRadius: AppSpacing.radiusSm,
                       ),
-                      child: const Icon(Icons.tune_rounded,
-                          color: _kBlue600, size: 16),
+                      child: const Icon(
+                        Icons.tune_rounded,
+                        color: _kBlue600,
+                        size: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -190,32 +199,32 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _filtered.isEmpty
-                    ? _EmptyState(hasQuery: _query.isNotEmpty)
-                    : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.lg,
-                          0,
-                          AppSpacing.lg,
-                          AppSpacing.xxl,
-                        ),
-                        itemCount: _filtered.length,
-                        separatorBuilder: (_, _) =>
-                            const SizedBox(height: AppSpacing.m),
-                        itemBuilder: (context, i) {
-                          final entry = _filtered[i];
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: entry.patient == null
-                                ? null
-                                : () => context.push(
-                                      AppRoute.patient.build(params: {
-                                        'patientId': entry.patient!.id,
-                                      }),
-                                    ),
-                            child: _ConsultationCard(entry: entry),
-                          );
-                        },
-                      ),
+                ? _EmptyState(hasQuery: _query.isNotEmpty)
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      0,
+                      AppSpacing.lg,
+                      AppSpacing.xxl,
+                    ),
+                    itemCount: _filtered.length,
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: AppSpacing.m),
+                    itemBuilder: (context, i) {
+                      final entry = _filtered[i];
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: entry.patient == null
+                            ? null
+                            : () => context.push(
+                                AppRoute.patient.build(
+                                  params: {'patientId': entry.patient!.id},
+                                ),
+                              ),
+                        child: _ConsultationCard(entry: entry),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -224,9 +233,7 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
 
   static bool _isToday(DateTime dt) {
     final now = DateTime.now();
-    return dt.year == now.year &&
-        dt.month == now.month &&
-        dt.day == now.day;
+    return dt.year == now.year && dt.month == now.month && dt.day == now.day;
   }
 
   static bool _isThisWeek(DateTime dt) {
@@ -258,13 +265,18 @@ class _StatPill extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(value,
-              style: AppTypography.headlineMedium
-                  .copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+          Text(
+            value,
+            style: AppTypography.headlineMedium.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: AppSpacing.xxs),
-          Text(label,
-              style:
-                  AppTypography.labelSmall.copyWith(color: Colors.white70)),
+          Text(
+            label,
+            style: AppTypography.labelSmall.copyWith(color: Colors.white70),
+          ),
         ],
       ),
     );
@@ -283,7 +295,11 @@ class _ConsultationCard extends StatelessWidget {
     final ageSex = [
       if (patient?.age != null) '${patient!.age} years',
       if (patient?.sex != null)
-        patient!.sex == Sex.male ? 'Male' : patient.sex == Sex.female ? 'Female' : 'Other',
+        patient!.sex == Sex.male
+            ? 'Male'
+            : patient.sex == Sex.female
+            ? 'Female'
+            : 'Other',
     ].join(' • ');
     final diagnosis = visit.insight?.diagnosis ?? '';
     final dateStr = _formatDate(visit.createdAt);
@@ -311,7 +327,11 @@ class _ConsultationCard extends StatelessWidget {
               ),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
+            child: const Icon(
+              Icons.person_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -321,41 +341,60 @@ class _ConsultationCard extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(name,
-                          style: AppTypography.titleSmall,
-                          overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        name,
+                        style: AppTypography.titleSmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: Color(0xFF9CA3AF), size: 20),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF9CA3AF),
+                      size: 20,
+                    ),
                   ],
                 ),
                 if (ageSex.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.xxs),
-                  Text(ageSex,
-                      style: AppTypography.bodySmall,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    ageSex,
+                    style: AppTypography.bodySmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
                 const SizedBox(height: AppSpacing.xs),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today_rounded,
-                        size: 12, color: Color(0xFF6B7280)),
+                    const Icon(
+                      Icons.calendar_today_rounded,
+                      size: 12,
+                      color: Color(0xFF6B7280),
+                    ),
                     const SizedBox(width: AppSpacing.xs),
                     Flexible(
-                      child: Text(dateStr,
-                          style: AppTypography.labelSmall.copyWith(
-                              color: AppColors.textSecondary),
-                          overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        dateStr,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.s),
-                    const Icon(Icons.access_time_rounded,
-                        size: 12, color: Color(0xFF6B7280)),
+                    const Icon(
+                      Icons.access_time_rounded,
+                      size: 12,
+                      color: Color(0xFF6B7280),
+                    ),
                     const SizedBox(width: AppSpacing.xs),
                     Flexible(
-                      child: Text(timeStr,
-                          style: AppTypography.labelSmall.copyWith(
-                              color: AppColors.textSecondary),
-                          overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        timeStr,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -363,14 +402,20 @@ class _ConsultationCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   Row(
                     children: [
-                      const Icon(Icons.description_rounded,
-                          size: 12, color: _kBlue600),
+                      const Icon(
+                        Icons.description_rounded,
+                        size: 12,
+                        color: _kBlue600,
+                      ),
                       const SizedBox(width: AppSpacing.xs),
                       Expanded(
-                        child: Text(diagnosis,
-                            style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textPrimary),
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          diagnosis,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -385,14 +430,26 @@ class _ConsultationCard extends StatelessWidget {
 
   static String _formatDate(DateTime dt) {
     final now = DateTime.now();
-    final diff = DateTime(now.year, now.month, now.day)
-        .difference(DateTime(dt.year, dt.month, dt.day))
-        .inDays;
+    final diff = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).difference(DateTime(dt.year, dt.month, dt.day)).inDays;
     if (diff == 0) return 'Today';
     if (diff == 1) return 'Yesterday';
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
   }
@@ -408,13 +465,17 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.person_search_rounded,
-              size: 48, color: Color(0xFFD1D5DB)),
+          const Icon(
+            Icons.person_search_rounded,
+            size: 48,
+            color: Color(0xFFD1D5DB),
+          ),
           const SizedBox(height: AppSpacing.m),
           Text(
             hasQuery ? 'No patients found' : 'No consultations yet',
-            style: AppTypography.bodyMedium
-                .copyWith(color: AppColors.textSecondary),
+            style: AppTypography.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

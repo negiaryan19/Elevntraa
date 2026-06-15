@@ -9,8 +9,12 @@ class MicPermission {
 
   static Future<MicPermissionResult> request() async {
     final status = await Permission.microphone.request();
-    if (status.isGranted || status.isLimited) return MicPermissionResult.granted;
-    if (status.isPermanentlyDenied) return MicPermissionResult.permanentlyDenied;
+    if (status.isGranted || status.isLimited) {
+      return MicPermissionResult.granted;
+    }
+    if (status.isPermanentlyDenied) {
+      return MicPermissionResult.permanentlyDenied;
+    }
     return MicPermissionResult.denied;
   }
 
