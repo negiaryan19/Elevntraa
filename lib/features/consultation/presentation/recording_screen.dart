@@ -589,9 +589,10 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                     const SizedBox(width: AppSpacing.s),
                                     Expanded(
                                       child: Text(
-                                        'No audio detected. Check that Microphone '
-                                        'is ON for Rxvarta in iPhone Settings, '
-                                        'and disconnect Bluetooth headphones. '
+                                        'No audio detected. Check that the '
+                                        'Microphone permission is ON for Rxvarta '
+                                        'in your device Settings, and disconnect '
+                                        'Bluetooth headphones. '
                                         'Tap here to open Settings.',
                                         style: AppTypography.labelSmall
                                             .copyWith(
