@@ -7,7 +7,7 @@
         <package android:name="com.whatsapp.w4b" />
     </queries>
     <application
-        android:label="medscribe"
+        android:label="Rxvarta"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

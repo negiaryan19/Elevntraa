@@ -15,7 +15,7 @@ class OnboardingScreen extends StatelessWidget {
         child: Padding(
           padding: AppSpacing.screenPadding,
           child: EmptyState(
-            title: 'Welcome to MedScribe',
+            title: 'Welcome to Rxvarta',
             message:
                 'Doctor profile + API key setup will live here. Coming in '
                 'milestone 3.',

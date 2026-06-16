@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:medscribe/main.dart' as app;
+import 'package:rxvarta/main.dart' as app;
 
 /// End-to-end drive of the full consultation flow against REAL services:
 /// home → new patient intake → live mic recording → Sarvam STT →
@@ -9,7 +9,7 @@ import 'package:medscribe/main.dart' as app;
 ///
 /// Run on a booted simulator with mic permission pre-granted and speech
 /// audio playing near the host mic:
-///   `xcrun simctl privacy <udid> grant microphone com.medscribe.varad`
+///   `xcrun simctl privacy <udid> grant microphone com.rxvarta.rxvarta`
 ///   `flutter test integration_test/e2e_test.dart -d <udid>`
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

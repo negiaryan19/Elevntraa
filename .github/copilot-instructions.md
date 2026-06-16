@@ -1,6 +1,6 @@
-# Copilot / AI assistant instructions — MedScribe (EMR)
+# Copilot / AI assistant instructions — Rxvarta (EMR)
 
-MedScribe is a Flutter app for AI-assisted prescription dictation for Indian
+Rxvarta is a Flutter app for AI-assisted prescription dictation for Indian
 doctors. Keep suggestions idiomatic to this codebase.
 
 ## Tech stack

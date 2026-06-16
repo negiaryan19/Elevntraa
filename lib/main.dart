@@ -25,5 +25,5 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const ProviderScope(child: MedScribeApp()));
+  runApp(const ProviderScope(child: RxvartaApp()));
 }

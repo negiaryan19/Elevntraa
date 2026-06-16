@@ -1,4 +1,4 @@
-package com.medscribe.medscribe
+package com.rxvarta.rxvarta
 
 import io.flutter.embedding.android.FlutterActivity
 

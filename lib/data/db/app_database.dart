@@ -147,7 +147,7 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'medscribe.sqlite'));
+    final file = File(p.join(dir.path, 'rxvarta.sqlite'));
     return NativeDatabase.createInBackground(file);
   });
 }
