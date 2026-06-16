@@ -590,7 +590,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                     Expanded(
                                       child: Text(
                                         'No audio detected. Check that Microphone '
-                                        'is ON for MediScribe in iPhone Settings, '
+                                        'is ON for Rxvarta in iPhone Settings, '
                                         'and disconnect Bluetooth headphones. '
                                         'Tap here to open Settings.',
                                         style: AppTypography.labelSmall

@@ -10,6 +10,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Welcome Back, Doctor'), findsOneWidget);
-    expect(find.text('MediScribe'), findsWidgets);
+    expect(find.text('Rxvarta'), findsWidgets);
   });
 }

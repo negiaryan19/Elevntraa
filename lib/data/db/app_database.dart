@@ -148,6 +148,17 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'rxvarta.sqlite'));
+
+    // Brand rename (MedScribe → Rxvarta): existing installs have their data in
+    // medscribe.sqlite. Migrate it once so upgrading users keep their patients,
+    // visits and prescriptions instead of starting with an empty database.
+    if (!file.existsSync()) {
+      final legacy = File(p.join(dir.path, 'medscribe.sqlite'));
+      if (legacy.existsSync()) {
+        await legacy.rename(file.path);
+      }
+    }
+
     return NativeDatabase.createInBackground(file);
   });
 }
