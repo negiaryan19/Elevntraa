@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/app_theme.dart';
 import 'router.dart';
 
-class MedScribeApp extends ConsumerWidget {
-  const MedScribeApp({super.key});
+class RxvartaApp extends ConsumerWidget {
+  const RxvartaApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
-      title: 'MedScribe',
+      title: 'Rxvarta',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       scrollBehavior: const _NoBounceScrollBehavior(),

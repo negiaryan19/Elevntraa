@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Medscribe</string>
+	<string>Rxvarta</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>medscribe</string>
+	<string>Rxvarta</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -32,11 +32,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>MedScribe needs camera access so the doctor can scan a patient's previous reports.</string>
+	<string>Rxvarta needs camera access so the doctor can scan a patient's previous reports.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>MedScribe needs microphone access so the doctor can dictate consultations.</string>
+	<string>Rxvarta needs microphone access so the doctor can dictate consultations.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MedScribe needs photo access so the doctor can attach a patient's previous reports.</string>
+	<string>Rxvarta needs photo access so the doctor can attach a patient's previous reports.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

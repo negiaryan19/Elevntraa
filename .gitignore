@@ -33,6 +33,12 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Flutter-generated, machine-specific build artifacts — never commit these.
+**/Flutter/ephemeral/
+**/Flutter/flutter_export_environment.sh
+**/Flutter/Generated.xcconfig
+**/Flutter/flutter_native_integration.env
+
 # Symbolication related
 app.*.symbols
 

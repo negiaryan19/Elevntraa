@@ -199,7 +199,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Text(
-                  'MediScribe v1.0.0',
+                  'Rxvarta v1.0.0',
                   style: AppTypography.bodySmall,
                   textAlign: TextAlign.center,
                 ),
@@ -417,7 +417,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 _Field(
                   label: 'Clinic / Hospital name',
                   controller: _clinicName,
-                  hint: 'MediScribe Clinic',
+                  hint: 'Rxvarta Clinic',
                 ),
                 _Field(
                   label: 'Clinic address',

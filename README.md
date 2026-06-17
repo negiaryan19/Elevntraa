@@ -1,6 +1,6 @@
-# MediScribe
+# Rxvarta
 
-MediScribe is an AI assisted prescription dictation app for Indian doctors. The doctor records a consultation, the audio is transcribed (with support for many Indian languages), and the conversation is turned into a structured prescription that can be reviewed, signed, exported as a PDF, and shared with the patient on WhatsApp.
+Rxvarta is an AI assisted prescription dictation app for Indian doctors. The doctor records a consultation, the audio is transcribed (with support for many Indian languages), and the conversation is turned into a structured prescription that can be reviewed, signed, exported as a PDF, and shared with the patient on WhatsApp.
 
 This README is a complete, step by step setup guide. If you have never built a Flutter app before, you can follow it from top to bottom and end up with the app running on an emulator or a real phone.
 

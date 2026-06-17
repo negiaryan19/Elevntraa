@@ -26,7 +26,7 @@ class DoctorProfile {
     name: 'Dr. Rajesh Sharma',
     qualifications: 'MBBS, MD (Medicine)',
     regNo: 'MH-12345',
-    clinicName: 'MediScribe Clinic',
+    clinicName: 'Rxvarta Clinic',
     clinicAddress: 'Andheri West, Mumbai, Maharashtra 400053',
     clinicPhone: '+91 98765 43210',
   );

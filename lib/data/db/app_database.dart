@@ -147,7 +147,25 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'medscribe.sqlite'));
+    final file = File(p.join(dir.path, 'rxvarta.sqlite'));
+
+    // Brand rename (MedScribe → Rxvarta): existing installs have their data in
+    // medscribe.sqlite. Migrate it once so upgrading users keep their patients,
+    // visits and prescriptions instead of starting with an empty database.
+    // The WAL/SHM/journal sidecar files must move alongside the main database,
+    // otherwise uncommitted transactions in those files would be lost.
+    if (!file.existsSync()) {
+      final legacy = File(p.join(dir.path, 'medscribe.sqlite'));
+      if (legacy.existsSync()) {
+        for (final suffix in const ['', '-wal', '-shm', '-journal']) {
+          final legacySidecar = File('${legacy.path}$suffix');
+          if (legacySidecar.existsSync()) {
+            await legacySidecar.rename('${file.path}$suffix');
+          }
+        }
+      }
+    }
+
     return NativeDatabase.createInBackground(file);
   });
 }
