@@ -87,11 +87,11 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppSpacing.lg,
+                  AppSpacing.adaptive(context, AppSpacing.lg),
                   AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.xl + AppSpacing.s,
+                  AppSpacing.adaptive(context, AppSpacing.xl + AppSpacing.s),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

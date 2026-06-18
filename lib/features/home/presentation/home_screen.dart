@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +6,7 @@ import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../settings/data/doctor_profile_repository.dart';
 
 // Figma palette: blue-600 → teal-500 gradient system
 const _kBlue600 = Color(0xFF2563EB);
@@ -38,57 +37,43 @@ class HomeScreen extends ConsumerWidget {
             children: [
               const _AppHeader(),
               Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) => SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                    ),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(flex: 2),
+                      const _HeroIcon(),
+                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                      Text(
+                        'Welcome Back, Doctor',
+                        style: AppTypography.displayMedium,
+                        textAlign: TextAlign.center,
                       ),
-                      child: Column(
-                        // On iOS the screen (e.g. iPhone 17 Pro) is much taller
-                        // than the Android test device, so centering left large
-                        // empty gaps above/below and pushed the CTA into dead
-                        // space. Top-align on iOS so content flows naturally;
-                        // Android keeps its original centered layout untouched.
-                        mainAxisAlignment: Platform.isIOS
-                            ? MainAxisAlignment.start
-                            : MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: AppSpacing.xl),
-                          const _HeroIcon(),
-                          const SizedBox(height: AppSpacing.lg),
-                          Text(
-                            'Welcome Back, Doctor',
-                            style: AppTypography.displayMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.m),
-                          Text(
-                            'Transform patient conversations into perfect prescriptions with AI-powered transcription',
-                            style: AppTypography.bodyLarge.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.xxl),
-                          const _StatsRow(),
-                          const SizedBox(height: AppSpacing.xxl),
-                          _CtaButton(
-                            onTap: () => context.push(AppRoute.intake.path),
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          Text(
-                            'Click to begin recording a patient consultation',
-                            style: AppTypography.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: AppSpacing.xl),
-                        ],
+                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.s)),
+                      Text(
+                        'Transform patient conversations into perfect prescriptions with AI-powered transcription',
+                        style: AppTypography.bodyLarge.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
+                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.xl)),
+                      const _StatsRow(),
+                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.xl)),
+                      _CtaButton(
+                        onTap: () => context.push(AppRoute.intake.path),
+                      ),
+                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.m)),
+                      Text(
+                        'Click to begin recording a patient consultation',
+                        style: AppTypography.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const Spacer(flex: 1),
+                    ],
                   ),
                 ),
               ),
@@ -101,15 +86,16 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _AppHeader extends StatelessWidget {
+class _AppHeader extends ConsumerWidget {
   const _AppHeader();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final doctor = ref.watch(doctorProfileControllerProvider);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         AppSpacing.lg,
-        AppSpacing.lg,
+        AppSpacing.adaptive(context, AppSpacing.lg),
         AppSpacing.lg,
         AppSpacing.s,
       ),
@@ -133,10 +119,9 @@ class _AppHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.m),
-          // Flexible so a narrow device (≈320dp) doesn't overflow this row:
-          // the title block yields width to the trailing icon + name instead
-          // of pushing past the screen edge.
-          Flexible(
+          // Expanded: left block takes all remaining space so the right
+          // side (name + icon) is never pushed off screen.
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -146,20 +131,42 @@ class _AppHeader extends StatelessWidget {
                   style: AppTypography.titleMedium.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'Smart Medical Documentation',
                   style: AppTypography.bodySmall,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
           const SizedBox(width: AppSpacing.s),
-          const Icon(Icons.monitor_heart_rounded, color: _kTeal600, size: 20),
-          const SizedBox(width: AppSpacing.xs),
-          Text('Dr. Sharma', style: AppTypography.labelLarge),
+          // Flexible: right block yields space to the left side on narrow
+          // screens; the name ellipsizes before pushing off the edge.
+          Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.monitor_heart_rounded,
+                  color: _kTeal600,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Flexible(
+                  child: Text(
+                    'Dr. ${_firstName(doctor.name)}',
+                    style: AppTypography.labelLarge,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -171,24 +178,27 @@ class _HeroIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = AppSpacing.adaptiveSize(context, 96, min: 52);
+    final iconSize = size * 0.5;
+    final radius = size * 0.25;
     return Container(
-      width: 96,
-      height: 96,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [_kBlue600, _kTeal500],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(radius),
         boxShadow: const [
           BoxShadow(color: _kBlueShadow, blurRadius: 20, offset: Offset(0, 8)),
         ],
       ),
-      child: const Icon(
+      child: Icon(
         Icons.medical_services_rounded,
         color: Colors.white,
-        size: 48,
+        size: iconSize,
       ),
     );
   }
@@ -242,8 +252,9 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pad = AppSpacing.adaptive(context, AppSpacing.md);
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: EdgeInsets.all(pad),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: AppSpacing.radiusLg,
@@ -303,20 +314,23 @@ class _CtaButton extends StatelessWidget {
               borderRadius: AppSpacing.radiusLg,
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.xl,
-                vertical: 20,
+                vertical: AppSpacing.adaptive(context, 20),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.add_rounded, color: Colors.white, size: 24),
                   const SizedBox(width: AppSpacing.m),
-                  Text(
-                    'Start New Consultation',
-                    style: AppTypography.titleMedium.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                  Flexible(
+                    child: Text(
+                      'Start New Consultation',
+                      style: AppTypography.titleMedium.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -335,9 +349,11 @@ class _HomeFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.lg,
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.xs + MediaQuery.of(context).padding.bottom,
       ),
       child: Text(
         'Secure • HIPAA Compliant • End-to-End Encrypted',
@@ -346,4 +362,27 @@ class _HomeFooter extends StatelessWidget {
       ),
     );
   }
+}
+
+String _firstName(String fullName) {
+  final parts = fullName.trim().split(RegExp(r'\s+'));
+  if (parts.isEmpty) return '';
+
+  final ignoredPrefixes = {
+    'dr', 'dr.',
+    'prof', 'prof.',
+    'mr', 'mr.',
+    'mrs', 'mrs.',
+    'ms', 'ms.',
+    'doctor', 'doc',
+  };
+
+  for (final part in parts) {
+    final cleanPart = part.toLowerCase();
+    if (!ignoredPrefixes.contains(cleanPart)) {
+      return part;
+    }
+  }
+
+  return parts.first;
 }

@@ -34,4 +34,27 @@ class AppSpacing {
   static const BorderRadius radiusLg = BorderRadius.all(Radius.circular(16));
   static const BorderRadius radiusXl = BorderRadius.all(Radius.circular(24));
   static const BorderRadius radiusPill = BorderRadius.all(Radius.circular(999));
+
+  /// Returns a scaled value based on screen height so fixed spacings shrink
+  /// on very small phones (<600dp), small phones (<680dp) and medium phones
+  /// (<780dp) while staying full-size on the Pixel 6a baseline and above.
+  static double adaptive(BuildContext context, double baseValue) {
+    final height = MediaQuery.of(context).size.height;
+    if (height < 600) return baseValue * 0.45;
+    if (height < 680) return baseValue * 0.6;
+    if (height < 780) return baseValue * 0.78;
+    return baseValue;
+  }
+
+  /// Like [adaptive] but for widget dimensions (icons, avatars, circles) that
+  /// need proportional scaling with optional clamping.
+  static double adaptiveSize(
+    BuildContext context,
+    double baseSize, {
+    double? min,
+  }) {
+    final scaled = adaptive(context, baseSize);
+    if (min != null && scaled < min) return min;
+    return scaled;
+  }
 }

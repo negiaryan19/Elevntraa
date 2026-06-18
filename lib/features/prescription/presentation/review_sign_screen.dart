@@ -134,9 +134,9 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppSpacing.s,
-                  AppSpacing.md,
+                  AppSpacing.adaptive(context, AppSpacing.md),
                   AppSpacing.lg,
                   0,
                 ),
@@ -175,7 +175,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
+              SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: _StepProgressBar(activeStep: 2),
@@ -188,7 +188,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                     AppSpacing.lg,
                     0,
                     AppSpacing.lg,
-                    AppSpacing.xxl,
+                    AppSpacing.lg,
                   ),
                   children: [
                     // Consultation summary card — the concise, human-readable
@@ -582,7 +582,12 @@ class _InfoField extends StatelessWidget {
       children: [
         Text(label, style: AppTypography.bodySmall),
         const SizedBox(height: AppSpacing.xxs),
-        Text(value, style: AppTypography.titleSmall),
+        Text(
+          value,
+          style: AppTypography.titleSmall,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }
@@ -803,9 +808,12 @@ class _GradientCta extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              label,
-              style: AppTypography.titleSmall.copyWith(color: Colors.white),
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.titleSmall.copyWith(color: Colors.white),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             if (trailingIcon != null) ...[
               const SizedBox(width: AppSpacing.s),
@@ -846,10 +854,13 @@ class _OutlineButton extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: AppColors.textSecondary),
             const SizedBox(width: AppSpacing.s),
-            Text(
-              label,
-              style: AppTypography.titleSmall.copyWith(
-                color: AppColors.textSecondary,
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.titleSmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

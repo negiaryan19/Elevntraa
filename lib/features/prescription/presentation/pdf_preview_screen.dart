@@ -163,9 +163,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppSpacing.s,
-                  AppSpacing.md,
+                  AppSpacing.adaptive(context, AppSpacing.md),
                   AppSpacing.lg,
                   0,
                 ),
@@ -836,9 +836,12 @@ class _PreviousReportsPreview extends StatelessWidget {
             children: [
               const Icon(Icons.attach_file_rounded, color: _kBlue600, size: 18),
               const SizedBox(width: AppSpacing.xs),
-              Text(
-                'Previous Reports (${attachments.length})',
-                style: AppTypography.titleMedium,
+              Flexible(
+                child: Text(
+                  'Previous Reports (${attachments.length})',
+                  style: AppTypography.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -922,9 +925,12 @@ class _GradientCta extends StatelessWidget {
           children: [
             Icon(icon, color: Colors.white, size: 22),
             const SizedBox(width: AppSpacing.m),
-            Text(
-              label,
-              style: AppTypography.titleSmall.copyWith(color: Colors.white),
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.titleSmall.copyWith(color: Colors.white),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -960,10 +966,13 @@ class _OutlineCta extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: AppColors.textSecondary),
             const SizedBox(width: AppSpacing.s),
-            Text(
-              label,
-              style: AppTypography.titleSmall.copyWith(
-                color: AppColors.textSecondary,
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.titleSmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
