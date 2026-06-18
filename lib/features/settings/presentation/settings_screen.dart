@@ -60,11 +60,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppSpacing.lg,
+                  AppSpacing.adaptive(context, AppSpacing.lg),
                   AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
+                  AppSpacing.adaptive(context, AppSpacing.lg),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,8 +96,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         child: Row(
                           children: [
                             Container(
-                              width: 64,
-                              height: 64,
+                              width: AppSpacing.adaptiveSize(
+                                context,
+                                64,
+                                min: 44,
+                              ),
+                              height: AppSpacing.adaptiveSize(
+                                context,
+                                64,
+                                min: 44,
+                              ),
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,

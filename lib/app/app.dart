@@ -25,7 +25,7 @@ class RxvartaApp extends ConsumerWidget {
           data: mq.copyWith(
             textScaler: mq.textScaler.clamp(
               minScaleFactor: 1.0,
-              maxScaleFactor: 1.1,
+              maxScaleFactor: 1.3,
             ),
           ),
           child: child!,

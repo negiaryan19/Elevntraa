@@ -33,9 +33,9 @@ class IntakeChoiceScreen extends StatelessWidget {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppSpacing.s,
-                  AppSpacing.md,
+                  AppSpacing.adaptive(context, AppSpacing.md),
                   AppSpacing.lg,
                   0,
                 ),
@@ -70,7 +70,7 @@ class IntakeChoiceScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.xl),
+              SizedBox(height: AppSpacing.adaptive(context, AppSpacing.xl)),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(

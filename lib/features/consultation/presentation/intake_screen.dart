@@ -280,9 +280,9 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
               children: [
                 // Header
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     AppSpacing.s,
-                    AppSpacing.md,
+                    AppSpacing.adaptive(context, AppSpacing.md),
                     AppSpacing.lg,
                     0,
                   ),
@@ -321,7 +321,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
                 // Progress bar
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -329,7 +329,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                   ),
                   child: _StepProgressBar(activeStep: 0),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
                 // Form card
                 if (_loadingPatient)
                   const Expanded(
@@ -342,7 +342,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                         AppSpacing.lg,
                         0,
                         AppSpacing.lg,
-                        AppSpacing.xxl,
+                        AppSpacing.lg,
                       ),
                       child: Container(
                         decoration: BoxDecoration(
@@ -357,7 +357,9 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                           ],
                           border: Border.all(color: const Color(0xFFF3F4F6)),
                         ),
-                        padding: const EdgeInsets.all(AppSpacing.xl),
+                        padding: EdgeInsets.all(
+                          AppSpacing.adaptive(context, AppSpacing.xl),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -375,7 +377,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                   ? 'Name is required'
                                   : null,
                             ),
-                            const SizedBox(height: AppSpacing.lg),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // Age + Gender
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,7 +447,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: AppSpacing.lg),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // WhatsApp
                             _FieldLabel(
                               icon: Icons.phone_outlined,
@@ -490,7 +502,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 color: AppColors.textMuted,
                               ),
                             ),
-                            const SizedBox(height: AppSpacing.lg),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // Previous reports
                             _FieldLabel(
                               icon: Icons.description_outlined,
@@ -518,7 +535,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                               ),
                             const SizedBox(height: AppSpacing.s),
                             _AddReportButton(onTap: _pickReportSource),
-                            const SizedBox(height: AppSpacing.lg),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // Consent
                             GestureDetector(
                               onTap: () => setState(() => _consent = !_consent),
@@ -559,7 +581,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: AppSpacing.xl),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.xl,
+                              ),
+                            ),
                             if (_error != null) ...[
                               Text(
                                 _error!,
@@ -658,10 +685,13 @@ class _FieldLabel extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: _kBlue600),
         const SizedBox(width: AppSpacing.xs),
-        Text(
-          label,
-          style: AppTypography.labelMedium.copyWith(
-            color: const Color(0xFF374151),
+        Flexible(
+          child: Text(
+            label,
+            style: AppTypography.labelMedium.copyWith(
+              color: const Color(0xFF374151),
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -966,12 +996,17 @@ class _GradientCta extends StatelessWidget {
                   ),
                 )
               : Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      label,
-                      style: AppTypography.titleSmall.copyWith(
-                        color: enabled ? Colors.white : const Color(0xFF9CA3AF),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: AppTypography.titleSmall.copyWith(
+                          color: enabled
+                              ? Colors.white
+                              : const Color(0xFF9CA3AF),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (trailingIcon != null) ...[
