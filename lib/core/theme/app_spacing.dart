@@ -39,7 +39,7 @@ class AppSpacing {
   /// on very small phones (<600dp), small phones (<680dp) and medium phones
   /// (<780dp) while staying full-size on the Pixel 6a baseline and above.
   static double adaptive(BuildContext context, double baseValue) {
-    final height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.longestSide;
     if (height < 600) return baseValue * 0.45;
     if (height < 680) return baseValue * 0.6;
     if (height < 780) return baseValue * 0.78;

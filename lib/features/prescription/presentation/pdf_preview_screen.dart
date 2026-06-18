@@ -840,6 +840,7 @@ class _PreviousReportsPreview extends StatelessWidget {
                 child: Text(
                   'Previous Reports (${attachments.length})',
                   style: AppTypography.titleMedium,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -929,6 +930,7 @@ class _GradientCta extends StatelessWidget {
               child: Text(
                 label,
                 style: AppTypography.titleSmall.copyWith(color: Colors.white),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -972,6 +974,7 @@ class _OutlineCta extends StatelessWidget {
                 style: AppTypography.titleSmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

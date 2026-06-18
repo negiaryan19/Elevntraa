@@ -357,7 +357,9 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                           ],
                           border: Border.all(color: const Color(0xFFF3F4F6)),
                         ),
-                        padding: EdgeInsets.all(AppSpacing.adaptive(context, AppSpacing.xl)),
+                        padding: EdgeInsets.all(
+                          AppSpacing.adaptive(context, AppSpacing.xl),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -375,7 +377,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                   ? 'Name is required'
                                   : null,
                             ),
-                            SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // Age + Gender
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,7 +447,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // WhatsApp
                             _FieldLabel(
                               icon: Icons.phone_outlined,
@@ -490,7 +502,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 color: AppColors.textMuted,
                               ),
                             ),
-                            SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // Previous reports
                             _FieldLabel(
                               icon: Icons.description_outlined,
@@ -518,7 +535,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                               ),
                             const SizedBox(height: AppSpacing.s),
                             _AddReportButton(onTap: _pickReportSource),
-                            SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.lg,
+                              ),
+                            ),
                             // Consent
                             GestureDetector(
                               onTap: () => setState(() => _consent = !_consent),
@@ -559,7 +581,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: AppSpacing.adaptive(context, AppSpacing.xl)),
+                            SizedBox(
+                              height: AppSpacing.adaptive(
+                                context,
+                                AppSpacing.xl,
+                              ),
+                            ),
                             if (_error != null) ...[
                               Text(
                                 _error!,

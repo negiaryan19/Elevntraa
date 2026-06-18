@@ -37,44 +37,81 @@ class HomeScreen extends ConsumerWidget {
             children: [
               const _AppHeader(),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Spacer(flex: 2),
-                      const _HeroIcon(),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
-                      Text(
-                        'Welcome Back, Doctor',
-                        style: AppTypography.displayMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.s)),
-                      Text(
-                        'Transform patient conversations into perfect prescriptions with AI-powered transcription',
-                        style: AppTypography.bodyLarge.copyWith(
-                          color: AppColors.textSecondary,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                        textAlign: TextAlign.center,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: AppSpacing.md),
+                              const _HeroIcon(),
+                              SizedBox(
+                                height: AppSpacing.adaptive(
+                                  context,
+                                  AppSpacing.lg,
+                                ),
+                              ),
+                              Text(
+                                'Welcome Back, Doctor',
+                                style: AppTypography.displayMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                height: AppSpacing.adaptive(
+                                  context,
+                                  AppSpacing.s,
+                                ),
+                              ),
+                              Text(
+                                'Transform patient conversations into perfect prescriptions with AI-powered transcription',
+                                style: AppTypography.bodyLarge.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                height: AppSpacing.adaptive(
+                                  context,
+                                  AppSpacing.xl,
+                                ),
+                              ),
+                              const _StatsRow(),
+                              SizedBox(
+                                height: AppSpacing.adaptive(
+                                  context,
+                                  AppSpacing.xl,
+                                ),
+                              ),
+                              _CtaButton(
+                                onTap: () => context.push(AppRoute.intake.path),
+                              ),
+                              SizedBox(
+                                height: AppSpacing.adaptive(
+                                  context,
+                                  AppSpacing.m,
+                                ),
+                              ),
+                              Text(
+                                'Click to begin recording a patient consultation',
+                                style: AppTypography.bodySmall,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                            ],
+                          ),
+                        ),
                       ),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.xl)),
-                      const _StatsRow(),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.xl)),
-                      _CtaButton(
-                        onTap: () => context.push(AppRoute.intake.path),
-                      ),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.m)),
-                      Text(
-                        'Click to begin recording a patient consultation',
-                        style: AppTypography.bodySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                      const Spacer(flex: 1),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
               const _HomeFooter(),
@@ -369,12 +406,18 @@ String _firstName(String fullName) {
   if (parts.isEmpty) return '';
 
   final ignoredPrefixes = {
-    'dr', 'dr.',
-    'prof', 'prof.',
-    'mr', 'mr.',
-    'mrs', 'mrs.',
-    'ms', 'ms.',
-    'doctor', 'doc',
+    'dr',
+    'dr.',
+    'prof',
+    'prof.',
+    'mr',
+    'mr.',
+    'mrs',
+    'mrs.',
+    'ms',
+    'ms.',
+    'doctor',
+    'doc',
   };
 
   for (final part in parts) {

@@ -96,8 +96,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         child: Row(
                           children: [
                             Container(
-                              width: AppSpacing.adaptiveSize(context, 64, min: 44),
-                              height: AppSpacing.adaptiveSize(context, 64, min: 44),
+                              width: AppSpacing.adaptiveSize(
+                                context,
+                                64,
+                                min: 44,
+                              ),
+                              height: AppSpacing.adaptiveSize(
+                                context,
+                                64,
+                                min: 44,
+                              ),
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,

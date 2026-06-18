@@ -812,6 +812,7 @@ class _GradientCta extends StatelessWidget {
               child: Text(
                 label,
                 style: AppTypography.titleSmall.copyWith(color: Colors.white),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -860,6 +861,7 @@ class _OutlineButton extends StatelessWidget {
                 style: AppTypography.titleSmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

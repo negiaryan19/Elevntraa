@@ -437,7 +437,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                      SizedBox(
+                        height: AppSpacing.adaptive(context, AppSpacing.lg),
+                      ),
                       // Large circle + pulse — sizes scale with screen height
                       AnimatedBuilder(
                         animation: Listenable.merge([_pulse1, _pulse2]),
@@ -502,7 +504,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           );
                         },
                       ),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                      SizedBox(
+                        height: AppSpacing.adaptive(context, AppSpacing.lg),
+                      ),
                       // Waveform
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -515,7 +519,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           height: AppSpacing.adaptive(context, 80),
                         ),
                       ),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                      SizedBox(
+                        height: AppSpacing.adaptive(context, AppSpacing.lg),
+                      ),
                       // Timer
                       Text(
                         _fmt(state.elapsed),
@@ -573,7 +579,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                             decoration: BoxDecoration(
                               color: const Color(0xFFFEF3C7),
                               borderRadius: AppSpacing.radiusMd,
-                              border: Border.all(color: const Color(0xFFF59E0B)),
+                              border: Border.all(
+                                color: const Color(0xFFF59E0B),
+                              ),
                             ),
                             child: Row(
                               children: [
@@ -703,7 +711,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                             ),
                           ),
                         ),
-                      SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                      SizedBox(
+                        height: AppSpacing.adaptive(context, AppSpacing.lg),
+                      ),
                     ],
                   ),
                 ),
