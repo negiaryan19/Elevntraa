@@ -79,6 +79,21 @@ class InsightService {
       'a timeframe, extract the followUpDays as a number. If a timeframe is '
       'mentioned but vague (e.g. "come back if not better"), set followUpDays to '
       'null but include the instruction in the instructions field. '
+      'When the doctor specifies a duration that applies to multiple medicines '
+      '(e.g. "take both for 5 days", "teen din tak dono lena", "sab medicine '
+      'paanch din tak"), apply that duration to ALL the medicines it refers to, '
+      'not just the last one mentioned. If a blanket duration is stated after '
+      'listing all medicines, apply it to every medicine that does not have its '
+      'own specific duration. '
+      'For each medication, extract the timing relative to food/meals into the '
+      'timing field of that specific medication. Use one of these values exactly: '
+      '"Before food", "After food", "With food", "Empty stomach", "Before bed", '
+      'or "As directed". If the doctor says "khana khane ke baad" extract '
+      '"After food". If "khali pet" extract "Empty stomach". If "sone se pehle" '
+      'extract "Before bed". If "khana khane se pehle" extract "Before food". '
+      'Every medication should have a timing value if the doctor mentioned when '
+      'to take it. Do not put timing information only in instructions — it must '
+      'be in the medication\'s timing field. '
       'For the diagnosis, if it maps clearly and unambiguously to a single '
       'ICD-10 code, provide the code with icdConfidence "high". If it could '
       'reasonably map to a code but there is some ambiguity (e.g. multiple '
@@ -131,6 +146,21 @@ class InsightService {
       'a timeframe, extract the followUpDays as a number. If a timeframe is '
       'mentioned but vague (e.g. "come back if not better"), set followUpDays to '
       'null but include the instruction in the instructions field. '
+      'When the doctor specifies a duration that applies to multiple medicines '
+      '(e.g. "take both for 5 days", "teen din tak dono lena", "sab medicine '
+      'paanch din tak"), apply that duration to ALL the medicines it refers to, '
+      'not just the last one mentioned. If a blanket duration is stated after '
+      'listing all medicines, apply it to every medicine that does not have its '
+      'own specific duration. '
+      'For each medication, extract the timing relative to food/meals into the '
+      'timing field of that specific medication. Use one of these values exactly: '
+      '"Before food", "After food", "With food", "Empty stomach", "Before bed", '
+      'or "As directed". If the doctor says "khana khane ke baad" extract '
+      '"After food". If "khali pet" extract "Empty stomach". If "sone se pehle" '
+      'extract "Before bed". If "khana khane se pehle" extract "Before food". '
+      'Every medication should have a timing value if the doctor mentioned when '
+      'to take it. Do not put timing information only in instructions — it must '
+      'be in the medication\'s timing field. '
       'For the diagnosis, if it maps clearly and unambiguously to a single '
       'ICD-10 code, provide the code with icdConfidence "high". If it could '
       'reasonably map to a code but there is some ambiguity (e.g. multiple '
@@ -300,6 +330,35 @@ class InsightService {
   @visibleForTesting
   Map<String, dynamic> coerce(Map<String, dynamic> input) => _coerce(input);
 
+  static String _normalizeTiming(String raw) {
+    if (raw.trim().isEmpty) return '';
+    final lower = raw.toLowerCase();
+    if (lower.contains('before food') || lower.contains('before meal')) {
+      return 'Before food';
+    }
+    if (lower.contains('after food') || lower.contains('after meal')) {
+      return 'After food';
+    }
+    if (lower.contains('with food') || lower.contains('with meal')) {
+      return 'With food';
+    }
+    if (lower.contains('empty stomach') ||
+        lower.contains('khali pet') ||
+        lower.contains('on empty')) {
+      return 'Empty stomach';
+    }
+    if (lower.contains('before bed') ||
+        lower.contains('bedtime') ||
+        lower.contains('before sleep') ||
+        lower.contains('before sleeping') ||
+        lower.contains('at night') ||
+        lower.contains('sone se pehle')) {
+      return 'Before bed';
+    }
+    if (lower.contains('as directed')) return 'As directed';
+    return 'As directed';
+  }
+
   Map<String, dynamic> _coerce(Map<String, dynamic> input) {
     final meds =
         (input['medications'] as List?)?.map((m) {
@@ -309,7 +368,7 @@ class InsightService {
             'dosage': m['dosage'] ?? '',
             'frequency': m['frequency'] ?? '',
             'duration': m['duration'] ?? '',
-            'timing': m['timing'] ?? '',
+            'timing': _normalizeTiming((m['timing'] ?? '').toString()),
             'needsReview': m['needsReview'] ?? m['needs_review'] ?? false,
           };
         }).toList() ??
@@ -433,6 +492,7 @@ class InsightService {
             'dosage': {'type': 'STRING'},
             'frequency': {'type': 'STRING'},
             'duration': {'type': 'STRING'},
+            'timing': {'type': 'STRING'},
             'needsReview': {'type': 'BOOLEAN'},
           },
           'required': ['name'],
@@ -494,6 +554,7 @@ class InsightService {
             'dosage': {'type': 'STRING'},
             'frequency': {'type': 'STRING'},
             'duration': {'type': 'STRING'},
+            'timing': {'type': 'STRING'},
             'needsReview': {'type': 'BOOLEAN'},
           },
           'required': ['name'],

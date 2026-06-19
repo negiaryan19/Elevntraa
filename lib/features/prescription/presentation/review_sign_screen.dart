@@ -1482,7 +1482,14 @@ class _MedicineRowState extends State<_MedicineRow> {
   late final TextEditingController _freq;
   late final TextEditingController _duration;
 
-  static const _timings = ['Before food', 'After food', 'With food'];
+  static const _timings = [
+    'Before food',
+    'After food',
+    'With food',
+    'Empty stomach',
+    'Before bed',
+    'As directed',
+  ];
 
   @override
   void initState() {

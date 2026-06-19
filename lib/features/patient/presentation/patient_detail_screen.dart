@@ -14,6 +14,7 @@ import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
 import '../../prescription/data/prescription_pdf_service.dart';
 import '../../settings/data/doctor_profile_repository.dart';
+import 'view_prescription_screen.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kTeal500 = Color(0xFF14B8A6);
@@ -59,26 +60,16 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
     }
   }
 
-  Future<void> _openPdf(VisitRecord visit) async {
-    if (_busyVisitId != null) return;
-    setState(() => _busyVisitId = visit.id);
-    try {
-      await ref
-          .read(prescriptionPdfServiceProvider)
-          .printOrPreview(
-            visit: visit,
-            patient: _patient,
-            doctor: ref.read(doctorProfileControllerProvider),
-          );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open prescription: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busyVisitId = null);
-    }
+  void _openPdf(VisitRecord visit) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ViewPrescriptionScreen(
+          visit: visit,
+          patient: _patient,
+        ),
+      ),
+    );
   }
 
   Future<void> _sharePdf(VisitRecord visit) async {
