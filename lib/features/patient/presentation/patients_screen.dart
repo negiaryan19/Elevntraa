@@ -40,8 +40,7 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
     final visits = await ref.read(visitRepositoryProvider).recent(limit: 50);
     final patientRepo = ref.read(patientRepositoryProvider);
 
-    final rawEntries =
-        <({VisitRecord visit, PatientProfile? patient})>[];
+    final rawEntries = <({VisitRecord visit, PatientProfile? patient})>[];
     for (final v in visits) {
       final p = await patientRepo.byId(v.patientId);
       rawEntries.add((visit: v, patient: p));
@@ -58,18 +57,18 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
     }
 
     // Build groups; representative = most recent visit
-    final groups = grouped.entries.map((e) {
-      final sorted = e.value.toList()
-        ..sort((a, b) => b.visit.createdAt.compareTo(a.visit.createdAt));
-      return _PatientGroup(
-        patient: sorted.first.patient,
-        latestVisit: sorted.first.visit,
-        visitCount: sorted.length,
-      );
-    }).toList()
-      ..sort(
-        (a, b) => b.latestVisit.createdAt.compareTo(a.latestVisit.createdAt),
-      );
+    final groups =
+        grouped.entries.map((e) {
+          final sorted = e.value.toList()
+            ..sort((a, b) => b.visit.createdAt.compareTo(a.visit.createdAt));
+          return _PatientGroup(
+            patient: sorted.first.patient,
+            latestVisit: sorted.first.visit,
+            visitCount: sorted.length,
+          );
+        }).toList()..sort(
+          (a, b) => b.latestVisit.createdAt.compareTo(a.latestVisit.createdAt),
+        );
 
     if (mounted) {
       setState(() {
@@ -99,10 +98,12 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
   @override
   Widget build(BuildContext context) {
     // Stats count unique patients, not consultations
-    final today =
-        _groups.where((g) => _isToday(g.latestVisit.createdAt)).length;
-    final thisWeek =
-        _groups.where((g) => _isThisWeek(g.latestVisit.createdAt)).length;
+    final today = _groups
+        .where((g) => _isToday(g.latestVisit.createdAt))
+        .length;
+    final thisWeek = _groups
+        .where((g) => _isThisWeek(g.latestVisit.createdAt))
+        .length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -481,14 +482,26 @@ class _PatientCard extends StatelessWidget {
 
   static String _formatDate(DateTime dt) {
     final now = DateTime.now();
-    final diff = DateTime(now.year, now.month, now.day)
-        .difference(DateTime(dt.year, dt.month, dt.day))
-        .inDays;
+    final diff = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).difference(DateTime(dt.year, dt.month, dt.day)).inDays;
     if (diff == 0) return 'Today';
     if (diff == 1) return 'Yesterday';
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
   }

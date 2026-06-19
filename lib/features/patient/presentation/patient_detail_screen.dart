@@ -60,16 +60,16 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
     }
   }
 
-  void _openPdf(VisitRecord visit) {
-    Navigator.push(
+  Future<void> _openPdf(VisitRecord visit) async {
+    if (_busyVisitId != null) return;
+    setState(() => _busyVisitId = visit.id);
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ViewPrescriptionScreen(
-          visit: visit,
-          patient: _patient,
-        ),
+        builder: (_) => ViewPrescriptionScreen(visit: visit, patient: _patient),
       ),
     );
+    if (mounted) setState(() => _busyVisitId = null);
   }
 
   Future<void> _sharePdf(VisitRecord visit) async {

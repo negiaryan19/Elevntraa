@@ -97,9 +97,9 @@ class _ViewPrescriptionScreenState
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not share PDF: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not share PDF: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -110,12 +110,21 @@ class _ViewPrescriptionScreenState
   Widget build(BuildContext context) {
     final dt = widget.visit.createdAt;
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final dateLabel = '${dt.day} ${months[dt.month - 1]} ${dt.year}';
-    final title =
-        '${widget.patient?.name ?? 'Prescription'} · $dateLabel';
+    final title = '${widget.patient?.name ?? 'Prescription'} · $dateLabel';
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -292,7 +301,11 @@ class _GradientBtn extends StatelessWidget {
           gradient: LinearGradient(colors: colors),
           borderRadius: AppSpacing.radiusLg,
           boxShadow: [
-            BoxShadow(color: shadowColor, blurRadius: 16, offset: const Offset(0, 6)),
+            BoxShadow(
+              color: shadowColor,
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
         child: Row(
@@ -316,7 +329,11 @@ class _GradientBtn extends StatelessWidget {
 }
 
 class _OutlineBtn extends StatelessWidget {
-  const _OutlineBtn({required this.label, required this.icon, required this.onTap});
+  const _OutlineBtn({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
   final String label;
   final IconData icon;
   final VoidCallback? onTap;

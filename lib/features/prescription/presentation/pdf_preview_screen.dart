@@ -110,9 +110,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not share PDF: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not share PDF: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -214,67 +214,69 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CircularProgressIndicator(),
+                            Icon(
+                              Icons.error_outline_rounded,
+                              size: 40,
+                              color: Color(0xFFEF4444),
+                            ),
                             SizedBox(height: 12),
                             Text('Could not generate PDF'),
                           ],
                         ),
                       )
                     : _pageImages.isEmpty
-                        ? const Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 12),
-                                Text('Generating prescription...'),
+                    ? const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 12),
+                            Text('Generating prescription...'),
+                          ],
+                        ),
+                      )
+                    : InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: 1.0,
+                        maxScale: 5.0,
+                        boundaryMargin: EdgeInsets.zero,
+                        constrained: false,
+                        panEnabled: _currentScale > 1.01,
+                        scaleEnabled: true,
+                        child: Container(
+                          color: Colors.grey.shade200,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              for (int i = 0; i < _pageImages.length; i++) ...[
+                                if (i > 0) const SizedBox(height: 16),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Image.memory(
+                                    _pageImages[i],
+                                    fit: BoxFit.contain,
+                                    width:
+                                        MediaQuery.of(context).size.width - 32,
+                                  ),
+                                ),
                               ],
-                            ),
-                          )
-                        : InteractiveViewer(
-                            transformationController: _transformationController,
-                            minScale: 1.0,
-                            maxScale: 5.0,
-                            boundaryMargin: EdgeInsets.zero,
-                            constrained: false,
-                            panEnabled: _currentScale > 1.01,
-                            scaleEnabled: true,
-                            child: Container(
-                              color: Colors.grey.shade200,
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  for (int i = 0;
-                                      i < _pageImages.length;
-                                      i++) ...[
-                                    if (i > 0) const SizedBox(height: 16),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black
-                                                .withValues(alpha: 0.15),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Image.memory(
-                                        _pageImages[i],
-                                        fit: BoxFit.contain,
-                                        width:
-                                            MediaQuery.of(context).size.width -
-                                            32,
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
+                            ],
                           ),
+                        ),
+                      ),
               ),
               // Sticky share bar
               _ShareBar(busy: _busy, onShare: _share),

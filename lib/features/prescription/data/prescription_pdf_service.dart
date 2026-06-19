@@ -33,10 +33,10 @@ class PrescriptionPdfService {
   }) async {
     final theme = await _loadTheme();
     final insight = visit.insight ?? MedicalInsight.empty;
-    final instructions =
-        insight.instructions.where((s) => s.trim().isNotEmpty).toList();
-    final advice =
-        insight.advice.where((s) => s.trim().isNotEmpty).toList();
+    final instructions = insight.instructions
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
+    final advice = insight.advice.where((s) => s.trim().isNotEmpty).toList();
     final hasFollowUp =
         insight.followUpDays != null && insight.followUpDays! > 0;
 
@@ -461,9 +461,7 @@ class PrescriptionPdfService {
   pw.Widget _instructionsSection(List<String> instructions) {
     return pw.Container(
       decoration: pw.BoxDecoration(
-        border: pw.Border(
-          left: pw.BorderSide(color: _teal, width: 2),
-        ),
+        border: pw.Border(left: pw.BorderSide(color: _teal, width: 2)),
       ),
       padding: const pw.EdgeInsets.only(left: 10),
       child: pw.Column(
@@ -496,9 +494,7 @@ class PrescriptionPdfService {
   pw.Widget _adviceSection(List<String> advice) {
     return pw.Container(
       decoration: pw.BoxDecoration(
-        border: pw.Border(
-          left: pw.BorderSide(color: _teal, width: 2),
-        ),
+        border: pw.Border(left: pw.BorderSide(color: _teal, width: 2)),
       ),
       padding: const pw.EdgeInsets.only(left: 10),
       child: pw.Column(
