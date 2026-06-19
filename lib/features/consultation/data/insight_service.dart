@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/env.dart';
@@ -61,7 +62,29 @@ class InsightService {
       'their standard Latin spelling. Translating the language is allowed, but '
       'never add clinical information that was not spoken. '
       'Never infer or add anything unspoken. Use empty list/string when absent '
-      '(null followUpDays). Output strict JSON per schema.';
+      '(null followUpDays). Output strict JSON per schema. '
+      'For the instructions field, write in simple, clear prescription language '
+      'that a doctor would naturally write on a prescription pad. Use "Take" not '
+      '"Administer". Use "before bed" not "prior to sleep". Keep each instruction '
+      'short and direct. Examples of good instruction style: '
+      '"Take Paracetamol 650mg after food", "Take Cetirizine at bedtime", '
+      '"Drink plenty of water and take rest", "Avoid cold food and drinks", '
+      '"Return after 3 days if fever persists". '
+      'Do not repeat dosage, frequency, or duration details that are already '
+      'captured in the medications list — only include timing relative to meals, '
+      'special precautions, lifestyle advice, and follow-up guidance. '
+      'Pay special attention to follow-up instructions. If the doctor mentions '
+      'ANY of these: "come back", "return", "wapas aana", "follow up", "phir '
+      'aana", "check-up ke liye aana", or any indication of a return visit with '
+      'a timeframe, extract the followUpDays as a number. If a timeframe is '
+      'mentioned but vague (e.g. "come back if not better"), set followUpDays to '
+      'null but include the instruction in the instructions field. '
+      'For the diagnosis, if it maps clearly and unambiguously to a single '
+      'ICD-10 code, provide the code with icdConfidence "high". If it could '
+      'reasonably map to a code but there is some ambiguity (e.g. multiple '
+      'possible codes, or the diagnosis is somewhat general), provide your best '
+      'code with icdConfidence "medium". If you are not reasonably confident, '
+      'return null for icdCode, icdDescription, and icdConfidence — do not guess.';
 
   // ── Diarized-transcript system instruction ───────────────────────────────
 
@@ -91,7 +114,29 @@ class InsightService {
       'their standard Latin spelling. Translating the language is allowed, but '
       'never add clinical information that was not spoken. '
       'Never infer or add anything unspoken. Use empty list/string when absent '
-      '(null followUpDays). Output strict JSON per schema.';
+      '(null followUpDays). Output strict JSON per schema. '
+      'For the instructions field, write in simple, clear prescription language '
+      'that a doctor would naturally write on a prescription pad. Use "Take" not '
+      '"Administer". Use "before bed" not "prior to sleep". Keep each instruction '
+      'short and direct. Examples of good instruction style: '
+      '"Take Paracetamol 650mg after food", "Take Cetirizine at bedtime", '
+      '"Drink plenty of water and take rest", "Avoid cold food and drinks", '
+      '"Return after 3 days if fever persists". '
+      'Do not repeat dosage, frequency, or duration details that are already '
+      'captured in the medications list — only include timing relative to meals, '
+      'special precautions, lifestyle advice, and follow-up guidance. '
+      'Pay special attention to follow-up instructions. If the doctor mentions '
+      'ANY of these: "come back", "return", "wapas aana", "follow up", "phir '
+      'aana", "check-up ke liye aana", or any indication of a return visit with '
+      'a timeframe, extract the followUpDays as a number. If a timeframe is '
+      'mentioned but vague (e.g. "come back if not better"), set followUpDays to '
+      'null but include the instruction in the instructions field. '
+      'For the diagnosis, if it maps clearly and unambiguously to a single '
+      'ICD-10 code, provide the code with icdConfidence "high". If it could '
+      'reasonably map to a code but there is some ambiguity (e.g. multiple '
+      'possible codes, or the diagnosis is somewhat general), provide your best '
+      'code with icdConfidence "medium". If you are not reasonably confident, '
+      'return null for icdCode, icdDescription, and icdConfidence — do not guess.';
 
   // ── Public API ────────────────────────────────────────────────────────────
 
@@ -247,6 +292,14 @@ class InsightService {
 
   // ── Shared helpers ────────────────────────────────────────────────────────
 
+  // ICD-10 codes are a letter followed by 2 digits, optionally a dot and
+  // 1–4 alphanumeric characters (e.g. "B34.9", "J06.9", "A00").
+  @visibleForTesting
+  static final icdPattern = RegExp(r'^[A-Z]\d{2}(\.[0-9A-Z]{1,4})?$');
+
+  @visibleForTesting
+  Map<String, dynamic> coerce(Map<String, dynamic> input) => _coerce(input);
+
   Map<String, dynamic> _coerce(Map<String, dynamic> input) {
     final meds =
         (input['medications'] as List?)?.map((m) {
@@ -256,10 +309,31 @@ class InsightService {
             'dosage': m['dosage'] ?? '',
             'frequency': m['frequency'] ?? '',
             'duration': m['duration'] ?? '',
+            'timing': m['timing'] ?? '',
             'needsReview': m['needsReview'] ?? m['needs_review'] ?? false,
           };
         }).toList() ??
         const <Map<String, dynamic>>[];
+
+    // Validate ICD code — discard silently if malformed or missing.
+    final rawIcd = input['icdCode'];
+    final icdCode = rawIcd is String && icdPattern.hasMatch(rawIcd)
+        ? rawIcd
+        : null;
+    final rawDesc = input['icdDescription'];
+    final icdDescription =
+        icdCode != null && rawDesc is String && rawDesc.isNotEmpty
+        ? rawDesc
+        : null;
+    // Only "high" or "medium" are accepted; discard anything else.
+    final rawConf = input['icdConfidence'];
+    final icdConfidence =
+        icdCode != null &&
+            rawConf is String &&
+            (rawConf == 'high' || rawConf == 'medium')
+        ? rawConf
+        : null;
+
     return {
       'consultationSummary':
           input['consultationSummary'] ?? input['consultation_summary'] ?? '',
@@ -272,6 +346,9 @@ class InsightService {
       'instructions': input['instructions'] ?? const <String>[],
       'followUpDays': input['followUpDays'] ?? input['follow_up_days'],
       'doctorNotes': input['doctorNotes'] ?? input['doctor_notes'] ?? '',
+      'icdCode': icdCode,
+      'icdDescription': icdDescription,
+      'icdConfidence': icdConfidence,
     };
   }
 
@@ -375,6 +452,9 @@ class InsightService {
       },
       'followUpDays': {'type': 'INTEGER', 'nullable': true},
       'doctorNotes': {'type': 'STRING'},
+      'icdCode': {'type': 'STRING', 'nullable': true},
+      'icdDescription': {'type': 'STRING', 'nullable': true},
+      'icdConfidence': {'type': 'STRING', 'nullable': true},
     },
     'required': [
       'doctor_speaker_id',
@@ -433,6 +513,9 @@ class InsightService {
       },
       'followUpDays': {'type': 'INTEGER', 'nullable': true},
       'doctorNotes': {'type': 'STRING'},
+      'icdCode': {'type': 'STRING', 'nullable': true},
+      'icdDescription': {'type': 'STRING', 'nullable': true},
+      'icdConfidence': {'type': 'STRING', 'nullable': true},
     },
     'required': [
       'consultationSummary',

@@ -366,6 +366,15 @@ class PrescriptionPdfService {
     );
   }
 
+  /// Combines frequency and meal-timing into one cell, e.g.
+  /// "Thrice daily · After food". Either part may be empty.
+  String _frequencyWithTiming(Medication m) {
+    return [
+      m.frequency,
+      m.timing,
+    ].map((s) => s.trim()).where((s) => s.isNotEmpty).join(' · ');
+  }
+
   pw.Widget _medicinesTable(List<Medication> meds) {
     final headerStyle = pw.TextStyle(
       fontSize: 8.5,
@@ -411,7 +420,7 @@ class PrescriptionPdfService {
                 cellStyle.copyWith(fontWeight: pw.FontWeight.bold),
               ),
               cell(meds[i].dosage, cellStyle),
-              cell(meds[i].frequency, cellStyle),
+              cell(_frequencyWithTiming(meds[i]), cellStyle),
               cell(meds[i].duration, cellStyle),
             ],
           ),
