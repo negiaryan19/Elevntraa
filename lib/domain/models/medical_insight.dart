@@ -27,6 +27,10 @@ abstract class MedicalInsight with _$MedicalInsight {
     @Default([]) List<String> instructions,
     int? followUpDays,
     @Default('') String doctorNotes,
+    String? icdCode,
+    String? icdDescription,
+    /// "high" or "medium". Null when absent or after doctor manually edits.
+    String? icdConfidence,
   }) = _MedicalInsight;
 
   factory MedicalInsight.fromJson(Map<String, dynamic> json) =>
