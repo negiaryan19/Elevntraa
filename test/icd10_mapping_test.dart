@@ -75,8 +75,8 @@ void main() {
       'instructions': <String>[],
       'followUpDays': null,
       'doctorNotes': '',
-      'icdCode': ?icdCode,
-      'icdDescription': ?icdDescription,
+      'icdCode': icdCode,
+      'icdDescription': icdDescription,
     };
 
     test('passes through a valid ICD code and description', () {
