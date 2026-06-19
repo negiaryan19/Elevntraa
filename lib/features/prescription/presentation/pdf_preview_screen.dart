@@ -757,10 +757,10 @@ class _MedicineTable extends StatelessWidget {
                 '${i + 1}',
                 meds[i].name,
                 meds[i].dosage,
-                [meds[i].frequency, meds[i].timing]
-                    .map((s) => s.trim())
-                    .where((s) => s.isNotEmpty)
-                    .join(' · '),
+                [
+                  meds[i].frequency,
+                  meds[i].timing,
+                ].map((s) => s.trim()).where((s) => s.isNotEmpty).join(' · '),
                 meds[i].duration,
               ],
               widths: widths,

@@ -107,7 +107,10 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
   void _addMedicine() {
     setState(() {
       _draft = _draft.copyWith(
-        medications: [..._draft.medications, const Medication(name: '')],
+        medications: [
+          ..._draft.medications,
+          const Medication(name: ''),
+        ],
       );
       _autofocusMedIndex = _draft.medications.length - 1;
     });
@@ -251,10 +254,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                     ),
                     SizedBox(height: gap),
                     if (_patient != null) ...[
-                      _PatientCard(
-                        patient: _patient!,
-                        onSave: _savePatient,
-                      ),
+                      _PatientCard(patient: _patient!, onSave: _savePatient),
                       SizedBox(height: gap),
                     ],
                     _DiagnosisCard(
@@ -324,7 +324,9 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                     _FollowUpCard(
                       days: _draft.followUpDays,
                       onChanged: (d) {
-                        setState(() => _draft = _draft.copyWith(followUpDays: d));
+                        setState(
+                          () => _draft = _draft.copyWith(followUpDays: d),
+                        );
                         _save();
                       },
                     ),
@@ -354,16 +356,9 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.medication_rounded,
-                color: _kBlue600,
-                size: 20,
-              ),
+              const Icon(Icons.medication_rounded, color: _kBlue600, size: 20),
               const SizedBox(width: AppSpacing.xs),
-              Text(
-                'Prescribed Medicines',
-                style: AppTypography.titleMedium,
-              ),
+              Text('Prescribed Medicines', style: AppTypography.titleMedium),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -776,9 +771,7 @@ class _PatientCardState extends State<_PatientCard> {
   void initState() {
     super.initState();
     _name = TextEditingController(text: widget.patient.name);
-    _age = TextEditingController(
-      text: widget.patient.age?.toString() ?? '',
-    );
+    _age = TextEditingController(text: widget.patient.age?.toString() ?? '');
     _whatsapp = TextEditingController(
       text: widget.patient.whatsappNumber ?? '',
     );
@@ -922,10 +915,7 @@ class _PatientCardState extends State<_PatientCard> {
                           value: _sex,
                           onChanged: (s) => setState(() => _sex = s),
                         )
-                      : Text(
-                          _sexLabel(_sex),
-                          style: AppTypography.titleSmall,
-                        ),
+                      : Text(_sexLabel(_sex), style: AppTypography.titleSmall),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -1586,9 +1576,8 @@ class _MedicineRowState extends State<_MedicineRow> {
                   'Duration',
                   _duration,
                   (v) => widget.onChanged(_med.copyWith(duration: v)),
-                  () => widget.onCommit(
-                    _med.copyWith(duration: _duration.text),
-                  ),
+                  () =>
+                      widget.onCommit(_med.copyWith(duration: _duration.text)),
                   hint: '5 days',
                 ),
               ),
@@ -1600,9 +1589,7 @@ class _MedicineRowState extends State<_MedicineRow> {
             'Frequency',
             _freq,
             (v) => widget.onChanged(_med.copyWith(frequency: v)),
-            () => widget.onCommit(
-              _med.copyWith(frequency: _freq.text),
-            ),
+            () => widget.onCommit(_med.copyWith(frequency: _freq.text)),
             hint: 'Three times a day',
           ),
           const SizedBox(height: AppSpacing.s),

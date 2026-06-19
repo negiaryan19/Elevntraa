@@ -369,10 +369,10 @@ class PrescriptionPdfService {
   /// Combines frequency and meal-timing into one cell, e.g.
   /// "Thrice daily · After food". Either part may be empty.
   String _frequencyWithTiming(Medication m) {
-    return [m.frequency, m.timing]
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .join(' · ');
+    return [
+      m.frequency,
+      m.timing,
+    ].map((s) => s.trim()).where((s) => s.isNotEmpty).join(' · ');
   }
 
   pw.Widget _medicinesTable(List<Medication> meds) {

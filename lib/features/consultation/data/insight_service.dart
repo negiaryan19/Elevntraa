@@ -317,21 +317,22 @@ class InsightService {
 
     // Validate ICD code — discard silently if malformed or missing.
     final rawIcd = input['icdCode'];
-    final icdCode =
-        rawIcd is String && icdPattern.hasMatch(rawIcd) ? rawIcd : null;
+    final icdCode = rawIcd is String && icdPattern.hasMatch(rawIcd)
+        ? rawIcd
+        : null;
     final rawDesc = input['icdDescription'];
     final icdDescription =
         icdCode != null && rawDesc is String && rawDesc.isNotEmpty
-            ? rawDesc
-            : null;
+        ? rawDesc
+        : null;
     // Only "high" or "medium" are accepted; discard anything else.
     final rawConf = input['icdConfidence'];
     final icdConfidence =
         icdCode != null &&
-                rawConf is String &&
-                (rawConf == 'high' || rawConf == 'medium')
-            ? rawConf
-            : null;
+            rawConf is String &&
+            (rawConf == 'high' || rawConf == 'medium')
+        ? rawConf
+        : null;
 
     return {
       'consultationSummary':

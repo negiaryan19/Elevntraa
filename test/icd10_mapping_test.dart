@@ -18,10 +18,10 @@ void main() {
     const validCodes = [
       'J06.9', // Acute upper-respiratory infection
       'B34.9', // Viral infection, unspecified
-      'A00',   // Cholera (base code, no decimal)
+      'A00', // Cholera (base code, no decimal)
       'K21.0', // GERD with oesophagitis
       'E11.9', // Type 2 diabetes, no complications
-      'I10',   // Essential hypertension
+      'I10', // Essential hypertension
       'Z00.0', // General health examination
       'M54.5', // Low back pain
       'J45.9', // Asthma, unspecified (4-char suffix)
@@ -35,17 +35,17 @@ void main() {
 
     // Invalid codes
     const invalidCodes = [
-      '',         // empty
-      'j06.9',    // lowercase letter
-      '106.9',    // digit instead of letter prefix
-      'JO6.9',    // letter O instead of digit 0
-      'J6.9',     // only one digit after letter
-      'J069',     // no dot, four digits
+      '', // empty
+      'j06.9', // lowercase letter
+      '106.9', // digit instead of letter prefix
+      'JO6.9', // letter O instead of digit 0
+      'J6.9', // only one digit after letter
+      'J069', // no dot, four digits
       'J06.99999', // suffix too long (5 chars)
-      'J06.',     // trailing dot, no suffix
-      '.J06',     // wrong prefix
+      'J06.', // trailing dot, no suffix
+      '.J06', // wrong prefix
       'J06.9X1Z5', // suffix way too long
-      'null',     // literal "null" string
+      'null', // literal "null" string
     ];
 
     for (final code in invalidCodes) {
@@ -65,23 +65,26 @@ void main() {
     });
 
     Map<String, dynamic> base({String? icdCode, String? icdDescription}) => {
-          'consultationSummary': 'Patient has fever.',
-          'symptoms': ['fever'],
-          'diagnosis': 'Viral fever',
-          'differentials': <String>[],
-          'medications': <dynamic>[],
-          'tests': <String>[],
-          'advice': <String>[],
-          'instructions': <String>[],
-          'followUpDays': null,
-          'doctorNotes': '',
-          'icdCode': ?icdCode,
-          'icdDescription': ?icdDescription,
-        };
+      'consultationSummary': 'Patient has fever.',
+      'symptoms': ['fever'],
+      'diagnosis': 'Viral fever',
+      'differentials': <String>[],
+      'medications': <dynamic>[],
+      'tests': <String>[],
+      'advice': <String>[],
+      'instructions': <String>[],
+      'followUpDays': null,
+      'doctorNotes': '',
+      'icdCode': ?icdCode,
+      'icdDescription': ?icdDescription,
+    };
 
     test('passes through a valid ICD code and description', () {
       final result = service.coerce(
-        base(icdCode: 'J06.9', icdDescription: 'Acute upper-respiratory infection'),
+        base(
+          icdCode: 'J06.9',
+          icdDescription: 'Acute upper-respiratory infection',
+        ),
       );
       expect(result['icdCode'], 'J06.9');
       expect(result['icdDescription'], 'Acute upper-respiratory infection');
@@ -89,7 +92,10 @@ void main() {
 
     test('passes through a valid code without decimal suffix', () {
       final result = service.coerce(
-        base(icdCode: 'I10', icdDescription: 'Essential (primary) hypertension'),
+        base(
+          icdCode: 'I10',
+          icdDescription: 'Essential (primary) hypertension',
+        ),
       );
       expect(result['icdCode'], 'I10');
       expect(result['icdDescription'], 'Essential (primary) hypertension');
@@ -153,9 +159,7 @@ void main() {
     });
 
     test('nulls out icdDescription when it is an empty string', () {
-      final result = service.coerce(
-        base(icdCode: 'J06.9', icdDescription: ''),
-      );
+      final result = service.coerce(base(icdCode: 'J06.9', icdDescription: ''));
       expect(result['icdCode'], 'J06.9');
       expect(result['icdDescription'], isNull);
     });
@@ -205,8 +209,10 @@ void main() {
       };
       final insight = MedicalInsight.fromJson(json);
       expect(insight.icdCode, 'K21.0');
-      expect(insight.icdDescription,
-          'Gastro-oesophageal reflux disease with oesophagitis');
+      expect(
+        insight.icdDescription,
+        'Gastro-oesophageal reflux disease with oesophagitis',
+      );
     });
 
     test('fromJson handles null icdCode and icdDescription', () {
@@ -237,8 +243,10 @@ void main() {
       );
       final json = insight.toJson();
       expect(json['icdCode'], 'E11.9');
-      expect(json['icdDescription'],
-          'Type 2 diabetes mellitus without complications');
+      expect(
+        json['icdDescription'],
+        'Type 2 diabetes mellitus without complications',
+      );
     });
 
     test('toJson serializes null ICD fields as null', () {

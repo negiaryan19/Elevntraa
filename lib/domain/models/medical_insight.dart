@@ -29,6 +29,7 @@ abstract class MedicalInsight with _$MedicalInsight {
     @Default('') String doctorNotes,
     String? icdCode,
     String? icdDescription,
+
     /// "high" or "medium". Null when absent or after doctor manually edits.
     String? icdConfidence,
   }) = _MedicalInsight;
