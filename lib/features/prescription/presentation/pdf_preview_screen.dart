@@ -1,19 +1,16 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:printing/printing.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../core/utils/app_paths.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
-import '../../../domain/models/medication.dart';
-import '../../../domain/models/patient.dart';
-import '../../../domain/models/report_attachment.dart';
 import '../../../domain/models/visit.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import '../data/prescription_pdf_service.dart';
@@ -33,13 +30,35 @@ class PdfPreviewScreen extends ConsumerStatefulWidget {
 
 class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
   VisitRecord? _visit;
-  PatientProfile? _patient;
   bool _loading = true;
+  bool _busy = false;
+  Uint8List? _pdfBytes;
+  String? _pdfFileName;
+  List<Uint8List> _pageImages = [];
+
+  final TransformationController _transformationController =
+      TransformationController();
+  double _currentScale = 1.0;
 
   @override
   void initState() {
     super.initState();
+    _transformationController.addListener(_onTransformChanged);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _transformationController.removeListener(_onTransformChanged);
+    _transformationController.dispose();
+    super.dispose();
+  }
+
+  void _onTransformChanged() {
+    final scale = _transformationController.value.getMaxScaleOnAxis();
+    if ((scale - _currentScale).abs() > 0.01) {
+      setState(() => _currentScale = scale);
+    }
   }
 
   Future<void> _load() async {
@@ -47,56 +66,53 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
     final p = v == null
         ? null
         : await ref.read(patientRepositoryProvider).byId(v.patientId);
+    if (!mounted) return;
+
+    Uint8List? bytes;
+    String? fname;
+    if (v != null) {
+      try {
+        final svc = ref.read(prescriptionPdfServiceProvider);
+        final doctor = ref.read(doctorProfileControllerProvider);
+        bytes = await svc.build(visit: v, patient: p, doctor: doctor);
+        fname = svc.fileName(p, v);
+      } catch (_) {}
+    }
+
     if (mounted) {
       setState(() {
         _visit = v;
-        _patient = p;
+        _pdfBytes = bytes;
+        _pdfFileName = fname;
         _loading = false;
       });
     }
+
+    if (bytes != null) await _rasterizePages();
   }
 
-  bool _busy = false;
+  Future<void> _rasterizePages() async {
+    final images = <Uint8List>[];
+    await for (final page in Printing.raster(_pdfBytes!, dpi: 200)) {
+      final png = await page.toPng();
+      images.add(png);
+    }
+    if (mounted) setState(() => _pageImages = images);
+  }
 
-  /// Generates the real PDF and opens the OS share sheet with it attached, so
-  /// the doctor sends the patient a proper document (pick WhatsApp from the
-  /// sheet) — not a plain-text message.
-  Future<void> _shareWhatsApp() => _runPdfAction(
-    (svc) => svc.shareAsFile(
-      visit: _visit!,
-      patient: _patient,
-      doctor: ref.read(doctorProfileControllerProvider),
-    ),
-  );
-
-  Future<void> _downloadPdf() => _runPdfAction(
-    (svc) => svc.shareAsFile(
-      visit: _visit!,
-      patient: _patient,
-      doctor: ref.read(doctorProfileControllerProvider),
-    ),
-  );
-
-  Future<void> _printPdf() => _runPdfAction(
-    (svc) => svc.printOrPreview(
-      visit: _visit!,
-      patient: _patient,
-      doctor: ref.read(doctorProfileControllerProvider),
-    ),
-  );
-
-  Future<void> _runPdfAction(
-    Future<void> Function(PrescriptionPdfService svc) action,
-  ) async {
-    if (_visit == null || _busy) return;
+  Future<void> _share() async {
+    if (_pdfBytes == null || _busy) return;
     setState(() => _busy = true);
     try {
-      await action(ref.read(prescriptionPdfServiceProvider));
+      await Printing.sharePdf(
+        bytes: _pdfBytes!,
+        filename: _pdfFileName ?? 'Prescription.pdf',
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Could not generate PDF: $e')));
+        ).showSnackBar(SnackBar(content: Text('Could not share PDF: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -106,7 +122,18 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Generating prescription PDF…'),
+            ],
+          ),
+        ),
+      );
     }
     if (_visit == null) {
       return Scaffold(
@@ -117,35 +144,6 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
         ),
       );
     }
-
-    final insight = _visit!.insight;
-    final meds = insight?.medications ?? [];
-    final adviceList = (insight?.advice ?? const <String>[])
-        .where((s) => s.trim().isNotEmpty)
-        .toList();
-    final instructionsList = (insight?.instructions ?? const <String>[])
-        .where((s) => s.trim().isNotEmpty)
-        .toList();
-    final hasAdviceContent =
-        adviceList.isNotEmpty || instructionsList.isNotEmpty;
-    final doctor = ref.watch(doctorProfileControllerProvider);
-    final today = DateTime.now();
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    final dateStr =
-        '${today.day.toString().padLeft(2, '0')} ${months[today.month - 1]} ${today.year}';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -208,448 +206,85 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: _StepProgressBar(activeStep: 3),
               ),
-              const SizedBox(height: AppSpacing.md),
-              // Content
+              const SizedBox(height: AppSpacing.s),
+              // PDF preview — shows the exact PDF that will be shared
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg,
-                    0,
-                    AppSpacing.lg,
-                    AppSpacing.xxl,
-                  ),
-                  children: [
-                    // Success banner
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFF0FDF4), Color(0xFFECFDF5)],
+                child: _pdfBytes == null
+                    ? const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.error_outline_rounded,
+                              size: 40,
+                              color: Color(0xFFEF4444),
+                            ),
+                            SizedBox(height: 12),
+                            Text('Could not generate PDF'),
+                          ],
                         ),
-                        borderRadius: AppSpacing.radiusXl,
-                        border: Border.all(color: const Color(0xFFBBF7D0)),
-                      ),
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle_rounded,
-                            color: Color(0xFF16A34A),
-                            size: 32,
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Prescription Generated!',
-                                  style: AppTypography.titleSmall.copyWith(
-                                    color: const Color(0xFF14532D),
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.xxs),
-                                Text(
-                                  'Your prescription is ready to share.',
-                                  style: AppTypography.bodySmall.copyWith(
-                                    color: const Color(0xFF166534),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    // Prescription card
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: AppSpacing.radiusXl,
-                        border: Border.all(
-                          color: const Color(0xFFD1D5DB),
-                          width: 2,
+                      )
+                    : _pageImages.isEmpty
+                    ? const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 12),
+                            Text('Generating prescription...'),
+                          ],
                         ),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x14000000),
-                            blurRadius: 24,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // PDF header gradient
-                          Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [_kBlue600, _kTeal500],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(AppSpacing.xl),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        doctor.clinicName,
-                                        style: AppTypography.headlineLarge
-                                            .copyWith(color: Colors.white),
-                                      ),
-                                      Text(
-                                        doctor.clinicAddress,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.s),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        doctor.name,
-                                        textAlign: TextAlign.end,
-                                        style: AppTypography.titleSmall
-                                            .copyWith(color: Colors.white),
-                                      ),
-                                      Text(
-                                        doctor.qualifications,
-                                        textAlign: TextAlign.end,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Reg. No: ${doctor.regNo}',
-                                        textAlign: TextAlign.end,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // PDF body
-                          Padding(
-                            padding: const EdgeInsets.all(AppSpacing.xl),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    'Date: $dateStr',
-                                    style: AppTypography.bodySmall,
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                // Patient details
+                      )
+                    : InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: 1.0,
+                        maxScale: 5.0,
+                        boundaryMargin: EdgeInsets.zero,
+                        constrained: false,
+                        panEnabled: _currentScale > 1.01,
+                        scaleEnabled: true,
+                        child: Container(
+                          color: Colors.grey.shade200,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              for (int i = 0; i < _pageImages.length; i++) ...[
+                                if (i > 0) const SizedBox(height: 16),
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF9FAFB),
-                                    borderRadius: AppSpacing.radiusMd,
-                                    border: Border.all(
-                                      color: const Color(0xFFE5E7EB),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.all(AppSpacing.md),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Patient Details',
-                                        style: AppTypography.titleMedium,
-                                      ),
-                                      const SizedBox(height: AppSpacing.md),
-                                      if (_patient != null)
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: _PdfField(
-                                                label: 'Name',
-                                                value: _patient!.name,
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: _PdfField(
-                                                label: 'Age',
-                                                value: _patient!.age != null
-                                                    ? '${_patient!.age} years'
-                                                    : '—',
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: _PdfField(
-                                                label: 'Gender',
-                                                value: _genderLabel(
-                                                  _patient!.sex,
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: _PdfField(
-                                                label: 'Contact',
-                                                value:
-                                                    _patient!.whatsappNumber !=
-                                                        null
-                                                    ? '+91 ${_patient!.whatsappNumber}'
-                                                    : '—',
-                                              ),
-                                            ),
-                                          ],
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.15,
                                         ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                if (insight?.symptoms.isNotEmpty ?? false) ...[
-                                  Text(
-                                    'Symptoms',
-                                    style: AppTypography.titleMedium,
-                                  ),
-                                  const SizedBox(height: AppSpacing.xs),
-                                  Text(
-                                    insight!.symptoms.join(', '),
-                                    style: AppTypography.bodyMedium,
-                                  ),
-                                  const SizedBox(height: AppSpacing.lg),
-                                ],
-                                if (insight?.diagnosis.isNotEmpty ?? false) ...[
-                                  Text(
-                                    'Diagnosis',
-                                    style: AppTypography.titleMedium,
-                                  ),
-                                  const SizedBox(height: AppSpacing.xs),
-                                  Text(
-                                    insight!.diagnosis,
-                                    style: AppTypography.bodyMedium,
-                                  ),
-                                  const SizedBox(height: AppSpacing.lg),
-                                ],
-                                // Rx symbol
-                                Row(
-                                  children: [
-                                    Text(
-                                      '℞',
-                                      style: TextStyle(
-                                        fontSize: 40,
-                                        color: _kBlue600,
-                                        fontFamily: 'serif',
-                                      ),
-                                    ),
-                                    const SizedBox(width: AppSpacing.m),
-                                    Expanded(
-                                      child: Container(
-                                        height: 1,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              _kBlue600,
-                                              Colors.transparent,
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                Text(
-                                  'Prescribed Medicines',
-                                  style: AppTypography.titleMedium,
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                // Medicines table
-                                if (meds.isEmpty)
-                                  Text(
-                                    'No medicines prescribed.',
-                                    style: AppTypography.bodySmall,
-                                  )
-                                else
-                                  _MedicineTable(meds: meds),
-                                const SizedBox(height: AppSpacing.lg),
-                                // Additional instructions
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFFFBEB),
-                                    borderRadius: AppSpacing.radiusMd,
-                                    border: Border.all(
-                                      color: const Color(0xFFFDE68A),
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.all(AppSpacing.md),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Advice & Instructions',
-                                        style: AppTypography.titleSmall,
-                                      ),
-                                      const SizedBox(height: AppSpacing.s),
-                                      if (adviceList.isNotEmpty) ...[
-                                        Text(
-                                          'Advice',
-                                          style: AppTypography.labelMedium,
-                                        ),
-                                        for (final a in adviceList)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: AppSpacing.xxs,
-                                            ),
-                                            child: Text(
-                                              '• $a',
-                                              style: AppTypography.bodySmall,
-                                            ),
-                                          ),
-                                        const SizedBox(height: AppSpacing.xs),
-                                      ],
-                                      if (instructionsList.isNotEmpty) ...[
-                                        Text(
-                                          'Instructions',
-                                          style: AppTypography.labelMedium,
-                                        ),
-                                        for (final ins in instructionsList)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: AppSpacing.xxs,
-                                            ),
-                                            child: Text(
-                                              '• $ins',
-                                              style: AppTypography.bodySmall,
-                                            ),
-                                          ),
-                                      ],
-                                      if (!hasAdviceContent)
-                                        for (final instr in [
-                                          'Take medicines after meals',
-                                          'Drink plenty of fluids and rest',
-                                        ])
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: AppSpacing.xxs,
-                                            ),
-                                            child: Text(
-                                              '• $instr',
-                                              style: AppTypography.bodySmall,
-                                            ),
-                                          ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.xl),
-                                // Signature
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        doctor.name,
-                                        style: AppTypography.headlineMedium
-                                            .copyWith(
-                                              color: _kBlue600,
-                                              fontStyle: FontStyle.italic,
-                                            ),
-                                      ),
-                                      const SizedBox(height: AppSpacing.xs),
-                                      Text(
-                                        doctor.qualifications,
-                                        style: AppTypography.bodySmall,
-                                      ),
-                                      Text(
-                                        'Reg. No: ${doctor.regNo}',
-                                        style: AppTypography.bodySmall,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                const Divider(),
-                                const SizedBox(height: AppSpacing.s),
-                                Text(
-                                  'This is a computer-generated prescription\n'
-                                  'Generated by Rxvarta AI | Secure • Private • HIPAA Compliant',
-                                  textAlign: TextAlign.center,
-                                  style: AppTypography.labelSmall.copyWith(
-                                    color: AppColors.textMuted,
+                                  child: Image.memory(
+                                    _pageImages[i],
+                                    fit: BoxFit.contain,
+                                    width:
+                                        MediaQuery.of(context).size.width - 32,
                                   ),
                                 ),
                               ],
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                    if (_visit!.attachments.isNotEmpty) ...[
-                      const SizedBox(height: AppSpacing.lg),
-                      _PreviousReportsPreview(attachments: _visit!.attachments),
-                    ],
-                    const SizedBox(height: AppSpacing.xl),
-                    // Action buttons
-                    _GradientCta(
-                      label: _busy ? 'Preparing PDF…' : 'Share on WhatsApp',
-                      icon: Icons.share_rounded,
-                      colors: [
-                        const Color(0xFF16A34A),
-                        const Color(0xFF10B981),
-                      ],
-                      shadowColor: const Color(0x4D16A34A),
-                      onTap: _busy ? null : _shareWhatsApp,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _OutlineCta(
-                            label: 'Download PDF',
-                            icon: Icons.download_rounded,
-                            onTap: _busy ? null : _downloadPdf,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: _OutlineCta(
-                            label: 'Print',
-                            icon: Icons.print_rounded,
-                            onTap: _busy ? null : _printPdf,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
               ),
+              // Sticky share bar
+              _ShareBar(busy: _busy, onShare: _share),
             ],
           ),
         ),
       ),
     );
-  }
-
-  static String _genderLabel(Sex? sex) {
-    if (sex == Sex.male) return 'Male';
-    if (sex == Sex.female) return 'Female';
-    if (sex == Sex.other) return 'Other';
-    return '—';
   }
 }
 
@@ -692,11 +327,7 @@ class _StepProgressBar extends StatelessWidget {
             (i) => Text(
               _steps[i],
               style: AppTypography.labelSmall.copyWith(
-                color: i == activeStep
-                    ? _kTeal600
-                    : i < activeStep
-                    ? _kTeal600
-                    : const Color(0xFF9CA3AF),
+                color: i <= activeStep ? _kTeal600 : const Color(0xFF9CA3AF),
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -707,186 +338,46 @@ class _StepProgressBar extends StatelessWidget {
   }
 }
 
-class _PdfField extends StatelessWidget {
-  const _PdfField({required this.label, required this.value});
-  final String label;
-  final String value;
+class _ShareBar extends StatelessWidget {
+  const _ShareBar({required this.busy, required this.onShare});
+  final bool busy;
+  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTypography.bodySmall),
-        Text(
-          value,
-          style: AppTypography.titleSmall,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
-}
-
-class _MedicineTable extends StatelessWidget {
-  const _MedicineTable({required this.meds});
-  final List<Medication> meds;
-
-  @override
-  Widget build(BuildContext context) {
-    const headers = ['#', 'Medicine', 'Dosage', 'Frequency', 'Duration'];
-    final widths = [0.05, 0.25, 0.15, 0.30, 0.25];
-
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD1D5DB)),
-        borderRadius: AppSpacing.radiusMd,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          // Header row
-          Container(
-            color: const Color(0xFFF3F4F6),
-            child: _TableRow(cells: headers, widths: widths, isHeader: true),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x14000000),
+            offset: Offset(0, -2),
+            blurRadius: 12,
           ),
-          for (var i = 0; i < meds.length; i++) ...[
-            const Divider(height: 1),
-            _TableRow(
-              cells: [
-                '${i + 1}',
-                meds[i].name,
-                meds[i].dosage,
-                [
-                  meds[i].frequency,
-                  meds[i].timing,
-                ].map((s) => s.trim()).where((s) => s.isNotEmpty).join(' · '),
-                meds[i].duration,
-              ],
-              widths: widths,
-              isHeader: false,
-            ),
-          ],
         ],
       ),
-    );
-  }
-}
-
-class _TableRow extends StatelessWidget {
-  const _TableRow({
-    required this.cells,
-    required this.widths,
-    required this.isHeader,
-  });
-  final List<String> cells;
-  final List<double> widths;
-  final bool isHeader;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Row(
-          children: [
-            for (var i = 0; i < cells.length; i++) ...[
-              if (i > 0)
-                Container(width: 1, height: 40, color: const Color(0xFFD1D5DB)),
-              SizedBox(
-                width: constraints.maxWidth * widths[i],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.s,
-                    vertical: AppSpacing.xs,
-                  ),
-                  child: Text(
-                    cells[i],
-                    style: isHeader
-                        ? AppTypography.labelSmall
-                        : AppTypography.bodySmall.copyWith(
-                            color: AppColors.textPrimary,
-                          ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _PreviousReportsPreview extends StatelessWidget {
-  const _PreviousReportsPreview({required this.attachments});
-  final List<ReportAttachment> attachments;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppSpacing.radiusXl,
-        border: Border.all(color: const Color(0xFFD1D5DB), width: 2),
-        boxShadow: AppColors.cardShadow,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.s,
+        AppSpacing.lg,
+        AppSpacing.s,
       ),
-      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.attach_file_rounded, color: _kBlue600, size: 18),
-              const SizedBox(width: AppSpacing.xs),
-              Flexible(
-                child: Text(
-                  'Previous Reports (${attachments.length})',
-                  style: AppTypography.titleMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+          _GradientCta(
+            label: busy ? 'Preparing PDF…' : 'Share on WhatsApp',
+            icon: Icons.share_rounded,
+            colors: [const Color(0xFF16A34A), const Color(0xFF10B981)],
+            shadowColor: const Color(0x4D16A34A),
+            onTap: busy ? null : onShare,
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Attached to the prescription PDF as additional pages.',
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+          const SizedBox(height: AppSpacing.s),
+          _OutlineCta(
+            label: 'Share via other apps',
+            icon: Icons.ios_share_rounded,
+            onTap: busy ? null : onShare,
           ),
-          const SizedBox(height: AppSpacing.md),
-          for (var i = 0; i < attachments.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${i + 1}. ${attachments[i].caption.trim().isEmpty ? 'Report ${i + 1}' : attachments[i].caption.trim()}',
-                    style: AppTypography.labelMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  ClipRRect(
-                    borderRadius: AppSpacing.radiusMd,
-                    child: Image.file(
-                      File(AppPaths.resolveAttachment(attachments[i].path)),
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(
-                        height: 120,
-                        color: const Color(0xFFF3F4F6),
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.broken_image_rounded,
-                          color: Color(0xFF9CA3AF),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
     );
