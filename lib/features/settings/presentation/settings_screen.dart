@@ -4,11 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/theme/theme_provider.dart';
+import '../../../core/widgets/reveal.dart';
 import '../../../domain/models/doctor_profile.dart';
 import '../data/doctor_profile_repository.dart';
-
-const _kBlue600 = Color(0xFF2563EB);
-const _kTeal500 = Color(0xFF14B8A6);
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -18,9 +17,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  bool _notificationsEnabled = true;
-  bool _darkModeEnabled = false;
-
   Future<void> _openProfileEditor() async {
     final current = ref.read(doctorProfileControllerProvider);
     final updated = await showModalBottomSheet<DoctorProfile>(
@@ -42,273 +38,615 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final doctor = ref.watch(doctorProfileControllerProvider);
-    final groups = _buildGroups();
+    final isDark = ref.watch(themeModeProvider).value == ThemeMode.dark;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
-      body: Column(
-        children: [
-          // Gradient header
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [_kBlue600, _kTeal500],
-              ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.adaptive(context, AppSpacing.lg),
-                  AppSpacing.lg,
-                  AppSpacing.adaptive(context, AppSpacing.lg),
+      body: CustomScrollView(
+        slivers: [
+          // ── Gradient header ──────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Reveal(
+              delayMs: 0,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF2563EB), Color(0xFF14B8A6)],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Settings',
-                      style: AppTypography.headlineLarge.copyWith(
-                        color: Colors.white,
-                      ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                      AppSpacing.xl,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'Manage your app preferences',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    // Profile card (tap to edit)
-                    GestureDetector(
-                      onTap: _openProfileEditor,
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: AppSpacing.radiusXl,
-                        ),
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
                             Container(
-                              width: AppSpacing.adaptiveSize(
-                                context,
-                                64,
-                                min: 44,
-                              ),
-                              height: AppSpacing.adaptiveSize(
-                                context,
-                                64,
-                                min: 44,
-                              ),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.person_rounded,
-                                color: _kBlue600,
-                                size: 32,
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    doctor.name,
-                                    style: AppTypography.titleMedium.copyWith(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: AppSpacing.xxs),
-                                  Text(
-                                    doctor.qualifications,
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Reg. No: ${doctor.regNo}',
-                                    style: AppTypography.labelSmall.copyWith(
-                                      color: Colors.white60,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(AppSpacing.s),
+                              padding: const EdgeInsets.all(AppSpacing.xs),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.25),
-                                shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: AppSpacing.radiusMd,
                               ),
                               child: const Icon(
-                                Icons.edit_rounded,
+                                Icons.settings_rounded,
                                 color: Colors.white,
-                                size: 18,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Text(
+                              'Settings',
+                              style: AppTypography.headlineLarge.copyWith(
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Settings list
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.lg,
-              ),
-              children: [
-                ...groups.map((group) => _SettingsGroup(group: group)),
-                const SizedBox(height: AppSpacing.md),
-                // Logout
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.md,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEF2F2),
-                      borderRadius: AppSpacing.radiusXl,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.logout_rounded,
-                          color: Color(0xFFDC2626),
-                          size: 20,
-                        ),
-                        const SizedBox(width: AppSpacing.s),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
-                          'Logout',
-                          style: AppTypography.titleSmall.copyWith(
-                            color: const Color(0xFFDC2626),
+                          'Manage your app preferences',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: Colors.white70,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        // Profile card
+                        GestureDetector(
+                          onTap: _openProfileEditor,
+                          behavior: HitTestBehavior.opaque,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              borderRadius: AppSpacing.radiusXl,
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.25),
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.25),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_rounded,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        doctor.name,
+                                        style: AppTypography.titleMedium
+                                            .copyWith(color: Colors.white),
+                                      ),
+                                      const SizedBox(height: AppSpacing.xxs),
+                                      Text(
+                                        doctor.qualifications,
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Reg. ${doctor.regNo}',
+                                        style: AppTypography.labelSmall
+                                            .copyWith(color: Colors.white60),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(AppSpacing.s),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit_rounded,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
+              ),
+            ),
+          ),
+
+          // ── Body ──────────────────────────────────────────────────────
+          SliverPadding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Account group
+                Reveal(
+                  delayMs: 90,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionLabel('Account'),
+                      _SettingsCard(
+                        children: [
+                          _Tile(
+                            icon: Icons.person_outline_rounded,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1A2060)
+                                : const Color(0xFFEFF6FF),
+                            iconColor: const Color(0xFF2563EB),
+                            label: 'Profile Settings',
+                            subtitle: 'Update your name and clinic details',
+                            onTap: _openProfileEditor,
+                          ),
+                          _Divider(),
+                          _Tile(
+                            icon: Icons.medical_services_outlined,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF0D3D2E)
+                                : const Color(0xFFECFDF5),
+                            iconColor: const Color(0xFF10B981),
+                            label: 'Medical Credentials',
+                            subtitle: 'Qualifications and registration number',
+                            onTap: _openProfileEditor,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.lg),
+
+                // Preferences group
+                Reveal(
+                  delayMs: 180,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionLabel('Preferences'),
+                      _SettingsCard(
+                        children: [
+                          // Dark mode — wired to real provider
+                          _ToggleTile(
+                            icon: isDark
+                                ? Icons.dark_mode_rounded
+                                : Icons.light_mode_rounded,
+                            iconBg: isDark
+                                ? const Color(0xFF1D2235)
+                                : const Color(0xFFFFFBEB),
+                            iconColor: isDark
+                                ? const Color(0xFF60A5FA)
+                                : const Color(0xFFF59E0B),
+                            label: 'Dark Mode',
+                            subtitle: isDark
+                                ? 'Dark theme active'
+                                : 'Light theme active',
+                            value: isDark,
+                            onToggle: () =>
+                                ref.read(themeModeProvider.notifier).toggle(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.lg),
+
+                // Data & Privacy group
+                Reveal(
+                  delayMs: 270,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionLabel('Data & Privacy'),
+                      _SettingsCard(
+                        children: [
+                          _Tile(
+                            icon: Icons.backup_outlined,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1A2060)
+                                : const Color(0xFFEFF6FF),
+                            iconColor: const Color(0xFF2563EB),
+                            label: 'Data Backup',
+                            subtitle: 'Backup your consultation history',
+                          ),
+                          _Divider(),
+                          _Tile(
+                            icon: Icons.download_outlined,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF0D3D2E)
+                                : const Color(0xFFECFDF5),
+                            iconColor: const Color(0xFF10B981),
+                            label: 'Export Data',
+                            subtitle: 'Download all your data',
+                          ),
+                          _Divider(),
+                          _Tile(
+                            icon: Icons.shield_outlined,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1E1A40)
+                                : const Color(0xFFF5F3FF),
+                            iconColor: const Color(0xFF8B5CF6),
+                            label: 'Privacy & Security',
+                            subtitle: 'Manage your privacy settings',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.lg),
+
+                // Support group
+                Reveal(
+                  delayMs: 360,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionLabel('Support'),
+                      _SettingsCard(
+                        children: [
+                          _Tile(
+                            icon: Icons.description_outlined,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF2A1A0A)
+                                : const Color(0xFFFFF7ED),
+                            iconColor: const Color(0xFFF97316),
+                            label: 'Terms & Conditions',
+                            subtitle: 'Read our terms of service',
+                          ),
+                          _Divider(),
+                          _Tile(
+                            icon: Icons.help_outline_rounded,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1A2060)
+                                : const Color(0xFFEFF6FF),
+                            iconColor: const Color(0xFF2563EB),
+                            label: 'Help & Support',
+                            subtitle: 'Get help or contact us',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
                 const SizedBox(height: AppSpacing.xl),
-                Text(
-                  'Rxvarta v1.0.0',
-                  style: AppTypography.bodySmall,
-                  textAlign: TextAlign.center,
+
+                // Logout + footer
+                Reveal(
+                  delayMs: 440,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.md,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF2F2),
+                            borderRadius: AppSpacing.radiusXl,
+                            border: Border.all(color: const Color(0xFFFECACA)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.logout_rounded,
+                                color: Color(0xFFDC2626),
+                                size: 20,
+                              ),
+                              const SizedBox(width: AppSpacing.s),
+                              Text(
+                                'Logout',
+                                style: AppTypography.titleSmall.copyWith(
+                                  color: const Color(0xFFDC2626),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        'Rxvarta v1.0.0',
+                        style: AppTypography.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        '© 2026 All rights reserved',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  '© 2026 All rights reserved',
-                  style: AppTypography.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.xxl),
-              ],
+              ]),
             ),
           ),
         ],
       ),
     );
   }
-
-  List<_Group> _buildGroups() => [
-    _Group(
-      title: 'Account',
-      items: [
-        _GroupItem(
-          icon: Icons.person_outline_rounded,
-          label: 'Profile Settings',
-          description: 'Update your name and clinic details',
-          onTap: _openProfileEditor,
-        ),
-        _GroupItem(
-          icon: Icons.medical_services_outlined,
-          label: 'Medical Credentials',
-          description: 'Qualifications and registration number',
-          onTap: _openProfileEditor,
-        ),
-      ],
-    ),
-    _Group(
-      title: 'Preferences',
-      items: [
-        _GroupItem(
-          icon: Icons.notifications_outlined,
-          label: 'Notifications',
-          description: 'Manage notification preferences',
-          toggleValue: _notificationsEnabled,
-          onToggle: () =>
-              setState(() => _notificationsEnabled = !_notificationsEnabled),
-        ),
-        _GroupItem(
-          icon: Icons.dark_mode_outlined,
-          label: 'Dark Mode',
-          description: 'Switch to dark theme',
-          toggleValue: _darkModeEnabled,
-          onToggle: () => setState(() => _darkModeEnabled = !_darkModeEnabled),
-        ),
-        _GroupItem(
-          icon: Icons.language_rounded,
-          label: 'Language',
-          description: 'English (US)',
-        ),
-      ],
-    ),
-    _Group(
-      title: 'Data & Privacy',
-      items: [
-        _GroupItem(
-          icon: Icons.backup_outlined,
-          label: 'Data Backup',
-          description: 'Backup your consultation history',
-        ),
-        _GroupItem(
-          icon: Icons.download_outlined,
-          label: 'Export Data',
-          description: 'Download all your data',
-        ),
-        _GroupItem(
-          icon: Icons.shield_outlined,
-          label: 'Privacy & Security',
-          description: 'Manage your privacy settings',
-        ),
-      ],
-    ),
-    _Group(
-      title: 'Support',
-      items: [
-        _GroupItem(
-          icon: Icons.description_outlined,
-          label: 'Terms & Conditions',
-          description: 'Read our terms of service',
-        ),
-        _GroupItem(
-          icon: Icons.help_outline_rounded,
-          label: 'Help & Support',
-          description: 'Get help or contact us',
-        ),
-      ],
-    ),
-  ];
 }
 
-/// Bottom-sheet form for editing the doctor / clinic identity. Pops with the
-/// updated [DoctorProfile] on save, or null if dismissed.
+// ── Reusable sub-widgets ──────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: AppSpacing.s, bottom: AppSpacing.m),
+      child: Text(
+        text.toUpperCase(),
+        style: AppTypography.labelSmall.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  const _SettingsCard({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: AppSpacing.radiusXl,
+        border: Border.all(color: scheme.outline),
+        boxShadow: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.cardShadowDark
+            : AppColors.cardShadow,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        type: MaterialType.transparency,
+        child: Column(children: children),
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      indent: AppSpacing.lg + 40 + AppSpacing.md,
+      color: Theme.of(context).colorScheme.outline,
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.label,
+    required this.subtitle,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  final String label;
+  final String subtitle;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: AppSpacing.radiusMd,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: AppTypography.titleSmall.copyWith(
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: scheme.onSurfaceVariant,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleTile extends StatelessWidget {
+  const _ToggleTile({
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.label,
+    required this.subtitle,
+    required this.value,
+    required this.onToggle,
+  });
+
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  final String label;
+  final String subtitle;
+  final bool value;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onToggle,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: AppSpacing.radiusMd,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: AppTypography.titleSmall.copyWith(
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _Toggle(value: value),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Toggle extends StatelessWidget {
+  const _Toggle({required this.value});
+  final bool value;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      width: 48,
+      height: 28,
+      decoration: BoxDecoration(
+        gradient: value
+            ? const LinearGradient(
+                colors: [Color(0xFF2563EB), Color(0xFF14B8A6)],
+              )
+            : null,
+        color: value ? null : Theme.of(context).colorScheme.outlineVariant,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: AnimatedAlign(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          width: 20,
+          height: 20,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x1A000000),
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Edit Profile Sheet ────────────────────────────────────────────────────────
+
 class _EditProfileSheet extends StatefulWidget {
   const _EditProfileSheet({required this.initial});
   final DoctorProfile initial;
@@ -340,12 +678,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
 
   @override
   void dispose() {
-    _name.dispose();
-    _quals.dispose();
-    _regNo.dispose();
-    _clinicName.dispose();
-    _clinicAddress.dispose();
-    _clinicPhone.dispose();
+    for (final c in [
+      _name,
+      _quals,
+      _regNo,
+      _clinicName,
+      _clinicAddress,
+      _clinicPhone,
+    ]) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -365,13 +707,14 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg,
@@ -392,16 +735,23 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                     height: 4,
                     margin: const EdgeInsets.only(bottom: AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE5E7EB),
+                      color: scheme.outlineVariant,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-                Text('Edit Profile', style: AppTypography.headlineMedium),
+                Text(
+                  'Edit Profile',
+                  style: AppTypography.headlineMedium.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'This appears on the prescription letterhead and signature.',
-                  style: AppTypography.bodySmall,
+                  'Appears on prescription letterhead.',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 _Field(
@@ -443,48 +793,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 Row(
                   children: [
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Container(
-                          height: 52,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: AppSpacing.radiusLg,
-                            border: Border.all(
-                              color: const Color(0xFFD1D5DB),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Text(
-                            'Cancel',
-                            style: AppTypography.titleSmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Cancel'),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: _save,
-                        child: Container(
-                          height: 52,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [_kBlue600, _kTeal500],
-                            ),
-                            borderRadius: AppSpacing.radiusLg,
-                          ),
-                          child: Text(
-                            'Save',
-                            style: AppTypography.titleSmall.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                      child: ElevatedButton(
+                        onPressed: _save,
+                        child: const Text('Save'),
                       ),
                     ),
                   ],
@@ -517,213 +835,30 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AppTypography.labelSmall),
+          Text(
+            label,
+            style: AppTypography.labelSmall.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: AppSpacing.xs),
           TextFormField(
             controller: controller,
             maxLines: maxLines,
             keyboardType: keyboardType,
-            style: AppTypography.bodyMedium,
+            style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
             validator: required
                 ? (v) => (v == null || v.trim().isEmpty) ? 'Required' : null
                 : null,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textMuted,
-              ),
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.m,
-              ),
-              filled: true,
-              fillColor: const Color(0xFFF9FAFB),
-              border: OutlineInputBorder(
-                borderRadius: AppSpacing.radiusMd,
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: AppSpacing.radiusMd,
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: AppSpacing.radiusMd,
-                borderSide: const BorderSide(color: _kBlue600, width: 1.5),
-              ),
-            ),
+            decoration: InputDecoration(hintText: hint),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _Group {
-  const _Group({required this.title, required this.items});
-  final String title;
-  final List<_GroupItem> items;
-}
-
-class _GroupItem {
-  const _GroupItem({
-    required this.icon,
-    required this.label,
-    required this.description,
-    this.toggleValue,
-    this.onToggle,
-    this.onTap,
-  });
-  final IconData icon;
-  final String label;
-  final String description;
-  final bool? toggleValue;
-  final VoidCallback? onToggle;
-  final VoidCallback? onTap;
-}
-
-class _SettingsGroup extends StatelessWidget {
-  const _SettingsGroup({required this.group});
-  final _Group group;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              left: AppSpacing.s,
-              bottom: AppSpacing.m,
-            ),
-            child: Text(
-              group.title.toUpperCase(),
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.textSecondary,
-                letterSpacing: 0.8,
-              ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: AppSpacing.radiusXl,
-              border: Border.all(color: const Color(0xFFF3F4F6)),
-              boxShadow: AppColors.cardShadow,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: [
-                for (var i = 0; i < group.items.length; i++) ...[
-                  _SettingsTile(item: group.items[i]),
-                  if (i < group.items.length - 1)
-                    const Divider(height: 1, indent: AppSpacing.lg),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({required this.item});
-  final _GroupItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final isToggle = item.toggleValue != null;
-
-    return InkWell(
-      onTap: isToggle ? item.onToggle : (item.onTap ?? () {}),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF),
-                borderRadius: AppSpacing.radiusMd,
-              ),
-              child: Icon(item.icon, color: _kBlue600, size: 20),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(item.label, style: AppTypography.titleSmall),
-                  Text(
-                    item.description,
-                    style: AppTypography.bodySmall,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppSpacing.s),
-            if (isToggle)
-              GestureDetector(
-                onTap: item.onToggle,
-                child: _Toggle(value: item.toggleValue!),
-              )
-            else
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFF9CA3AF),
-                size: 20,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Toggle extends StatelessWidget {
-  const _Toggle({required this.value});
-  final bool value;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 48,
-      height: 28,
-      decoration: BoxDecoration(
-        color: value ? _kBlue600 : const Color(0xFFD1D5DB),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: AnimatedAlign(
-        duration: const Duration(milliseconds: 200),
-        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          width: 20,
-          height: 20,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 4,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -16,8 +16,6 @@ import '../features/prescription/presentation/pdf_preview_screen.dart';
 import '../features/prescription/presentation/review_sign_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 
-const _kBlue600 = Color(0xFF2563EB);
-
 /// Named route table. Keep paths centralized so feature code uses
 /// [AppRoute.foo.path] / `context.go(AppRoute.foo.path)` and we don't have
 /// raw strings sprinkled around.
@@ -61,17 +59,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoute.home.path,
             name: AppRoute.home.name,
-            builder: (context, state) => const HomeScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomeScreen()),
           ),
           GoRoute(
             path: AppRoute.patients.path,
             name: AppRoute.patients.name,
-            builder: (context, state) => const PatientsScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: PatientsScreen()),
           ),
           GoRoute(
             path: AppRoute.settings.path,
             name: AppRoute.settings.name,
-            builder: (context, state) => const SettingsScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SettingsScreen()),
           ),
         ],
       ),
@@ -130,8 +131,10 @@ class _MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Each screen animates its own sections internally (staggered focus-in),
+    // so the shell just hosts the active tab.
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: child,
       bottomNavigationBar: _BottomNavBar(location: location),
     );
@@ -149,9 +152,11 @@ class _BottomNavBar extends StatelessWidget {
     final isSettings = location.startsWith('/settings');
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: Theme.of(context).colorScheme.outline),
+        ),
       ),
       child: SafeArea(
         top: false,
@@ -204,7 +209,9 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? _kBlue600 : const Color(0xFF9CA3AF);
+    final color = isActive
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return GestureDetector(
       onTap: () => context.go(route),
@@ -225,7 +232,7 @@ class _NavItem extends StatelessWidget {
                     width: 44,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: AppSpacing.radiusMd,
                     ),
                   ),

@@ -108,6 +108,7 @@ class _ViewPrescriptionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final dt = widget.visit.createdAt;
     const months = [
       'Jan',
@@ -127,12 +128,16 @@ class _ViewPrescriptionScreenState
     final title = '${widget.patient?.name ?? 'Prescription'} · $dateLabel';
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: scheme.surface,
+        surfaceTintColor: scheme.surface,
+        foregroundColor: scheme.onSurface,
         elevation: 0.5,
-        title: Text(title, style: AppTypography.titleMedium),
+        title: Text(
+          title,
+          style: AppTypography.titleMedium.copyWith(color: scheme.onSurface),
+        ),
         actions: [
           if (widget.patient != null)
             IconButton(
@@ -156,6 +161,8 @@ class _ViewPrescriptionScreenState
   }
 
   Widget _buildPreview(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (_hasError) {
       return Center(
         child: Column(
@@ -169,7 +176,7 @@ class _ViewPrescriptionScreenState
             const SizedBox(height: 12),
             Text(
               'Could not generate prescription',
-              style: AppTypography.bodyMedium,
+              style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
             ),
           ],
         ),
@@ -196,7 +203,8 @@ class _ViewPrescriptionScreenState
       panEnabled: _currentScale > 1.01,
       scaleEnabled: true,
       child: Container(
-        color: Colors.grey.shade200,
+        // Surround follows the theme; the page itself stays white below.
+        color: isDark ? const Color(0xFF13162A) : Colors.grey.shade200,
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -238,10 +246,11 @@ class _ShareBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
             offset: Offset(0, -2),
@@ -340,26 +349,29 @@ class _OutlineBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 52,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: AppSpacing.radiusLg,
-          border: Border.all(color: const Color(0xFFD1D5DB), width: 2),
-          boxShadow: AppColors.cardShadow,
+          border: Border.all(color: scheme.outline, width: 2),
+          boxShadow: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.cardShadowDark
+              : AppColors.cardShadow,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: AppColors.textSecondary),
+            Icon(icon, size: 20, color: scheme.onSurfaceVariant),
             const SizedBox(width: AppSpacing.s),
             Flexible(
               child: Text(
                 label,
                 style: AppTypography.titleSmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: scheme.onSurfaceVariant,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

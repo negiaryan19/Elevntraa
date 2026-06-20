@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,115 +9,335 @@ import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/loading_shimmer.dart';
+import '../../../core/widgets/status_chip.dart';
+import '../../../data/repositories/patient_repository.dart';
+import '../../../domain/models/patient.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 
-// Figma palette: blue-600 → teal-500 gradient system
-const _kBlue600 = Color(0xFF2563EB);
-const _kTeal500 = Color(0xFF14B8A6);
-const _kTeal600 = Color(0xFF0D9488);
-const _kPurple600 = Color(0xFF9333EA);
-const _kBlueShadow = Color(0x4D2563EB); // blue-500/30
+final _recentPatientsProvider =
+    FutureProvider.autoDispose<List<PatientProfile>>((ref) async {
+      final repo = ref.read(patientRepositoryProvider);
+      final list = await repo.recent();
+      return list.take(5).toList();
+    });
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final doctor = ref.watch(doctorProfileControllerProvider);
+    final recent = ref.watch(_recentPatientsProvider);
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
-            stops: [0.0, 0.5, 1.0],
+      body: Stack(
+        children: [
+          Positioned(
+            top: -140,
+            right: -110,
+            child: _GlowCircle(
+              color: isDark ? AppColors.darkPrimary : AppColors.primary,
+              alpha: isDark ? 0.20 : 0.13,
+              size: 320,
+            ),
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              const _AppHeader(),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(height: AppSpacing.md),
-                              const _HeroIcon(),
-                              SizedBox(
-                                height: AppSpacing.adaptive(
-                                  context,
-                                  AppSpacing.lg,
-                                ),
-                              ),
-                              Text(
-                                'Welcome Back, Doctor',
-                                style: AppTypography.displayMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(
-                                height: AppSpacing.adaptive(
-                                  context,
-                                  AppSpacing.s,
-                                ),
-                              ),
-                              Text(
-                                'Transform patient conversations into perfect prescriptions with AI-powered transcription',
-                                style: AppTypography.bodyLarge.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(
-                                height: AppSpacing.adaptive(
-                                  context,
-                                  AppSpacing.xl,
-                                ),
-                              ),
-                              const _StatsRow(),
-                              SizedBox(
-                                height: AppSpacing.adaptive(
-                                  context,
-                                  AppSpacing.xl,
-                                ),
-                              ),
-                              _CtaButton(
-                                onTap: () => context.push(AppRoute.intake.path),
-                              ),
-                              SizedBox(
-                                height: AppSpacing.adaptive(
-                                  context,
-                                  AppSpacing.m,
-                                ),
-                              ),
-                              Text(
-                                'Click to begin recording a patient consultation',
-                                style: AppTypography.bodySmall,
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                            ],
-                          ),
-                        ),
+          Positioned(
+            bottom: -70,
+            left: -120,
+            child: _GlowCircle(
+              color: isDark ? AppColors.darkSecondary : AppColors.secondary,
+              alpha: isDark ? 0.16 : 0.10,
+              size: 260,
+            ),
+          ),
+          Positioned.fill(
+            child: SafeArea(
+              bottom: false,
+              child: RefreshIndicator(
+                color: scheme.primary,
+                onRefresh: () async {
+                  ref.invalidate(_recentPatientsProvider);
+                  await ref.read(_recentPatientsProvider.future);
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    AppSpacing.xxl,
+                  ),
+                  children: [
+                    _Reveal(
+                      delayMs: 0,
+                      child: _Header(scheme: scheme, isDark: isDark),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    _Reveal(
+                      delayMs: 90,
+                      child: _Greeting(name: doctor.name, scheme: scheme),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    _Reveal(
+                      delayMs: 180,
+                      child: _Pressable(
+                        onTap: () => context.push(AppRoute.intake.path),
+                        child: _ConsultationHero(isDark: isDark),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _Reveal(
+                      delayMs: 270,
+                      child: _QuickActions(scheme: scheme, isDark: isDark),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    _Reveal(
+                      delayMs: 360,
+                      child: _SectionHeader(
+                        title: 'Recent patients',
+                        actionLabel: 'See all',
+                        scheme: scheme,
+                        onAction: () => context.go(AppRoute.patients.path),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    recent.when(
+                      data: (list) => list.isEmpty
+                          ? _Reveal(
+                              delayMs: 440,
+                              child: _EmptyRecent(scheme: scheme),
+                            )
+                          : Column(
+                              children: [
+                                for (var i = 0; i < list.length; i++) ...[
+                                  _Reveal(
+                                    delayMs: 440 + i * 90,
+                                    child: _Pressable(
+                                      onTap: () => context.push(
+                                        AppRoute.patient.build(
+                                          params: {'patientId': list[i].id},
+                                        ),
+                                      ),
+                                      child: _PatientRow(
+                                        patient: list[i],
+                                        isDark: isDark,
+                                        scheme: scheme,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.m),
+                                ],
+                              ],
+                            ),
+                      loading: () => Column(
+                        children: [
+                          _RowSkeleton(),
+                          const SizedBox(height: AppSpacing.m),
+                          _RowSkeleton(),
+                          const SizedBox(height: AppSpacing.m),
+                          _RowSkeleton(),
+                        ],
+                      ),
+                      error: (_, _) => _EmptyRecent(scheme: scheme),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    _Reveal(
+                      delayMs: 560,
+                      child: _SecurityFooter(scheme: scheme),
+                    ),
+                  ],
                 ),
               ),
-              const _HomeFooter(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Motion primitives ─────────────────────────────────────────────────────
+
+/// Rises from below AND sharpens from blurred to crisp — a "coming into
+/// focus" entrance that suits a transcription product.
+class _Reveal extends StatefulWidget {
+  const _Reveal({required this.child, this.delayMs = 0});
+  final Widget child;
+  final int delayMs;
+
+  @override
+  State<_Reveal> createState() => _RevealState();
+}
+
+class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 520),
+  );
+  late final Animation<double> _t = CurvedAnimation(
+    parent: _c,
+    curve: Curves.easeOutCubic,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: widget.delayMs), () {
+      if (mounted) _c.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _t,
+      child: widget.child,
+      builder: (context, child) {
+        final v = _t.value;
+        final dy = (1 - v) * 44;
+        final blur = (1 - v) * 9;
+        Widget result = child!;
+        if (blur > 0.2) {
+          result = ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+            child: result,
+          );
+        }
+        return Opacity(
+          opacity: v.clamp(0.0, 1.0),
+          child: Transform.translate(offset: Offset(0, dy), child: result),
+        );
+      },
+    );
+  }
+}
+
+class _Pressable extends StatefulWidget {
+  const _Pressable({required this.child, required this.onTap});
+  final Widget child;
+  final VoidCallback onTap;
+
+  @override
+  State<_Pressable> createState() => _PressableState();
+}
+
+class _PressableState extends State<_Pressable> {
+  double _scale = 1;
+
+  void _set(double s) {
+    if (mounted) setState(() => _scale = s);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _set(0.97),
+      onTapUp: (_) => _set(1),
+      onTapCancel: () => _set(1),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _scale,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// A live, continuously dancing audio waveform — the hero always looks like
+/// it is listening.
+class _Waveform extends StatefulWidget {
+  const _Waveform({this.bars = 30});
+  final int bars;
+
+  @override
+  State<_Waveform> createState() => _WaveformState();
+}
+
+class _WaveformState extends State<_Waveform>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2700),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 28,
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) {
+          final tt = _c.value * 2 * math.pi;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: List.generate(widget.bars, (i) {
+              final phase = i / widget.bars * 2 * math.pi;
+              final s =
+                  (math.sin(tt * 2 + phase) + math.sin(tt + phase * 0.5)) / 2;
+              final norm = 0.5 + 0.5 * s;
+              final h = 4.0 + 20.0 * norm;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 1.5),
+                  child: Container(
+                    height: h,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.35 + 0.4 * norm),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GlowCircle extends StatelessWidget {
+  const _GlowCircle({
+    required this.color,
+    required this.alpha,
+    required this.size,
+  });
+  final Color color;
+  final double alpha;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              color.withValues(alpha: alpha),
+              Colors.transparent,
             ],
           ),
         ),
@@ -123,152 +346,269 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _AppHeader extends ConsumerWidget {
-  const _AppHeader();
+// ── Sections ──────────────────────────────────────────────────────────────
+
+class _Header extends StatelessWidget {
+  const _Header({required this.scheme, required this.isDark});
+  final ColorScheme scheme;
+  final bool isDark;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final doctor = ref.watch(doctorProfileControllerProvider);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.adaptive(context, AppSpacing.lg),
-        AppSpacing.lg,
-        AppSpacing.s,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [_kBlue600, _kTeal500],
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+            ),
+            borderRadius: AppSpacing.radiusMd,
+            boxShadow: isDark ? AppColors.glowBlueDark : AppColors.glowBlue,
+          ),
+          child: const Icon(
+            Icons.medical_services_rounded,
+            color: Colors.white,
+            size: 22,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.m),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Rxvarta',
+                style: AppTypography.titleMedium.copyWith(
+                  color: scheme.onSurface,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              borderRadius: AppSpacing.radiusMd,
-            ),
-            child: const Icon(
-              Icons.medical_services_rounded,
-              color: Colors.white,
-              size: 22,
-            ),
+              Text(
+                'Smart Medical Documentation',
+                style: AppTypography.bodySmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.m),
-          // Expanded: left block takes all remaining space so the right
-          // side (name + icon) is never pushed off screen.
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Rxvarta',
-                  style: AppTypography.titleMedium.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  'Smart Medical Documentation',
-                  style: AppTypography.bodySmall,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.s),
-          // Flexible: right block yields space to the left side on narrow
-          // screens; the name ellipsizes before pushing off the edge.
-          Flexible(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.monitor_heart_rounded,
-                  color: _kTeal600,
-                  size: 20,
-                ),
-                const SizedBox(width: AppSpacing.xs),
-                Flexible(
-                  child: Text(
-                    'Dr. ${_firstName(doctor.name)}',
-                    style: AppTypography.labelLarge,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+        const StatusChip(
+          label: 'Online',
+          tone: StatusTone.success,
+          icon: Icons.circle,
+          dense: true,
+        ),
+      ],
     );
   }
 }
 
-class _HeroIcon extends StatelessWidget {
-  const _HeroIcon();
+class _Greeting extends StatelessWidget {
+  const _Greeting({required this.name, required this.scheme});
+  final String name;
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
-    final size = AppSpacing.adaptiveSize(context, 96, min: 52);
-    final iconSize = size * 0.5;
-    final radius = size * 0.25;
+    final now = DateTime.now();
+    final hour = now.hour;
+    final part = hour < 12
+        ? 'Good morning'
+        : hour < 17
+        ? 'Good afternoon'
+        : 'Good evening';
+    final display = name.trim().isEmpty ? 'Doctor' : name.trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.m,
+            vertical: AppSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            borderRadius: AppSpacing.radiusPill,
+            border: Border.all(color: scheme.outline),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.calendar_today_rounded,
+                size: 12,
+                color: scheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                _prettyDate(now),
+                style: AppTypography.labelSmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.m),
+        Text(
+          '$part,',
+          style: AppTypography.titleMedium.copyWith(
+            color: scheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          display,
+          style: AppTypography.displayLarge.copyWith(color: scheme.onSurface),
+        ),
+      ],
+    );
+  }
+
+  static String _prettyDate(DateTime d) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return '${days[d.weekday - 1]}, ${d.day} ${months[d.month - 1]}';
+  }
+}
+
+class _ConsultationHero extends StatelessWidget {
+  const _ConsultationHero({required this.isDark});
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: size,
-      height: size,
       decoration: BoxDecoration(
+        borderRadius: AppSpacing.radiusXl,
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_kBlue600, _kTeal500],
+          colors: [AppColors.gradientStart, AppColors.gradientEnd],
         ),
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: const [
-          BoxShadow(color: _kBlueShadow, blurRadius: 20, offset: Offset(0, 8)),
-        ],
+        boxShadow: isDark ? AppColors.glowBlueDark : AppColors.glowBlue,
       ),
-      child: Icon(
-        Icons.medical_services_rounded,
-        color: Colors.white,
-        size: iconSize,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: AppSpacing.radiusLg,
+                ),
+                child: const Icon(
+                  Icons.mic_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Start new consultation',
+                      style: AppTypography.titleMedium.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      'Record and transcribe a patient visit',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: Colors.white.withValues(alpha: 0.85),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          const _Waveform(bars: 30),
+        ],
       ),
     );
   }
 }
 
-class _StatsRow extends StatelessWidget {
-  const _StatsRow();
+class _QuickActions extends StatelessWidget {
+  const _QuickActions({required this.scheme, required this.isDark});
+  final ColorScheme scheme;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
         Expanded(
-          child: _StatCard(
-            value: '247',
-            label: 'Consultations',
-            valueColor: _kBlue600,
+          child: _Pressable(
+            onTap: () => context.push(AppRoute.intakeForm.path),
+            child: _ActionTile(
+              icon: Icons.person_add_alt_1_rounded,
+              label: 'New patient',
+              accent: AppColors.primary,
+              isDark: isDark,
+              scheme: scheme,
+            ),
           ),
         ),
-        SizedBox(width: AppSpacing.md),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
-          child: _StatCard(
-            value: '98%',
-            label: 'Accuracy',
-            valueColor: _kTeal600,
+          child: _Pressable(
+            onTap: () => context.push(AppRoute.intakeExisting.path),
+            child: _ActionTile(
+              icon: Icons.search_rounded,
+              label: 'Find patient',
+              accent: AppColors.secondary,
+              isDark: isDark,
+              scheme: scheme,
+            ),
           ),
         ),
-        SizedBox(width: AppSpacing.md),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
-          child: _StatCard(
-            value: '2.5h',
-            label: 'Saved Today',
-            valueColor: _kPurple600,
+          child: _Pressable(
+            onTap: () => context.go(AppRoute.patients.path),
+            child: _ActionTile(
+              icon: Icons.people_alt_rounded,
+              label: 'All patients',
+              accent: const Color(0xFF8B5CF6),
+              isDark: isDark,
+              scheme: scheme,
+            ),
           ),
         ),
       ],
@@ -276,156 +616,316 @@ class _StatsRow extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.value,
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.icon,
     required this.label,
-    required this.valueColor,
+    required this.accent,
+    required this.isDark,
+    required this.scheme,
   });
 
-  final String value;
+  final IconData icon;
   final String label;
-  final Color valueColor;
+  final Color accent;
+  final bool isDark;
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
-    final pad = AppSpacing.adaptive(context, AppSpacing.md);
     return Container(
-      padding: EdgeInsets.all(pad),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: const Color(0xFFF3F4F6)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 4,
-            offset: Offset(0, 1),
-          ),
-        ],
+        border: Border.all(color: scheme.outline),
+        boxShadow: isDark ? AppColors.cardShadowDark : AppColors.cardShadow,
+      ),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.md,
+        horizontal: AppSpacing.s,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            value,
-            style: AppTypography.headlineLarge.copyWith(color: valueColor),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: isDark ? 0.22 : 0.12),
+              borderRadius: AppSpacing.radiusMd,
+            ),
+            child: Icon(icon, color: accent, size: 20),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(label, style: AppTypography.bodySmall),
+          const SizedBox(height: AppSpacing.s),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.labelMedium.copyWith(color: scheme.onSurface),
+          ),
         ],
       ),
     );
   }
 }
 
-class _CtaButton extends StatelessWidget {
-  const _CtaButton({required this.onTap});
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
+    required this.title,
+    required this.scheme,
+    this.actionLabel,
+    this.onAction,
+  });
 
-  final VoidCallback onTap;
+  final String title;
+  final ColorScheme scheme;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: AppTypography.titleLarge.copyWith(color: scheme.onSurface),
+        ),
+        if (actionLabel != null && onAction != null)
+          GestureDetector(
+            onTap: onAction,
+            behavior: HitTestBehavior.opaque,
+            child: Text(
+              actionLabel!,
+              style: AppTypography.labelLarge.copyWith(color: scheme.primary),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _PatientRow extends StatelessWidget {
+  const _PatientRow({
+    required this.patient,
+    required this.isDark,
+    required this.scheme,
+  });
+
+  final PatientProfile patient;
+  final bool isDark;
+  final ColorScheme scheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final meta = [
+      if (patient.age != null) '${patient.age} yrs',
+      _sexLabel(patient.sex),
+      if (patient.whatsappNumber != null) '+91 ${patient.whatsappNumber}',
+    ].where((s) => s.isNotEmpty).join('  •  ');
+
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: scheme.outline),
+        boxShadow: isDark ? AppColors.cardShadowDark : AppColors.cardShadow,
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Row(
+        children: [
+          _Avatar(name: patient.name),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  patient.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.titleSmall.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                ),
+                if (meta.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    meta,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: scheme.onSurfaceVariant,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _sexLabel(Sex? sex) {
+    switch (sex) {
+      case Sex.male:
+        return 'Male';
+      case Sex.female:
+        return 'Female';
+      case Sex.other:
+        return 'Other';
+      case null:
+        return '';
+    }
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.name});
+  final String name;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: AppSpacing.radiusLg,
-        boxShadow: const [
-          BoxShadow(color: _kBlueShadow, blurRadius: 20, offset: Offset(0, 8)),
-        ],
+      width: 46,
+      height: 46,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.gradientStart, AppColors.gradientEnd],
+        ),
+        shape: BoxShape.circle,
       ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: AppSpacing.radiusLg,
-        child: InkWell(
-          onTap: onTap,
+      alignment: Alignment.center,
+      child: Text(
+        _initials(name),
+        style: AppTypography.titleSmall.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  static String _initials(String n) {
+    final parts = n
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((e) => e.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    String f(String s) => s.substring(0, 1).toUpperCase();
+    if (parts.length == 1) return f(parts.first);
+    return f(parts.first) + f(parts.last);
+  }
+}
+
+class _RowSkeleton extends StatelessWidget {
+  const _RowSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return LoadingShimmer(
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: scheme.surface,
           borderRadius: AppSpacing.radiusLg,
-          splashColor: Colors.white24,
-          highlightColor: Colors.white12,
-          child: Ink(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [_kBlue600, _kTeal500],
-              ),
-              borderRadius: AppSpacing.radiusLg,
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.xl,
-                vertical: AppSpacing.adaptive(context, 20),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.add_rounded, color: Colors.white, size: 24),
-                  const SizedBox(width: AppSpacing.m),
-                  Flexible(
-                    child: Text(
-                      'Start New Consultation',
-                      style: AppTypography.titleMedium.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+          border: Border.all(color: scheme.outline),
+        ),
+        child: Row(
+          children: [
+            const ShimmerBar(width: 46, height: 46, radius: 23),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  ShimmerBar(width: 140, height: 12),
+                  SizedBox(height: AppSpacing.s),
+                  ShimmerBar(width: 90, height: 10),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _HomeFooter extends StatelessWidget {
-  const _HomeFooter();
+class _EmptyRecent extends StatelessWidget {
+  const _EmptyRecent({required this.scheme});
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.xs,
-        AppSpacing.lg,
-        AppSpacing.xs + MediaQuery.of(context).padding.bottom,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: scheme.outline),
       ),
-      child: Text(
-        'Secure • HIPAA Compliant • End-to-End Encrypted',
-        style: AppTypography.bodySmall,
-        textAlign: TextAlign.center,
+      child: Column(
+        children: [
+          Icon(
+            Icons.people_outline_rounded,
+            size: 36,
+            color: scheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: AppSpacing.s),
+          Text(
+            'No patients yet',
+            style: AppTypography.titleSmall.copyWith(color: scheme.onSurface),
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            'Start a consultation to add your first patient.',
+            textAlign: TextAlign.center,
+            style: AppTypography.bodySmall.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-String _firstName(String fullName) {
-  final parts = fullName.trim().split(RegExp(r'\s+'));
-  if (parts.isEmpty) return '';
+class _SecurityFooter extends StatelessWidget {
+  const _SecurityFooter({required this.scheme});
+  final ColorScheme scheme;
 
-  final ignoredPrefixes = {
-    'dr',
-    'dr.',
-    'prof',
-    'prof.',
-    'mr',
-    'mr.',
-    'mrs',
-    'mrs.',
-    'ms',
-    'ms.',
-    'doctor',
-    'doc',
-  };
-
-  for (final part in parts) {
-    final cleanPart = part.toLowerCase();
-    if (!ignoredPrefixes.contains(cleanPart)) {
-      return part;
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.lock_outline_rounded,
+          size: 12,
+          color: scheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        Flexible(
+          child: Text(
+            'Secure • HIPAA Compliant • End-to-End Encrypted',
+            style: AppTypography.bodySmall.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
+    );
   }
-
-  return parts.first;
 }

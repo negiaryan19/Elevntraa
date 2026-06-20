@@ -16,12 +16,14 @@ import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
+const _kBlue300 = Color(0xFF6B8FFF);
 const _kTeal500 = Color(0xFF14B8A6);
 const _kTeal600 = Color(0xFF0D9488);
 const _kBlueShadow = Color(0x4D2563EB);
-const _kBorder = Color(0xFFD1D5DB);
-const _kBorderSoft = Color(0xFFE5E7EB);
-const _kPencil = Color(0xFF9CA3AF);
+
+/// Accent blue that stays legible in both themes.
+Color _accent(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? _kBlue300 : _kBlue600;
 
 class ReviewSignScreen extends ConsumerStatefulWidget {
   const ReviewSignScreen({super.key, required this.visitId});
@@ -166,19 +168,32 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
       );
     }
 
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final signed = _visit!.signed;
     final gap = AppSpacing.adaptive(context, AppSpacing.md);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
-            stops: [0.0, 0.5, 1.0],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF0D0F1A),
+                    Color(0xFF13162A),
+                    Color(0xFF0D1525),
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                )
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
+                  stops: [0.0, 0.5, 1.0],
+                ),
         ),
         child: SafeArea(
           child: Column(
@@ -196,9 +211,9 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                     IconButton(
                       onPressed: () =>
                           context.canPop() ? context.pop() : context.go('/'),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_rounded,
-                        color: Color(0xFF374151),
+                        color: scheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
@@ -208,11 +223,15 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         children: [
                           Text(
                             'Review Prescription',
-                            style: AppTypography.headlineMedium,
+                            style: AppTypography.headlineMedium.copyWith(
+                              color: scheme.onSurface,
+                            ),
                           ),
                           Text(
                             'Verify and edit transcribed details',
-                            style: AppTypography.bodySmall,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
@@ -350,15 +369,21 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
   // ── Section builders ────────────────────────────────────────────────────────
 
   Widget _medicinesCard() {
+    final scheme = Theme.of(context).colorScheme;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.medication_rounded, color: _kBlue600, size: 20),
+              Icon(Icons.medication_rounded, color: _accent(context), size: 20),
               const SizedBox(width: AppSpacing.xs),
-              Text('Prescribed Medicines', style: AppTypography.titleMedium),
+              Text(
+                'Prescribed Medicines',
+                style: AppTypography.titleMedium.copyWith(
+                  color: scheme.onSurface,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -367,7 +392,9 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
               padding: const EdgeInsets.only(bottom: AppSpacing.s),
               child: Text(
                 'No medications recorded yet.',
-                style: AppTypography.bodySmall,
+                style: AppTypography.bodySmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
               ),
             ),
           for (var i = 0; i < _draft.medications.length; i++) ...[
@@ -401,6 +428,7 @@ class _StepProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -415,7 +443,7 @@ class _StepProgressBar extends StatelessWidget {
                     gradient: i <= activeStep
                         ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                         : null,
-                    color: i <= activeStep ? null : const Color(0xFFE5E7EB),
+                    color: i <= activeStep ? null : scheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -435,7 +463,7 @@ class _StepProgressBar extends StatelessWidget {
                     ? _kTeal600
                     : i < activeStep
                     ? _kTeal600
-                    : const Color(0xFF9CA3AF),
+                    : scheme.onSurfaceVariant,
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -453,13 +481,15 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: AppSpacing.radiusXl,
-        border: Border.all(color: const Color(0xFFF3F4F6)),
-        boxShadow: AppColors.cardShadow,
+        border: Border.all(color: scheme.outline),
+        boxShadow: isDark ? AppColors.cardShadowDark : AppColors.cardShadow,
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: child,
@@ -480,7 +510,9 @@ class _LabeledField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+          style: AppTypography.bodySmall.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: AppSpacing.xxs),
         child,
@@ -564,7 +596,10 @@ class _InlineEditableState extends State<_InlineEditable> {
 
   @override
   Widget build(BuildContext context) {
-    final style = widget.style ?? AppTypography.bodyMedium;
+    final scheme = Theme.of(context).colorScheme;
+    final style =
+        widget.style ??
+        AppTypography.bodyMedium.copyWith(color: scheme.onSurface);
     if (!_editing) {
       final isEmpty = widget.value.trim().isEmpty;
       // Display mode: plain text, not tappable. Edit via pencil icon only.
@@ -572,7 +607,7 @@ class _InlineEditableState extends State<_InlineEditable> {
         isEmpty ? widget.placeholder : widget.value,
         style: isEmpty
             ? style.copyWith(
-                color: AppColors.textMuted,
+                color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
               )
             : style,
@@ -599,15 +634,15 @@ class _InlineEditableState extends State<_InlineEditable> {
               isDense: true,
               hintText: widget.hint.isEmpty ? null : widget.hint,
               hintStyle: AppTypography.bodySmall.copyWith(
-                color: AppColors.textMuted,
+                color: scheme.onSurfaceVariant,
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 10,
               ),
-              border: _inputBorder(_kBorder),
-              enabledBorder: _inputBorder(_kBorder),
-              focusedBorder: _inputBorder(_kBlue600),
+              border: _inputBorder(scheme.outline),
+              enabledBorder: _inputBorder(scheme.outline),
+              focusedBorder: _inputBorder(_accent(context)),
             ),
             onSubmitted: (_) => _commit(),
           ),
@@ -627,21 +662,23 @@ class _EditActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         _btn(
           Icons.check_rounded,
           _kTeal600,
-          const Color(0xFFE6FBF6),
+          isDark ? const Color(0xFF0D3D2E) : const Color(0xFFE6FBF6),
           onSave,
           'Save',
         ),
         const SizedBox(width: AppSpacing.s),
         _btn(
           Icons.close_rounded,
-          const Color(0xFF6B7280),
-          const Color(0xFFF3F4F6),
+          scheme.onSurfaceVariant,
+          scheme.surfaceContainerHigh,
           onCancel,
           'Cancel',
         ),
@@ -690,17 +727,28 @@ class _SummaryCardState extends State<_SummaryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = _accent(context);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFEFF6FF), Color(0xFFF0FDFA)],
-        ),
+        gradient: isDark
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF13162A), Color(0xFF0D1525)],
+              )
+            : const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFEFF6FF), Color(0xFFF0FDFA)],
+              ),
         borderRadius: AppSpacing.radiusXl,
-        border: Border.all(color: const Color(0xFFBFDBFE)),
-        boxShadow: AppColors.cardShadow,
+        border: Border.all(
+          color: isDark ? const Color(0xFF2A3354) : const Color(0xFFBFDBFE),
+        ),
+        boxShadow: isDark ? AppColors.cardShadowDark : AppColors.cardShadow,
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
@@ -708,12 +756,12 @@ class _SummaryCardState extends State<_SummaryCard> {
         children: [
           Row(
             children: [
-              const Icon(Icons.summarize_rounded, color: _kBlue600, size: 18),
+              Icon(Icons.summarize_rounded, color: accent, size: 18),
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Text(
                   'Consultation Summary',
-                  style: AppTypography.titleSmall.copyWith(color: _kBlue600),
+                  style: AppTypography.titleSmall.copyWith(color: accent),
                 ),
               ),
               GestureDetector(
@@ -721,9 +769,9 @@ class _SummaryCardState extends State<_SummaryCard> {
                 behavior: HitTestBehavior.opaque,
                 child: Padding(
                   padding: const EdgeInsets.all(4),
-                  child: const Icon(
+                  child: Icon(
                     Icons.edit_rounded,
-                    color: _kPencil,
+                    color: scheme.onSurfaceVariant,
                     size: 20,
                   ),
                 ),
@@ -739,7 +787,7 @@ class _SummaryCardState extends State<_SummaryCard> {
             placeholder: 'Tap ✏️ to add a consultation summary',
             hint: 'Summarise what the patient came in for and the plan',
             style: AppTypography.bodyMedium.copyWith(
-              color: const Color(0xFF1E3A5F),
+              color: isDark ? scheme.onSurface : const Color(0xFF1E3A5F),
               height: 1.5,
             ),
           ),
@@ -839,13 +887,22 @@ class _PatientCardState extends State<_PatientCard> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final titleStyle = AppTypography.titleSmall.copyWith(
+      color: scheme.onSurface,
+    );
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text('Patient Information', style: AppTypography.titleMedium),
+              Text(
+                'Patient Information',
+                style: AppTypography.titleMedium.copyWith(
+                  color: scheme.onSurface,
+                ),
+              ),
               const Spacer(),
               if (_editing)
                 _EditActions(onSave: _commit, onCancel: _cancel)
@@ -855,9 +912,9 @@ class _PatientCardState extends State<_PatientCard> {
                   behavior: HitTestBehavior.opaque,
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_rounded,
-                      color: _kPencil,
+                      color: scheme.onSurfaceVariant,
                       size: 20,
                     ),
                   ),
@@ -874,13 +931,13 @@ class _PatientCardState extends State<_PatientCard> {
                   child: _editing
                       ? TextField(
                           controller: _name,
-                          style: AppTypography.titleSmall,
+                          style: titleStyle,
                           keyboardType: TextInputType.name,
-                          decoration: _fieldDeco('Patient name'),
+                          decoration: _fieldDeco(context, 'Patient name'),
                         )
                       : Text(
                           _name.text.isEmpty ? '—' : _name.text,
-                          style: AppTypography.titleSmall,
+                          style: titleStyle,
                         ),
                 ),
               ),
@@ -891,13 +948,13 @@ class _PatientCardState extends State<_PatientCard> {
                   child: _editing
                       ? TextField(
                           controller: _age,
-                          style: AppTypography.titleSmall,
+                          style: titleStyle,
                           keyboardType: TextInputType.number,
-                          decoration: _fieldDeco('Years'),
+                          decoration: _fieldDeco(context, 'Years'),
                         )
                       : Text(
                           _age.text.isEmpty ? '—' : _age.text,
-                          style: AppTypography.titleSmall,
+                          style: titleStyle,
                         ),
                 ),
               ),
@@ -915,7 +972,7 @@ class _PatientCardState extends State<_PatientCard> {
                           value: _sex,
                           onChanged: (s) => setState(() => _sex = s),
                         )
-                      : Text(_sexLabel(_sex), style: AppTypography.titleSmall),
+                      : Text(_sexLabel(_sex), style: titleStyle),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -925,15 +982,15 @@ class _PatientCardState extends State<_PatientCard> {
                   child: _editing
                       ? TextField(
                           controller: _whatsapp,
-                          style: AppTypography.titleSmall,
+                          style: titleStyle,
                           keyboardType: TextInputType.phone,
-                          decoration: _fieldDeco('Mobile number'),
+                          decoration: _fieldDeco(context, 'Mobile number'),
                         )
                       : Text(
                           _whatsapp.text.isEmpty
                               ? '—'
                               : '+91 ${_whatsapp.text}',
-                          style: AppTypography.titleSmall,
+                          style: titleStyle,
                         ),
                 ),
               ),
@@ -944,15 +1001,20 @@ class _PatientCardState extends State<_PatientCard> {
     );
   }
 
-  InputDecoration _fieldDeco(String hint) => InputDecoration(
-    isDense: true,
-    hintText: hint,
-    hintStyle: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-    border: _inputBorder(_kBorder),
-    enabledBorder: _inputBorder(_kBorder),
-    focusedBorder: _inputBorder(_kBlue600),
-  );
+  InputDecoration _fieldDeco(BuildContext context, String hint) {
+    final scheme = Theme.of(context).colorScheme;
+    return InputDecoration(
+      isDense: true,
+      hintText: hint,
+      hintStyle: AppTypography.bodySmall.copyWith(
+        color: scheme.onSurfaceVariant,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      border: _inputBorder(scheme.outline),
+      enabledBorder: _inputBorder(scheme.outline),
+      focusedBorder: _inputBorder(_accent(context)),
+    );
+  }
 }
 
 /// Diagnosis card with pencil-only edit trigger. The ICD-10 chip is always
@@ -1025,13 +1087,19 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text('Diagnosis', style: AppTypography.titleSmall),
+              Text(
+                'Diagnosis',
+                style: AppTypography.titleSmall.copyWith(
+                  color: scheme.onSurface,
+                ),
+              ),
               const Spacer(),
               if (_editing)
                 _EditActions(onSave: _commit, onCancel: _cancel)
@@ -1041,9 +1109,9 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
                   behavior: HitTestBehavior.opaque,
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_rounded,
-                      color: _kPencil,
+                      color: scheme.onSurfaceVariant,
                       size: 20,
                     ),
                   ),
@@ -1056,7 +1124,9 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
               onTapOutside: (_) => _commit(),
               child: TextField(
                 controller: _ctrl,
-                style: AppTypography.bodyMedium,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: scheme.onSurface,
+                ),
                 maxLines: 3,
                 minLines: 1,
                 autofocus: true,
@@ -1064,15 +1134,15 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
                   isDense: true,
                   hintText: 'e.g. Viral fever',
                   hintStyle: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textMuted,
+                    color: scheme.onSurfaceVariant,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 10,
                   ),
-                  border: _inputBorder(_kBorder),
-                  enabledBorder: _inputBorder(_kBorder),
-                  focusedBorder: _inputBorder(_kBlue600),
+                  border: _inputBorder(scheme.outline),
+                  enabledBorder: _inputBorder(scheme.outline),
+                  focusedBorder: _inputBorder(_accent(context)),
                 ),
               ),
             )
@@ -1080,12 +1150,15 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
             Text(
               'No diagnosis — tap ✏️ to add',
               style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textMuted,
+                color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
               ),
             )
           else
-            Text(widget.diagnosis, style: AppTypography.bodyMedium),
+            Text(
+              widget.diagnosis,
+              style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
+            ),
           if (widget.icdCode != null) ...[
             const SizedBox(height: AppSpacing.s),
             _IcdChip(
@@ -1116,23 +1189,24 @@ class _GenderField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DropdownButtonHideUnderline(
       child: DropdownButton<Sex>(
         value: value,
         isDense: true,
         isExpanded: true,
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_drop_down_rounded,
-          color: AppColors.textMuted,
+          color: scheme.onSurfaceVariant,
         ),
         hint: Text(
           'Tap to set',
           style: AppTypography.titleSmall.copyWith(
-            color: AppColors.textMuted,
+            color: scheme.onSurfaceVariant,
             fontStyle: FontStyle.italic,
           ),
         ),
-        style: AppTypography.titleSmall.copyWith(color: AppColors.textPrimary),
+        style: AppTypography.titleSmall.copyWith(color: scheme.onSurface),
         items: [
           for (final s in Sex.values)
             DropdownMenuItem(value: s, child: Text(_label(s))),
@@ -1206,16 +1280,22 @@ class _EditableBulletsState extends State<_EditableBullets> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(widget.icon, color: _kBlue600, size: 20),
+              Icon(widget.icon, color: _accent(context), size: 20),
               const SizedBox(width: AppSpacing.xs),
               Expanded(
-                child: Text(widget.title, style: AppTypography.titleMedium),
+                child: Text(
+                  widget.title,
+                  style: AppTypography.titleMedium.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                ),
               ),
               if (!_editing)
                 GestureDetector(
@@ -1223,9 +1303,9 @@ class _EditableBulletsState extends State<_EditableBullets> {
                   behavior: HitTestBehavior.opaque,
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_rounded,
-                      color: _kPencil,
+                      color: scheme.onSurfaceVariant,
                       size: 20,
                     ),
                   ),
@@ -1242,7 +1322,9 @@ class _EditableBulletsState extends State<_EditableBullets> {
                   TextField(
                     controller: _ctrl,
                     focusNode: _focus,
-                    style: AppTypography.bodyMedium,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: scheme.onSurface,
+                    ),
                     minLines: 3,
                     maxLines: 8,
                     keyboardType: TextInputType.multiline,
@@ -1250,15 +1332,15 @@ class _EditableBulletsState extends State<_EditableBullets> {
                       isDense: true,
                       hintText: widget.hint,
                       hintStyle: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textMuted,
+                        color: scheme.onSurfaceVariant,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 10,
                       ),
-                      border: _inputBorder(_kBorder),
-                      enabledBorder: _inputBorder(_kBorder),
-                      focusedBorder: _inputBorder(_kBlue600),
+                      border: _inputBorder(scheme.outline),
+                      enabledBorder: _inputBorder(scheme.outline),
+                      focusedBorder: _inputBorder(_accent(context)),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -1270,7 +1352,7 @@ class _EditableBulletsState extends State<_EditableBullets> {
             Text(
               widget.placeholder,
               style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textMuted,
+                color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
               ),
             )
@@ -1281,7 +1363,12 @@ class _EditableBulletsState extends State<_EditableBullets> {
                 for (final item in widget.items)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.xxs),
-                    child: Text('•  $item', style: AppTypography.bodyMedium),
+                    child: Text(
+                      '•  $item',
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: scheme.onSurface,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -1354,19 +1441,25 @@ class _FollowUpCardState extends State<_FollowUpCard> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.event_repeat_rounded,
-                color: _kBlue600,
+                color: _accent(context),
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.s),
-              Text('Follow-up', style: AppTypography.titleMedium),
+              Text(
+                'Follow-up',
+                style: AppTypography.titleMedium.copyWith(
+                  color: scheme.onSurface,
+                ),
+              ),
               const Spacer(),
               Switch.adaptive(
                 value: _enabled,
@@ -1380,7 +1473,7 @@ class _FollowUpCardState extends State<_FollowUpCard> {
             Text(
               'No follow-up set',
               style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textMuted,
+                color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
               ),
             )
@@ -1395,7 +1488,9 @@ class _FollowUpCardState extends State<_FollowUpCard> {
                       controller: _ctrl,
                       focusNode: _focus,
                       keyboardType: TextInputType.number,
-                      style: AppTypography.bodyMedium,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: scheme.onSurface,
+                      ),
                       decoration: InputDecoration(
                         isDense: true,
                         suffixText: 'days',
@@ -1403,9 +1498,9 @@ class _FollowUpCardState extends State<_FollowUpCard> {
                           horizontal: 12,
                           vertical: 10,
                         ),
-                        border: _inputBorder(_kBorder),
-                        enabledBorder: _inputBorder(_kBorder),
-                        focusedBorder: _inputBorder(_kBlue600),
+                        border: _inputBorder(scheme.outline),
+                        enabledBorder: _inputBorder(scheme.outline),
+                        focusedBorder: _inputBorder(_accent(context)),
                       ),
                       onSubmitted: (_) => _commit(),
                     ),
@@ -1422,7 +1517,7 @@ class _FollowUpCardState extends State<_FollowUpCard> {
                 Text(
                   'After ${widget.days} day${widget.days == 1 ? '' : 's'}',
                   style: AppTypography.bodyMedium.copyWith(
-                    color: AppColors.textPrimary,
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.xs),
@@ -1431,9 +1526,9 @@ class _FollowUpCardState extends State<_FollowUpCard> {
                   behavior: HitTestBehavior.opaque,
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_rounded,
-                      color: _kPencil,
+                      color: scheme.onSurfaceVariant,
                       size: 20,
                     ),
                   ),
@@ -1447,12 +1542,6 @@ class _FollowUpCardState extends State<_FollowUpCard> {
 }
 
 /// One editable medicine card. Always editable (no pencil pattern).
-///
-/// Layout:
-///   Row 1: Medicine name (full width) + × delete
-///   Row 2: Dosage (50%) | Duration (50%)
-///   Row 3: Frequency (full width)
-///   Row 4: Timing chips
 class _MedicineRow extends StatefulWidget {
   const _MedicineRow({
     required this.med,
@@ -1524,12 +1613,17 @@ class _MedicineRowState extends State<_MedicineRow> {
 
   Medication get _med => widget.med;
 
+  TextStyle get _labelStyle => AppTypography.labelSmall.copyWith(
+    color: Theme.of(context).colorScheme.onSurfaceVariant,
+  );
+
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        border: Border.all(color: _kBorderSoft),
+        border: Border.all(color: scheme.outline),
         borderRadius: AppSpacing.radiusMd,
       ),
       child: Column(
@@ -1622,10 +1716,6 @@ class _MedicineRowState extends State<_MedicineRow> {
     );
   }
 
-  static final TextStyle _labelStyle = AppTypography.labelSmall.copyWith(
-    color: AppColors.textMuted,
-  );
-
   Widget _field(
     String label,
     TextEditingController controller,
@@ -1634,6 +1724,7 @@ class _MedicineRowState extends State<_MedicineRow> {
     bool autofocus = false,
     String hint = '',
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1642,7 +1733,7 @@ class _MedicineRowState extends State<_MedicineRow> {
         TextField(
           controller: controller,
           autofocus: autofocus,
-          style: AppTypography.bodyMedium,
+          style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
           onChanged: onChanged,
           onEditingComplete: onCommit,
           onTapOutside: (_) => onCommit(),
@@ -1650,15 +1741,15 @@ class _MedicineRowState extends State<_MedicineRow> {
             isDense: true,
             hintText: hint,
             hintStyle: AppTypography.bodySmall.copyWith(
-              color: AppColors.textMuted,
+              color: scheme.onSurfaceVariant,
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 14,
             ),
-            border: _inputBorder(_kBorder),
-            enabledBorder: _inputBorder(_kBorder),
-            focusedBorder: _inputBorder(_kBlue600),
+            border: _inputBorder(scheme.outline),
+            enabledBorder: _inputBorder(scheme.outline),
+            focusedBorder: _inputBorder(_accent(context)),
           ),
         ),
       ],
@@ -1679,19 +1770,20 @@ class _TimingChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? _kTeal500 : Colors.white,
+          color: selected ? _kTeal500 : scheme.surface,
           borderRadius: AppSpacing.radiusPill,
-          border: Border.all(color: selected ? _kTeal500 : _kBorder),
+          border: Border.all(color: selected ? _kTeal500 : scheme.outline),
         ),
         child: Text(
           label,
           style: AppTypography.labelMedium.copyWith(
-            color: selected ? Colors.white : AppColors.textSecondary,
+            color: selected ? Colors.white : scheme.onSurfaceVariant,
           ),
         ),
       ),
@@ -1715,10 +1807,11 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
             offset: Offset(0, -2),
@@ -1739,7 +1832,9 @@ class _BottomBar extends StatelessWidget {
             'AI extracts only what the doctor said. Review the summary and '
             'medicines before signing.',
             textAlign: TextAlign.center,
-            style: AppTypography.bodySmall,
+            style: AppTypography.bodySmall.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.s),
           _GradientCta(
@@ -1827,27 +1922,30 @@ class _OutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 52,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: AppSpacing.radiusLg,
-          border: Border.all(color: _kBorder, width: 2),
-          boxShadow: AppColors.cardShadow,
+          border: Border.all(color: scheme.outline, width: 2),
+          boxShadow: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.cardShadowDark
+              : AppColors.cardShadow,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: AppColors.textSecondary),
+            Icon(icon, size: 20, color: scheme.onSurfaceVariant),
             const SizedBox(width: AppSpacing.s),
             Flexible(
               child: Text(
                 label,
                 style: AppTypography.titleSmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: scheme.onSurfaceVariant,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1868,15 +1966,7 @@ OutlineInputBorder _inputBorder(Color color) => OutlineInputBorder(
 const _kAmber400 = Color(0xFFFBBF24);
 const _kAmber50 = Color(0xFFFFFBEB);
 
-/// Small ICD-10 annotation chip shown below the diagnosis field. Only rendered
-/// when an icdCode is present. Tapping the label opens a bottom sheet to
-/// view/edit; the × removes it. The label wraps to two lines rather than
-/// truncating, since codes + descriptions are clinically meaningful.
-///
-/// Styling by confidence:
-///   "high"   → grey chip (no icon) — AI is confident
-///   "medium" → amber-tinted chip with "?" icon — doctor should verify
-///   null     → grey chip (doctor has manually edited, no AI confidence)
+/// Small ICD-10 annotation chip shown below the diagnosis field.
 class _IcdChip extends StatelessWidget {
   const _IcdChip({
     required this.code,
@@ -1896,15 +1986,19 @@ class _IcdChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final label = description != null && description!.isNotEmpty
         ? 'ICD-10: $code - $description'
         : 'ICD-10: $code';
 
-    final bgColor = _isMedium ? _kAmber50 : const Color(0xFFF3F4F6);
-    final borderColor = _isMedium ? _kAmber400 : const Color(0xFFE5E7EB);
+    final bgColor = _isMedium
+        ? (isDark ? const Color(0xFF2A1A0A) : _kAmber50)
+        : scheme.surfaceContainerHigh;
+    final borderColor = _isMedium ? _kAmber400 : scheme.outline;
     final textColor = _isMedium
-        ? const Color(0xFF92400E)
-        : const Color(0xFF6B7280);
+        ? (isDark ? const Color(0xFFFBBF24) : const Color(0xFF92400E))
+        : scheme.onSurfaceVariant;
 
     return GestureDetector(
       onTap: () => _showEditSheet(context),
@@ -1941,12 +2035,12 @@ class _IcdChip extends StatelessWidget {
             GestureDetector(
               onTap: onRemove,
               behavior: HitTestBehavior.opaque,
-              child: const Padding(
-                padding: EdgeInsets.only(top: 1),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 1),
                 child: Icon(
                   Icons.close_rounded,
                   size: 15,
-                  color: Color(0xFF9CA3AF),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -2011,6 +2105,8 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.fromLTRB(
         24,
@@ -2022,13 +2118,16 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('ICD-10 Code', style: AppTypography.titleMedium),
+          Text(
+            'ICD-10 Code',
+            style: AppTypography.titleMedium.copyWith(color: scheme.onSurface),
+          ),
           const SizedBox(height: 16),
           if (widget.isMediumConfidence) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: _kAmber50,
+                color: isDark ? const Color(0xFF2A1A0A) : _kAmber50,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: _kAmber400),
               ),
@@ -2045,7 +2144,9 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
                       'AI suggestion - please verify this code before relying '
                       'on it.',
                       style: AppTypography.bodySmall.copyWith(
-                        color: const Color(0xFF92400E),
+                        color: isDark
+                            ? const Color(0xFFFBBF24)
+                            : const Color(0xFF92400E),
                       ),
                     ),
                   ),
@@ -2060,7 +2161,7 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
               labelText: 'Code (e.g. B34.9)',
               isDense: true,
             ),
-            style: AppTypography.bodyMedium,
+            style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
             textCapitalization: TextCapitalization.characters,
           ),
           const SizedBox(height: 12),
@@ -2070,14 +2171,14 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
               labelText: 'Description',
               isDense: true,
             ),
-            style: AppTypography.bodyMedium,
+            style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
           ),
           const SizedBox(height: 16),
           Text(
             'This code was suggested by AI based on the diagnosis text. '
             'Please verify accuracy before clinical or billing use.',
             style: AppTypography.bodySmall.copyWith(
-              color: const Color(0xFF9CA3AF),
+              color: scheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 16),

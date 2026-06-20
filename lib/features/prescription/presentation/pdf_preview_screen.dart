@@ -145,16 +145,30 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       );
     }
 
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
-            stops: [0.0, 0.5, 1.0],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF0D0F1A),
+                    Color(0xFF13162A),
+                    Color(0xFF0D1525),
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                )
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
+                  stops: [0.0, 0.5, 1.0],
+                ),
         ),
         child: SafeArea(
           child: Column(
@@ -172,9 +186,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                     IconButton(
                       onPressed: () =>
                           context.canPop() ? context.pop() : context.go('/'),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_rounded,
-                        color: Color(0xFF374151),
+                        color: scheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
@@ -184,11 +198,15 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         children: [
                           Text(
                             'Prescription Ready',
-                            style: AppTypography.headlineMedium,
+                            style: AppTypography.headlineMedium.copyWith(
+                              color: scheme.onSurface,
+                            ),
                           ),
                           Text(
                             'Review and share with patient',
-                            style: AppTypography.bodySmall,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
@@ -207,7 +225,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                 child: _StepProgressBar(activeStep: 3),
               ),
               const SizedBox(height: AppSpacing.s),
-              // PDF preview — shows the exact PDF that will be shared
+              // PDF preview — shows the exact PDF that will be shared.
+              // The page itself stays white (it is printable paper); only the
+              // surrounding area follows the theme.
               Expanded(
                 child: _pdfBytes == null
                     ? const Center(
@@ -244,7 +264,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         panEnabled: _currentScale > 1.01,
                         scaleEnabled: true,
                         child: Container(
-                          color: Colors.grey.shade200,
+                          color: isDark
+                              ? const Color(0xFF13162A)
+                              : Colors.grey.shade200,
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -297,6 +319,7 @@ class _StepProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -311,7 +334,7 @@ class _StepProgressBar extends StatelessWidget {
                     gradient: i <= activeStep
                         ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                         : null,
-                    color: i <= activeStep ? null : const Color(0xFFE5E7EB),
+                    color: i <= activeStep ? null : scheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -327,7 +350,7 @@ class _StepProgressBar extends StatelessWidget {
             (i) => Text(
               _steps[i],
               style: AppTypography.labelSmall.copyWith(
-                color: i <= activeStep ? _kTeal600 : const Color(0xFF9CA3AF),
+                color: i <= activeStep ? _kTeal600 : scheme.onSurfaceVariant,
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -345,10 +368,11 @@ class _ShareBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
             offset: Offset(0, -2),
@@ -447,26 +471,29 @@ class _OutlineCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 52,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: AppSpacing.radiusLg,
-          border: Border.all(color: const Color(0xFFD1D5DB), width: 2),
-          boxShadow: AppColors.cardShadow,
+          border: Border.all(color: scheme.outline, width: 2),
+          boxShadow: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.cardShadowDark
+              : AppColors.cardShadow,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: AppColors.textSecondary),
+            Icon(icon, size: 20, color: scheme.onSurfaceVariant),
             const SizedBox(width: AppSpacing.s),
             Flexible(
               child: Text(
                 label,
                 style: AppTypography.titleSmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: scheme.onSurfaceVariant,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

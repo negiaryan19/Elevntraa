@@ -6,6 +6,7 @@ import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/reveal.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/patient.dart';
@@ -106,159 +107,175 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
         .length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      // theme-driven background
       body: Column(
         children: [
           // Gradient header
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [_kBlue600, _kTeal500],
-              ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.adaptive(context, AppSpacing.lg),
-                  AppSpacing.lg,
-                  AppSpacing.adaptive(context, AppSpacing.xl + AppSpacing.s),
+          Reveal(
+            delayMs: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [_kBlue600, _kTeal500],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Patient History',
-                      style: AppTypography.headlineLarge.copyWith(
-                        color: Colors.white,
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.adaptive(context, AppSpacing.lg),
+                    AppSpacing.lg,
+                    AppSpacing.adaptive(context, AppSpacing.xl + AppSpacing.s),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Patient History',
+                        style: AppTypography.headlineLarge.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'View all consultations and records',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: Colors.white70,
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        'View all consultations and records',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: Colors.white70,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _StatPill(
-                            value: '${_groups.length}',
-                            label: 'Total',
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _StatPill(
+                              value: '${_groups.length}',
+                              label: 'Total',
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: _StatPill(
-                            value: '$thisWeek',
-                            label: 'This Week',
+                          const SizedBox(width: AppSpacing.m),
+                          Expanded(
+                            child: _StatPill(
+                              value: '$thisWeek',
+                              label: 'This Week',
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: _StatPill(value: '$today', label: 'Today'),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: AppSpacing.m),
+                          Expanded(
+                            child: _StatPill(value: '$today', label: 'Today'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
           // Search bar (pulled up)
-          Transform.translate(
-            offset: const Offset(0, -24),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: AppSpacing.radiusXl,
-                  border: Border.all(color: const Color(0xFFF3F4F6)),
-                  boxShadow: AppColors.cardShadow,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.m,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.search_rounded,
-                      color: Color(0xFF9CA3AF),
-                      size: 20,
+          Reveal(
+            delayMs: 90,
+            child: Transform.translate(
+              offset: const Offset(0, -24),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: AppSpacing.radiusXl,
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
                     ),
-                    const SizedBox(width: AppSpacing.m),
-                    Expanded(
-                      child: TextField(
-                        onChanged: _onSearch,
-                        decoration: InputDecoration(
-                          hintText: 'Search patients...',
-                          hintStyle: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textMuted,
+                    boxShadow: AppColors.cardShadow,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.m,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.search_rounded,
+                        color: Color(0xFF9CA3AF),
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppSpacing.m),
+                      Expanded(
+                        child: TextField(
+                          onChanged: _onSearch,
+                          decoration: InputDecoration(
+                            hintText: 'Search patients...',
+                            hintStyle: AppTypography.bodyMedium.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            isDense: true,
+                            filled: false,
                           ),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          isDense: true,
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
-                        style: AppTypography.bodyMedium,
                       ),
-                    ),
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEFF6FF),
-                        borderRadius: AppSpacing.radiusSm,
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          borderRadius: AppSpacing.radiusSm,
+                        ),
+                        child: const Icon(
+                          Icons.tune_rounded,
+                          color: _kBlue600,
+                          size: 16,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.tune_rounded,
-                        color: _kBlue600,
-                        size: 16,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
           // Patient list — one card per unique patient
           Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _filtered.isEmpty
-                ? _EmptyState(hasQuery: _query.isNotEmpty)
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      0,
-                      AppSpacing.lg,
-                      AppSpacing.xxl,
-                    ),
-                    itemCount: _filtered.length,
-                    separatorBuilder: (_, _) =>
-                        const SizedBox(height: AppSpacing.m),
-                    itemBuilder: (context, i) {
-                      final group = _filtered[i];
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: group.patient == null
-                            ? null
-                            : () => context.push(
-                                AppRoute.patient.build(
-                                  params: {'patientId': group.patient!.id},
+            child: Reveal(
+              delayMs: 180,
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filtered.isEmpty
+                  ? _EmptyState(hasQuery: _query.isNotEmpty)
+                  : ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        0,
+                        AppSpacing.lg,
+                        AppSpacing.xxl,
+                      ),
+                      itemCount: _filtered.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.m),
+                      itemBuilder: (context, i) {
+                        final group = _filtered[i];
+                        return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: group.patient == null
+                              ? null
+                              : () => context.push(
+                                  AppRoute.patient.build(
+                                    params: {'patientId': group.patient!.id},
+                                  ),
                                 ),
-                              ),
-                        child: _PatientCard(group: group),
-                      );
-                    },
-                  ),
+                          child: _PatientCard(group: group),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),
@@ -352,9 +369,9 @@ class _PatientCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: AppSpacing.radiusXl,
-        border: Border.all(color: const Color(0xFFF3F4F6)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         boxShadow: AppColors.cardShadow,
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -388,7 +405,9 @@ class _PatientCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         name,
-                        style: AppTypography.titleSmall,
+                        style: AppTypography.titleSmall.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -424,7 +443,9 @@ class _PatientCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     ageSex,
-                    style: AppTypography.bodySmall,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -464,7 +485,7 @@ class _PatientCard extends StatelessWidget {
                         child: Text(
                           diagnosis,
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),

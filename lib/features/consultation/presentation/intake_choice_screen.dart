@@ -16,16 +16,27 @@ class IntakeChoiceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
-            stops: [0.0, 0.5, 1.0],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF0D0F1A),
+                    Color(0xFF13162A),
+                    Color(0xFF0D1525),
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                )
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
+                  stops: [0.0, 0.5, 1.0],
+                ),
         ),
         child: SafeArea(
           child: Column(
@@ -44,9 +55,9 @@ class IntakeChoiceScreen extends StatelessWidget {
                     IconButton(
                       onPressed: () =>
                           context.canPop() ? context.pop() : context.go('/'),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_rounded,
-                        color: Color(0xFF374151),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
@@ -56,12 +67,18 @@ class IntakeChoiceScreen extends StatelessWidget {
                         children: [
                           Text(
                             'New Consultation',
-                            style: AppTypography.headlineMedium,
+                            style: AppTypography.headlineMedium.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             'Who is this consultation for?',
-                            style: AppTypography.bodySmall,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
@@ -133,9 +150,9 @@ class _ChoiceCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: AppSpacing.radiusXl,
-          border: Border.all(color: const Color(0xFFF3F4F6)),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
           boxShadow: AppColors.cardShadow,
         ),
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -159,21 +176,26 @@ class _ChoiceCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTypography.titleMedium),
+                  Text(
+                    title,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     subtitle,
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: AppSpacing.s),
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: Color(0xFF9CA3AF),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               size: 22,
             ),
           ],

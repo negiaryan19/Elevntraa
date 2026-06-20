@@ -100,15 +100,16 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: scheme.surface,
+        surfaceTintColor: scheme.surface,
+        foregroundColor: scheme.onSurface,
         elevation: 0.5,
         title: Text(
           _patient?.name ?? 'Patient',
-          style: AppTypography.titleMedium,
+          style: AppTypography.titleMedium.copyWith(color: scheme.onSurface),
         ),
       ),
       body: _loading
@@ -140,7 +141,9 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   Text(
                     'Consultation History',
-                    style: AppTypography.titleMedium,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: scheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.m),
                   if (_visits.isEmpty)
@@ -328,15 +331,20 @@ class _VisitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final insight = visit.insight ?? MedicalInsight.empty;
     final meds = insight.medications;
+    final signedGreen = isDark
+        ? const Color(0xFF4ADE80)
+        : const Color(0xFF16A34A);
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: AppSpacing.radiusXl,
-        border: Border.all(color: const Color(0xFFF3F4F6)),
-        boxShadow: AppColors.cardShadow,
+        border: Border.all(color: scheme.outline),
+        boxShadow: isDark ? AppColors.cardShadowDark : AppColors.cardShadow,
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
@@ -345,16 +353,12 @@ class _VisitCard extends StatelessWidget {
           // Date + signed status
           Row(
             children: [
-              const Icon(
-                Icons.calendar_today_rounded,
-                size: 14,
-                color: _kBlue600,
-              ),
+              Icon(Icons.calendar_today_rounded, size: 14, color: _kBlue600),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 _formatDateTime(visit.createdAt),
                 style: AppTypography.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -365,21 +369,23 @@ class _VisitCard extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF0FDF4),
+                    color: isDark
+                        ? const Color(0xFF0D3D2E)
+                        : const Color(0xFFF0FDF4),
                     borderRadius: AppSpacing.radiusSm,
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.verified_rounded,
                         size: 12,
-                        color: Color(0xFF16A34A),
+                        color: signedGreen,
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       Text(
                         'Signed',
                         style: AppTypography.labelSmall.copyWith(
-                          color: const Color(0xFF16A34A),
+                          color: signedGreen,
                         ),
                       ),
                     ],
@@ -393,13 +399,13 @@ class _VisitCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(AppSpacing.s),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF),
+                color: scheme.primaryContainer,
                 borderRadius: AppSpacing.radiusMd,
               ),
               child: Text(
                 insight.consultationSummary,
                 style: AppTypography.bodySmall.copyWith(
-                  color: const Color(0xFF1E3A5F),
+                  color: scheme.onPrimaryContainer,
                   height: 1.4,
                 ),
               ),
@@ -407,19 +413,22 @@ class _VisitCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.s),
           ] else ...[
             if (insight.diagnosis.trim().isNotEmpty)
-              _line('Diagnosis', insight.diagnosis),
+              _line(context, 'Diagnosis', insight.diagnosis),
             if (insight.symptoms.isNotEmpty)
-              _line('Symptoms', insight.symptoms.join(', ')),
+              _line(context, 'Symptoms', insight.symptoms.join(', ')),
           ],
           // Medicines
           const SizedBox(height: AppSpacing.s),
-          Text('Medicines', style: AppTypography.titleSmall),
+          Text(
+            'Medicines',
+            style: AppTypography.titleSmall.copyWith(color: scheme.onSurface),
+          ),
           const SizedBox(height: AppSpacing.xs),
           if (meds.isEmpty)
             Text(
               'No medicines recorded.',
               style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textMuted,
+                color: scheme.onSurfaceVariant,
               ),
             )
           else
@@ -442,7 +451,7 @@ class _VisitCard extends StatelessWidget {
                       child: Text(
                         _medLine(m.name, m.dosage, m.frequency, m.duration),
                         style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textPrimary,
+                          color: scheme.onSurface,
                         ),
                       ),
                     ),
@@ -452,6 +461,7 @@ class _VisitCard extends StatelessWidget {
           if (insight.followUpDays != null && insight.followUpDays! > 0) ...[
             const SizedBox(height: AppSpacing.s),
             _line(
+              context,
               'Follow-up',
               'After ${insight.followUpDays} day${insight.followUpDays == 1 ? '' : 's'}',
             ),
@@ -482,18 +492,19 @@ class _VisitCard extends StatelessWidget {
     );
   }
 
-  Widget _line(String label, String value) {
+  Widget _line(BuildContext context, String label, String value) {
+    final color = Theme.of(context).colorScheme.onSurface;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xxs),
       child: RichText(
         text: TextSpan(
-          style: AppTypography.bodySmall.copyWith(color: AppColors.textPrimary),
+          style: AppTypography.bodySmall.copyWith(color: color),
           children: [
             TextSpan(
               text: '$label: ',
               style: AppTypography.bodySmall.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: color,
               ),
             ),
             TextSpan(text: value),
@@ -555,18 +566,19 @@ class _PdfButton extends StatelessWidget {
         opacity: disabled ? 0.6 : 1,
         child: Container(
           height: 44,
-          padding: EdgeInsets.symmetric(
-            horizontal: filled ? AppSpacing.md : AppSpacing.md,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           decoration: BoxDecoration(
             gradient: filled
                 ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                 : null,
-            color: filled ? null : Colors.white,
+            color: filled ? null : Theme.of(context).colorScheme.surface,
             borderRadius: AppSpacing.radiusLg,
             border: filled
                 ? null
-                : Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
+                : Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1.5,
+                  ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -574,13 +586,17 @@ class _PdfButton extends StatelessWidget {
               Icon(
                 icon,
                 size: 18,
-                color: filled ? Colors.white : AppColors.textSecondary,
+                color: filled
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: AppSpacing.s),
               Text(
                 label,
                 style: AppTypography.titleSmall.copyWith(
-                  color: filled ? Colors.white : AppColors.textSecondary,
+                  color: filled
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],

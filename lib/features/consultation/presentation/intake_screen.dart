@@ -19,6 +19,7 @@ import '../../../domain/models/report_attachment.dart';
 import 'intake_controller.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
+const _kBlue300 = Color(0xFF6B8FFF);
 const _kTeal500 = Color(0xFF14B8A6);
 
 class IntakeScreen extends ConsumerStatefulWidget {
@@ -260,16 +261,28 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
-            stops: [0.0, 0.5, 1.0],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF0D0F1A),
+                    Color(0xFF13162A),
+                    Color(0xFF0D1525),
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                )
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
+                  stops: [0.0, 0.5, 1.0],
+                ),
         ),
         child: SafeArea(
           child: Form(
@@ -291,9 +304,9 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                       IconButton(
                         onPressed: () =>
                             context.canPop() ? context.pop() : context.go('/'),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back_rounded,
-                          color: Color(0xFF374151),
+                          color: scheme.onSurface,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.xs),
@@ -305,14 +318,18 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                               _isReturning
                                   ? 'New Consultation'
                                   : 'Patient Details',
-                              style: AppTypography.headlineMedium,
+                              style: AppTypography.headlineMedium.copyWith(
+                                color: scheme.onSurface,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               _isReturning
                                   ? 'Confirm details & consent'
                                   : 'Enter basic patient information',
-                              style: AppTypography.bodySmall,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
@@ -346,16 +363,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                       ),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: scheme.surface,
                           borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08),
-                              blurRadius: 24,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                          border: Border.all(color: const Color(0xFFF3F4F6)),
+                          boxShadow: isDark
+                              ? AppColors.cardShadowDark
+                              : AppColors.cardShadow,
+                          border: Border.all(color: scheme.outline),
                         ),
                         padding: EdgeInsets.all(
                           AppSpacing.adaptive(context, AppSpacing.xl),
@@ -468,17 +481,19 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                     horizontal: AppSpacing.md,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF9FAFB),
+                                    color: scheme.surfaceContainer,
                                     borderRadius: AppSpacing.radiusMd,
                                     border: Border.all(
-                                      color: const Color(0xFFD1D5DB),
+                                      color: scheme.outline,
                                       width: 2,
                                     ),
                                   ),
                                   alignment: Alignment.center,
                                   child: Text(
                                     '+91',
-                                    style: AppTypography.titleSmall,
+                                    style: AppTypography.titleSmall.copyWith(
+                                      color: scheme.onSurface,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: AppSpacing.s),
@@ -499,7 +514,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             Text(
                               'Prescription will be shared on this number',
                               style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textMuted,
+                                color: scheme.onSurfaceVariant,
                               ),
                             ),
                             SizedBox(
@@ -518,7 +533,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                               'Scan or attach the patient\'s earlier reports — they '
                               'are added to the prescription PDF.',
                               style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textMuted,
+                                color: scheme.onSurfaceVariant,
                               ),
                             ),
                             const SizedBox(height: AppSpacing.s),
@@ -559,7 +574,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                       border: Border.all(
                                         color: _consent
                                             ? _kBlue600
-                                            : const Color(0xFFD1D5DB),
+                                            : scheme.outline,
                                         width: 2,
                                       ),
                                     ),
@@ -575,7 +590,9 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                   Expanded(
                                     child: Text(
                                       'Patient has consented to be recorded (DPDP Act)',
-                                      style: AppTypography.bodySmall,
+                                      style: AppTypography.bodySmall.copyWith(
+                                        color: scheme.onSurface,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -628,6 +645,7 @@ class _StepProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -642,7 +660,7 @@ class _StepProgressBar extends StatelessWidget {
                     gradient: i <= activeStep
                         ? const LinearGradient(colors: [_kBlue600, _kTeal500])
                         : null,
-                    color: i <= activeStep ? null : const Color(0xFFE5E7EB),
+                    color: i <= activeStep ? null : scheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -662,7 +680,7 @@ class _StepProgressBar extends StatelessWidget {
                     ? _kBlue600
                     : i < activeStep
                     ? const Color(0xFF0D9488)
-                    : const Color(0xFF9CA3AF),
+                    : scheme.onSurfaceVariant,
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -681,16 +699,16 @@ class _FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
-        Icon(icon, size: 16, color: _kBlue600),
+        Icon(icon, size: 16, color: isDark ? _kBlue300 : _kBlue600),
         const SizedBox(width: AppSpacing.xs),
         Flexible(
           child: Text(
             label,
-            style: AppTypography.labelMedium.copyWith(
-              color: const Color(0xFF374151),
-            ),
+            style: AppTypography.labelMedium.copyWith(color: scheme.onSurface),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -716,41 +734,41 @@ class _IntakeTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final FormFieldValidator<String>? validator;
 
-  static final _enabledBorder = OutlineInputBorder(
-    borderRadius: AppSpacing.radiusMd,
-    borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 2),
-  );
-  static final _focusedBorder = OutlineInputBorder(
-    borderRadius: AppSpacing.radiusMd,
-    borderSide: const BorderSide(color: _kBlue600, width: 2),
-  );
-  static final _errorBorder = OutlineInputBorder(
-    borderRadius: AppSpacing.radiusMd,
-    borderSide: BorderSide(color: AppColors.error, width: 2),
-  );
-
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final enabledBorder = OutlineInputBorder(
+      borderRadius: AppSpacing.radiusMd,
+      borderSide: BorderSide(color: scheme.outline, width: 2),
+    );
+    final focusedBorder = OutlineInputBorder(
+      borderRadius: AppSpacing.radiusMd,
+      borderSide: const BorderSide(color: _kBlue600, width: 2),
+    );
+    final errorBorder = OutlineInputBorder(
+      borderRadius: AppSpacing.radiusMd,
+      borderSide: BorderSide(color: AppColors.error, width: 2),
+    );
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       textInputAction: textInputAction,
       validator: validator,
-      style: AppTypography.bodyMedium,
+      style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppTypography.bodyMedium.copyWith(
-          color: AppColors.textMuted,
+          color: scheme.onSurfaceVariant,
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: 14,
         ),
-        enabledBorder: _enabledBorder,
-        focusedBorder: _focusedBorder,
-        errorBorder: _errorBorder,
-        focusedErrorBorder: _errorBorder,
+        enabledBorder: enabledBorder,
+        focusedBorder: focusedBorder,
+        errorBorder: errorBorder,
+        focusedErrorBorder: errorBorder,
         filled: false,
       ),
     );
@@ -779,13 +797,14 @@ class _ReportTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.s),
       padding: const EdgeInsets.all(AppSpacing.s),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: scheme.surfaceContainer,
         borderRadius: AppSpacing.radiusMd,
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: scheme.outline),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -800,10 +819,10 @@ class _ReportTile extends StatelessWidget {
               errorBuilder: (_, _, _) => Container(
                 width: 52,
                 height: 52,
-                color: const Color(0xFFE5E7EB),
-                child: const Icon(
+                color: scheme.surfaceContainerHigh,
+                child: Icon(
                   Icons.broken_image_rounded,
-                  color: Color(0xFF9CA3AF),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -812,7 +831,7 @@ class _ReportTile extends StatelessWidget {
           Expanded(
             child: TextFormField(
               initialValue: attachment.caption,
-              style: AppTypography.bodySmall,
+              style: AppTypography.bodySmall.copyWith(color: scheme.onSurface),
               decoration: const InputDecoration(
                 hintText: 'Label (e.g. Blood test, 2 Jan)',
                 isDense: true,
@@ -853,6 +872,7 @@ class _IconBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final disabled = onTap == null;
     return InkWell(
       onTap: onTap,
@@ -862,8 +882,8 @@ class _IconBtn extends StatelessWidget {
           icon,
           size: 20,
           color: disabled
-              ? const Color(0xFFD1D5DB)
-              : (color ?? const Color(0xFF6B7280)),
+              ? scheme.outlineVariant
+              : (color ?? scheme.onSurfaceVariant),
         ),
       ),
     );
@@ -876,24 +896,30 @@ class _AddReportButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final blue = isDark ? _kBlue300 : _kBlue600;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: const Color(0xFFEFF6FF),
+          color: scheme.primaryContainer,
           borderRadius: AppSpacing.radiusMd,
-          border: Border.all(color: const Color(0xFFBFDBFE), width: 1.5),
+          border: Border.all(
+            color: scheme.primary.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_a_photo_rounded, color: _kBlue600, size: 20),
+            Icon(Icons.add_a_photo_rounded, color: blue, size: 20),
             const SizedBox(width: AppSpacing.s),
             Text(
               'Add report',
-              style: AppTypography.titleSmall.copyWith(color: _kBlue600),
+              style: AppTypography.titleSmall.copyWith(color: blue),
             ),
           ],
         ),
@@ -910,14 +936,16 @@ class _GenderDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DropdownButtonFormField<String>(
       initialValue: value,
       onChanged: onChanged,
-      style: AppTypography.bodyMedium,
+      dropdownColor: scheme.surface,
+      style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
       decoration: InputDecoration(
         hintText: 'Select',
         hintStyle: AppTypography.bodyMedium.copyWith(
-          color: AppColors.textMuted,
+          color: scheme.onSurfaceVariant,
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
@@ -925,7 +953,7 @@ class _GenderDropdown extends StatelessWidget {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppSpacing.radiusMd,
-          borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 2),
+          borderSide: BorderSide(color: scheme.outline, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppSpacing.radiusMd,
@@ -959,6 +987,7 @@ class _GradientCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: AnimatedContainer(
@@ -973,7 +1002,7 @@ class _GradientCta extends StatelessWidget {
                   end: Alignment.centerRight,
                 )
               : null,
-          color: enabled ? null : const Color(0xFFE5E7EB),
+          color: enabled ? null : scheme.surfaceContainerHigh,
           borderRadius: AppSpacing.radiusMd,
           boxShadow: enabled
               ? [
@@ -1004,7 +1033,7 @@ class _GradientCta extends StatelessWidget {
                         style: AppTypography.titleSmall.copyWith(
                           color: enabled
                               ? Colors.white
-                              : const Color(0xFF9CA3AF),
+                              : scheme.onSurfaceVariant,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1014,7 +1043,7 @@ class _GradientCta extends StatelessWidget {
                       Icon(
                         trailingIcon,
                         size: 20,
-                        color: enabled ? Colors.white : const Color(0xFF9CA3AF),
+                        color: enabled ? Colors.white : scheme.onSurfaceVariant,
                       ),
                     ],
                   ],

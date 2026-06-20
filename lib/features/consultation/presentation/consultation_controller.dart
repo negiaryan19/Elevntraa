@@ -1,8 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// StateNotifier/StateNotifierProvider moved to the legacy library in
-// flutter_riverpod 3.x. Imported here to keep the existing controller working;
-// migrating to the Notifier API can be done as a follow-up.
-import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
@@ -48,19 +44,17 @@ class ConsultationState {
   }
 }
 
-/// Per-visit notifier — created with `family` so each visit gets its own
-/// state and we don't leak between consultations.
-class ConsultationController extends StateNotifier<ConsultationState> {
-  ConsultationController(this._ref, this.visitId)
-    : super(const ConsultationState());
-
-  final Ref _ref;
+class ConsultationController extends Notifier<ConsultationState> {
+  ConsultationController(this.visitId);
   final String visitId;
 
-  RecordingService get _recorder => _ref.read(recordingServiceProvider);
-  SttService get _stt => _ref.read(sttServiceProvider);
-  InsightService get _insight => _ref.read(insightServiceProvider);
-  VisitRepository get _visits => _ref.read(visitRepositoryProvider);
+  @override
+  ConsultationState build() => const ConsultationState();
+
+  RecordingService get _recorder => ref.read(recordingServiceProvider);
+  SttService get _stt => ref.read(sttServiceProvider);
+  InsightService get _insight => ref.read(insightServiceProvider);
+  VisitRepository get _visits => ref.read(visitRepositoryProvider);
 
   void setLanguage(String code) =>
       state = state.copyWith(languageCode: code, clearError: true);
@@ -81,16 +75,10 @@ class ConsultationController extends StateNotifier<ConsultationState> {
     }
   }
 
-  /// Stop recording and run the full pipeline. On success the visit row
-  /// has audioPath, transcript, languageCode, and insightJson filled in,
-  /// and [state.stage] becomes [ConsultationStage.done] — the screen then
-  /// navigates to /review/:visitId.
   Future<void> stopAndProcess() async {
     try {
       final path = await _recorder.stop();
-      if (path == null) {
-        throw const StorageFailure('No audio was captured.');
-      }
+      if (path == null) throw const StorageFailure('No audio was captured.');
 
       state = state.copyWith(stage: ConsultationStage.transcribing);
 
@@ -102,11 +90,6 @@ class ConsultationController extends StateNotifier<ConsultationState> {
         visit.copyWith(audioPath: path, languageCode: state.languageCode),
       );
 
-      // Probe the actual file duration — the UI timer (`state.elapsed`)
-      // drifts under jank and pause/resume, so it can't be trusted to
-      // pick the REST (<30s) vs Batch (>30s) path. If the probe fails
-      // and the UI timer never started, pass null so STT defaults to
-      // the safe Batch path.
       final probed = await _recorder.probeDuration(path);
       final fallback = state.elapsed > Duration.zero ? state.elapsed : null;
       final effectiveDuration = probed ?? fallback;
@@ -121,12 +104,9 @@ class ConsultationController extends StateNotifier<ConsultationState> {
 
       final result = await _insight.extract(transcript);
 
-      final updated = (await _visits.byId(visitId))!.copyWith(
-        // Store the re-labeled transcript (Doctor:/Patient: lines) so the
-        // Review screen shows a human-readable conversation.
-        transcript: result.transcript,
-        insight: result.insight,
-      );
+      final updated = (await _visits.byId(
+        visitId,
+      ))!.copyWith(transcript: result.transcript, insight: result.insight);
       await _visits.upsert(updated);
 
       state = state.copyWith(stage: ConsultationStage.done);
@@ -139,7 +119,6 @@ class ConsultationController extends StateNotifier<ConsultationState> {
   }
 
   Future<void> pauseRecording() => _recorder.pause();
-
   Future<void> resumeRecording() => _recorder.resume();
 
   Future<void> cancelRecording() async {
@@ -159,11 +138,17 @@ class ConsultationController extends StateNotifier<ConsultationState> {
   void reset() => state = const ConsultationState();
 }
 
-final consultationControllerProvider =
-    StateNotifierProvider.family<
-      ConsultationController,
-      ConsultationState,
-      String
-    >((ref, visitId) {
-      return ConsultationController(ref, visitId);
-    });
+// Memoized so the same provider instance is returned for a given
+// visitId across rebuilds — required for Riverpod to track state correctly.
+final _providerCache =
+    <String, NotifierProvider<ConsultationController, ConsultationState>>{};
+
+NotifierProvider<ConsultationController, ConsultationState>
+consultationControllerProvider(String visitId) {
+  return _providerCache.putIfAbsent(
+    visitId,
+    () => NotifierProvider<ConsultationController, ConsultationState>(
+      () => ConsultationController(visitId),
+    ),
+  );
+}

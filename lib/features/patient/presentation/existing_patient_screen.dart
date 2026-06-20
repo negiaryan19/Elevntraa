@@ -51,10 +51,9 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Theme.of(context).colorScheme.surface,
         elevation: 0.5,
         title: Text('Find Patient', style: AppTypography.titleMedium),
       ),
@@ -66,9 +65,11 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: AppSpacing.radiusXl,
-                  border: Border.all(color: const Color(0xFFF3F4F6)),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                   boxShadow: AppColors.cardShadow,
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -77,9 +78,9 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.search_rounded,
-                      color: Color(0xFF9CA3AF),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       size: 20,
                     ),
                     const SizedBox(width: AppSpacing.m),
@@ -90,12 +91,19 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
                         decoration: InputDecoration(
                           hintText: 'Search by name or number…',
                           hintStyle: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textMuted,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
                           isDense: true,
+                          filled: false,
                         ),
-                        style: AppTypography.bodyMedium,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                   ],
@@ -147,9 +155,9 @@ class _PatientTile extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: AppSpacing.radiusXl,
-          border: Border.all(color: const Color(0xFFF3F4F6)),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
           boxShadow: AppColors.cardShadow,
         ),
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -179,23 +187,27 @@ class _PatientTile extends StatelessWidget {
                 children: [
                   Text(
                     patient.name,
-                    style: AppTypography.titleSmall,
+                    style: AppTypography.titleSmall.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (meta.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
                       meta,
-                      style: AppTypography.bodySmall,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: Color(0xFF9CA3AF),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               size: 20,
             ),
           ],
@@ -228,16 +240,16 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.person_search_rounded,
             size: 48,
-            color: Color(0xFFD1D5DB),
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
           const SizedBox(height: AppSpacing.m),
           Text(
             hasQuery ? 'No matching patients' : 'No patients yet',
             style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

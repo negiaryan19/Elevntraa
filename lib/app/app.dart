@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/theme/theme_provider.dart';
 import 'router.dart';
 
 class RxvartaApp extends ConsumerWidget {
@@ -10,10 +11,17 @@ class RxvartaApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeAsync = ref.watch(themeModeProvider);
+
+    // While prefs load, show a blank screen in system theme — no flash
+    final themeMode = themeAsync.value ?? ThemeMode.system;
+
     return MaterialApp.router(
       title: 'Rxvarta',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: themeMode,
       scrollBehavior: const _NoBounceScrollBehavior(),
       // Screens are laid out for the default text scale. A larger system
       // text size (common on iOS via Dynamic Type) inflates text until
