@@ -261,7 +261,7 @@ class _PressableState extends State<_Pressable> {
 /// soft fill hugging their tops. Decorative only; loops forever so the card
 /// always feels alive.
 class _Waveform extends StatefulWidget {
-  const _Waveform({this.bars = 30});
+  const _Waveform({this.bars = 30}) : assert(bars > 0, 'bars must be positive');
   final int bars;
 
   @override
@@ -353,7 +353,8 @@ class _BaselineBarsPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _BaselineBarsPainter old) => old.tt != tt;
+  bool shouldRepaint(covariant _BaselineBarsPainter old) =>
+      old.tt != tt || old.bars != bars;
 }
 
 class _GlowCircle extends StatelessWidget {
