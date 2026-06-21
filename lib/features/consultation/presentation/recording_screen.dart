@@ -157,10 +157,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       final segment = DateTime.now().difference(_segmentStartedAt!);
       controller.tickElapsed(_accumulated + segment);
 
-      // 4s of recording without a single amplitude blip means no audio is
+      // 5s of recording without a single amplitude blip means no audio is
       // reaching us — warn now so the doctor doesn't lose the consultation.
+      // Once any sound is heard, _peakAmp stays high and this stays cleared.
       final silent =
-          _accumulated + segment > const Duration(seconds: 4) &&
+          _accumulated + segment > const Duration(seconds: 5) &&
           _peakAmp < 0.02;
       if (silent != _silenceHint && mounted) {
         setState(() => _silenceHint = silent);
@@ -458,6 +459,60 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                     ),
                   ),
                 ),
+              // No-audio alert — shown while recording if the mic stays silent
+              // past 5s. Sits up here (not by the controls) so it never covers
+              // the timer, and clears itself the moment any sound is heard.
+              if (isActiveRecording && _silenceHint)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.s,
+                    AppSpacing.lg,
+                    0,
+                  ),
+                  child: GestureDetector(
+                    onTap: MicPermission.openSettings,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.s,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF2A1212)
+                            : const Color(0xFFFEE2E2),
+                        borderRadius: AppSpacing.radiusMd,
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF7F1D1D)
+                              : const Color(0xFFFCA5A5),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.mic_off_rounded,
+                            color: isDark
+                                ? const Color(0xFFF87171)
+                                : const Color(0xFFDC2626),
+                            size: 16,
+                          ),
+                          const SizedBox(width: AppSpacing.s),
+                          Text(
+                            'No audio detected',
+                            style: AppTypography.labelMedium.copyWith(
+                              color: isDark
+                                  ? const Color(0xFFFCA5A5)
+                                  : const Color(0xFFB91C1C),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               const SizedBox(height: AppSpacing.lg),
               // Main recording area — scrollable so error text never overflows
               Expanded(
@@ -596,57 +651,6 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                               ),
                             ],
                           ),
-                          // Live "mic is silent" warning — recording is running but
-                          // no audio is arriving, so the file will be empty.
-                          if (isActiveRecording && _silenceHint) ...[
-                            const SizedBox(height: AppSpacing.md),
-                            GestureDetector(
-                              onTap: MicPermission.openSettings,
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.lg,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.md,
-                                  vertical: AppSpacing.s,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? const Color(0xFF3D2E0A)
-                                      : const Color(0xFFFEF3C7),
-                                  borderRadius: AppSpacing.radiusMd,
-                                  border: Border.all(
-                                    color: const Color(0xFFF59E0B),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.mic_off_rounded,
-                                      color: Color(0xFFF59E0B),
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: AppSpacing.s),
-                                    Expanded(
-                                      child: Text(
-                                        'No audio detected. Check that the '
-                                        'Microphone permission is ON for Rxvarta '
-                                        'in your device Settings, and disconnect '
-                                        'Bluetooth headphones. '
-                                        'Tap here to open Settings.',
-                                        style: AppTypography.labelSmall
-                                            .copyWith(
-                                              color: isDark
-                                                  ? const Color(0xFFFCD34D)
-                                                  : const Color(0xFF92400E),
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
                           // 55-minute soft warning (free-tier batch limit is 1 h)
                           if (isRecording && state.elapsed.inMinutes >= 55) ...[
                             const SizedBox(height: AppSpacing.md),
