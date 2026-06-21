@@ -257,8 +257,9 @@ class _PressableState extends State<_Pressable> {
   }
 }
 
-/// A live, continuously dancing audio waveform — the hero always looks like
-/// it is listening.
+/// The hero "start consultation" visual: a flowing wave with a comet that
+/// rides along it and gives one small ripple per cycle when it tops a crest.
+/// Decorative only (no mic); loops forever so the card always feels alive.
 class _Waveform extends StatefulWidget {
   const _Waveform({this.bars = 30});
   final int bars;
@@ -267,53 +268,204 @@ class _Waveform extends StatefulWidget {
   State<_Waveform> createState() => _WaveformState();
 }
 
+class _CometParticle {
+  _CometParticle(this.u, this.vy, this.bornMs);
+  final double u;
+  final double vy;
+  final double bornMs;
+}
+
 class _WaveformState extends State<_Waveform>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 2700),
-  )..repeat();
+  late final _ticker = createTicker(_onTick);
+
+  double _nowMs = 0;
+  double _lastCu = 0;
+  bool _splashedThisCycle = false;
+  double _targetU = 0.4;
+  final math.Random _rng = math.Random();
+  double _cometU = 0;
+  double _cometVy = 0;
+  List<double> _wave = const [];
+  final List<_CometParticle> _splashes = [];
+  final List<_CometParticle> _trail = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker.start();
+  }
+
+  double _raw(double u, double t) {
+    final env = math.sin(u * math.pi);
+    return (math.sin(u * 8 - t * 0.003) * 0.6 +
+            math.sin(u * 15 - t * 0.0045) * 0.4) *
+        env;
+  }
+
+  void _onTick(Duration elapsed) {
+    final t = elapsed.inMicroseconds / 1000.0;
+    _nowMs = t;
+    final amp = 0.8 + 0.2 * math.sin(t * 0.0012);
+
+    final n = widget.bars.clamp(12, 120);
+    _wave = List<double>.generate(n + 1, (i) => _raw(i / n, t) * amp);
+
+    final cu = (t * 0.00045) % 1.0;
+    if (cu < _lastCu) {
+      // New sweep: reset and pick a fresh random spot in [0.20, 0.78] so the
+      // ripple lands somewhere different each trip across the button.
+      _splashedThisCycle = false;
+      _targetU = 0.20 + _rng.nextDouble() * 0.58;
+    }
+    _lastCu = cu;
+
+    final cRaw = _raw(cu, t);
+    _cometU = cu;
+    _cometVy = cRaw * amp;
+
+    // When the comet reaches this cycle's random target, splash at the highest
+    // point of the wave in a small window around it: a real local maximum, at a
+    // randomized position, exactly once per sweep (no end-of-wave fallback).
+    if (!_splashedThisCycle && cu >= _targetU) {
+      var bestU = _targetU;
+      var bestV = -2.0;
+      for (var uu = _targetU - 0.07; uu <= _targetU + 0.07; uu += 0.01) {
+        final v = _raw(uu, t);
+        if (v > bestV) {
+          bestV = v;
+          bestU = uu;
+        }
+      }
+      _splashes.add(_CometParticle(bestU, bestV * amp, t));
+      _splashedThisCycle = true;
+    }
+
+    _trail.add(_CometParticle(cu, _cometVy, t));
+    _splashes.removeWhere((s) => t - s.bornMs > 460);
+    _trail.removeWhere((s) => t - s.bornMs > 320);
+
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
-    _c.dispose();
+    _ticker.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 28,
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, _) {
-          final tt = _c.value * 2 * math.pi;
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(widget.bars, (i) {
-              final phase = i / widget.bars * 2 * math.pi;
-              final s =
-                  (math.sin(tt * 2 + phase) + math.sin(tt + phase * 0.5)) / 2;
-              final norm = 0.5 + 0.5 * s;
-              final h = 4.0 + 20.0 * norm;
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                  child: Container(
-                    height: h,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.35 + 0.4 * norm),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          );
-        },
+      height: 46,
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: _CometWavePainter(
+          nowMs: _nowMs,
+          wave: _wave,
+          cometU: _cometU,
+          cometVy: _cometVy,
+          splashes: _splashes,
+          trail: _trail,
+        ),
       ),
     );
   }
+}
+
+class _CometWavePainter extends CustomPainter {
+  _CometWavePainter({
+    required this.nowMs,
+    required this.wave,
+    required this.cometU,
+    required this.cometVy,
+    required this.splashes,
+    required this.trail,
+  });
+
+  final double nowMs;
+  final List<double> wave;
+  final double cometU;
+  final double cometVy;
+  final List<_CometParticle> splashes;
+  final List<_CometParticle> trail;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (wave.isEmpty) return;
+    canvas.clipRect(Offset.zero & size);
+    final cy = size.height / 2;
+    final hr = size.height / 2 - 7;
+
+    double sx(double u) => u * size.width;
+    double sy(double vy) => cy - vy * hr;
+
+    final path = Path();
+    final n = wave.length - 1;
+    for (var i = 0; i <= n; i++) {
+      final x = i / n * size.width;
+      final y = sy(wave[i]);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.2
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..color = Colors.white.withValues(alpha: 0.6),
+    );
+
+    for (final p in trail) {
+      final age = nowMs - p.bornMs;
+      final a = (1 - age / 320).clamp(0.0, 1.0);
+      if (a <= 0) continue;
+      canvas.drawCircle(
+        Offset(sx(p.u), sy(p.vy)),
+        2.0 * a + 0.6,
+        Paint()..color = Colors.white.withValues(alpha: a * 0.6),
+      );
+    }
+
+    for (final s in splashes) {
+      final age = nowMs - s.bornMs;
+      final a = (1 - age / 460).clamp(0.0, 1.0);
+      if (a <= 0) continue;
+      final c = Offset(sx(s.u), sy(s.vy));
+      canvas.drawCircle(
+        c,
+        3 + age * 0.04,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = Colors.white.withValues(alpha: a),
+      );
+      canvas.drawCircle(
+        c,
+        2.4 * a,
+        Paint()..color = Colors.white.withValues(alpha: a),
+      );
+    }
+
+    final head = Offset(sx(cometU), sy(cometVy));
+    canvas.drawCircle(
+      head,
+      6,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.6
+        ..color = Colors.white.withValues(alpha: 0.55),
+    );
+    canvas.drawCircle(head, 3.5, Paint()..color = Colors.white);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CometWavePainter old) => old.nowMs != nowMs;
 }
 
 class _GlowCircle extends StatelessWidget {
