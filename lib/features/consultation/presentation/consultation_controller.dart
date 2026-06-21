@@ -104,9 +104,14 @@ class ConsultationController extends Notifier<ConsultationState> {
 
       final result = await _insight.extract(transcript);
 
-      final updated = (await _visits.byId(
-        visitId,
-      ))!.copyWith(transcript: result.transcript, insight: result.insight);
+      final current = await _visits.byId(visitId);
+      if (current == null) {
+        throw const StorageFailure('Visit record missing from local DB.');
+      }
+      final updated = current.copyWith(
+        transcript: result.transcript,
+        insight: result.insight,
+      );
       await _visits.upsert(updated);
 
       state = state.copyWith(stage: ConsultationStage.done);
