@@ -177,7 +177,7 @@ class _Reveal extends StatefulWidget {
 class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 520),
+    duration: const Duration(milliseconds: 312),
   );
   late final Animation<double> _t = CurvedAnimation(
     parent: _c,
@@ -187,7 +187,7 @@ class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: widget.delayMs), () {
+    Future.delayed(Duration(milliseconds: (widget.delayMs * 0.6).round()), () {
       if (mounted) _c.forward();
     });
   }
