@@ -257,10 +257,11 @@ class _PressableState extends State<_Pressable> {
   }
 }
 
-/// A live, continuously dancing audio waveform — the hero always looks like
-/// it is listening.
+/// The hero "start consultation" visual: bars rising from a baseline with a
+/// soft fill hugging their tops. Decorative only; loops forever so the card
+/// always feels alive.
 class _Waveform extends StatefulWidget {
-  const _Waveform({this.bars = 30});
+  const _Waveform({this.bars = 30}) : assert(bars > 0, 'bars must be positive');
   final int bars;
 
   @override
@@ -271,7 +272,7 @@ class _WaveformState extends State<_Waveform>
     with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 2700),
+    duration: const Duration(milliseconds: 3200),
   )..repeat();
 
   @override
@@ -283,37 +284,77 @@ class _WaveformState extends State<_Waveform>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 28,
+      height: 40,
       child: AnimatedBuilder(
         animation: _c,
         builder: (context, _) {
-          final tt = _c.value * 2 * math.pi;
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(widget.bars, (i) {
-              final phase = i / widget.bars * 2 * math.pi;
-              final s =
-                  (math.sin(tt * 2 + phase) + math.sin(tt + phase * 0.5)) / 2;
-              final norm = 0.5 + 0.5 * s;
-              final h = 4.0 + 20.0 * norm;
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                  child: Container(
-                    height: h,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.35 + 0.4 * norm),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-              );
-            }),
+          return CustomPaint(
+            size: Size.infinite,
+            painter: _BaselineBarsPainter(
+              tt: _c.value * 2 * math.pi,
+              bars: widget.bars,
+            ),
           );
         },
       ),
     );
   }
+}
+
+class _BaselineBarsPainter extends CustomPainter {
+  _BaselineBarsPainter({required this.tt, required this.bars});
+  final double tt;
+  final int bars;
+
+  double _a(double u) {
+    final w =
+        (0.5 + 0.5 * math.sin(u * 6.0 + tt * 1.7)) *
+        (0.45 + 0.55 * (0.5 + 0.5 * math.sin(u * 11.0 - tt * 1.1)));
+    return 0.14 + 0.86 * w;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final h = size.height;
+    final w = size.width;
+    final usable = h - 4;
+
+    // Soft fill hugging the bar tops.
+    final fill = Path()..moveTo(0, h);
+    for (var u = 0.0; u <= 1.0001; u += 0.02) {
+      fill.lineTo(u * w, h - _a(u) * usable);
+    }
+    fill.lineTo(w, h);
+    fill.close();
+    canvas.drawPath(
+      fill,
+      Paint()..color = Colors.white.withValues(alpha: 0.16),
+    );
+
+    // Bars from the baseline.
+    final n = bars;
+    final slot = w / n;
+    final bw = slot * 0.5;
+    final radius = Radius.circular(bw / 2);
+    for (var i = 0; i < n; i++) {
+      final u = (i + 0.5) / n;
+      final a = _a(u);
+      final bh = a * usable;
+      final x = slot * i + (slot - bw) / 2;
+      final rect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(x, h - bh, bw, bh),
+        radius,
+      );
+      canvas.drawRRect(
+        rect,
+        Paint()..color = Colors.white.withValues(alpha: 0.35 + 0.45 * a),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _BaselineBarsPainter old) =>
+      old.tt != tt || old.bars != bars;
 }
 
 class _GlowCircle extends StatelessWidget {
