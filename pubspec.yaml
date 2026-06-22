@@ -24,7 +24,7 @@ dependencies:
   # Local DB
   drift: ^2.34.0
   sqlite3_flutter_libs: ^0.6.0+eol
-  path_provider: ^2.1.4
+  path_provider: ^2.1.6
   path: ^1.9.0
 
   # Audio
@@ -36,8 +36,8 @@ dependencies:
   image_picker: ^1.1.2
 
   # PDF / sharing
-  pdf: ^3.11.1
-  printing: ^5.13.3
+  pdf: ^3.13.0
+  printing: ^5.15.0
   url_launcher: ^6.3.1
 
   # Config / secure storage
