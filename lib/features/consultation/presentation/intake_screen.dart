@@ -855,7 +855,7 @@ class _ReportTile extends StatelessWidget {
           ),
           _IconBtn(
             icon: Icons.delete_outline_rounded,
-            color: const Color(0xFFDC2626),
+            color: scheme.error,
             onTap: onDelete,
           ),
         ],

@@ -1650,11 +1650,7 @@ class _MedicineRowState extends State<_MedicineRow> {
                 visualDensity: VisualDensity.compact,
                 constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 padding: EdgeInsets.zero,
-                icon: const Icon(
-                  Icons.close_rounded,
-                  color: Color(0xFFDC2626),
-                  size: 20,
-                ),
+                icon: Icon(Icons.close_rounded, color: scheme.error, size: 20),
               ),
             ],
           ),

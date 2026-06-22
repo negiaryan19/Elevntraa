@@ -168,11 +168,7 @@ class _ViewPrescriptionScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              size: 40,
-              color: Color(0xFFEF4444),
-            ),
+            Icon(Icons.error_outline_rounded, size: 40, color: scheme.error),
             const SizedBox(height: 12),
             Text(
               'Could not generate prescription',

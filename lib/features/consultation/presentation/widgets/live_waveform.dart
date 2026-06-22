@@ -4,8 +4,6 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../../../../core/theme/app_colors.dart';
-
 /// Scrolling-bars visualiser fed by the real mic amplitude stream.
 /// Each amplitude tick (~10/sec) appends one bar; old bars fall off the
 /// left edge. Heights interpolate smoothly between ticks so the motion
@@ -83,12 +81,15 @@ class _LiveWaveformState extends State<LiveWaveform>
 
   @override
   Widget build(BuildContext context) {
+    final barColor = widget.active
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.outlineVariant;
     return SizedBox(
       height: widget.height,
       child: CustomPaint(
         painter: _WavePainter(
           bars: _bars.toList(growable: false),
-          active: widget.active,
+          barColor: barColor,
         ),
         size: Size.infinite,
       ),
@@ -97,10 +98,10 @@ class _LiveWaveformState extends State<LiveWaveform>
 }
 
 class _WavePainter extends CustomPainter {
-  _WavePainter({required this.bars, required this.active});
+  _WavePainter({required this.bars, required this.barColor});
 
   final List<double> bars;
-  final bool active;
+  final Color barColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -110,15 +111,13 @@ class _WavePainter extends CustomPainter {
     final barW = slot * 0.55;
     final radius = Radius.circular(barW / 2);
 
-    final baseColor = active ? AppColors.primary : AppColors.outlineStrong;
-
     for (var i = 0; i < n; i++) {
       final h = (bars[i].clamp(0.04, 1.0)) * size.height;
       final x = slot * i + (slot - barW) / 2;
       final top = (size.height - h) / 2;
 
       final alpha = (0.35 + 0.65 * (i / (n - 1))).clamp(0.0, 1.0);
-      final paint = Paint()..color = baseColor.withValues(alpha: alpha);
+      final paint = Paint()..color = barColor.withValues(alpha: alpha);
 
       final rect = RRect.fromRectAndRadius(
         Rect.fromLTWH(x, top, barW, h),
@@ -130,5 +129,5 @@ class _WavePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _WavePainter old) =>
-      old.bars != bars || old.active != active;
+      old.bars != bars || old.barColor != barColor;
 }
