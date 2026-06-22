@@ -394,14 +394,12 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                               : null,
                           color: isSelected
                               ? null
-                              : (isDark
-                                    ? const Color(0xFF1C2040)
-                                    : Colors.white),
+                              : Theme.of(context).colorScheme.surfaceContainer,
                           borderRadius: AppSpacing.radiusPill,
                           border: Border.all(
                             color: isSelected
                                 ? Colors.transparent
-                                : const Color(0xFFD1D5DB),
+                                : Theme.of(context).colorScheme.outlineVariant,
                           ),
                         ),
                         child: Text(
@@ -409,7 +407,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           style: AppTypography.labelSmall.copyWith(
                             color: isSelected
                                 ? Colors.white
-                                : AppColors.textSecondary,
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -540,7 +540,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                         progress: _pulse1.value,
                                         baseSize: 192,
                                         maxScale: 1.5,
-                                        color: const Color(0xFF60A5FA),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                       ),
                                       _PulseRing(
                                         progress: _pulse2.value,
@@ -608,12 +610,10 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                             _fmt(state.elapsed),
                             style: AppTypography.displayMedium.copyWith(
                               color: isActiveRecording
-                                  ? (isDark
-                                        ? const Color(0xFF6B8FFF)
-                                        : _kBlue600)
-                                  : (isDark
-                                        ? const Color(0xFF8B93C8)
-                                        : AppColors.textSecondary),
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                               fontFeatures: const [
                                 FontFeature.tabularFigures(),
                               ],
@@ -828,10 +828,10 @@ class _StepProgressBar extends StatelessWidget {
               _steps[i],
               style: AppTypography.labelSmall.copyWith(
                 color: i == activeStep
-                    ? _kBlue600
+                    ? Theme.of(context).colorScheme.primary
                     : i < activeStep
-                    ? const Color(0xFF0D9488)
-                    : const Color(0xFF9CA3AF),
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -942,14 +942,10 @@ class _OutlineButton extends StatelessWidget {
           vertical: 18,
         ),
         decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? const Color(0xFF1C2040)
-              : Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: AppSpacing.radiusLg,
           border: Border.all(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? const Color(0xFF3D4470)
-                : const Color(0xFFD1D5DB),
+            color: Theme.of(context).colorScheme.outlineVariant,
             width: 2,
           ),
           boxShadow: AppColors.cardShadow,

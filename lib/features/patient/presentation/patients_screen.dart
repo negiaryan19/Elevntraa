@@ -196,9 +196,9 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.search_rounded,
-                        color: Color(0xFF9CA3AF),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       const SizedBox(width: AppSpacing.m),
@@ -230,9 +230,9 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                           color: Theme.of(context).colorScheme.surfaceContainer,
                           borderRadius: AppSpacing.radiusSm,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.tune_rounded,
-                          color: _kBlue600,
+                          color: Theme.of(context).colorScheme.primary,
                           size: 16,
                         ),
                       ),
@@ -419,21 +419,23 @@ class _PatientCard extends StatelessWidget {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFCCFBF1),
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         countLabel,
                         style: AppTypography.labelSmall.copyWith(
-                          color: const Color(0xFF0F766E),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
-                    const Icon(
+                    Icon(
                       Icons.chevron_right_rounded,
-                      color: Color(0xFF9CA3AF),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       size: 20,
                     ),
                   ],
@@ -453,17 +455,17 @@ class _PatientCard extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xs),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.calendar_today_rounded,
                       size: 12,
-                      color: Color(0xFF6B7280),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Flexible(
                       child: Text(
                         dateTime,
                         style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -475,10 +477,10 @@ class _PatientCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.description_rounded,
                         size: 12,
-                        color: _kBlue600,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       Expanded(
@@ -538,16 +540,16 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.person_search_rounded,
             size: 48,
-            color: Color(0xFFD1D5DB),
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
           const SizedBox(height: AppSpacing.m),
           Text(
             hasQuery ? 'No patients found' : 'No consultations yet',
             style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

@@ -358,23 +358,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             vertical: AppSpacing.md,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFEF2F2),
+                            color: scheme.errorContainer,
                             borderRadius: AppSpacing.radiusXl,
-                            border: Border.all(color: const Color(0xFFFECACA)),
+                            border: Border.all(
+                              color: scheme.error.withValues(alpha: 0.35),
+                            ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.logout_rounded,
-                                color: Color(0xFFDC2626),
+                                color: scheme.error,
                                 size: 20,
                               ),
                               const SizedBox(width: AppSpacing.s),
                               Text(
                                 'Logout',
                                 style: AppTypography.titleSmall.copyWith(
-                                  color: const Color(0xFFDC2626),
+                                  color: scheme.error,
                                 ),
                               ),
                             ],
