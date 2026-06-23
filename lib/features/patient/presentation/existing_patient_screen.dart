@@ -55,7 +55,12 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Theme.of(context).colorScheme.surface,
         elevation: 0.5,
-        title: Text('Find Patient', style: AppTypography.titleMedium),
+        title: Text(
+          'Find Patient',
+          style: AppTypography.titleMedium.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -65,12 +70,14 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: AppSpacing.radiusXl,
                   border: Border.all(
                     color: Theme.of(context).colorScheme.outline,
                   ),
-                  boxShadow: AppColors.cardShadow,
+                  boxShadow: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.cardShadowDark
+                      : AppColors.cardShadow,
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.md,
@@ -158,7 +165,9 @@ class _PatientTile extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: AppSpacing.radiusXl,
           border: Border.all(color: Theme.of(context).colorScheme.outline),
-          boxShadow: AppColors.cardShadow,
+          boxShadow: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.cardShadowDark
+              : AppColors.cardShadow,
         ),
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(

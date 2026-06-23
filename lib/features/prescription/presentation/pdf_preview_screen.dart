@@ -230,17 +230,17 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
               // surrounding area follows the theme.
               Expanded(
                 child: _pdfBytes == null
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Icons.error_outline_rounded,
                               size: 40,
-                              color: Color(0xFFEF4444),
+                              color: scheme.error,
                             ),
-                            SizedBox(height: 12),
-                            Text('Could not generate PDF'),
+                            const SizedBox(height: 12),
+                            const Text('Could not generate PDF'),
                           ],
                         ),
                       )
