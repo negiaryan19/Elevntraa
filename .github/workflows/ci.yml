@@ -117,6 +117,8 @@ jobs:
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        # Non-fatal: a full artifact storage quota should not block a green build.
+        continue-on-error: true
         with:
           name: app-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
@@ -143,3 +145,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
+          # Skip uploading the SARIF artifact — avoids failures when the
+          # GitHub Actions artifact storage quota is exhausted. The scan
+          # itself still runs and fails the job if secrets are detected.
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false

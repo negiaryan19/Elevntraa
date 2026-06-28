@@ -398,25 +398,6 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
-            ),
-            borderRadius: AppSpacing.radiusMd,
-            boxShadow: isDark ? AppColors.glowBlueDark : AppColors.glowBlue,
-          ),
-          child: const Icon(
-            Icons.medical_services_rounded,
-            color: Colors.white,
-            size: 22,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.m),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

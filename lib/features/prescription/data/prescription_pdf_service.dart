@@ -241,9 +241,8 @@ class PrescriptionPdfService {
 
   pw.Widget _doctorHeader(DoctorProfile d) {
     return pw.Row(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      crossAxisAlignment: pw.CrossAxisAlignment.center,
       children: [
-        // Doctor credentials — left
         pw.Expanded(
           flex: 3,
           child: pw.Column(

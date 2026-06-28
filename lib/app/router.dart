@@ -59,20 +59,23 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoute.home.path,
             name: AppRoute.home.name,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: HomeScreen()),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: _TabBackHandler(isHome: true, child: HomeScreen()),
+            ),
           ),
           GoRoute(
             path: AppRoute.patients.path,
             name: AppRoute.patients.name,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: PatientsScreen()),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: _TabBackHandler(isHome: false, child: PatientsScreen()),
+            ),
           ),
           GoRoute(
             path: AppRoute.settings.path,
             name: AppRoute.settings.name,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: SettingsScreen()),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: _TabBackHandler(isHome: false, child: SettingsScreen()),
+            ),
           ),
         ],
       ),
@@ -95,8 +98,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.recording.path,
         name: AppRoute.recording.name,
-        builder: (context, state) =>
-            RecordingScreen(visitId: state.pathParameters['visitId']!),
+        builder: (context, state) => RecordingScreen(
+          visitId: state.pathParameters['visitId']!,
+          append: state.uri.queryParameters['append'] == 'true',
+          fromReview: state.uri.queryParameters['fromReview'] == 'true',
+        ),
       ),
       GoRoute(
         path: AppRoute.review.path,
@@ -124,6 +130,15 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
+/// Shell that hosts the bottom-nav tabs.
+///
+/// The [PopScope] lives here at the ROOT navigator level (not inside the
+/// shell's nested navigator) so it intercepts back presses even after a modal
+/// opened with `useRootNavigator: true` has been dismissed — which previously
+/// caused the tab's nested-navigator PopScope to be bypassed, exiting the app.
+///
+/// canPop: true  → Home tab: let the root navigator pop the shell (exits app).
+/// canPop: false → other tabs: block pop and navigate to Home instead.
 class _MainShell extends StatelessWidget {
   const _MainShell({required this.location, required this.child});
   final String location;
@@ -131,12 +146,42 @@ class _MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Each screen animates its own sections internally (staggered focus-in),
-    // so the shell just hosts the active tab.
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: child,
-      bottomNavigationBar: _BottomNavBar(location: location),
+    final isHome = location == AppRoute.home.path;
+    return PopScope(
+      canPop: isHome,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return; // Home tab already handled by the system
+        context.go(AppRoute.home.path);
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: child,
+        bottomNavigationBar: _BottomNavBar(location: location),
+      ),
+    );
+  }
+}
+
+/// Handles back presses inside the nested navigator (normal tab navigation).
+///
+/// The root-level [_MainShell] PopScope catches back presses that arrive at
+/// the ROOT navigator — specifically, the press that follows dismissing a
+/// `useRootNavigator: true` modal (Bug 1 scenario). For all other back presses
+/// Flutter routes through the NESTED navigator first, hitting this handler.
+class _TabBackHandler extends StatelessWidget {
+  const _TabBackHandler({required this.isHome, required this.child});
+  final bool isHome;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: isHome,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.go(AppRoute.home.path);
+      },
+      child: child,
     );
   }
 }

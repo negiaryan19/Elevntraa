@@ -16,6 +16,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/report_attachment.dart';
+import 'consultation_controller.dart';
 import 'intake_controller.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
@@ -220,7 +221,17 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
         attachments: _attachments,
       );
       if (!mounted) return;
-      context.go(AppRoute.recording.build(params: {'visitId': result.visitId}));
+      // Fresh consultation — clear any transcript left over from a previous
+      // one so "Add More" appends only within this consultation.
+      ref.read(cumulativeTranscriptProvider.notifier).state = '';
+      // Push (not go) so the recording screen sits on top of intake and the
+      // back gesture returns here instead of exiting the app.
+      await context.push(
+        AppRoute.recording.build(params: {'visitId': result.visitId}),
+      );
+      // Returned from recording (back / discard). Clear the submitting flag so
+      // the form is usable again instead of showing a stuck spinner.
+      if (mounted) setState(() => _submitting = false);
     } catch (e) {
       setState(() {
         _submitting = false;

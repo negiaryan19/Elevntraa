@@ -126,7 +126,37 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     await ref.read(visitRepositoryProvider).upsert(signed);
     if (!mounted) return;
     setState(() => _visit = signed);
-    context.go(AppRoute.pdf.build(params: {'visitId': widget.visitId}));
+    // Push (not go) so the PDF screen can pop back here to edit & regenerate.
+    context.push(AppRoute.pdf.build(params: {'visitId': widget.visitId}));
+  }
+
+  /// Back arrow / Android back — confirm before returning to the recording
+  /// screen so the doctor can add more audio or start a fresh recording.
+  Future<void> _goBackToRecording() async {
+    final goBack = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Go back to recording?'),
+        content: const Text(
+          'You can add more to this consultation or start a new recording.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Stay'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Go Back'),
+          ),
+        ],
+      ),
+    );
+    if (goBack != true || !mounted) return;
+    context.pushReplacement(
+      '${AppRoute.recording.build(params: {'visitId': widget.visitId})}'
+      '?fromReview=true',
+    );
   }
 
   Future<void> _share() async {
@@ -173,193 +203,211 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     final signed = _visit!.signed;
     final gap = AppSpacing.adaptive(context, AppSpacing.md);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: isDark
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF0D0F1A),
-                    Color(0xFF13162A),
-                    Color(0xFF0D1525),
-                  ],
-                  stops: [0.0, 0.5, 1.0],
-                )
-              : const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFEFF6FF), Colors.white, Color(0xFFF0FDFA)],
-                  stops: [0.0, 0.5, 1.0],
-                ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.s,
-                  AppSpacing.adaptive(context, AppSpacing.md),
-                  AppSpacing.lg,
-                  0,
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () =>
-                          context.canPop() ? context.pop() : context.go('/'),
-                      icon: Icon(
-                        Icons.arrow_back_rounded,
-                        color: scheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Review Prescription',
-                            style: AppTypography.headlineMedium.copyWith(
-                              color: scheme.onSurface,
-                            ),
-                          ),
-                          Text(
-                            'Verify and edit transcribed details',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: scheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (_saving)
-                      const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                  ],
-                ),
-              ),
-              SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: _StepProgressBar(activeStep: 2),
-              ),
-              SizedBox(height: gap),
-              // Scrolling content
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _goBackToRecording();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: isDark
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF0D0F1A),
+                      Color(0xFF13162A),
+                      Color(0xFF0D1525),
+                    ],
+                    stops: [0.0, 0.5, 1.0],
+                  )
+                : const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFEFF6FF),
+                      Colors.white,
+                      Color(0xFFF0FDFA),
+                    ],
+                    stops: [0.0, 0.5, 1.0],
+                  ),
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    AppSpacing.s,
+                    AppSpacing.adaptive(context, AppSpacing.md),
                     AppSpacing.lg,
                     0,
-                    AppSpacing.lg,
-                    AppSpacing.md,
                   ),
-                  children: [
-                    _SummaryCard(
-                      summary: _draft.consultationSummary,
-                      onSave: (v) {
-                        setState(
-                          () =>
-                              _draft = _draft.copyWith(consultationSummary: v),
-                        );
-                        _save();
-                      },
-                    ),
-                    SizedBox(height: gap),
-                    if (_patient != null) ...[
-                      _PatientCard(patient: _patient!, onSave: _savePatient),
-                      SizedBox(height: gap),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: _goBackToRecording,
+                        icon: Icon(
+                          Icons.arrow_back_rounded,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Review Prescription',
+                              style: AppTypography.headlineMedium.copyWith(
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                            Text(
+                              'Verify and edit transcribed details',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_saving)
+                        const Padding(
+                          padding: EdgeInsets.only(right: AppSpacing.s),
+                          child: SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
                     ],
-                    _DiagnosisCard(
-                      diagnosis: _draft.diagnosis,
-                      icdCode: _draft.icdCode,
-                      icdDescription: _draft.icdDescription,
-                      icdConfidence: _draft.icdConfidence,
-                      onSaveDiagnosis: (v) {
-                        setState(() => _draft = _draft.copyWith(diagnosis: v));
-                        _save();
-                      },
-                      onRemoveIcd: () {
-                        setState(
-                          () => _draft = _draft.copyWith(
-                            icdCode: null,
-                            icdDescription: null,
-                            icdConfidence: null,
-                          ),
-                        );
-                        _save();
-                      },
-                      onEditIcd: (newCode, newDesc) {
-                        setState(
-                          () => _draft = _draft.copyWith(
-                            icdCode: newCode,
-                            icdDescription: newDesc,
-                            icdConfidence: null,
-                          ),
-                        );
-                        _save();
-                      },
-                    ),
-                    SizedBox(height: gap),
-                    _medicinesCard(),
-                    SizedBox(height: gap),
-                    _EditableBullets(
-                      title: 'Advice',
-                      icon: Icons.tips_and_updates_rounded,
-                      items: _draft.advice,
-                      placeholder: 'No advice yet — tap ✏️ to add',
-                      hint:
-                          'General guidance — one per line\n'
-                          'e.g. Take adequate rest\nAvoid oily food',
-                      onSave: (v) {
-                        setState(() => _draft = _draft.copyWith(advice: v));
-                        _save();
-                      },
-                    ),
-                    SizedBox(height: gap),
-                    _EditableBullets(
-                      title: 'Instructions',
-                      icon: Icons.checklist_rounded,
-                      items: _draft.instructions,
-                      placeholder: 'No instructions yet — tap ✏️ to add',
-                      hint:
-                          'Clinical directives — one per line\n'
-                          'e.g. Take medication after meals\n'
-                          'Review after 3 days if symptoms persist',
-                      onSave: (v) {
-                        setState(
-                          () => _draft = _draft.copyWith(instructions: v),
-                        );
-                        _save();
-                      },
-                    ),
-                    SizedBox(height: gap),
-                    _FollowUpCard(
-                      days: _draft.followUpDays,
-                      onChanged: (d) {
-                        setState(
-                          () => _draft = _draft.copyWith(followUpDays: d),
-                        );
-                        _save();
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              // Sticky bottom bar
-              _BottomBar(
-                signed: signed,
-                showShare: !signed && _patient?.whatsappNumber != null,
-                onSign: _sign,
-                onShare: _share,
-              ),
-            ],
+                SizedBox(height: AppSpacing.adaptive(context, AppSpacing.lg)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  child: _StepProgressBar(activeStep: 2),
+                ),
+                SizedBox(height: gap),
+                // Scrolling content
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      0,
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                    ),
+                    children: [
+                      _SummaryCard(
+                        summary: _draft.consultationSummary,
+                        onSave: (v) {
+                          setState(
+                            () => _draft = _draft.copyWith(
+                              consultationSummary: v,
+                            ),
+                          );
+                          _save();
+                        },
+                      ),
+                      SizedBox(height: gap),
+                      if (_patient != null) ...[
+                        _PatientCard(patient: _patient!, onSave: _savePatient),
+                        SizedBox(height: gap),
+                      ],
+                      _DiagnosisCard(
+                        diagnosis: _draft.diagnosis,
+                        icdCode: _draft.icdCode,
+                        icdDescription: _draft.icdDescription,
+                        icdConfidence: _draft.icdConfidence,
+                        onSaveDiagnosis: (v) {
+                          setState(
+                            () => _draft = _draft.copyWith(diagnosis: v),
+                          );
+                          _save();
+                        },
+                        onRemoveIcd: () {
+                          setState(
+                            () => _draft = _draft.copyWith(
+                              icdCode: null,
+                              icdDescription: null,
+                              icdConfidence: null,
+                            ),
+                          );
+                          _save();
+                        },
+                        onEditIcd: (newCode, newDesc) {
+                          setState(
+                            () => _draft = _draft.copyWith(
+                              icdCode: newCode,
+                              icdDescription: newDesc,
+                              icdConfidence: null,
+                            ),
+                          );
+                          _save();
+                        },
+                      ),
+                      SizedBox(height: gap),
+                      _medicinesCard(),
+                      SizedBox(height: gap),
+                      _EditableBullets(
+                        title: 'Advice',
+                        icon: Icons.tips_and_updates_rounded,
+                        items: _draft.advice,
+                        placeholder: 'No advice yet — tap ✏️ to add',
+                        hint:
+                            'General guidance — one per line\n'
+                            'e.g. Take adequate rest\nAvoid oily food',
+                        onSave: (v) {
+                          setState(() => _draft = _draft.copyWith(advice: v));
+                          _save();
+                        },
+                      ),
+                      SizedBox(height: gap),
+                      _EditableBullets(
+                        title: 'Instructions',
+                        icon: Icons.checklist_rounded,
+                        items: _draft.instructions,
+                        placeholder: 'No instructions yet — tap ✏️ to add',
+                        hint:
+                            'Clinical directives — one per line\n'
+                            'e.g. Take medication after meals\n'
+                            'Review after 3 days if symptoms persist',
+                        onSave: (v) {
+                          setState(
+                            () => _draft = _draft.copyWith(instructions: v),
+                          );
+                          _save();
+                        },
+                      ),
+                      SizedBox(height: gap),
+                      _FollowUpCard(
+                        days: _draft.followUpDays,
+                        onChanged: (d) {
+                          setState(
+                            () => _draft = _draft.copyWith(followUpDays: d),
+                          );
+                          _save();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                // Sticky bottom bar
+                _BottomBar(
+                  signed: signed,
+                  showShare: !signed && _patient?.whatsappNumber != null,
+                  onSign: _sign,
+                  onShare: _share,
+                ),
+              ],
+            ),
           ),
         ),
       ),
