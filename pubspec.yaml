@@ -70,9 +70,21 @@ dev_dependencies:
   json_serializable: ^6.14.0
   drift_dev: ^2.34.0
   mockito: ^5.4.4
+  flutter_launcher_icons: ^0.14.4
 
 
 flutter:
   uses-material-design: true
   assets:
     - .env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon_fullbleed.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icon/icon_fullbleed.png"

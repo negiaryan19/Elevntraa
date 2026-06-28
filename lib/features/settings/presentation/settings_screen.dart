@@ -23,6 +23,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      // Use the root navigator so the modal barrier covers the whole screen
+      // (including the bottom nav). Otherwise the barrier only covers the tab
+      // content and the bottom nav stays tappable, letting the user switch
+      // tabs behind the sheet and bypass the unsaved-changes guard.
+      useRootNavigator: true,
       builder: (_) => _EditProfileSheet(initial: current),
     );
     if (updated != null) {
@@ -199,19 +204,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 : const Color(0xFFEFF6FF),
                             iconColor: const Color(0xFF2563EB),
                             label: 'Profile Settings',
-                            subtitle: 'Update your name and clinic details',
-                            onTap: _openProfileEditor,
-                          ),
-                          _Divider(),
-                          _Tile(
-                            icon: Icons.medical_services_outlined,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF0D3D2E)
-                                : const Color(0xFFECFDF5),
-                            iconColor: const Color(0xFF10B981),
-                            label: 'Medical Credentials',
-                            subtitle: 'Qualifications and registration number',
+                            subtitle:
+                                'Name, qualifications, registration & clinic details',
                             onTap: _openProfileEditor,
                           ),
                         ],
@@ -665,6 +659,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   late final TextEditingController _clinicAddress;
   late final TextEditingController _clinicPhone;
   final _formKey = GlobalKey<FormState>();
+  bool _hasUnsavedChanges = false;
+
+  List<TextEditingController> get _controllers => [
+    _name,
+    _quals,
+    _regNo,
+    _clinicName,
+    _clinicAddress,
+    _clinicPhone,
+  ];
 
   @override
   void initState() {
@@ -676,21 +680,68 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     _clinicName = TextEditingController(text: p.clinicName);
     _clinicAddress = TextEditingController(text: p.clinicAddress);
     _clinicPhone = TextEditingController(text: p.clinicPhone);
+    for (final c in _controllers) {
+      c.addListener(_onFieldChanged);
+    }
+  }
+
+  void _onFieldChanged() {
+    final p = widget.initial;
+    final dirty =
+        _name.text != p.name ||
+        _quals.text != p.qualifications ||
+        _regNo.text != p.regNo ||
+        _clinicName.text != p.clinicName ||
+        _clinicAddress.text != p.clinicAddress ||
+        _clinicPhone.text != p.clinicPhone;
+    if (dirty != _hasUnsavedChanges) {
+      setState(() => _hasUnsavedChanges = dirty);
+    }
   }
 
   @override
   void dispose() {
-    for (final c in [
-      _name,
-      _quals,
-      _regNo,
-      _clinicName,
-      _clinicAddress,
-      _clinicPhone,
-    ]) {
+    for (final c in _controllers) {
+      c.removeListener(_onFieldChanged);
       c.dispose();
     }
     super.dispose();
+  }
+
+  /// Shown when the user tries to dismiss the sheet with unsaved edits.
+  /// Returns true if the sheet should be allowed to close.
+  Future<bool> _confirmDiscard() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Unsaved Changes'),
+        content: const Text(
+          'You have unsaved changes. Do you want to save them or discard?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Discard'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (result == true) {
+      // Discard: allow the sheet to close, returning no profile update.
+      return true;
+    }
+    if (result == false) {
+      // Save: validate & pop with the updated profile (handled by _save).
+      _save();
+    }
+    // Either we saved (and _save already popped) or the dialog was cancelled —
+    // in both cases the PopScope should not pop again.
+    return false;
   }
 
   void _save() {
@@ -711,105 +762,115 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomInset),
-      child: Container(
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.md,
-          AppSpacing.lg,
-          AppSpacing.lg,
-        ),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: scheme.outlineVariant,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                Text(
-                  'Edit Profile',
-                  style: AppTypography.headlineMedium.copyWith(
-                    color: scheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xxs),
-                Text(
-                  'Appears on prescription letterhead.',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                _Field(
-                  label: 'Doctor name',
-                  controller: _name,
-                  hint: 'Dr. Rajesh Sharma',
-                  required: true,
-                ),
-                _Field(
-                  label: 'Qualifications',
-                  controller: _quals,
-                  hint: 'MBBS, MD (Medicine)',
-                  required: true,
-                ),
-                _Field(
-                  label: 'Registration number',
-                  controller: _regNo,
-                  hint: 'MH-12345',
-                  required: true,
-                ),
-                _Field(
-                  label: 'Clinic / Hospital name',
-                  controller: _clinicName,
-                  hint: 'Rxvarta Clinic',
-                ),
-                _Field(
-                  label: 'Clinic address',
-                  controller: _clinicAddress,
-                  hint: 'Area, City, State PIN',
-                  maxLines: 2,
-                ),
-                _Field(
-                  label: 'Clinic phone',
-                  controller: _clinicPhone,
-                  hint: '+91 98765 43210',
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Cancel'),
+    return PopScope(
+      canPop: !_hasUnsavedChanges,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldDiscard = await _confirmDiscard();
+        if (shouldDiscard && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: Container(
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: scheme.outlineVariant,
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _save,
-                        child: const Text('Save'),
-                      ),
+                  ),
+                  Text(
+                    'Edit Profile',
+                    style: AppTypography.headlineMedium.copyWith(
+                      color: scheme.onSurface,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    'Appears on prescription letterhead.',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  _Field(
+                    label: 'Doctor name',
+                    controller: _name,
+                    hint: 'Dr. Rajesh Sharma',
+                    required: true,
+                  ),
+                  _Field(
+                    label: 'Qualifications',
+                    controller: _quals,
+                    hint: 'MBBS, MD (Medicine)',
+                    required: true,
+                  ),
+                  _Field(
+                    label: 'Registration number',
+                    controller: _regNo,
+                    hint: 'MH-12345',
+                    required: true,
+                  ),
+                  _Field(
+                    label: 'Clinic / Hospital name',
+                    controller: _clinicName,
+                    hint: 'Rxvarta Clinic',
+                  ),
+                  _Field(
+                    label: 'Clinic address',
+                    controller: _clinicAddress,
+                    hint: 'Area, City, State PIN',
+                    maxLines: 2,
+                  ),
+                  _Field(
+                    label: 'Clinic phone',
+                    controller: _clinicPhone,
+                    hint: '+91 98765 43210',
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _save,
+                          child: const Text('Save'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
