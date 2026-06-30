@@ -25,7 +25,10 @@ Future<void> main() async {
   final supabaseUrl = Env.supabaseUrl;
   final supabaseAnonKey = Env.supabaseAnonKey;
   if (supabaseUrl != null && supabaseAnonKey != null) {
-    await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseAnonKey);
+    await Supabase.initialize(
+      url: supabaseUrl,
+      publishableKey: supabaseAnonKey,
+    );
     await _autoLogin();
   } else {
     debugPrint('[Supabase] URL or anon key missing — backend calls will fail.');
@@ -50,13 +53,17 @@ Future<void> _autoLogin() async {
     final email = Env.autoLoginEmail;
     final password = Env.autoLoginPassword;
     if (email == null || password == null) {
-      debugPrint('[Supabase] AUTO_LOGIN_EMAIL/PASSWORD not set — skipping auto-login.');
+      debugPrint(
+        '[Supabase] AUTO_LOGIN_EMAIL/PASSWORD not set — skipping auto-login.',
+      );
       return;
     }
 
     await client.auth.signInWithPassword(email: email, password: password);
     debugPrint('[Supabase] Auto-login succeeded.');
   } catch (e) {
-    debugPrint('[Supabase] Auto-login failed: $e — pipeline calls will return "Not authenticated".');
+    debugPrint(
+      '[Supabase] Auto-login failed: $e — pipeline calls will return "Not authenticated".',
+    );
   }
 }

@@ -32,17 +32,24 @@ class PipelineService {
     final userId = session.user.id;
 
     final jobUuid = const Uuid().v4();
-    final ext = audioPath.contains('.') ? audioPath.substring(audioPath.lastIndexOf('.')) : '.m4a';
+    final ext = audioPath.contains('.')
+        ? audioPath.substring(audioPath.lastIndexOf('.'))
+        : '.m4a';
     final storagePath = '$userId/$jobUuid$ext';
 
     // Step 1 — upload audio
     try {
       final bytes = await File(audioPath).readAsBytes();
-      await client.storage.from(_bucket).uploadBinary(
-        storagePath,
-        bytes,
-        fileOptions: const FileOptions(contentType: 'audio/mp4', upsert: false),
-      );
+      await client.storage
+          .from(_bucket)
+          .uploadBinary(
+            storagePath,
+            bytes,
+            fileOptions: const FileOptions(
+              contentType: 'audio/mp4',
+              upsert: false,
+            ),
+          );
     } on StorageException catch (e) {
       throw ApiFailure('Audio upload failed: ${e.message}', cause: e);
     } catch (e) {
@@ -57,7 +64,8 @@ class PipelineService {
         body: {
           'audioPath': storagePath,
           'languageCode': languageCode,
-          if (audioDuration != null) 'audioDurationSeconds': audioDuration.inSeconds,
+          if (audioDuration != null)
+            'audioDurationSeconds': audioDuration.inSeconds,
         },
       );
     } on FunctionException catch (e) {
@@ -68,8 +76,13 @@ class PipelineService {
 
     if (response.status != 200) {
       final body = response.data;
-      final msg = body is Map ? (body['error'] ?? body.toString()) : body.toString();
-      throw ApiFailure('Pipeline returned HTTP ${response.status}: $msg', statusCode: response.status);
+      final msg = body is Map
+          ? (body['error'] ?? body.toString())
+          : body.toString();
+      throw ApiFailure(
+        'Pipeline returned HTTP ${response.status}: $msg',
+        statusCode: response.status,
+      );
     }
 
     // Step 3 — handle sync vs async response
