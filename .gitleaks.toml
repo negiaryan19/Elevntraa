@@ -63,3 +63,29 @@ regexes = [
   '''your_key_here''',
   '''ci_placeholder''',
 ]
+
+# ---------------------------------------------------------------------------
+# Supabase-specific rules
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "supabase-service-role-key"
+description = "Supabase service_role API key (new format)"
+regex = '''sb_secret_[A-Za-z0-9]{20,}'''
+keywords = ["sb_secret_"]
+
+[[rules]]
+id = "supabase-service-role-jwt"
+description = "Supabase legacy service_role JWT (fuzzy — matches any HS256 JWT long enough to be a real Supabase token)"
+# Supabase anon/service_role keys shipped as JWTs: three base64url segments separated by dots.
+# The header always starts with eyJ (base64url of '{"') and both header and payload are
+# non-trivially long. This is a best-effort pattern; gitleaks' built-in jwt rule also fires,
+# so this catches anything the upstream rule misses in Supabase-specific contexts.
+regex = '''eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{30,}\.[A-Za-z0-9_-]{20,}'''
+keywords = ["eyj"]
+
+[[rules]]
+id = "supabase-db-url"
+description = "Supabase Postgres database URL with embedded password"
+regex = '''postgres(?:ql)?://postgres[a-zA-Z0-9.]*:[^@\s]+@[a-z0-9.-]+\.supabase\.(co|com)'''
+keywords = ["supabase.co"]

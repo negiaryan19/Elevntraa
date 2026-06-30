@@ -1,269 +1,304 @@
 # Rxvarta
 
-Rxvarta is an AI assisted prescription dictation app for Indian doctors. The doctor records a consultation, the audio is transcribed (with support for many Indian languages), and the conversation is turned into a structured prescription that can be reviewed, signed, exported as a PDF, and shared with the patient on WhatsApp.
+Rxvarta is an AI-powered prescription dictation app for Indian doctors. A doctor records a consultation, the audio gets transcribed (supporting Indian languages), and the app generates a structured prescription that can be reviewed, signed, exported as PDF, and shared via WhatsApp.
 
-This README is a complete, step by step setup guide. If you have never built a Flutter app before, you can follow it from top to bottom and end up with the app running on an emulator or a real phone.
+---
 
-## What you are building
+## What you need before starting
 
-- Platforms: Android and iOS (there is no web or desktop build in this project).
-- Framework: Flutter (Dart).
-- Local database: Drift (SQLite) for patients and visits.
-- Speech to text: Sarvam AI, with a Google Gemini audio fallback.
-- Clinical extraction: Google Gemini turns the transcript into a structured prescription.
+- Flutter SDK 3.44 or newer (includes Dart 3.12+)
+- Git
+- Android: Android Studio, Java 17 JDK, Android SDK
+- iOS (Mac only): Xcode and CocoaPods
+- A Supabase account and project
+- API keys: Sarvam AI and Google Gemini
 
-## Requirements at a glance
-
-You need these tools installed before you start. Exact install steps are in the sections further down.
-
-- Flutter SDK 3.44 or newer, which bundles Dart 3.12 or newer.
-- Git.
-- For Android: Android Studio (or the Android command line tools), a Java 17 JDK, and an Android SDK.
-- For iOS (Mac only): Xcode and CocoaPods.
-- Two API keys: one from Sarvam AI and one from Google Gemini. See the "Add your API keys" section.
-
-The project is currently pinned to these toolchain versions on the Android side, so if you hit version errors this is the reference:
+Android toolchain versions this project uses:
 
 - Android Gradle Plugin 9.0.1
 - Kotlin 2.3.20
 - Gradle 9.1.0
 - Java 17
 
+---
+
 ## Step 1: Install Git
 
-Git is needed to clone the project and is also used internally by Flutter.
+**macOS**
+Run `git --version` in Terminal. If missing, macOS will prompt you to install Command Line Tools. Or use Homebrew: `brew install git`
 
-- macOS: run `git --version` in the Terminal. If it is missing, macOS will offer to install the Command Line Tools, which include Git. You can also install it with Homebrew using `brew install git`.
-- Linux (Debian or Ubuntu): `sudo apt update && sudo apt install git`.
-- Windows: download and install Git from https://git-scm.com/download/win.
+**Linux (Ubuntu/Debian)**
+```bash
+sudo apt update && sudo apt install git
+```
+
+**Windows**
+Download and install from https://git-scm.com/download/win
+
+---
 
 ## Step 2: Install Flutter
 
-Flutter gives you the `flutter` and `dart` commands used everywhere below.
-
-1. Follow the official install guide for your operating system at https://docs.flutter.dev/get-started/install. Use the stable channel.
-2. Add the Flutter `bin` folder to your `PATH` so the `flutter` command works in any terminal.
-3. Confirm the version. This project expects Flutter 3.44 or newer:
-
+1. Go to https://docs.flutter.dev/get-started/install and follow the guide for your OS. Use the stable channel.
+2. Add the Flutter `bin` folder to your PATH.
+3. Check your version:
    ```bash
    flutter --version
    ```
+4. If older than 3.44, run:
+   ```bash
+   flutter upgrade
+   ```
 
-If you already have Flutter but it is older, upgrade it:
-
-```bash
-flutter upgrade
-```
+---
 
 ## Step 3: Install the Android toolchain
 
-Skip this section if you only want to build for iOS. You need this to run on an Android emulator or an Android phone.
+Skip this if you only need iOS.
 
-### 3a. Install a Java 17 JDK
+### Java 17
 
-The Android build uses Java 17. Check what you have:
-
+Check what you have:
 ```bash
 java -version
 ```
 
-If you do not have Java 17:
+**macOS**: `brew install openjdk@17` or install through Android Studio.
 
-- macOS: `brew install openjdk@17` and then follow the symlink instructions Homebrew prints, or install it through Android Studio which bundles a compatible JDK.
-- Linux (Debian or Ubuntu): `sudo apt update && sudo apt install openjdk-17-jdk`.
-- Windows: install the Temurin 17 JDK from https://adoptium.net.
+**Linux**:
+```bash
+sudo apt update && sudo apt install openjdk-17-jdk
+```
 
-### 3b. Install the Android SDK
+**Windows**: Download Temurin 17 from https://adoptium.net
 
-The easiest path is Android Studio, which installs the SDK, the platform tools, and an emulator for you.
+### Android SDK
 
-1. Download Android Studio from https://developer.android.com/studio and install it.
-2. Open Android Studio once and let it finish the first run setup, which downloads the Android SDK.
-3. In Android Studio, open the SDK Manager and make sure you have a recent Android SDK Platform and the Android SDK Command line Tools installed.
+1. Download Android Studio from https://developer.android.com/studio
+2. Open it once and complete the first-run setup. It downloads the SDK for you.
+3. In SDK Manager, make sure you have an Android SDK Platform and Android SDK Command-line Tools installed.
 
-If you prefer not to install the full Android Studio, you can install only the command line tools from the same download page, unzip them, and place them under your Android SDK folder in a directory named `cmdline-tools/latest`.
-
-### 3c. Accept the Android licenses
-
-The Android SDK will not build until you accept its licenses. This is the step people often forget. On Linux you may need elevated permissions if your SDK lives in a system wide folder, which is where the `sudo` part comes in.
-
-Normal case (SDK is in your own home folder, which is the default with Android Studio):
+### Accept Android licenses
 
 ```bash
 flutter doctor --android-licenses
 ```
 
-Type `y` to accept each license.
+Type `y` for each license. If you get a permission error, run with `sudo` on Mac/Linux, or open the terminal as Administrator on Windows.
 
-If the SDK was installed into a protected system location and the command above fails with a permission error, run it with elevated rights so it can write the license files. On macOS or Linux:
-
-```bash
-sudo flutter doctor --android-licenses
-```
-
-On Windows, open the terminal as Administrator and run `flutter doctor --android-licenses` without `sudo`, because `sudo` is not a Windows command.
-
-Tip: the cleaner long term fix for permission errors is to make your user the owner of the Android SDK folder so you do not need elevated rights at all. For example on Linux, if your SDK is at `/opt/android-sdk`, you can run `sudo chown -R $USER:$USER /opt/android-sdk` once, after which the plain `flutter doctor --android-licenses` will work.
-
-### 3d. Confirm the Android setup
+### Confirm setup
 
 ```bash
 flutter doctor
 ```
 
-Look for a check mark next to "Android toolchain". Resolve anything it flags before moving on.
+Look for a checkmark next to "Android toolchain".
+
+---
 
 ## Step 4: Install the iOS toolchain (Mac only)
 
-Skip this section if you are building for Android only.
+Skip if building for Android only.
 
 1. Install Xcode from the Mac App Store.
-2. Install the Xcode command line tools:
-
+2. Install command line tools:
    ```bash
    sudo xcode-select --install
    ```
-
 3. Accept the Xcode license:
-
    ```bash
    sudo xcodebuild -license accept
    ```
-
-4. Install CocoaPods, which manages the iOS native dependencies:
-
+4. Install CocoaPods:
    ```bash
    sudo gem install cocoapods
    ```
 
-## Step 5: Get the project
+---
 
-Clone the repository and move into it:
+## Step 5: Set up Supabase
+
+### Create a Supabase account and project
+
+1. Go to https://supabase.com and sign up for a free account.
+2. After logging in, click "New Project".
+3. Fill in your project name, a database password (save this), and choose a region close to you.
+4. Wait for the project to finish setting up (about 1-2 minutes).
+
+### Get your project credentials
+
+1. In your Supabase project, go to Project Settings > API.
+2. Copy your "Project URL" and "anon/public" key. You will need these in the `.env` file.
+
+### Install the Supabase CLI
+
+**macOS**:
+```bash
+brew install supabase/tap/supabase
+```
+
+**Linux**:
+```bash
+brew install supabase/tap/supabase
+```
+(Install Homebrew first from https://brew.sh if you do not have it.)
+
+**Windows**: Download the latest release from https://github.com/supabase/cli/releases and add it to your PATH.
+
+### Link your project
+
+From the project root, log in and link to your Supabase project:
 
 ```bash
-git clone <your-repository-url>
+supabase login
+supabase link --project-ref YOUR_PROJECT_REF
+```
+
+Your project ref is the string in your Supabase dashboard URL: `https://supabase.com/dashboard/project/YOUR_PROJECT_REF`
+
+### Push the database schema
+
+Apply the migrations to your Supabase project:
+
+```bash
+supabase db push
+```
+
+### Deploy Edge Functions
+
+The backend processing runs on Supabase Edge Functions. Deploy them with:
+
+```bash
+supabase functions deploy process-consultation
+supabase functions deploy check-job-status
+```
+
+### Set secrets for Edge Functions
+
+The Edge Functions need your API keys. Set them as secrets in Supabase:
+
+```bash
+supabase secrets set SARVAM_API_KEY=your_sarvam_key
+supabase secrets set GEMINI_API_KEY=your_gemini_key
+```
+
+---
+
+## Step 6: Clone and set up the project
+
+```bash
+git clone <repository-url>
 cd project
 ```
 
-Replace `<your-repository-url>` with the actual URL of this repository.
-
-## Step 6: Install the Dart and Flutter dependencies
-
-From the project root, download all the packages listed in `pubspec.yaml`:
+Install Flutter dependencies:
 
 ```bash
 flutter pub get
 ```
 
+---
+
 ## Step 7: Add your API keys
 
-The app reads two API keys from a file named `.env` in the project root. This file is intentionally not committed to Git, so you create your own from the provided example.
+Create a `.env` file from the example:
 
-1. Copy the example file:
+**macOS/Linux**:
+```bash
+cp .env.example .env
+```
 
-   ```bash
-   cp .env.example .env
-   ```
+**Windows**:
+```bash
+copy .env.example .env
+```
 
-2. Open `.env` and fill in your real keys:
+Open `.env` and fill in your values:
 
-   ```
-   SARVAM_API_KEY=your_real_sarvam_key
-   GEMINI_API_KEY=your_real_gemini_key
-   ```
+```
+SARVAM_API_KEY=your_sarvam_key
+GEMINI_API_KEY=your_gemini_key
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+AUTO_LOGIN_EMAIL=your_test_user_email
+AUTO_LOGIN_PASSWORD=your_test_user_password
+```
 
 Where to get the keys:
 
-- Sarvam API key: sign up at https://www.sarvam.ai and create an API key from your dashboard. This powers speech to text for Indian languages.
-- Gemini API key: create a key in Google AI Studio at https://aistudio.google.com/app/apikey. This powers the prescription extraction and the audio fallback.
+- Sarvam API key: sign up at https://www.sarvam.ai, then create a key from your dashboard.
+- Gemini API key: create one at https://aistudio.google.com/app/apikey
+- Supabase URL and anon key: found in your Supabase project under Settings > API.
 
-Notes:
+Do not commit the `.env` file. Only `.env.example` goes into version control.
 
-- A missing `.env` will not crash the app on first launch, but transcription and extraction will not work until both keys are present.
-- The `.env` file is already bundled as an app asset in `pubspec.yaml`, so once you fill it in, no extra wiring is needed.
-- Never commit your real `.env`. Only `.env.example` belongs in version control.
+---
 
-## Step 8: Generate the code (only if needed)
+## Step 8: Run the app
 
-This project uses code generation for its models and database (Freezed, json_serializable, and Drift). The generated files are already checked into the repository, so a normal first build does not require this step.
-
-You only need to run this if you change a model or the database schema, or if the build complains about missing generated files:
-
-```bash
-dart run build_runner build --delete-conflicting-outputs
-```
-
-## Step 9: Pick a device
-
-List everything Flutter can run on right now:
+List available devices:
 
 ```bash
 flutter devices
 ```
 
-To start an Android emulator, you can list and launch one of your created emulators:
+Start an Android emulator:
 
 ```bash
 flutter emulators
 flutter emulators --launch <emulator-id>
 ```
 
-On a Mac you can also start the iOS Simulator:
+Start the iOS Simulator (Mac only):
 
 ```bash
 open -a Simulator
 ```
 
-To use a real phone, enable Developer Options and USB debugging on Android, or trust the computer on iOS, then plug it in.
-
-## Step 10: Run the app
-
-With a device or emulator ready, start the app in debug mode:
+Run the app:
 
 ```bash
 flutter run
 ```
 
-If more than one device is connected, target a specific one:
+If multiple devices are connected:
 
 ```bash
 flutter run -d <device-id>
 ```
 
-The first run takes longer because it compiles the native code. Later runs are faster, and you can use hot reload while developing.
+---
 
-## Permissions you will be asked for
+## Step 9: Generate code (only when needed)
 
-The app requests these at runtime, and it handles a denial without crashing:
+The generated files are already in the repo. Only run this if you change a model or database schema:
 
-- Microphone: required to record the consultation.
-- Camera and photo library: optional, used only when you attach a previous report.
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
 
-If you deny the microphone permission permanently, the app shows a prompt that takes you to the system settings so you can enable it.
+---
 
-## Building a release version
+## Build a release version
 
-Android APK (good for sharing a test build):
-
+**Android APK**:
 ```bash
 flutter build apk --release
 ```
 
-Android App Bundle (for the Play Store):
-
+**Android App Bundle (Play Store)**:
 ```bash
 flutter build appbundle --release
 ```
 
-iOS (Mac with Xcode required):
-
+**iOS (Mac + Xcode required)**:
 ```bash
 flutter build ios --release
 ```
 
-For a real Play Store or App Store submission you will also need to set up signing, which is beyond the scope of this setup guide. See the official Flutter deployment docs for that.
+---
 
-## Running the tests
+## Run tests
 
 Unit and widget tests:
 
@@ -271,31 +306,36 @@ Unit and widget tests:
 flutter test
 ```
 
-There is also an end to end integration test under `integration_test`. It drives the real recording and AI flow, so it needs a booted device, a granted microphone permission, and your API keys in place:
+End-to-end test (needs a booted device, microphone permission, and API keys set):
 
 ```bash
 flutter test integration_test/e2e_test.dart -d <device-id>
 ```
 
+---
+
 ## Project layout
 
-A quick map so you know where things live:
+- `lib/main.dart` - app entry point
+- `lib/app` - app shell, theme, routing
+- `lib/core` - shared utilities, networking, env reader
+- `lib/data` - local Drift/SQLite database and repositories
+- `lib/domain` - data models
+- `lib/features` - screens grouped by feature (home, consultation, prescription, patient, settings, onboarding)
+- `supabase/functions` - backend Edge Functions (process-consultation, check-job-status)
+- `supabase/migrations` - database schema migrations
+- `android`, `ios` - native platform projects
+- `.env.example` - template for your API keys
 
-- `lib/main.dart`: app entry point, loads the `.env` file and starts the app.
-- `lib/app`: app shell, theme, and routing.
-- `lib/core`: shared utilities, theme, widgets, networking, and the `.env` reader.
-- `lib/data`: the local Drift database and repositories.
-- `lib/domain`: the data models.
-- `lib/features`: the screens, grouped by feature (home, consultation, prescription, patient, settings, onboarding).
-- `android` and `ios`: the native platform projects.
-- `.env.example`: the template for your API keys.
+---
 
 ## Troubleshooting
 
-- "Android licenses not accepted": run `flutter doctor --android-licenses` and accept them. If you get a permission error, see Step 3c.
-- "Gradle or Android Gradle Plugin version" errors: confirm you are on Java 17, and note the pinned versions listed under "Requirements at a glance".
-- Build cannot find generated files: run the command in Step 8.
-- Transcription or extraction does nothing: confirm your `.env` exists in the project root and both keys are filled in, then stop and rerun the app so the new values load.
-- CocoaPods errors on iOS: from the `ios` folder run `pod install`, and if it still fails run `pod repo update` first.
-- General health check: `flutter doctor -v` prints a detailed report of what is missing.
-
+- "Android licenses not accepted": run `flutter doctor --android-licenses`. If permission error, see Step 3.
+- "Gradle version" errors: confirm you are on Java 17 and check the pinned versions at the top.
+- Missing generated files: run the build_runner command in Step 9.
+- Transcription not working: check `.env` exists in the project root and both keys are filled in. Restart the app after editing.
+- Supabase connection issues: confirm your URL and anon key match what is in Supabase project settings.
+- Edge Functions not responding: check that you deployed them and set the secrets (Step 5).
+- CocoaPods errors (iOS): from the `ios` folder run `pod install`. If it still fails, run `pod repo update` first.
+- General health check: `flutter doctor -v`

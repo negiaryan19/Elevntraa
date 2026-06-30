@@ -9,3 +9,8 @@
 /.github/               @Varadraj75
 /.gitleaks.toml         @Varadraj75
 /analysis_options.yaml  @Varadraj75
+
+# Supabase backend and CI validation scripts.
+/supabase/                              @Varadraj75
+/scripts/ci/                           @Varadraj75
+/.github/workflows/supabase-ci.yml     @Varadraj75

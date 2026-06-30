@@ -40,6 +40,9 @@ dependencies:
   printing: ^5.15.0
   url_launcher: ^6.3.1
 
+  # Backend
+  supabase_flutter: ^2.5.0
+
   # Config / secure storage
   flutter_dotenv: ^6.0.1
   flutter_secure_storage: ^10.3.1
