@@ -1,0 +1,71 @@
+name: Supabase CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "supabase/**"
+      - "scripts/ci/**"
+
+# Cancel in-progress runs for the same ref to save CI minutes.
+concurrency:
+  group: supabase-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege default for GITHUB_TOKEN.
+permissions:
+  contents: read
+
+jobs:
+  validate-supabase:
+    name: validate-supabase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      # Early informational check — subsequent steps are individually gated
+      # via hashFiles so the job still passes when only scripts/ci/** changed.
+      - name: Check for Supabase function changes
+        run: |
+          if [ ! -d "supabase/functions" ]; then
+            echo "No Supabase function changes to validate"
+            exit 0
+          fi
+
+      - name: Type-check _shared/pipeline.ts
+        if: ${{ hashFiles('supabase/functions/_shared/pipeline.ts') != '' }}
+        run: deno check supabase/functions/_shared/pipeline.ts
+
+      - name: Type-check process-consultation/index.ts
+        if: ${{ hashFiles('supabase/functions/process-consultation/index.ts') != '' }}
+        run: deno check supabase/functions/process-consultation/index.ts
+
+      - name: Type-check check-job-status/index.ts
+        if: ${{ hashFiles('supabase/functions/check-job-status/index.ts') != '' }}
+        run: deno check supabase/functions/check-job-status/index.ts
+
+      - name: Lint Supabase functions
+        if: ${{ hashFiles('supabase/functions/**') != '' }}
+        run: deno lint supabase/functions/
+
+      - name: Format check Supabase functions
+        if: ${{ hashFiles('supabase/functions/**') != '' }}
+        run: deno fmt --check supabase/functions/
+
+      - name: Validate SQL migrations
+        if: ${{ hashFiles('supabase/migrations/*.sql') != '' }}
+        run: bash scripts/ci/check_migrations.sh
+
+      - name: Check prompt drift
+        if: ${{ hashFiles('supabase/functions/_shared/pipeline.ts') != '' }}
+        run: bash scripts/ci/check_prompt_drift.sh
+
+      - name: Check for hardcoded keys
+        if: ${{ hashFiles('supabase/functions/**') != '' }}
+        run: bash scripts/ci/check_no_hardcoded_keys.sh
