@@ -71,3 +71,7 @@ GoogleService-Info.plist
 **/*.g.dart
 **/*.freezed.dart
 
+
+# Build artifacts and editor configs
+android/build/
+.vscode/

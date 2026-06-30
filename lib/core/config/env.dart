@@ -18,4 +18,9 @@ class Env {
   static const String geminiEndpointBase =
       'https://generativelanguage.googleapis.com/v1beta';
   static const String geminiModel = 'gemini-2.5-flash';
+
+  static String? get supabaseUrl => _value('SUPABASE_URL');
+  static String? get supabaseAnonKey => _value('SUPABASE_ANON_KEY');
+  static String? get autoLoginEmail => _value('AUTO_LOGIN_EMAIL');
+  static String? get autoLoginPassword => _value('AUTO_LOGIN_PASSWORD');
 }
