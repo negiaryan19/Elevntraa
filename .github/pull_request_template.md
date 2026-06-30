@@ -27,3 +27,10 @@
 - [ ] No secrets, API keys, `.env`, keystores, or `key.properties` are committed
 - [ ] New env vars (if any) are documented in `.env.example`
 - [ ] Self-reviewed the diff and removed debug/print statements
+
+## Supabase changes (if applicable)
+
+- [ ] Edge Function code reviewed
+- [ ] SQL migration tested locally (or N/A)
+- [ ] No new hardcoded keys
+- [ ] Gemini prompts unchanged (or `scripts/ci/prompt_hashes.txt` updated intentionally)
