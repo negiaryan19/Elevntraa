@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../data/insight_service.dart';
+import '../data/pipeline_service.dart';
 import '../data/recording_service.dart';
 import '../data/stt_service.dart';
 
@@ -76,6 +77,7 @@ class ConsultationController extends Notifier<ConsultationState> {
   ConsultationState build() => const ConsultationState();
 
   RecordingService get _recorder => ref.read(recordingServiceProvider);
+  // ignore: unused_element — _stt is retained for kDebugSkipStt path; removed in Phase 8 cleanup.
   SttService get _stt => ref.read(sttServiceProvider);
   InsightService get _insight => ref.read(insightServiceProvider);
   VisitRepository get _visits => ref.read(visitRepositoryProvider);
@@ -118,26 +120,52 @@ class ConsultationController extends Notifier<ConsultationState> {
       final fallback = state.elapsed > Duration.zero ? state.elapsed : null;
       final effectiveDuration = probed ?? fallback;
 
-      final newTranscript = kDebugSkipStt
-          ? _kDebugTranscript
-          : await _stt.transcribe(
-              path,
+      // result      → what's written to the visit DB (labeled transcript + insight)
+      // cumulativeToStore → raw accumulated text committed to cumulativeTranscriptProvider
+      //                     so future "Add More" segments are appended correctly.
+      final InsightResult result;
+      final String cumulativeToStore;
+
+      if (kDebugSkipStt) {
+        // Debug path: skip backend, run on-device extraction with hardcoded transcript.
+        // Keeps emulator testing working without network/auth dependency.
+        state = state.copyWith(stage: ConsultationStage.extracting);
+        final previous = ref.read(cumulativeTranscriptProvider);
+        final combined = previous.trim().isEmpty
+            ? _kDebugTranscript
+            : '$previous\n$_kDebugTranscript';
+        result = await _insight.extract(combined);
+        cumulativeToStore = combined;
+      } else {
+        // Production path — call backend pipeline.
+        state = state.copyWith(stage: ConsultationStage.transcribing);
+        final backendResult = await ref
+            .read(pipelineServiceProvider)
+            .processConsultation(
+              audioPath: path,
               languageCode: state.languageCode,
               audioDuration: effectiveDuration,
             );
 
-      state = state.copyWith(stage: ConsultationStage.extracting);
-
-      // Accumulate across recording sessions. For a fresh consultation the
-      // provider was reset to '' before recording started, so `combined`
-      // equals `newTranscript`. In "Add More" mode it holds the prior
-      // session(s), and the new segment is appended before re-extraction.
-      final previous = ref.read(cumulativeTranscriptProvider);
-      final combined = previous.trim().isEmpty
-          ? newTranscript
-          : '$previous\n$newTranscript';
-
-      final result = await _insight.extract(combined);
+        final previous = ref.read(cumulativeTranscriptProvider);
+        if (previous.trim().isEmpty) {
+          // Fresh consultation — backend result is final.
+          result = backendResult;
+          cumulativeToStore = backendResult.transcript;
+        } else {
+          // "Add More" mode — re-extract on combined transcript using on-device
+          // InsightService. The backend only processes the new audio segment, so
+          // we append its transcript to the prior session(s) and re-run extraction
+          // client-side. This avoids passing server state across requests while
+          // keeping accumulation semantics identical to the old path.
+          // cumulativeToStore holds the raw accumulated text (not relabeled) so
+          // the next "Add More" appends cleanly.
+          state = state.copyWith(stage: ConsultationStage.extracting);
+          final combined = '$previous\n${backendResult.transcript}';
+          result = await _insight.extract(combined);
+          cumulativeToStore = combined;
+        }
+      }
 
       final current = await _visits.byId(visitId);
       if (current == null) {
@@ -151,7 +179,7 @@ class ConsultationController extends Notifier<ConsultationState> {
 
       // Commit the accumulated transcript only after extraction and DB write
       // succeed — prevents a failed segment from polluting future "Add More" runs.
-      ref.read(cumulativeTranscriptProvider.notifier).state = combined;
+      ref.read(cumulativeTranscriptProvider.notifier).state = cumulativeToStore;
 
       state = state.copyWith(stage: ConsultationStage.done);
     } catch (e) {
