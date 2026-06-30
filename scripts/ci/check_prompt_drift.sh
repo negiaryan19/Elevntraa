@@ -1,31 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PIPELINE_FILE="supabase/functions/_shared/pipeline.ts"
 HASH_FILE="scripts/ci/prompt_hashes.txt"
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=scripts/ci/lib/prompt_lib.sh
+source "$SCRIPT_DIR/lib/prompt_lib.sh"
 
 if [ ! -f "$PIPELINE_FILE" ]; then
   echo "ERROR: $PIPELINE_FILE not found"
   exit 1
 fi
-
-# Portable SHA-256: sha256sum (Linux/CI) or shasum -a 256 (macOS).
-portable_sha256() {
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum | awk '{print $1}'
-  else
-    shasum -a 256 | awk '{print $1}'
-  fi
-}
-
-# Extract each constant from the first matching line through the first line that
-# is solely a semicolon (column-0 semicolon terminates the statement).
-# Using ^;[[:space:]]*$ avoids premature truncation when prompt content itself
-# contains a line that starts with ; but has more text after it.
-extract_constant() {
-  local name="$1"
-  awk "/^export const ${name} =/{found=1} found{print} found && /^;[[:space:]]*$/{found=0}" "$PIPELINE_FILE"
-}
 
 plain_value=$(extract_constant "PLAIN_INSTRUCTION")
 diarized_value=$(extract_constant "DIARIZED_INSTRUCTION")
@@ -43,13 +28,28 @@ plain_hash=$(printf '%s' "$plain_value" | portable_sha256)
 diarized_hash=$(printf '%s' "$diarized_value" | portable_sha256)
 
 if [ ! -f "$HASH_FILE" ]; then
+  # In CI, a missing hash file means the baseline was never committed — fail loudly
+  # so the developer is forced to initialize it intentionally on the feature branch.
+  if [ -n "${CI:-}" ]; then
+    echo "ERROR: $HASH_FILE not found."
+    echo "Run 'bash scripts/ci/update_prompt_hashes.sh' locally and commit scripts/ci/prompt_hashes.txt."
+    exit 1
+  fi
   printf 'PLAIN_INSTRUCTION %s\nDIARIZED_INSTRUCTION %s\n' "$plain_hash" "$diarized_hash" > "$HASH_FILE"
   echo "Initialized prompt hashes. Commit scripts/ci/prompt_hashes.txt to lock these in."
   exit 0
 fi
 
-stored_plain=$(grep '^PLAIN_INSTRUCTION ' "$HASH_FILE" | awk '{print $2}')
-stored_diarized=$(grep '^DIARIZED_INSTRUCTION ' "$HASH_FILE" | awk '{print $2}')
+# Use || true so grep's exit-1-on-no-match doesn't kill the script under set -e;
+# the empty-string guards below produce a clear diagnostic instead.
+stored_plain=$(grep '^PLAIN_INSTRUCTION ' "$HASH_FILE" | awk '{print $2}' || true)
+stored_diarized=$(grep '^DIARIZED_INSTRUCTION ' "$HASH_FILE" | awk '{print $2}' || true)
+
+if [ -z "$stored_plain" ] || [ -z "$stored_diarized" ]; then
+  echo "ERROR: $HASH_FILE is malformed or missing required entries."
+  echo "Run 'bash scripts/ci/update_prompt_hashes.sh' locally and commit the result."
+  exit 1
+fi
 
 failed=0
 

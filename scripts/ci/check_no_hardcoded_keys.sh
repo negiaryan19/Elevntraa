@@ -20,7 +20,7 @@ ts_count=0
 is_safe_line() {
   local line="$1"
   # Comment lines only (// single-line or * block comment continuation)
-  echo "$line" | grep -qE '^[0-9]+:[[:space:]]*(//|\*)' && return 0
+  echo "$line" | grep -qE '^[0-9]+:[[:space:]]*(//|/\*|\*)' && return 0
   return 1
 }
 
