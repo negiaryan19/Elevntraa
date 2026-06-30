@@ -9,11 +9,22 @@ if [ ! -f "$PIPELINE_FILE" ]; then
   exit 1
 fi
 
-# Extract each constant from the first matching line through the line whose
-# first character is a semicolon (column-0 semicolon terminates the statement).
+# Portable SHA-256: sha256sum (Linux/CI) or shasum -a 256 (macOS).
+portable_sha256() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | awk '{print $1}'
+  else
+    shasum -a 256 | awk '{print $1}'
+  fi
+}
+
+# Extract each constant from the first matching line through the first line that
+# is solely a semicolon (column-0 semicolon terminates the statement).
+# Using ^;[[:space:]]*$ avoids premature truncation when prompt content itself
+# contains a line that starts with ; but has more text after it.
 extract_constant() {
   local name="$1"
-  awk "/^export const ${name} =/{found=1} found{print} found && /^;/{found=0}" "$PIPELINE_FILE"
+  awk "/^export const ${name} =/{found=1} found{print} found && /^;[[:space:]]*$/{found=0}" "$PIPELINE_FILE"
 }
 
 plain_value=$(extract_constant "PLAIN_INSTRUCTION")
@@ -28,8 +39,8 @@ if [ -z "$diarized_value" ]; then
   exit 1
 fi
 
-plain_hash=$(printf '%s' "$plain_value" | sha256sum | awk '{print $1}')
-diarized_hash=$(printf '%s' "$diarized_value" | sha256sum | awk '{print $1}')
+plain_hash=$(printf '%s' "$plain_value" | portable_sha256)
+diarized_hash=$(printf '%s' "$diarized_value" | portable_sha256)
 
 if [ ! -f "$HASH_FILE" ]; then
   printf 'PLAIN_INSTRUCTION %s\nDIARIZED_INSTRUCTION %s\n' "$plain_hash" "$diarized_hash" > "$HASH_FILE"

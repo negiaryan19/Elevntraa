@@ -87,5 +87,5 @@ keywords = ["eyj"]
 [[rules]]
 id = "supabase-db-url"
 description = "Supabase Postgres database URL with embedded password"
-regex = '''postgres://postgres[a-zA-Z0-9.]*:[^@\s]{1,}@[a-z0-9.-]+\.supabase\.co'''
+regex = '''postgres(?:ql)?://postgres[a-zA-Z0-9.]*:[^@\s]{1,}@[a-z0-9.-]+\.supabase\.co'''
 keywords = ["supabase.co"]

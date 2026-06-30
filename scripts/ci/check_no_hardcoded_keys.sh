@@ -12,14 +12,15 @@ found=0
 ts_count=0
 
 # Returns 0 if the line is on the allowlist (safe); 1 if it needs scrutiny.
+# Deliberately does NOT allowlist Deno.env.get lines: a line like
+#   Deno.env.get("KEY") ?? "AIzaSy..."
+# contains both a safe env-var read AND a hardcoded fallback — the fallback must be flagged.
+# Similarly, an all-caps identifier anywhere on the line does not make the whole line safe
+# (e.g. someFunc("API_KEY", "AIzaSy...") would otherwise bypass detection).
 is_safe_line() {
   local line="$1"
-  # Env var read — safe
-  echo "$line" | grep -q 'Deno\.env\.get(' && return 0
-  # Comment line (// or block comment *)
+  # Comment lines only (// single-line or * block comment continuation)
   echo "$line" | grep -qE '^[0-9]+:[[:space:]]*(//|\*)' && return 0
-  # Bare env var NAME strings (all-caps identifiers) — not values
-  echo "$line" | grep -qE '"[A-Z][A-Z0-9_]{4,}"' && return 0
   return 1
 }
 
