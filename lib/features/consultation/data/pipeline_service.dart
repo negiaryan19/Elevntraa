@@ -6,7 +6,25 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/errors/failure.dart';
 import '../../../domain/models/medical_insight.dart';
-import 'insight_service.dart';
+import 'mock_pipeline_service.dart';
+
+/// DEBUG ONLY — when true, [pipelineServiceProvider] returns a
+/// [MockPipelineService] that yields a hardcoded insight without touching any
+/// AI or network, so the full Review → Share → Add-More flow can be exercised
+/// on the emulator (which cannot capture Mac speaker audio through its virtual
+/// mic). Controlled at build time — leave false for real builds:
+///   flutter run --dart-define=DEBUG_SKIP_STT=true
+const bool kDebugSkipStt =
+    bool.fromEnvironment('DEBUG_SKIP_STT', defaultValue: false);
+
+/// Holds the re-labeled transcript (Doctor:/Patient:) plus the extracted
+/// [MedicalInsight]. The controller stores both in the visit row so the Review
+/// screen shows a clean, human-readable conversation.
+class InsightResult {
+  const InsightResult({required this.transcript, required this.insight});
+  final String transcript;
+  final MedicalInsight insight;
+}
 
 /// Backend pipeline service — replaces the on-device Sarvam + Gemini pair.
 ///
@@ -22,6 +40,7 @@ class PipelineService {
     required String audioPath,
     required String languageCode,
     Duration? audioDuration,
+    String? previousTranscript,
   }) async {
     final client = Supabase.instance.client;
 
@@ -66,6 +85,9 @@ class PipelineService {
           'languageCode': languageCode,
           if (audioDuration != null)
             'audioDurationSeconds': audioDuration.inSeconds,
+          if (previousTranscript != null &&
+              previousTranscript.trim().isNotEmpty)
+            'previousTranscript': previousTranscript,
         },
       );
     } on FunctionException catch (e) {
@@ -147,5 +169,8 @@ class PipelineService {
 }
 
 final pipelineServiceProvider = Provider<PipelineService>((ref) {
+  // Emulator/debug builds swap in a no-network mock so the flow is testable
+  // without a live mic or any AI keys. See [kDebugSkipStt].
+  if (kDebugSkipStt) return MockPipelineService();
   return PipelineService();
 });

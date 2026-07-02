@@ -62,19 +62,26 @@ serve(async (req: Request): Promise<Response> => {
   let audioPath: string;
   let languageCode: string;
   let audioDurationSeconds: number | null;
+  let previousTranscript: string | null;
 
   try {
     const json = (await req.json()) as {
       audioPath: string;
       languageCode: string;
       audioDurationSeconds: number | null;
+      previousTranscript?: string | null;
     };
     audioPath = json.audioPath;
     languageCode = json.languageCode ?? "unknown";
     audioDurationSeconds = json.audioDurationSeconds ?? null;
+    previousTranscript = json.previousTranscript ?? null;
   } catch {
     return corsResponse({ error: "Invalid request body" }, 400);
   }
+
+  // Non-empty prior transcript from earlier "Add More" segments, or null.
+  const hasPrevious = previousTranscript != null &&
+    previousTranscript.trim() !== "";
 
   if (!audioPath) {
     return corsResponse({ error: "audioPath is required" }, 400);
@@ -141,7 +148,7 @@ serve(async (req: Request): Promise<Response> => {
   if (mode === "rest") {
     try {
       const tStt0 = Date.now();
-      const rawTranscript = await transcribeRest(
+      const newTranscript = await transcribeRest(
         sarvamApiKey,
         audioBytes,
         filename,
@@ -152,9 +159,15 @@ serve(async (req: Request): Promise<Response> => {
         `[process-consultation] job=${jobId} stt_ms=${sttDurationMs}`,
       );
 
+      // "Add More" accumulation: prepend the prior segments so extraction runs
+      // over the whole consultation, not just the newest audio chunk.
+      const combinedTranscript = hasPrevious
+        ? `${previousTranscript}\n${newTranscript}`
+        : newTranscript;
+
       const tLlm0 = Date.now();
       const { transcript, insight } = await extractInsight(
-        rawTranscript,
+        combinedTranscript,
         geminiApiKey,
       );
       const extractionDurationMs = Date.now() - tLlm0;
@@ -195,7 +208,7 @@ serve(async (req: Request): Promise<Response> => {
   if (mode === "batch_sync") {
     try {
       const tStt0 = Date.now();
-      const rawTranscript = await transcribeBatchSync(
+      const newTranscript = await transcribeBatchSync(
         sarvamApiKey,
         audioBytes,
         filename,
@@ -206,9 +219,15 @@ serve(async (req: Request): Promise<Response> => {
         `[process-consultation] job=${jobId} stt_ms=${sttDurationMs}`,
       );
 
+      // "Add More" accumulation: prepend the prior segments so extraction runs
+      // over the whole consultation, not just the newest audio chunk.
+      const combinedTranscript = hasPrevious
+        ? `${previousTranscript}\n${newTranscript}`
+        : newTranscript;
+
       const tLlm0 = Date.now();
       const { transcript, insight } = await extractInsight(
-        rawTranscript,
+        combinedTranscript,
         geminiApiKey,
       );
       const extractionDurationMs = Date.now() - tLlm0;
@@ -274,6 +293,9 @@ serve(async (req: Request): Promise<Response> => {
       .update({
         sarvam_job_id: sarvamJobId,
         audio_storage_path: audioPath,
+        // Persisted across the async gap: check-job-status will combine this
+        // with the Sarvam transcript before extraction, then clear it.
+        cached_previous_transcript: hasPrevious ? previousTranscript : null,
       })
       .eq("id", jobId);
 

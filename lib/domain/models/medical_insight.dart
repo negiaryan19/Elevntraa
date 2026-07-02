@@ -6,8 +6,9 @@ part 'medical_insight.freezed.dart';
 part 'medical_insight.g.dart';
 
 /// Structured prescription extracted from the doctor's dictation. The
-/// extractor MUST NOT invent fields — see system_instruction in
-/// insight_service.dart. Empty lists / null fields are valid and expected.
+/// extractor MUST NOT invent fields — see the Gemini system instructions in
+/// the backend pipeline (supabase/functions/_shared/pipeline.ts). Empty lists /
+/// null fields are valid and expected.
 @freezed
 abstract class MedicalInsight with _$MedicalInsight {
   const factory MedicalInsight({
