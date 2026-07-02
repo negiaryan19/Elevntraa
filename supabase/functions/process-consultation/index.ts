@@ -74,14 +74,17 @@ serve(async (req: Request): Promise<Response> => {
     audioPath = json.audioPath;
     languageCode = json.languageCode ?? "unknown";
     audioDurationSeconds = json.audioDurationSeconds ?? null;
-    previousTranscript = json.previousTranscript ?? null;
+    // Runtime-guard the type: the client may send a non-string (or omit it).
+    // Anything that isn't a non-empty string is treated as "no prior segment"
+    // so a malformed payload can never reach .trim() and throw at runtime.
+    const rawPrevious = json.previousTranscript;
+    previousTranscript =
+      typeof rawPrevious === "string" && rawPrevious.trim() !== ""
+        ? rawPrevious
+        : null;
   } catch {
     return corsResponse({ error: "Invalid request body" }, 400);
   }
-
-  // Non-empty prior transcript from earlier "Add More" segments, or null.
-  const hasPrevious = previousTranscript != null &&
-    previousTranscript.trim() !== "";
 
   if (!audioPath) {
     return corsResponse({ error: "audioPath is required" }, 400);
@@ -161,7 +164,7 @@ serve(async (req: Request): Promise<Response> => {
 
       // "Add More" accumulation: prepend the prior segments so extraction runs
       // over the whole consultation, not just the newest audio chunk.
-      const combinedTranscript = hasPrevious
+      const combinedTranscript = previousTranscript
         ? `${previousTranscript}\n${newTranscript}`
         : newTranscript;
 
@@ -221,7 +224,7 @@ serve(async (req: Request): Promise<Response> => {
 
       // "Add More" accumulation: prepend the prior segments so extraction runs
       // over the whole consultation, not just the newest audio chunk.
-      const combinedTranscript = hasPrevious
+      const combinedTranscript = previousTranscript
         ? `${previousTranscript}\n${newTranscript}`
         : newTranscript;
 
@@ -295,7 +298,7 @@ serve(async (req: Request): Promise<Response> => {
         audio_storage_path: audioPath,
         // Persisted across the async gap: check-job-status will combine this
         // with the Sarvam transcript before extraction, then clear it.
-        cached_previous_transcript: hasPrevious ? previousTranscript : null,
+        cached_previous_transcript: previousTranscript,
       })
       .eq("id", jobId);
 

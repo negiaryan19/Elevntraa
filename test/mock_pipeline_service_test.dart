@@ -49,7 +49,10 @@ void main() {
 
       // The combined transcript keeps the prior text and grows.
       expect(result.transcript, startsWith('Doctor: Earlier segment.'));
-      expect(result.transcript.length, greaterThan('Doctor: Earlier segment.'.length));
+      expect(
+        result.transcript.length,
+        greaterThan('Doctor: Earlier segment.'.length),
+      );
       // Insight is still the fixed mock payload.
       expect(result.insight.followUpDays, 3);
     });
