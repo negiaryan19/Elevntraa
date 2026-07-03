@@ -74,7 +74,7 @@ serve(async (req: Request): Promise<Response> => {
   const { data: job, error: fetchError } = await supabaseAdmin
     .from("pipeline_jobs")
     .select(
-      "id, doctor_id, status, sarvam_job_id, error_code, cached_transcript, cached_insight, created_at",
+      "id, doctor_id, status, sarvam_job_id, error_code, cached_transcript, cached_insight, cached_previous_transcript, created_at",
     )
     .eq("id", jobId)
     .single();
@@ -91,6 +91,7 @@ serve(async (req: Request): Promise<Response> => {
     error_code: string | null;
     cached_transcript: string | null;
     cached_insight: MedicalInsight | null;
+    cached_previous_transcript: string | null;
     created_at: string;
   };
 
@@ -114,7 +115,11 @@ serve(async (req: Request): Promise<Response> => {
       try {
         await supabaseAdmin
           .from("pipeline_jobs")
-          .update({ cached_transcript: null, cached_insight: null })
+          .update({
+            cached_transcript: null,
+            cached_insight: null,
+            cached_previous_transcript: null,
+          })
           .eq("id", jobId);
       } catch (e) {
         console.error(
@@ -177,8 +182,17 @@ serve(async (req: Request): Promise<Response> => {
         sarvamState.outputFilename,
       );
       const rawTranscript = await batchDownloadTranscript(downloadUrl);
+
+      // "Add More" accumulation: an async job may have carried a prior
+      // transcript across the polling gap. Combine before extraction so the
+      // insight reflects the whole consultation, not just this audio chunk.
+      const prev = row.cached_previous_transcript;
+      const combinedTranscript = prev != null && prev.trim() !== ""
+        ? `${prev}\n${rawTranscript}`
+        : rawTranscript;
+
       const { transcript, insight } = await extractInsight(
-        rawTranscript,
+        combinedTranscript,
         geminiApiKey,
       );
 
@@ -202,6 +216,8 @@ serve(async (req: Request): Promise<Response> => {
           status: "success",
           cached_transcript: transcript,
           cached_insight: insight,
+          // Extraction is done — the prior transcript has been consumed.
+          cached_previous_transcript: null,
           total_duration_ms: totalDurationMs,
           completed_at: completedAt,
         })

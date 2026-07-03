@@ -1,12 +1,39 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/errors/failure.dart';
 import '../../../domain/models/medical_insight.dart';
-import 'insight_service.dart';
+import 'mock_pipeline_service.dart';
+
+const bool _kDebugSkipSttRequested = bool.fromEnvironment(
+  'DEBUG_SKIP_STT',
+  defaultValue: false,
+);
+
+/// DEBUG ONLY — when true, [pipelineServiceProvider] returns a
+/// [MockPipelineService] that yields a hardcoded insight without touching any
+/// AI or network, so the full Review → Share → Add-More flow can be exercised
+/// on the emulator (which cannot capture Mac speaker audio through its virtual
+/// mic). Enable at build time for testing only:
+///   flutter run --dart-define=DEBUG_SKIP_STT=true
+///
+/// Hard-gated to non-release builds: even if `DEBUG_SKIP_STT=true` leaks into a
+/// release pipeline, [kReleaseMode] forces this to false so a production app can
+/// never silently serve mock consultations instead of calling the backend.
+const bool kDebugSkipStt = _kDebugSkipSttRequested && !kReleaseMode;
+
+/// Holds the re-labeled transcript (Doctor:/Patient:) plus the extracted
+/// [MedicalInsight]. The controller stores both in the visit row so the Review
+/// screen shows a clean, human-readable conversation.
+class InsightResult {
+  const InsightResult({required this.transcript, required this.insight});
+  final String transcript;
+  final MedicalInsight insight;
+}
 
 /// Backend pipeline service — replaces the on-device Sarvam + Gemini pair.
 ///
@@ -22,6 +49,7 @@ class PipelineService {
     required String audioPath,
     required String languageCode,
     Duration? audioDuration,
+    String? previousTranscript,
   }) async {
     final client = Supabase.instance.client;
 
@@ -66,6 +94,9 @@ class PipelineService {
           'languageCode': languageCode,
           if (audioDuration != null)
             'audioDurationSeconds': audioDuration.inSeconds,
+          if (previousTranscript != null &&
+              previousTranscript.trim().isNotEmpty)
+            'previousTranscript': previousTranscript,
         },
       );
     } on FunctionException catch (e) {
@@ -147,5 +178,8 @@ class PipelineService {
 }
 
 final pipelineServiceProvider = Provider<PipelineService>((ref) {
+  // Emulator/debug builds swap in a no-network mock so the flow is testable
+  // without a live mic or any AI keys. See [kDebugSkipStt].
+  if (kDebugSkipStt) return MockPipelineService();
   return PipelineService();
 });
