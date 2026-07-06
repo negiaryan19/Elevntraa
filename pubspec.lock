@@ -526,10 +526,10 @@ packages:
     dependency: transitive
     description:
       name: functions_client
-      sha256: "5b17b8dcf5ae1cd6a6428e7a4ca8b569477297a7f158955b5407dda23baeaa5b"
+      sha256: e9685e9ab852a8b8e0579c867f6c9155da27317b294b3df796a536b8b8e0d253
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.3"
+    version: "2.6.4"
   glob:
     dependency: transitive
     description:
@@ -558,10 +558,10 @@ packages:
     dependency: transitive
     description:
       name: gotrue
-      sha256: ea9aacde70ec9a5b0c59493dcc1ec133190ae42554b06dcae4fe9133a2ba500a
+      sha256: ac6b664b35304aece2034c66bc09ce761f9f7c8fb6066bbb6b2932aa87d82653
       url: "https://pub.dev"
     source: hosted
-    version: "2.23.0"
+    version: "2.25.0"
   graphs:
     dependency: transitive
     description:
@@ -622,10 +622,10 @@ packages:
     dependency: "direct main"
     description:
       name: image_picker
-      sha256: "91c025426c2881c551100bce834e201c835a170151545f58d17da5180ca7d9ac"
+      sha256: d8402284df184bc05f4a2210c6c23983b0720f4cd87cbd05c5390a78af602667
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.2"
+    version: "1.2.3"
   image_picker_android:
     dependency: transitive
     description:
@@ -1067,10 +1067,10 @@ packages:
     dependency: transitive
     description:
       name: postgrest
-      sha256: "41c313d3c0aeb8ded9e06d49daadd7f036a3c092e7849e87375b6264a602624c"
+      sha256: "10e3f195e131eec944fa872644aed89b33b5be998f3fc77c87325db3927bc646"
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.3"
+    version: "2.8.0"
   printing:
     dependency: "direct main"
     description:
@@ -1115,10 +1115,10 @@ packages:
     dependency: transitive
     description:
       name: realtime_client
-      sha256: f377b8e30d23eb83f30110ddfb6cbfa7af67232ead04abad6b39b3885d7ad699
+      sha256: cf816d406248a6286bf7aa2053b406583ff88bd0842ab7f3f3127d53f6f1c68b
       url: "https://pub.dev"
     source: hosted
-    version: "2.9.0"
+    version: "2.10.0"
   recase:
     dependency: transitive
     description:
@@ -1408,10 +1408,10 @@ packages:
     dependency: transitive
     description:
       name: storage_client
-      sha256: "2cc5432c312c4a08687bcce795aff377d006e2892097c7f88d57512885bb4b10"
+      sha256: "221263cfbe0c01575b7d7fe7543e44abff380eb4d38d936372844a1caa85ba12"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.9"
+    version: "2.6.0"
   stream_channel:
     dependency: transitive
     description:
@@ -1440,18 +1440,18 @@ packages:
     dependency: transitive
     description:
       name: supabase
-      sha256: "187a14e7c7e5da9b2a507381eace5c8f73e3459337c2e96f272717e568544336"
+      sha256: "6933e60614652fa10749eb29fdcc6f2adb6515f5638e5ce28376ae08a626d745"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.2"
+    version: "2.13.4"
   supabase_flutter:
     dependency: "direct main"
     description:
       name: supabase_flutter
-      sha256: e4d8b0a54fda5fdc5c86967f0f42291b9ecf058fc39a7ffad3514e9207ac7040
+      sha256: b6d34558565c14f1b44ff7bc9ca2979ed38ee2907b80ed73e699150cec08b739
       url: "https://pub.dev"
     source: hosted
-    version: "2.15.2"
+    version: "2.15.4"
   sync_http:
     dependency: transitive
     description:
