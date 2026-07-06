@@ -134,21 +134,28 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     _pulse2.reset();
   }
 
-  /// Shows the offline snackbar and nudges the connectivity provider to
-  /// re-probe (so a just-restored connection is reflected quickly).
-  void _showOfflineMessage() {
+  /// Explains why a server-dependent action was blocked and nudges the
+  /// connectivity provider to re-probe (so a just-restored connection is
+  /// reflected quickly). While the first probe is still in flight the message
+  /// is softened to "checking" rather than a hard "no internet".
+  void _showBlockedMessage() {
+    final status = ref.read(connectivityStatusProvider);
     ref.read(connectivityStatusProvider.notifier).recheck();
+    final message = status == ConnectivityStatus.checking
+        ? 'Checking your connection — please try again in a moment.'
+        : _kOfflineMessage;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(const SnackBar(content: Text(_kOfflineMessage)));
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _onStartPressed() async {
     // Recording only makes sense if we can reach the STT/Gemini backend when
-    // the doctor taps Done — block the start rather than let them record audio
-    // that can never be processed.
-    if (ref.read(connectivityStatusProvider) == ConnectivityStatus.offline) {
-      _showOfflineMessage();
+    // the doctor taps Done. Fail closed: block unless connectivity is
+    // *confirmed* online — a still-checking or offline status must not let the
+    // doctor record audio that can never be processed.
+    if (ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
+      _showBlockedMessage();
       return;
     }
 
@@ -214,6 +221,15 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       consultationControllerProvider(widget.visitId).notifier,
     );
     final willPause = !_isPaused;
+
+    // Resuming captures more audio that must ultimately be uploaded — refuse to
+    // resume while still offline so we don't accumulate un-processable audio.
+    if (!willPause &&
+        ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
+      _showBlockedMessage();
+      return;
+    }
+
     setState(() => _isPaused = willPause);
     if (willPause) {
       // Bank what we've recorded so far so elapsed doesn't grow while paused.
@@ -231,10 +247,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   }
 
   Future<void> _onDone() async {
-    // Processing uploads audio to Sarvam/Gemini — refuse if there's no working
-    // internet so the recording stays intact (paused) instead of failing.
-    if (ref.read(connectivityStatusProvider) == ConnectivityStatus.offline) {
-      _showOfflineMessage();
+    // Processing uploads audio to Sarvam/Gemini — refuse unless connectivity is
+    // confirmed online so the recording stays intact (paused) instead of
+    // failing mid-upload.
+    if (ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
+      _showBlockedMessage();
       return;
     }
 
@@ -279,8 +296,26 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     if (stage != ConsultationStage.recording) return;
 
     if (!_isPaused) {
-      // Banks elapsed and pauses the underlying recorder.
-      _onPauseResume();
+      // Banks elapsed and pauses the underlying recorder. Fire-and-forget, but
+      // guarded so a failed pause surfaces as a user message instead of an
+      // unhandled async error.
+      unawaited(
+        _onPauseResume().catchError((Object _) {
+          if (mounted) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Internet lost and the recording could not be paused '
+                    'automatically — please tap Pause.',
+                  ),
+                  duration: Duration(seconds: 6),
+                ),
+              );
+          }
+        }),
+      );
     }
 
     if (mounted) {
@@ -489,8 +524,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       connectivityStatusProvider,
       _onConnectivityChanged,
     );
-    final isOffline =
-        ref.watch(connectivityStatusProvider) == ConnectivityStatus.offline;
+    final connectivity = ref.watch(connectivityStatusProvider);
+    // Fail closed: server-dependent actions are only allowed once reachability
+    // is *confirmed* online. 'checking' (first probe in flight) is blocked too.
+    final canReachServer = connectivity == ConnectivityStatus.online;
+    final isChecking = connectivity == ConnectivityStatus.checking;
 
     final isRecording = state.stage == ConsultationStage.recording;
     final isBusy =
@@ -978,7 +1016,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (!isRecording && !isBusy) ...[
-                          if (isOffline)
+                          // Only surface the red "no internet" banner once we've
+                          // *confirmed* offline — not during the initial probe.
+                          if (connectivity == ConnectivityStatus.offline)
                             Padding(
                               padding: const EdgeInsets.only(
                                 bottom: AppSpacing.md,
@@ -986,14 +1026,18 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                               child: _OfflineNotice(),
                             ),
                           _GradientCta(
-                            label: isOffline
-                                ? 'Offline — reconnect to record'
-                                : 'Start Consultation',
-                            leadingIcon: isOffline
-                                ? Icons.wifi_off_rounded
-                                : Icons.record_voice_over_rounded,
-                            enabled: !isOffline,
-                            // Still fires when offline so the tap explains why
+                            label: canReachServer
+                                ? 'Start Consultation'
+                                : isChecking
+                                ? 'Checking connection…'
+                                : 'Offline — reconnect to record',
+                            leadingIcon: canReachServer
+                                ? Icons.record_voice_over_rounded
+                                : isChecking
+                                ? Icons.wifi_find_rounded
+                                : Icons.wifi_off_rounded,
+                            enabled: canReachServer,
+                            // Still fires when blocked so the tap explains why
                             // nothing happened via a snackbar.
                             onTap: _onStartPressed,
                           ),
@@ -1289,7 +1333,11 @@ class _OfflineNotice extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.wifi_off_rounded, color: scheme.error, size: 18),
+          Icon(
+            Icons.wifi_off_rounded,
+            color: scheme.onErrorContainer,
+            size: 18,
+          ),
           const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Text(

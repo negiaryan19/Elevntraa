@@ -22,16 +22,22 @@ enum ConnectivityStatus { online, offline, checking }
 ///  * on a periodic timer ([_probeInterval]) to catch silent losses (router
 ///    dies, data pack exhausted) that don't flip the interface state.
 ///
-/// Behaves identically on Android and iOS: the probe is a plain DNS lookup via
-/// dart:io, which needs no extra permissions on either platform.
+/// Behaves identically on Android and iOS: the probe is a plain HTTPS request
+/// via dart:io, which needs no extra permissions on either platform.
 class ConnectivityNotifier extends Notifier<ConnectivityStatus> {
   static const _probeInterval = Duration(seconds: 12);
   static const _probeTimeout = Duration(seconds: 5);
 
-  /// Hosts we DNS-resolve to prove the internet works. Multiple well-known,
-  /// highly-available anycast resolvers so a single provider outage doesn't
-  /// make us report a false "offline".
-  static const _probeHosts = ['one.one.one.one', 'dns.google', 'google.com'];
+  /// Lightweight, highly-available "captive portal" endpoints that answer an
+  /// empty `204 No Content`. We probe over HTTPS (not just DNS) so a network
+  /// where names resolve but real HTTPS egress is blocked — captive portal,
+  /// firewalled hotspot — is correctly reported offline, matching the HTTPS
+  /// traffic the gated STT/Gemini calls actually need. Multiple providers so a
+  /// single outage can't produce a false "offline".
+  static const _probeUrls = [
+    'https://clients3.google.com/generate_204',
+    'https://cp.cloudflare.com/generate_204',
+  ];
 
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _sub;
@@ -40,6 +46,12 @@ class ConnectivityNotifier extends Notifier<ConnectivityStatus> {
   /// Guards against overlapping probes (a periodic tick landing while an
   /// interface-change probe is still in flight).
   bool _probing = false;
+
+  /// Set when a refresh is requested while one is already running. The in-flight
+  /// probe re-runs on completion instead of dropping the request — otherwise a
+  /// network change landing mid-probe could leave the published state stale
+  /// until the next periodic tick.
+  bool _refreshQueued = false;
 
   @override
   ConnectivityStatus build() {
@@ -64,44 +76,65 @@ class ConnectivityNotifier extends Notifier<ConnectivityStatus> {
     await _refresh();
   }
 
-  /// Probe reachability and publish the resulting status.
+  /// Probe reachability and publish the resulting status. If called while a
+  /// probe is already running, the request is queued so the in-flight probe
+  /// re-runs once — this way a change that arrives mid-probe is never lost.
   Future<void> _refresh() async {
-    if (_probing) return;
+    if (_probing) {
+      _refreshQueued = true;
+      return;
+    }
     _probing = true;
     try {
-      final results = await _connectivity.checkConnectivity();
-      if (results.every((r) => r == ConnectivityResult.none)) {
-        state = ConnectivityStatus.offline;
-        return;
-      }
-      final reachable = await _hasInternet();
-      state = reachable
-          ? ConnectivityStatus.online
-          : ConnectivityStatus.offline;
+      do {
+        _refreshQueued = false;
+        final results = await _connectivity.checkConnectivity();
+        if (results.every((r) => r == ConnectivityResult.none)) {
+          state = ConnectivityStatus.offline;
+        } else {
+          final reachable = await _hasInternet();
+          state = reachable
+              ? ConnectivityStatus.online
+              : ConnectivityStatus.offline;
+        }
+      } while (_refreshQueued);
     } finally {
       _probing = false;
     }
   }
 
-  /// True if the internet is genuinely reachable. A DNS lookup succeeding
-  /// against any probe host proves we have real upstream connectivity, not
-  /// just an associated-but-dead network.
+  /// True if the internet is genuinely reachable. A successful HTTPS request to
+  /// any probe endpoint proves we have real upstream egress (DNS + TCP + TLS +
+  /// HTTP), not just a resolvable-but-dead network.
   Future<bool> _hasInternet() async {
-    for (final host in _probeHosts) {
-      try {
-        final result = await InternetAddress.lookup(
-          host,
-        ).timeout(_probeTimeout);
-        if (result.isNotEmpty && result.first.rawAddress.isNotEmpty) {
-          return true;
+    final client = HttpClient()..connectionTimeout = _probeTimeout;
+    try {
+      for (final url in _probeUrls) {
+        try {
+          final request = await client
+              .getUrl(Uri.parse(url))
+              .timeout(_probeTimeout);
+          final response = await request.close().timeout(_probeTimeout);
+          // Drain the (empty) body so the socket can be reused/closed cleanly.
+          await response.drain<void>();
+          // Must be *exactly* 204: a captive portal answers the same URL with a
+          // 200 login page (or redirects to one), so accepting 200 would let a
+          // portal masquerade as real internet.
+          if (response.statusCode == 204) {
+            return true;
+          }
+        } on SocketException {
+          // Try the next endpoint.
+        } on HttpException {
+          // Try the next endpoint.
+        } on TimeoutException {
+          // Try the next endpoint.
         }
-      } on SocketException {
-        // Try the next host.
-      } on TimeoutException {
-        // Try the next host.
       }
+      return false;
+    } finally {
+      client.close(force: true);
     }
-    return false;
   }
 
   /// Force an immediate reachability re-check (e.g. after a user retries a
