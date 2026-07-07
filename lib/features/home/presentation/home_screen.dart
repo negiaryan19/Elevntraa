@@ -6,11 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
+import '../../../core/network/connectivity_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/loading_shimmer.dart';
-import '../../../core/widgets/status_chip.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
 import '../../settings/data/doctor_profile_repository.dart';
@@ -419,13 +419,61 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-        const StatusChip(
-          label: 'Online',
-          tone: StatusTone.success,
-          icon: Icons.circle,
-          dense: true,
-        ),
+        const _ConnectivityChip(),
       ],
+    );
+  }
+}
+
+/// Live network indicator shown in the home header. Green dot + "Online" when
+/// the internet is genuinely reachable, red dot + "Offline" otherwise — colours
+/// come from [ColorScheme] tokens so both dark and light themes stay coherent.
+class _ConnectivityChip extends ConsumerWidget {
+  const _ConnectivityChip();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final status = ref.watch(connectivityStatusProvider);
+    final scheme = Theme.of(context).colorScheme;
+
+    // secondary (teal) reads as the positive "online" accent and adapts to the
+    // active brightness; error is the theme's red; onSurfaceVariant is the
+    // muted tone used while the first probe is still in flight.
+    final (Color color, String label) = switch (status) {
+      ConnectivityStatus.online => (scheme.secondary, 'Online'),
+      ConnectivityStatus.offline => (scheme.error, 'Offline'),
+      ConnectivityStatus.checking => (scheme.onSurfaceVariant, 'Checking'),
+    };
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.s,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: AppSpacing.radiusPill,
+        border: Border.all(color: color.withValues(alpha: 0.55), width: 0.8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Text(
+            label,
+            style: AppTypography.labelSmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
