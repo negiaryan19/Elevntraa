@@ -13,6 +13,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/loading_shimmer.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 
 final _recentPatientsProvider =
@@ -99,8 +100,8 @@ class HomeScreen extends ConsumerWidget {
                     _Reveal(
                       delayMs: 360,
                       child: _SectionHeader(
-                        title: 'Recent patients',
-                        actionLabel: 'See all',
+                        title: AppLocalizations.of(context)!.recentPatients,
+                        actionLabel: AppLocalizations.of(context)!.seeAll,
                         scheme: scheme,
                         onAction: () => context.go(AppRoute.patients.path),
                       ),
@@ -404,14 +405,14 @@ class _Header extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Rxvarta',
+                AppLocalizations.of(context)!.appName,
                 style: AppTypography.titleMedium.copyWith(
                   color: scheme.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
-                'Smart Medical Documentation',
+                AppLocalizations.of(context)!.appTagline,
                 style: AppTypography.bodySmall.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
@@ -439,10 +440,11 @@ class _ConnectivityChip extends ConsumerWidget {
     // secondary (teal) reads as the positive "online" accent and adapts to the
     // active brightness; error is the theme's red; onSurfaceVariant is the
     // muted tone used while the first probe is still in flight.
+    final t = AppLocalizations.of(context)!;
     final (Color color, String label) = switch (status) {
-      ConnectivityStatus.online => (scheme.secondary, 'Online'),
-      ConnectivityStatus.offline => (scheme.error, 'Offline'),
-      ConnectivityStatus.checking => (scheme.onSurfaceVariant, 'Checking'),
+      ConnectivityStatus.online => (scheme.secondary, t.online),
+      ConnectivityStatus.offline => (scheme.error, t.offline),
+      ConnectivityStatus.checking => (scheme.onSurfaceVariant, t.checking),
     };
 
     return AnimatedContainer(
@@ -485,14 +487,15 @@ class _Greeting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final hour = now.hour;
     final part = hour < 12
-        ? 'Good morning'
+        ? t.goodMorning
         : hour < 17
-        ? 'Good afternoon'
-        : 'Good evening';
-    final display = name.trim().isEmpty ? 'Doctor' : name.trim();
+        ? t.goodAfternoon
+        : t.goodEvening;
+    final display = name.trim().isEmpty ? t.doctorFallback : name.trim();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -603,7 +606,7 @@ class _ConsultationHero extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Start new consultation',
+                      AppLocalizations.of(context)!.startNewConsultation,
                       style: AppTypography.titleMedium.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
@@ -611,7 +614,9 @@ class _ConsultationHero extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
-                      'Record and transcribe a patient visit',
+                      AppLocalizations.of(
+                        context,
+                      )!.startNewConsultationSubtitle,
                       style: AppTypography.bodySmall.copyWith(
                         color: Colors.white.withValues(alpha: 0.85),
                       ),
@@ -648,7 +653,7 @@ class _QuickActions extends StatelessWidget {
             onTap: () => context.push(AppRoute.intakeForm.path),
             child: _ActionTile(
               icon: Icons.person_add_alt_1_rounded,
-              label: 'New patient',
+              label: AppLocalizations.of(context)!.newPatient,
               accent: AppColors.primary,
               isDark: isDark,
               scheme: scheme,
@@ -661,7 +666,7 @@ class _QuickActions extends StatelessWidget {
             onTap: () => context.push(AppRoute.intakeExisting.path),
             child: _ActionTile(
               icon: Icons.search_rounded,
-              label: 'Find patient',
+              label: AppLocalizations.of(context)!.findPatient,
               accent: AppColors.secondary,
               isDark: isDark,
               scheme: scheme,
@@ -674,7 +679,7 @@ class _QuickActions extends StatelessWidget {
             onTap: () => context.go(AppRoute.patients.path),
             child: _ActionTile(
               icon: Icons.people_alt_rounded,
-              label: 'All patients',
+              label: AppLocalizations.of(context)!.allPatients,
               accent: const Color(0xFF8B5CF6),
               isDark: isDark,
               scheme: scheme,
@@ -788,9 +793,10 @@ class _PatientRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final meta = [
-      if (patient.age != null) '${patient.age} yrs',
-      _sexLabel(patient.sex),
+      if (patient.age != null) '${patient.age} ${t.years}',
+      _sexLabel(t, patient.sex),
       if (patient.whatsappNumber != null) '+91 ${patient.whatsappNumber}',
     ].where((s) => s.isNotEmpty).join('  •  ');
 
@@ -842,14 +848,14 @@ class _PatientRow extends StatelessWidget {
     );
   }
 
-  static String _sexLabel(Sex? sex) {
+  static String _sexLabel(AppLocalizations t, Sex? sex) {
     switch (sex) {
       case Sex.male:
-        return 'Male';
+        return t.male;
       case Sex.female:
-        return 'Female';
+        return t.female;
       case Sex.other:
-        return 'Other';
+        return t.other;
       case null:
         return '';
     }
@@ -955,12 +961,12 @@ class _EmptyRecent extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s),
           Text(
-            'No patients yet',
+            AppLocalizations.of(context)!.noPatientsYet,
             style: AppTypography.titleSmall.copyWith(color: scheme.onSurface),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
-            'Start a consultation to add your first patient.',
+            AppLocalizations.of(context)!.noPatientsYetSubtitle,
             textAlign: TextAlign.center,
             style: AppTypography.bodySmall.copyWith(
               color: scheme.onSurfaceVariant,
@@ -989,7 +995,7 @@ class _SecurityFooter extends StatelessWidget {
         const SizedBox(width: AppSpacing.xs),
         Flexible(
           child: Text(
-            'Secure • HIPAA Compliant • End-to-End Encrypted',
+            AppLocalizations.of(context)!.securityFooter,
             style: AppTypography.bodySmall.copyWith(
               color: scheme.onSurfaceVariant,
             ),

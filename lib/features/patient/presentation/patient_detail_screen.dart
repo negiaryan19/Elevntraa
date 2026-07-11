@@ -12,6 +12,7 @@ import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../prescription/data/prescription_pdf_service.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import 'view_prescription_screen.dart';
@@ -90,7 +91,11 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not share prescription: $e')),
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.couldNotSharePrescription}: $e',
+            ),
+          ),
         );
       }
     } finally {
@@ -101,6 +106,7 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: scheme.surface,
@@ -108,17 +114,14 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
         foregroundColor: scheme.onSurface,
         elevation: 0.5,
         title: Text(
-          _patient?.name ?? 'Patient',
+          _patient?.name ?? t.patientFallback,
           style: AppTypography.titleMedium.copyWith(color: scheme.onSurface),
         ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _patient == null
-          ? const EmptyState(
-              title: 'Patient not found',
-              icon: Icons.person_off_rounded,
-            )
+          ? EmptyState(title: t.patientNotFound, icon: Icons.person_off_rounded)
           : SafeArea(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(
@@ -140,19 +143,18 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    'Consultation History',
+                    t.consultationHistory,
                     style: AppTypography.titleMedium.copyWith(
                       color: scheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.m),
                   if (_visits.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.only(top: AppSpacing.xl),
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.xl),
                       child: EmptyState(
-                        title: 'No consultations yet',
-                        message:
-                            'Records from this patient\'s visits will appear here.',
+                        title: t.noConsultationsYet,
+                        message: t.visitsWillAppearHere,
                         icon: Icons.timeline_rounded,
                       ),
                     )
@@ -203,7 +205,7 @@ class _StartConsultationButton extends StatelessWidget {
             const Icon(Icons.mic_rounded, color: Colors.white, size: 20),
             const SizedBox(width: AppSpacing.s),
             Text(
-              'Start New Consultation',
+              AppLocalizations.of(context)!.startNewConsultationCta,
               style: AppTypography.titleSmall.copyWith(color: Colors.white),
             ),
           ],
@@ -222,9 +224,10 @@ class _PatientHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final ageSex = [
-      if (patient.age != null) '${patient.age} yrs',
-      _sexLabel(patient.sex),
+      if (patient.age != null) '${patient.age} ${t.years}',
+      _sexLabel(t, patient.sex),
     ].where((s) => s != '—').join(' • ');
 
     return Container(
@@ -289,7 +292,7 @@ class _PatientHeader extends StatelessWidget {
                 ],
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  '$visitCount consultation${visitCount == 1 ? '' : 's'}',
+                  '$visitCount ${visitCount == 1 ? t.consultationOne : t.consultationMany}',
                   style: AppTypography.labelSmall.copyWith(color: Colors.white),
                 ),
               ],
@@ -300,14 +303,14 @@ class _PatientHeader extends StatelessWidget {
     );
   }
 
-  static String _sexLabel(Sex? sex) {
+  static String _sexLabel(AppLocalizations t, Sex? sex) {
     switch (sex) {
       case Sex.male:
-        return 'Male';
+        return t.male;
       case Sex.female:
-        return 'Female';
+        return t.female;
       case Sex.other:
-        return 'Other';
+        return t.other;
       case null:
         return '—';
     }
@@ -333,6 +336,7 @@ class _VisitCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = AppLocalizations.of(context)!;
     final insight = visit.insight ?? MedicalInsight.empty;
     final meds = insight.medications;
     final signedGreen = isDark
@@ -383,7 +387,7 @@ class _VisitCard extends StatelessWidget {
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       Text(
-                        'Signed',
+                        t.signed,
                         style: AppTypography.labelSmall.copyWith(
                           color: signedGreen,
                         ),
@@ -413,20 +417,20 @@ class _VisitCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.s),
           ] else ...[
             if (insight.diagnosis.trim().isNotEmpty)
-              _line(context, 'Diagnosis', insight.diagnosis),
+              _line(context, t.diagnosisLabel, insight.diagnosis),
             if (insight.symptoms.isNotEmpty)
-              _line(context, 'Symptoms', insight.symptoms.join(', ')),
+              _line(context, t.symptomsLabel, insight.symptoms.join(', ')),
           ],
           // Medicines
           const SizedBox(height: AppSpacing.s),
           Text(
-            'Medicines',
+            t.medicinesLabel,
             style: AppTypography.titleSmall.copyWith(color: scheme.onSurface),
           ),
           const SizedBox(height: AppSpacing.xs),
           if (meds.isEmpty)
             Text(
-              'No medicines recorded.',
+              t.noMedicinesRecorded,
               style: AppTypography.bodySmall.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
@@ -462,8 +466,10 @@ class _VisitCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.s),
             _line(
               context,
-              'Follow-up',
-              'After ${insight.followUpDays} day${insight.followUpDays == 1 ? '' : 's'}',
+              t.followUpLabel,
+              insight.followUpDays == 1
+                  ? t.afterDaysOne
+                  : t.afterDaysMany(insight.followUpDays!),
             ),
           ],
           const SizedBox(height: AppSpacing.md),
@@ -472,7 +478,7 @@ class _VisitCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _PdfButton(
-                  label: busy ? 'Opening…' : 'View Prescription',
+                  label: busy ? t.opening : t.viewPrescription,
                   icon: Icons.picture_as_pdf_rounded,
                   filled: true,
                   onTap: busy ? null : onView,
@@ -480,7 +486,7 @@ class _VisitCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.s),
               _PdfButton(
-                label: 'Share',
+                label: t.share,
                 icon: Icons.share_rounded,
                 filled: false,
                 onTap: busy ? null : onShare,

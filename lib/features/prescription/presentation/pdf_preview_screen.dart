@@ -12,6 +12,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/visit.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import '../data/prescription_pdf_service.dart';
 
@@ -110,9 +111,13 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not share PDF: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.couldNotSharePdf}: $e',
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -121,15 +126,16 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     if (_loading) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Generating prescription PDF…'),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(t.generatingPdfLong),
             ],
           ),
         ),
@@ -137,9 +143,9 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
     }
     if (_visit == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Prescription')),
-        body: const EmptyState(
-          title: 'Visit not found',
+        appBar: AppBar(title: Text(t.prescriptionFallback)),
+        body: EmptyState(
+          title: t.visitNotFound,
           icon: Icons.search_off_rounded,
         ),
       );
@@ -197,13 +203,13 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Prescription Ready',
+                            t.prescriptionReady,
                             style: AppTypography.headlineMedium.copyWith(
                               color: scheme.onSurface,
                             ),
                           ),
                           Text(
-                            'Review and share with patient',
+                            t.reviewAndShare,
                             style: AppTypography.bodySmall.copyWith(
                               color: scheme.onSurfaceVariant,
                             ),
@@ -214,7 +220,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                     TextButton.icon(
                       onPressed: () => context.go('/'),
                       icon: const Icon(Icons.home_rounded, size: 18),
-                      label: const Text('Home'),
+                      label: Text(t.navHome),
                     ),
                   ],
                 ),
@@ -240,18 +246,18 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                               color: scheme.error,
                             ),
                             const SizedBox(height: 12),
-                            const Text('Could not generate PDF'),
+                            Text(t.couldNotGeneratePdf),
                           ],
                         ),
                       )
                     : _pageImages.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 12),
-                            Text('Generating prescription...'),
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 12),
+                            Text(t.generatingPrescription),
                           ],
                         ),
                       )
@@ -315,17 +321,18 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
 class _StepProgressBar extends StatelessWidget {
   const _StepProgressBar({required this.activeStep});
   final int activeStep;
-  static const _steps = ['Details', 'Recording', 'Review', 'Share'];
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    final steps = [t.stepDetails, t.stepRecording, t.stepReview, t.stepShare];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
-            for (var i = 0; i < _steps.length; i++) ...[
+            for (var i = 0; i < steps.length; i++) ...[
               if (i > 0) const SizedBox(width: AppSpacing.s),
               Expanded(
                 child: Container(
@@ -346,9 +353,9 @@ class _StepProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(
-            _steps.length,
+            steps.length,
             (i) => Text(
-              _steps[i],
+              steps[i],
               style: AppTypography.labelSmall.copyWith(
                 color: i <= activeStep ? _kTeal600 : scheme.onSurfaceVariant,
                 fontWeight: i == activeStep ? FontWeight.w600 : FontWeight.w400,
@@ -369,6 +376,7 @@ class _ShareBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: scheme.surface,
@@ -390,7 +398,7 @@ class _ShareBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _GradientCta(
-            label: busy ? 'Preparing PDF…' : 'Share on WhatsApp',
+            label: busy ? t.preparingPdf : t.shareOnWhatsapp,
             icon: Icons.share_rounded,
             colors: [const Color(0xFF16A34A), const Color(0xFF10B981)],
             shadowColor: const Color(0x4D16A34A),
@@ -398,7 +406,7 @@ class _ShareBar extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s),
           _OutlineCta(
-            label: 'Share via other apps',
+            label: t.shareViaOtherApps,
             icon: Icons.ios_share_rounded,
             onTap: busy ? null : onShare,
           ),

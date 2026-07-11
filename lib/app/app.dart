@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/locale/locale_provider.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_provider.dart';
+import '../l10n/app_localizations.dart';
 import 'router.dart';
 
 class RxvartaApp extends ConsumerWidget {
@@ -12,6 +14,7 @@ class RxvartaApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeAsync = ref.watch(themeModeProvider);
+    final locale = ref.watch(appLocaleProvider);
 
     // While prefs load, show a blank screen in system theme — no flash
     final themeMode = themeAsync.value ?? ThemeMode.system;
@@ -22,6 +25,9 @@ class RxvartaApp extends ConsumerWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       scrollBehavior: const _NoBounceScrollBehavior(),
       // Screens are laid out for the default text scale. A larger system
       // text size (common on iOS via Dynamic Type) inflates text until

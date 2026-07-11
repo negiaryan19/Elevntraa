@@ -5,6 +5,7 @@ import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../l10n/app_localizations.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kTeal500 = Color(0xFF14B8A6);
@@ -17,6 +18,7 @@ class IntakeChoiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -66,14 +68,14 @@ class IntakeChoiceScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'New Consultation',
+                            t.newConsultation,
                             style: AppTypography.headlineMedium.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            'Who is this consultation for?',
+                            t.whoIsThisFor,
                             style: AppTypography.bodySmall.copyWith(
                               color: Theme.of(
                                 context,
@@ -100,18 +102,16 @@ class IntakeChoiceScreen extends StatelessWidget {
                     children: [
                       _ChoiceCard(
                         icon: Icons.person_add_alt_1_rounded,
-                        title: 'New Patient',
-                        subtitle:
-                            'Add name, age, gender and mobile number for a first-time patient.',
+                        title: t.newPatientTitle,
+                        subtitle: t.newPatientDesc,
                         gradient: const [_kBlue600, _kTeal500],
                         onTap: () => context.push(AppRoute.intakeForm.path),
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       _ChoiceCard(
                         icon: Icons.history_rounded,
-                        title: 'Existing Patient',
-                        subtitle:
-                            'Search a patient from history, review their report, then start a new consultation.',
+                        title: t.existingPatientTitle,
+                        subtitle: t.existingPatientDesc,
                         gradient: const [Color(0xFF0D9488), Color(0xFF2563EB)],
                         onTap: () => context.push(AppRoute.intakeExisting.path),
                       ),
