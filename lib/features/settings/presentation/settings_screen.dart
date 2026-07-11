@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/locale/locale_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/reveal.dart';
 import '../../../domain/models/doctor_profile.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/doctor_profile_repository.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -35,10 +37,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (updated != null) {
       await notifier.update(updated);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Profile updated')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.profileUpdated)),
+        );
       }
+    }
+  }
+
+  Future<void> _openLanguagePicker() async {
+    final current = ref.read(appLocaleProvider).languageCode;
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useRootNavigator: true,
+      builder: (_) => _LanguageSheet(current: current),
+    );
+    if (picked != null && picked != current) {
+      await ref.read(appLocaleProvider.notifier).setLocale(picked);
     }
   }
 
@@ -47,6 +63,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final doctor = ref.watch(doctorProfileControllerProvider);
     final isDark = ref.watch(themeModeProvider).value == ThemeMode.dark;
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    final localeCode = ref.watch(appLocaleProvider).languageCode;
+    final languageName = kSupportedLanguages
+        .firstWhere((l) => l.code == localeCode)
+        .nativeName;
 
     return Scaffold(
       body: CustomScrollView(
@@ -91,7 +112,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                             const SizedBox(width: AppSpacing.m),
                             Text(
-                              'Settings',
+                              t.settings,
                               style: AppTypography.headlineLarge.copyWith(
                                 color: Colors.white,
                               ),
@@ -100,7 +121,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
-                          'Manage your app preferences',
+                          t.settingsSubtitle,
                           style: AppTypography.bodySmall.copyWith(
                             color: Colors.white70,
                           ),
@@ -153,7 +174,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                       ),
                                       Text(
-                                        'Reg. ${doctor.regNo}',
+                                        '${t.regPrefix} ${doctor.regNo}',
                                         style: AppTypography.labelSmall
                                             .copyWith(color: Colors.white60),
                                       ),
@@ -195,7 +216,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel('Account'),
+                      _SectionLabel(t.sectionAccount),
                       _SettingsCard(
                         children: [
                           _Tile(
@@ -205,9 +226,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ? const Color(0xFF1A2060)
                                 : const Color(0xFFEFF6FF),
                             iconColor: const Color(0xFF2563EB),
-                            label: 'Profile Settings',
-                            subtitle:
-                                'Name, qualifications, registration & clinic details',
+                            label: t.profileSettings,
+                            subtitle: t.profileSettingsSubtitle,
                             onTap: _openProfileEditor,
                           ),
                         ],
@@ -224,7 +244,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel('Preferences'),
+                      _SectionLabel(t.sectionPreferences),
                       _SettingsCard(
                         children: [
                           // Dark mode — wired to real provider
@@ -238,13 +258,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             iconColor: isDark
                                 ? const Color(0xFF60A5FA)
                                 : const Color(0xFFF59E0B),
-                            label: 'Dark Mode',
+                            label: t.darkMode,
                             subtitle: isDark
-                                ? 'Dark theme active'
-                                : 'Light theme active',
+                                ? t.darkThemeActive
+                                : t.lightThemeActive,
                             value: isDark,
                             onToggle: () =>
                                 ref.read(themeModeProvider.notifier).toggle(),
+                          ),
+                          _Divider(),
+                          _Tile(
+                            icon: Icons.translate_rounded,
+                            iconBg:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF0D3D2E)
+                                : const Color(0xFFECFDF5),
+                            iconColor: const Color(0xFF10B981),
+                            label: t.appLanguage,
+                            subtitle: languageName,
+                            onTap: _openLanguagePicker,
                           ),
                         ],
                       ),
@@ -260,7 +292,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel('Data & Privacy'),
+                      _SectionLabel(t.sectionDataPrivacy),
                       _SettingsCard(
                         children: [
                           _Tile(
@@ -270,8 +302,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ? const Color(0xFF1A2060)
                                 : const Color(0xFFEFF6FF),
                             iconColor: const Color(0xFF2563EB),
-                            label: 'Data Backup',
-                            subtitle: 'Backup your consultation history',
+                            label: t.dataBackup,
+                            subtitle: t.dataBackupSubtitle,
                           ),
                           _Divider(),
                           _Tile(
@@ -281,8 +313,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ? const Color(0xFF0D3D2E)
                                 : const Color(0xFFECFDF5),
                             iconColor: const Color(0xFF10B981),
-                            label: 'Export Data',
-                            subtitle: 'Download all your data',
+                            label: t.exportData,
+                            subtitle: t.exportDataSubtitle,
                           ),
                           _Divider(),
                           _Tile(
@@ -292,8 +324,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ? const Color(0xFF1E1A40)
                                 : const Color(0xFFF5F3FF),
                             iconColor: const Color(0xFF8B5CF6),
-                            label: 'Privacy & Security',
-                            subtitle: 'Manage your privacy settings',
+                            label: t.privacySecurity,
+                            subtitle: t.privacySecuritySubtitle,
                           ),
                         ],
                       ),
@@ -309,7 +341,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel('Support'),
+                      _SectionLabel(t.sectionSupport),
                       _SettingsCard(
                         children: [
                           _Tile(
@@ -319,8 +351,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ? const Color(0xFF2A1A0A)
                                 : const Color(0xFFFFF7ED),
                             iconColor: const Color(0xFFF97316),
-                            label: 'Terms & Conditions',
-                            subtitle: 'Read our terms of service',
+                            label: t.termsConditions,
+                            subtitle: t.termsConditionsSubtitle,
                           ),
                           _Divider(),
                           _Tile(
@@ -330,8 +362,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ? const Color(0xFF1A2060)
                                 : const Color(0xFFEFF6FF),
                             iconColor: const Color(0xFF2563EB),
-                            label: 'Help & Support',
-                            subtitle: 'Get help or contact us',
+                            label: t.helpSupport,
+                            subtitle: t.helpSupportSubtitle,
                           ),
                         ],
                       ),
@@ -370,7 +402,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                               const SizedBox(width: AppSpacing.s),
                               Text(
-                                'Logout',
+                                t.logout,
                                 style: AppTypography.titleSmall.copyWith(
                                   color: scheme.error,
                                 ),
@@ -387,7 +419,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        '© 2026 All rights reserved',
+                        '© 2026 ${t.allRightsReserved}',
                         style: AppTypography.bodySmall.copyWith(
                           color: scheme.onSurfaceVariant,
                         ),
@@ -717,18 +749,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Unsaved Changes'),
-        content: const Text(
-          'You have unsaved changes. Do you want to save them or discard?',
-        ),
+        title: Text(AppLocalizations.of(dialogContext)!.unsavedChanges),
+        content: Text(AppLocalizations.of(dialogContext)!.unsavedChangesBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Discard'),
+            child: Text(AppLocalizations.of(dialogContext)!.discard),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(dialogContext)!.save),
           ),
         ],
       ),
@@ -763,6 +793,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return PopScope(
       canPop: !_hasUnsavedChanges,
@@ -805,50 +836,50 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                     ),
                   ),
                   Text(
-                    'Edit Profile',
+                    t.editProfile,
                     style: AppTypography.headlineMedium.copyWith(
                       color: scheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
-                    'Appears on prescription letterhead.',
+                    t.editProfileSubtitle,
                     style: AppTypography.bodySmall.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   _Field(
-                    label: 'Doctor name',
+                    label: t.doctorName,
                     controller: _name,
                     hint: 'Dr. Rajesh Sharma',
                     required: true,
                   ),
                   _Field(
-                    label: 'Qualifications',
+                    label: t.qualifications,
                     controller: _quals,
                     hint: 'MBBS, MD (Medicine)',
                     required: true,
                   ),
                   _Field(
-                    label: 'Registration number',
+                    label: t.registrationNumber,
                     controller: _regNo,
                     hint: 'MH-12345',
                     required: true,
                   ),
                   _Field(
-                    label: 'Clinic / Hospital name',
+                    label: t.clinicName,
                     controller: _clinicName,
                     hint: 'Rxvarta Clinic',
                   ),
                   _Field(
-                    label: 'Clinic address',
+                    label: t.clinicAddress,
                     controller: _clinicAddress,
                     hint: 'Area, City, State PIN',
                     maxLines: 2,
                   ),
                   _Field(
-                    label: 'Clinic phone',
+                    label: t.clinicPhone,
                     controller: _clinicPhone,
                     hint: '+91 98765 43210',
                     keyboardType: TextInputType.phone,
@@ -859,14 +890,14 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
+                          child: Text(t.cancel),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _save,
-                          child: const Text('Save'),
+                          child: Text(t.save),
                         ),
                       ),
                     ],
@@ -919,11 +950,109 @@ class _Field extends StatelessWidget {
             keyboardType: keyboardType,
             style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
             validator: required
-                ? (v) => (v == null || v.trim().isEmpty) ? 'Required' : null
+                ? (v) => (v == null || v.trim().isEmpty)
+                      ? AppLocalizations.of(context)!.required
+                      : null
                 : null,
             decoration: InputDecoration(hintText: hint),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// -- Language Sheet ----------------------------------------------------------
+
+class _LanguageSheet extends StatelessWidget {
+  const _LanguageSheet({required this.current});
+  final String current;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.xl,
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: scheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              t.chooseLanguage,
+              style: AppTypography.headlineMedium.copyWith(
+                color: scheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xxs),
+            Text(
+              t.appLanguageSubtitle,
+              style: AppTypography.bodySmall.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            for (final lang in kSupportedLanguages)
+              InkWell(
+                onTap: () => Navigator.of(context).pop(lang.code),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              lang.nativeName,
+                              style: AppTypography.titleSmall.copyWith(
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              lang.englishName,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (lang.code == current)
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: scheme.primary,
+                          size: 22,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

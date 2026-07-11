@@ -11,6 +11,7 @@ import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../l10n/app_localizations.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kTeal500 = Color(0xFF14B8A6);
@@ -98,6 +99,7 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     // Stats count unique patients, not consultations
     final today = _groups
         .where((g) => _isToday(g.latestVisit.createdAt))
@@ -134,14 +136,14 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Patient History',
+                        t.patientHistory,
                         style: AppTypography.headlineLarge.copyWith(
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        'View all consultations and records',
+                        t.viewAllConsultations,
                         style: AppTypography.bodySmall.copyWith(
                           color: Colors.white70,
                         ),
@@ -152,19 +154,22 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                           Expanded(
                             child: _StatPill(
                               value: '${_groups.length}',
-                              label: 'Total',
+                              label: t.statTotal,
                             ),
                           ),
                           const SizedBox(width: AppSpacing.m),
                           Expanded(
                             child: _StatPill(
                               value: '$thisWeek',
-                              label: 'This Week',
+                              label: t.statThisWeek,
                             ),
                           ),
                           const SizedBox(width: AppSpacing.m),
                           Expanded(
-                            child: _StatPill(value: '$today', label: 'Today'),
+                            child: _StatPill(
+                              value: '$today',
+                              label: t.statToday,
+                            ),
                           ),
                         ],
                       ),
@@ -206,7 +211,7 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                         child: TextField(
                           onChanged: _onSearch,
                           decoration: InputDecoration(
-                            hintText: 'Search patients...',
+                            hintText: t.searchPatientsHint,
                             hintStyle: AppTypography.bodyMedium.copyWith(
                               color: Theme.of(
                                 context,
@@ -348,24 +353,25 @@ class _PatientCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final patient = group.patient;
     final visit = group.latestVisit;
 
-    final name = patient?.name ?? 'Unknown Patient';
+    final name = patient?.name ?? t.unknownPatient;
     final ageSex = [
-      if (patient?.age != null) '${patient!.age} years',
+      if (patient?.age != null) '${patient!.age} ${t.years}',
       if (patient?.sex != null)
         patient!.sex == Sex.male
-            ? 'Male'
+            ? t.male
             : patient.sex == Sex.female
-            ? 'Female'
-            : 'Other',
+            ? t.female
+            : t.other,
     ].join(' • ');
     final diagnosis = visit.insight?.diagnosis ?? '';
     final dateTime =
-        '${_formatDate(visit.createdAt)} · ${visit.createdAt.hour.toString().padLeft(2, '0')}:${visit.createdAt.minute.toString().padLeft(2, '0')}';
+        '${_formatDate(t, visit.createdAt)} · ${visit.createdAt.hour.toString().padLeft(2, '0')}:${visit.createdAt.minute.toString().padLeft(2, '0')}';
     final countLabel =
-        '${group.visitCount} ${group.visitCount == 1 ? 'consultation' : 'consultations'}';
+        '${group.visitCount} ${group.visitCount == 1 ? t.consultationOne : t.consultationMany}';
 
     return Container(
       decoration: BoxDecoration(
@@ -503,15 +509,15 @@ class _PatientCard extends StatelessWidget {
     );
   }
 
-  static String _formatDate(DateTime dt) {
+  static String _formatDate(AppLocalizations t, DateTime dt) {
     final now = DateTime.now();
     final diff = DateTime(
       now.year,
       now.month,
       now.day,
     ).difference(DateTime(dt.year, dt.month, dt.day)).inDays;
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Yesterday';
+    if (diff == 0) return t.statToday;
+    if (diff == 1) return t.yesterday;
     const months = [
       'Jan',
       'Feb',
@@ -547,7 +553,9 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.m),
           Text(
-            hasQuery ? 'No patients found' : 'No consultations yet',
+            hasQuery
+                ? AppLocalizations.of(context)!.noPatientsFound
+                : AppLocalizations.of(context)!.noConsultationsYet,
             style: AppTypography.bodyMedium.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

@@ -11,6 +11,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/mic_permission.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/recording_service.dart';
 import 'consultation_controller.dart';
 import 'widgets/live_waveform.dart';
@@ -20,12 +21,6 @@ const _kBlue300 = Color(0xFF6B8FFF);
 const _kTeal500 = Color(0xFF14B8A6);
 const _kTeal600 = Color(0xFF0D9488);
 const _kBlueShadow = Color(0x4D2563EB);
-
-/// Shown whenever an action that needs the server (STT / Gemini) is attempted
-/// while the device has no working internet.
-const _kOfflineMessage =
-    'No internet connection — recording requires internet to transcribe and '
-    'process the consultation.';
 
 class _Language {
   const _Language(this.code, this.label);
@@ -142,9 +137,10 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   void _showBlockedMessage() {
     final status = ref.read(connectivityStatusProvider);
     ref.read(connectivityStatusProvider.notifier).recheck();
+    final t = AppLocalizations.of(context)!;
     final message = status == ConnectivityStatus.checking
-        ? 'Checking your connection — please try again in a moment.'
-        : _kOfflineMessage;
+        ? t.checkingConnectionRetry
+        : t.offlineNotice;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message)));
@@ -173,10 +169,8 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
         // happened instead of failing silently.
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Microphone permission is needed to record the consultation.',
-              ),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.micPermissionNeeded),
             ),
           );
         }
@@ -308,12 +302,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'Internet lost and the recording could not be paused '
-                    'automatically — please tap Pause.',
+                    AppLocalizations.of(context)!.internetLostPauseManually,
                   ),
-                  duration: Duration(seconds: 6),
+                  duration: const Duration(seconds: 6),
                 ),
               );
           }
@@ -325,12 +318,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Internet lost — recording paused. Reconnect to resume and '
-              'finish the consultation.',
-            ),
-            duration: Duration(seconds: 6),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.internetLostPaused),
+            duration: const Duration(seconds: 6),
           ),
         );
     }
@@ -396,18 +386,16 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Stop recording and go back?'),
-        content: const Text(
-          'Your recording will be lost. This cannot be undone.',
-        ),
+        title: Text(AppLocalizations.of(ctx)!.stopRecordingGoBack),
+        content: Text(AppLocalizations.of(ctx)!.recordingWillBeLost),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Stop & Go Back'),
+            child: Text(AppLocalizations.of(ctx)!.stopAndGoBack),
           ),
         ],
       ),
@@ -420,18 +408,16 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Discard recording?'),
-        content: const Text(
-          'Your recorded audio will be discarded. This cannot be undone.',
-        ),
+        title: Text(AppLocalizations.of(ctx)!.discardRecording),
+        content: Text(AppLocalizations.of(ctx)!.audioWillBeDiscarded),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Discard & Go Back'),
+            child: Text(AppLocalizations.of(ctx)!.discardAndGoBack),
           ),
         ],
       ),
@@ -450,18 +436,16 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Start fresh?'),
-        content: const Text(
-          'This will replace your current consultation data.',
-        ),
+        title: Text(AppLocalizations.of(ctx)!.startFresh),
+        content: Text(AppLocalizations.of(ctx)!.startFreshBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Start Fresh'),
+            child: Text(AppLocalizations.of(ctx)!.startFreshConfirm),
           ),
         ],
       ),
@@ -488,12 +472,12 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
             ),
             AppSpacing.gapMd,
             Text(
-              'Microphone access needed',
+              AppLocalizations.of(ctx)!.micAccessNeeded,
               style: Theme.of(ctx).textTheme.titleLarge,
             ),
             AppSpacing.gapS,
             Text(
-              'Enable microphone permission in settings to record.',
+              AppLocalizations.of(ctx)!.micEnableInSettings,
               textAlign: TextAlign.center,
               style: Theme.of(ctx).textTheme.bodyMedium,
             ),
@@ -503,7 +487,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                 Navigator.pop(ctx);
                 MicPermission.openSettings();
               },
-              child: const Text('Open settings'),
+              child: Text(AppLocalizations.of(ctx)!.openSettings),
             ),
           ],
         ),
@@ -544,6 +528,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final tipColor = isDark ? _kBlue300 : _kBlue600;
+    final t = AppLocalizations.of(context)!;
 
     return PopScope(
       // fromReview → always intercept so _leave() can pushReplacement to Review.
@@ -610,7 +595,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Consultation Recording',
+                              t.consultationRecording,
                               style: AppTypography.headlineMedium.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
@@ -618,14 +603,14 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                             ),
                             Text(
                               isBusy
-                                  ? 'Processing audio...'
+                                  ? t.processingAudio
                                   : _mode == _RecordingMode.choice
-                                  ? 'Choose recording option'
+                                  ? t.chooseRecordingOption
                                   : isRecording
                                   ? _isPaused
-                                        ? 'Paused'
-                                        : 'Recording conversation...'
-                                  : 'Doctor + Patient',
+                                        ? t.paused
+                                        : t.recordingConversation
+                                  : t.doctorPlusPatient,
                               style: AppTypography.bodySmall.copyWith(
                                 color: Theme.of(
                                   context,
@@ -669,8 +654,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           const SizedBox(width: AppSpacing.s),
                           Expanded(
                             child: Text(
-                              'Adding to consultation — new audio will be merged '
-                              'with the existing transcript.',
+                              t.addingToConsultation,
                               style: AppTypography.bodySmall.copyWith(
                                 color: _kTeal600,
                               ),
@@ -787,7 +771,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           const SizedBox(width: AppSpacing.s),
                           Expanded(
                             child: Text(
-                              'Place phone on the desk between doctor and patient, then tap Start.',
+                              t.recordingTip,
                               style: AppTypography.bodySmall.copyWith(
                                 color: tipColor,
                               ),
@@ -930,13 +914,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                   Text(
                                     isRecording
                                         ? _isPaused
-                                              ? 'Paused'
+                                              ? t.paused
                                               : _heardVoice
-                                              ? 'Recording conversation...'
-                                              : 'Say something...'
+                                              ? t.recordingConversation
+                                              : t.saySomething
                                         : isBusy
-                                        ? _busyLabel(state.stage)
-                                        : 'Ready — both voices will be captured',
+                                        ? _busyLabel(context, state.stage)
+                                        : t.readyBothVoices,
                                     style: AppTypography.bodySmall.copyWith(
                                       color: Theme.of(
                                         context,
@@ -976,7 +960,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                       ),
                                       const SizedBox(width: AppSpacing.xs),
                                       Text(
-                                        'Recording approaching limit',
+                                        t.recordingApproachingLimit,
                                         style: AppTypography.labelSmall
                                             .copyWith(
                                               color: isDark
@@ -1035,10 +1019,10 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                             ),
                           _GradientCta(
                             label: canReachServer
-                                ? 'Start Consultation'
+                                ? t.startConsultation
                                 : isChecking
-                                ? 'Checking connection…'
-                                : 'Offline — reconnect to record',
+                                ? t.checkingConnection
+                                : t.offlineReconnect,
                             leadingIcon: canReachServer
                                 ? Icons.record_voice_over_rounded
                                 : isChecking
@@ -1057,13 +1041,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                 icon: _isPaused
                                     ? Icons.play_arrow_rounded
                                     : Icons.pause_rounded,
-                                label: _isPaused ? 'Resume' : 'Pause',
+                                label: _isPaused ? t.resume : t.pause,
                                 onTap: _onPauseResume,
                               ),
                               const SizedBox(width: AppSpacing.md),
                               _GreenButton(
                                 icon: Icons.check_rounded,
-                                label: 'Done',
+                                label: t.done,
                                 enabled: state.elapsed.inSeconds >= 5,
                                 onTap: state.elapsed.inSeconds >= 5
                                     ? _onDone
@@ -1075,7 +1059,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                           Padding(
                             padding: const EdgeInsets.only(top: AppSpacing.s),
                             child: Text(
-                              'Minimum 5 seconds required',
+                              t.minimumFiveSeconds,
                               textAlign: TextAlign.center,
                               style: AppTypography.bodySmall.copyWith(
                                 color: Theme.of(
@@ -1095,14 +1079,16 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     );
   }
 
-  String _busyLabel(ConsultationStage s) {
+  String _busyLabel(BuildContext context, ConsultationStage s) {
+    final t = AppLocalizations.of(context)!;
     return s == ConsultationStage.transcribing
-        ? 'Transcribing conversation...'
-        : 'Extracting prescription...';
+        ? t.transcribingConversation
+        : t.extractingPrescription;
   }
 
   Widget _buildChoiceBody(ConsultationState state, bool isDark) {
     final tipColor = isDark ? _kBlue300 : _kBlue600;
+    final t = AppLocalizations.of(context)!;
     return Expanded(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
@@ -1137,14 +1123,14 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'You have an existing recording for this consultation.',
+                          t.existingRecordingNotice,
                           style: AppTypography.bodySmall.copyWith(
                             color: tipColor,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xxs),
                         Text(
-                          'Duration: ${_fmt(state.elapsed)}',
+                          '${t.duration}: ${_fmt(state.elapsed)}',
                           style: AppTypography.labelSmall.copyWith(
                             color: tipColor,
                             fontWeight: FontWeight.w600,
@@ -1159,16 +1145,16 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
             const SizedBox(height: AppSpacing.xl),
             _ChoiceActionCard(
               icon: Icons.mic_rounded,
-              title: 'Add Extra Conversation',
-              subtitle: 'Record more and merge with existing data',
+              title: t.addExtraConversation,
+              subtitle: t.addExtraDesc,
               gradient: const LinearGradient(colors: [_kBlue600, _kTeal500]),
               onTap: _onChoiceAddExtra,
             ),
             const SizedBox(height: AppSpacing.md),
             _ChoiceActionCard(
               icon: Icons.refresh_rounded,
-              title: 'Start New Conversation',
-              subtitle: 'Clear previous and record fresh',
+              title: t.startNewConversation,
+              subtitle: t.startNewDesc,
               onTap: _onChoiceStartNew,
             ),
           ],
@@ -1184,16 +1170,17 @@ class _StepProgressBar extends StatelessWidget {
   const _StepProgressBar({required this.activeStep});
 
   final int activeStep;
-  static const _steps = ['Details', 'Recording', 'Review', 'Share'];
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final steps = [t.stepDetails, t.stepRecording, t.stepReview, t.stepShare];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
-            for (var i = 0; i < _steps.length; i++) ...[
+            for (var i = 0; i < steps.length; i++) ...[
               if (i > 0) const SizedBox(width: AppSpacing.s),
               Expanded(
                 child: Container(
@@ -1216,9 +1203,9 @@ class _StepProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(
-            _steps.length,
+            steps.length,
             (i) => Text(
-              _steps[i],
+              steps[i],
               style: AppTypography.labelSmall.copyWith(
                 color: i == activeStep
                     ? Theme.of(context).colorScheme.primary
@@ -1349,8 +1336,7 @@ class _OfflineNotice extends StatelessWidget {
           const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Text(
-              'No internet connection. Recording needs internet to transcribe '
-              'and process the consultation.',
+              AppLocalizations.of(context)!.offlineNotice,
               style: AppTypography.bodySmall.copyWith(
                 color: scheme.onErrorContainer,
               ),

@@ -8,6 +8,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
+import '../../../l10n/app_localizations.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kTeal500 = Color(0xFF14B8A6);
@@ -56,7 +57,7 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
         surfaceTintColor: Theme.of(context).colorScheme.surface,
         elevation: 0.5,
         title: Text(
-          'Find Patient',
+          AppLocalizations.of(context)!.findPatientTitle,
           style: AppTypography.titleMedium.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -96,7 +97,9 @@ class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
                         autofocus: true,
                         onChanged: _search,
                         decoration: InputDecoration(
-                          hintText: 'Search by name or number…',
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.searchByNameOrNumber,
                           hintStyle: AppTypography.bodyMedium.copyWith(
                             color: Theme.of(
                               context,
@@ -149,9 +152,10 @@ class _PatientTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final meta = [
-      if (patient.age != null) '${patient.age} yrs',
-      _sexLabel(patient.sex),
+      if (patient.age != null) '${patient.age} ${t.years}',
+      _sexLabel(t, patient.sex),
       if (patient.whatsappNumber != null) '+91 ${patient.whatsappNumber}',
     ].where((s) => s.isNotEmpty && s != '—').join(' • ');
 
@@ -225,14 +229,14 @@ class _PatientTile extends StatelessWidget {
     );
   }
 
-  static String _sexLabel(Sex? sex) {
+  static String _sexLabel(AppLocalizations t, Sex? sex) {
     switch (sex) {
       case Sex.male:
-        return 'Male';
+        return t.male;
       case Sex.female:
-        return 'Female';
+        return t.female;
       case Sex.other:
-        return 'Other';
+        return t.other;
       case null:
         return '';
     }
@@ -256,7 +260,9 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.m),
           Text(
-            hasQuery ? 'No matching patients' : 'No patients yet',
+            hasQuery
+                ? AppLocalizations.of(context)!.noMatchingPatients
+                : AppLocalizations.of(context)!.noPatientsYet,
             style: AppTypography.bodyMedium.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

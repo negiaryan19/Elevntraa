@@ -16,6 +16,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/report_attachment.dart';
+import '../../../l10n/app_localizations.dart';
 import 'consultation_controller.dart';
 import 'intake_controller.dart';
 
@@ -115,9 +116,13 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not add report: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.couldNotAddReport}: $e',
+            ),
+          ),
+        );
       }
     }
   }
@@ -131,7 +136,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_rounded, color: _kBlue600),
-              title: const Text('Take photo'),
+              title: Text(AppLocalizations.of(ctx)!.takePhoto),
               onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
             ),
             ListTile(
@@ -139,7 +144,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                 Icons.photo_library_rounded,
                 color: _kBlue600,
               ),
-              title: const Text('Choose from gallery'),
+              title: Text(AppLocalizations.of(ctx)!.chooseFromGallery),
               onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
             ),
           ],
@@ -235,7 +240,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
     } catch (e) {
       setState(() {
         _submitting = false;
-        _error = 'Could not save patient: $e';
+        _error = '${AppLocalizations.of(context)!.couldNotSavePatient}: $e';
       });
     }
   }
@@ -243,27 +248,28 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
   /// Returns true → reuse [existing]; false → create a new record anyway;
   /// null → the doctor dismissed the dialog.
   Future<bool?> _confirmUseExisting(PatientProfile existing) {
+    final t = AppLocalizations.of(context)!;
     final meta = [
-      if (existing.age != null) '${existing.age} yrs',
+      if (existing.age != null) '${existing.age} ${t.years}',
       if (existing.whatsappNumber != null) '+91 ${existing.whatsappNumber}',
     ].join(' • ');
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Patient already exists'),
+        title: Text(t.patientAlreadyExists),
         content: Text(
-          'A patient with this number is already in your records:\n\n'
+          '${t.patientExistsBody}\n\n'
           '${existing.name}${meta.isEmpty ? '' : '\n$meta'}\n\n'
-          'Add this consultation to their existing history?',
+          '${t.patientExistsQuestion}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Create new'),
+            child: Text(t.createNew),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Use existing'),
+            child: Text(t.useExisting),
           ),
         ],
       ),
@@ -274,6 +280,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -327,8 +334,8 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                           children: [
                             Text(
                               _isReturning
-                                  ? 'New Consultation'
-                                  : 'Patient Details',
+                                  ? t.newConsultation
+                                  : t.patientDetails,
                               style: AppTypography.headlineMedium.copyWith(
                                 color: scheme.onSurface,
                               ),
@@ -336,8 +343,8 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             ),
                             Text(
                               _isReturning
-                                  ? 'Confirm details & consent'
-                                  : 'Enter basic patient information',
+                                  ? t.confirmDetailsConsent
+                                  : t.enterBasicInfo,
                               style: AppTypography.bodySmall.copyWith(
                                 color: scheme.onSurfaceVariant,
                               ),
@@ -390,15 +397,15 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             // Name
                             _FieldLabel(
                               icon: Icons.person_outline_rounded,
-                              label: 'Patient Name',
+                              label: t.patientName,
                             ),
                             const SizedBox(height: AppSpacing.s),
                             _IntakeTextField(
                               controller: _nameCtrl,
-                              hint: "Enter patient's full name",
+                              hint: t.patientNameHint,
                               textInputAction: TextInputAction.next,
                               validator: (v) => (v == null || v.trim().isEmpty)
-                                  ? 'Name is required'
+                                  ? t.nameRequired
                                   : null,
                             ),
                             SizedBox(
@@ -418,12 +425,12 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                     children: [
                                       _FieldLabel(
                                         icon: Icons.cake_outlined,
-                                        label: 'Age',
+                                        label: t.age,
                                       ),
                                       const SizedBox(height: AppSpacing.s),
                                       _IntakeTextField(
                                         controller: _ageCtrl,
-                                        hint: 'Age',
+                                        hint: t.age,
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
                                           FilteringTextInputFormatter
@@ -443,7 +450,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                     children: [
                                       _FieldLabel(
                                         icon: Icons.people_outline_rounded,
-                                        label: 'Gender',
+                                        label: t.gender,
                                       ),
                                       const SizedBox(height: AppSpacing.s),
                                       _GenderDropdown(
@@ -480,7 +487,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             // WhatsApp
                             _FieldLabel(
                               icon: Icons.phone_outlined,
-                              label: 'WhatsApp Number',
+                              label: t.whatsappNumber,
                             ),
                             const SizedBox(height: AppSpacing.s),
                             Row(
@@ -511,7 +518,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                 Expanded(
                                   child: _IntakeTextField(
                                     controller: _whatsappCtrl,
-                                    hint: '10-digit mobile number',
+                                    hint: t.mobileHint,
                                     keyboardType: TextInputType.phone,
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
@@ -523,7 +530,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'Prescription will be shared on this number',
+                              t.prescriptionShareNote,
                               style: AppTypography.bodySmall.copyWith(
                                 color: scheme.onSurfaceVariant,
                               ),
@@ -537,12 +544,11 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             // Previous reports
                             _FieldLabel(
                               icon: Icons.description_outlined,
-                              label: 'Previous Reports (optional)',
+                              label: t.previousReports,
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'Scan or attach the patient\'s earlier reports — they '
-                              'are added to the prescription PDF.',
+                              t.previousReportsDesc,
                               style: AppTypography.bodySmall.copyWith(
                                 color: scheme.onSurfaceVariant,
                               ),
@@ -600,7 +606,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                                   const SizedBox(width: AppSpacing.s),
                                   Expanded(
                                     child: Text(
-                                      'Patient has consented to be recorded (DPDP Act)',
+                                      t.consentLine,
                                       style: AppTypography.bodySmall.copyWith(
                                         color: scheme.onSurface,
                                       ),
@@ -626,7 +632,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                             ],
                             // Submit button
                             _GradientCta(
-                              label: 'Continue to Recording',
+                              label: t.continueToRecording,
                               trailingIcon: Icons.arrow_forward_rounded,
                               enabled: _isFormValid,
                               loading: _submitting,
@@ -652,17 +658,18 @@ class _StepProgressBar extends StatelessWidget {
   const _StepProgressBar({required this.activeStep});
 
   final int activeStep;
-  static const _steps = ['Details', 'Recording', 'Review', 'Share'];
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    final steps = [t.stepDetails, t.stepRecording, t.stepReview, t.stepShare];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
-            for (var i = 0; i < _steps.length; i++) ...[
+            for (var i = 0; i < steps.length; i++) ...[
               if (i > 0) const SizedBox(width: AppSpacing.s),
               Expanded(
                 child: Container(
@@ -683,9 +690,9 @@ class _StepProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(
-            _steps.length,
+            steps.length,
             (i) => Text(
-              _steps[i],
+              steps[i],
               style: AppTypography.labelSmall.copyWith(
                 color: i == activeStep
                     ? _kBlue600
@@ -843,8 +850,8 @@ class _ReportTile extends StatelessWidget {
             child: TextFormField(
               initialValue: attachment.caption,
               style: AppTypography.bodySmall.copyWith(color: scheme.onSurface),
-              decoration: const InputDecoration(
-                hintText: 'Label (e.g. Blood test, 2 Jan)',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.reportLabelHint,
                 isDense: true,
                 border: InputBorder.none,
               ),
@@ -929,7 +936,7 @@ class _AddReportButton extends StatelessWidget {
             Icon(Icons.add_a_photo_rounded, color: blue, size: 20),
             const SizedBox(width: AppSpacing.s),
             Text(
-              'Add report',
+              AppLocalizations.of(context)!.addReport,
               style: AppTypography.titleSmall.copyWith(color: blue),
             ),
           ],
@@ -948,13 +955,14 @@ class _GenderDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return DropdownButtonFormField<String>(
       initialValue: value,
       onChanged: onChanged,
       dropdownColor: scheme.surface,
       style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
       decoration: InputDecoration(
-        hintText: 'Select',
+        hintText: t.select,
         hintStyle: AppTypography.bodyMedium.copyWith(
           color: scheme.onSurfaceVariant,
         ),
@@ -972,10 +980,10 @@ class _GenderDropdown extends StatelessWidget {
         ),
         filled: false,
       ),
-      items: const [
-        DropdownMenuItem(value: 'male', child: Text('Male')),
-        DropdownMenuItem(value: 'female', child: Text('Female')),
-        DropdownMenuItem(value: 'other', child: Text('Other')),
+      items: [
+        DropdownMenuItem(value: 'male', child: Text(t.male)),
+        DropdownMenuItem(value: 'female', child: Text(t.female)),
+        DropdownMenuItem(value: 'other', child: Text(t.other)),
       ],
     );
   }

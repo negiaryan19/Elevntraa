@@ -11,6 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../prescription/data/prescription_pdf_service.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 
@@ -97,9 +98,13 @@ class _ViewPrescriptionScreenState
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not share PDF: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.couldNotSharePdf}: $e',
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -109,6 +114,7 @@ class _ViewPrescriptionScreenState
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     final dt = widget.visit.createdAt;
     const months = [
       'Jan',
@@ -125,7 +131,8 @@ class _ViewPrescriptionScreenState
       'Dec',
     ];
     final dateLabel = '${dt.day} ${months[dt.month - 1]} ${dt.year}';
-    final title = '${widget.patient?.name ?? 'Prescription'} · $dateLabel';
+    final title =
+        '${widget.patient?.name ?? t.prescriptionFallback} · $dateLabel';
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -141,7 +148,7 @@ class _ViewPrescriptionScreenState
         actions: [
           if (widget.patient != null)
             IconButton(
-              tooltip: 'Create new consultation based on this patient',
+              tooltip: t.newConsultationTooltip,
               icon: const Icon(Icons.add_rounded),
               onPressed: () => context.push(
                 '${AppRoute.intakeForm.path}?patientId=${widget.patient!.id}',
@@ -171,7 +178,7 @@ class _ViewPrescriptionScreenState
             Icon(Icons.error_outline_rounded, size: 40, color: scheme.error),
             const SizedBox(height: 12),
             Text(
-              'Could not generate prescription',
+              AppLocalizations.of(context)!.couldNotGeneratePrescription,
               style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
             ),
           ],
@@ -179,13 +186,13 @@ class _ViewPrescriptionScreenState
       );
     }
     if (_pageImages.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 12),
-            Text('Generating prescription...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 12),
+            Text(AppLocalizations.of(context)!.generatingPrescription),
           ],
         ),
       );
@@ -243,6 +250,7 @@ class _ShareBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: scheme.surface,
@@ -264,7 +272,7 @@ class _ShareBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _GradientBtn(
-            label: busy ? 'Preparing PDF…' : 'Share on WhatsApp',
+            label: busy ? t.preparingPdf : t.shareOnWhatsapp,
             icon: Icons.share_rounded,
             colors: const [Color(0xFF16A34A), Color(0xFF10B981)],
             shadowColor: const Color(0x4D16A34A),
@@ -272,7 +280,7 @@ class _ShareBar extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s),
           _OutlineBtn(
-            label: 'Share via other apps',
+            label: t.shareViaOtherApps,
             icon: Icons.ios_share_rounded,
             onTap: busy ? null : onShare,
           ),

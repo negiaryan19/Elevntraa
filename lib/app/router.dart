@@ -15,6 +15,7 @@ import '../features/patient/presentation/patients_screen.dart';
 import '../features/prescription/presentation/pdf_preview_screen.dart';
 import '../features/prescription/presentation/review_sign_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
+import '../l10n/app_localizations.dart';
 
 /// Named route table. Keep paths centralized so feature code uses
 /// [AppRoute.foo.path] / `context.go(AppRoute.foo.path)` and we don't have
@@ -124,8 +125,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: const Text('Not found')),
-      body: Center(child: Text('Route not found: ${state.uri}')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.notFound)),
+      body: Center(
+        child: Text('${AppLocalizations.of(context)!.notFound}: ${state.uri}'),
+      ),
     ),
   );
 });
@@ -215,19 +218,19 @@ class _BottomNavBar extends StatelessWidget {
             children: [
               _NavItem(
                 icon: Icons.home_rounded,
-                label: 'Home',
+                label: AppLocalizations.of(context)!.navHome,
                 route: AppRoute.home.path,
                 isActive: isHome,
               ),
               _NavItem(
                 icon: Icons.people_rounded,
-                label: 'Patients',
+                label: AppLocalizations.of(context)!.navPatients,
                 route: AppRoute.patients.path,
                 isActive: isPatients,
               ),
               _NavItem(
                 icon: Icons.settings_rounded,
-                label: 'Settings',
+                label: AppLocalizations.of(context)!.navSettings,
                 route: AppRoute.settings.path,
                 isActive: isSettings,
               ),
