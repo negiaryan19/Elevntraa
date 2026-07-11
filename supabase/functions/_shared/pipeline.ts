@@ -850,7 +850,15 @@ function _spokenText(transcript: string): string {
 // The transcript is romanized Hindi/vernacular while Gemini outputs canonical
 // English names, so we must match phonetically, not just literally.
 const _MEDICINE_VARIANTS: Record<string, string[]> = {
-  paracetamol: ["paracetamol", "paracetemol", "parcetamol", "paracitamol", "pcm", "dolo", "calpol"],
+  paracetamol: [
+    "paracetamol",
+    "paracetemol",
+    "parcetamol",
+    "paracitamol",
+    "pcm",
+    "dolo",
+    "calpol",
+  ],
   cetirizine: ["cetirizine", "cetrizine", "citrizine", "cetzine", "cetiriz"],
   amoxicillin: ["amoxicillin", "amoxicilin", "amoxycillin", "amox", "moxikind"],
   azithromycin: ["azithromycin", "azithromicin", "azithro", "azee"],
@@ -916,93 +924,138 @@ const _SUSPICIOUS_TIMINGS = new Set([
 // Kannada, Bengali, Odia, Gujarati, Marathi.
 const _TIMING_ALIASES: Record<string, string[]> = {
   afterfood: [
-    "afterfood", "aftermeal",
+    "afterfood",
+    "aftermeal",
     // Hindi
-    "khanakhanekebaad", "khanekebaad", "khanebaad", "bhojankebaad", "bhojankhanekebaad",
+    "khanakhanekebaad",
+    "khanekebaad",
+    "khanebaad",
+    "bhojankebaad",
+    "bhojankhanekebaad",
     // Telugu
-    "bhojanamtaruvata", "bhojanamtarvata", "thinakatarvata",
+    "bhojanamtaruvata",
+    "bhojanamtarvata",
+    "thinakatarvata",
     // Tamil
-    "sappaatukkuappuram", "sappaadukkuapuram", "unavuvakkupiraghu",
+    "sappaatukkuappuram",
+    "sappaadukkuapuram",
+    "unavuvakkupiraghu",
     // Kannada
-    "ootaaadamele", "utaadamelay",
+    "ootaaadamele",
+    "utaadamelay",
     // Bengali
-    "khabarpare", "khawarpore",
+    "khabarpare",
+    "khawarpore",
     // Odia
-    "khanaparey", "khaibapare",
+    "khanaparey",
+    "khaibapare",
     // Gujarati
-    "jamanpachhi", "jamyapachhi",
+    "jamanpachhi",
+    "jamyapachhi",
     // Marathi
-    "jevanaantar", "jevannantar",
+    "jevanaantar",
+    "jevannantar",
   ],
   beforefood: [
-    "beforefood", "beforemeal",
+    "beforefood",
+    "beforemeal",
     // Hindi
-    "khanakhanesepehle", "khanesepehle", "bhojansepehle",
+    "khanakhanesepehle",
+    "khanesepehle",
+    "bhojansepehle",
     // Telugu
-    "bhojanammundu", "thinakamundu",
+    "bhojanammundu",
+    "thinakamundu",
     // Tamil
-    "sappaatukkumunbu", "unavuvakkumunnaal",
+    "sappaatukkumunbu",
+    "unavuvakkumunnaal",
     // Kannada
-    "ootaaagodumunche", "utaagodmunche",
+    "ootaaagodumunche",
+    "utaagodmunche",
     // Bengali
-    "khabaraage", "khawaraagey",
+    "khabaraage",
+    "khawaraagey",
     // Odia
-    "khanaaagaru", "khaibaagaru",
+    "khanaaagaru",
+    "khaibaagaru",
     // Gujarati
-    "jamanpehla", "jamtapehla",
+    "jamanpehla",
+    "jamtapehla",
     // Marathi
-    "jevanaapurvi", "jevanaadhi",
+    "jevanaapurvi",
+    "jevanaadhi",
   ],
   emptystomach: [
     "emptystomach",
     // Hindi
-    "khalipet", "khalipetmein",
+    "khalipet",
+    "khalipetmein",
     // Telugu
-    "khalikaddupputho", "pustekadduppu",
+    "khalikaddupputho",
+    "pustekadduppu",
     // Tamil
-    "verumvayitril", "verumvayiru",
+    "verumvayitril",
+    "verumvayiru",
     // Kannada
-    "khalihotte", "bareehotteyalli",
+    "khalihotte",
+    "bareehotteyalli",
     // Bengali
-    "khalipete", "khaalipete",
+    "khalipete",
+    "khaalipete",
     // Odia
-    "bhokapetare", "khalipetare",
+    "bhokapetare",
+    "khalipetare",
     // Gujarati
-    "khalipate", "khalipet",
+    "khalipate",
+    "khalipet",
     // Marathi
-    "upashipoti", "rikaamyapoti",
+    "upashipoti",
+    "rikaamyapoti",
   ],
   beforebed: [
-    "beforebed", "atbedtime", "atnight",
+    "beforebed",
+    "atbedtime",
+    "atnight",
     // Hindi
-    "sonesepehle", "raatkosonesepehle",
+    "sonesepehle",
+    "raatkosonesepehle",
     // Telugu
-    "padukonemundu", "nidramundu",
+    "padukonemundu",
+    "nidramundu",
     // Tamil
-    "thoongumunnaal", "thookathukkumunbu",
+    "thoongumunnaal",
+    "thookathukkumunbu",
     // Kannada
-    "malagumunche", "niddemadodumunche",
+    "malagumunche",
+    "niddemadodumunche",
     // Bengali
-    "ghumabaraage", "shobaraagey",
+    "ghumabaraage",
+    "shobaraagey",
     // Odia
-    "suibaaagaru", "suibapurba",
+    "suibaaagaru",
+    "suibapurba",
     // Gujarati
-    "sutaapehla", "suvapehla",
+    "sutaapehla",
+    "suvapehla",
     // Marathi
-    "zhopanyapurvi", "zopaychiaadhi",
+    "zhopanyapurvi",
+    "zopaychiaadhi",
   ],
 };
 
 // Romanized/vernacular source phrases for frequency across all 8 languages.
 const _FREQUENCY_ALIASES: Record<string, string[]> = {
   twicedaily: [
-    "twicedaily", "twiceaday", "bid",
+    "twicedaily",
+    "twiceaday",
+    "bid",
     // Hindi
     "dinmeindobaar",
     // Telugu
     "rojukirendusarlu",
     // Tamil
-    "naalukkuirandumurai", "dinathukkurendumurai",
+    "naalukkuirandumurai",
+    "dinathukkurendumurai",
     // Kannada
     "dinakkeeradusarti",
     // Bengali
@@ -1015,7 +1068,9 @@ const _FREQUENCY_ALIASES: Record<string, string[]> = {
     "diwasatundonvela",
   ],
   threetimesaday: [
-    "threetimesaday", "thricedaily", "tid",
+    "threetimesaday",
+    "thricedaily",
+    "tid",
     // Hindi
     "dinmeinteenbaar",
     // Telugu
@@ -1034,7 +1089,9 @@ const _FREQUENCY_ALIASES: Record<string, string[]> = {
     "diwasatuntinvela",
   ],
   oncedaily: [
-    "oncedaily", "onceaday", "od",
+    "oncedaily",
+    "onceaday",
+    "od",
     // Hindi
     "dinmeinekbaar",
     // Telugu
@@ -1058,37 +1115,58 @@ const _FREQUENCY_ALIASES: Record<string, string[]> = {
 // (e.g. "paanch din") grounds the corresponding English value ("5 days").
 const _DURATION_ALIASES: Record<string, string[]> = {
   "3days": [
-    "3days", "threedays",
+    "3days",
+    "threedays",
     // Hindi / Bengali / Odia / Gujarati / Marathi (Devanagari-family)
-    "teendin", "teendivas", "tindin", "tinidina", "trandivas",
+    "teendin",
+    "teendivas",
+    "tindin",
+    "tinidina",
+    "trandivas",
     // Telugu
     "moodurojulu",
     // Tamil
-    "moonrunaal", "moonrunaalkal",
+    "moonrunaal",
+    "moonrunaalkal",
     // Kannada
-    "moorudina", "moorudinagalu",
+    "moorudina",
+    "moorudinagalu",
   ],
   "5days": [
-    "5days", "fivedays",
+    "5days",
+    "fivedays",
     // Hindi / Bengali / Gujarati / Marathi / Odia
-    "paanchdin", "paanchdivas", "paachdivas", "paachdivsanche", "panchadina",
+    "paanchdin",
+    "paanchdivas",
+    "paachdivas",
+    "paachdivsanche",
+    "panchadina",
     // Telugu
     "aidurojulu",
     // Tamil
-    "ainthunaal", "ainthunaalkal",
+    "ainthunaal",
+    "ainthunaalkal",
     // Kannada
-    "aidudina", "aidudinagalu",
+    "aidudina",
+    "aidudinagalu",
   ],
   "7days": [
-    "7days", "sevendays", "oneweek",
+    "7days",
+    "sevendays",
+    "oneweek",
     // Hindi / Bengali / Odia / Gujarati / Marathi
-    "saatdin", "saatdivas", "shaatdin", "saatadina",
+    "saatdin",
+    "saatdivas",
+    "shaatdin",
+    "saatadina",
     // Telugu
     "edurojulu",
     // Tamil
-    "ezhunaal", "ezhunaalkal",
+    "ezhunaal",
+    "ezhunaalkal",
     // Kannada
-    "eludina", "eludinagalu",
+    "eludina",
+    "eludinagalu",
   ],
 };
 
@@ -1133,7 +1211,7 @@ export function validateExtraction(
   for (const med of insight.medications) {
     if (!_medicineFoundInTranscript(med.name, transcriptNorm)) {
       console.warn(
-        `[validateExtraction] Removed hallucinated medicine: ${med.name} — ` +
+        "[validateExtraction] Removed hallucinated medicine — " +
           "not found in transcript",
       );
       continue;
@@ -1150,8 +1228,8 @@ export function validateExtraction(
       !_valueGrounded(_norm(dosage), transcriptNorm)
     ) {
       console.warn(
-        `[validateExtraction] Cleared suspicious dosage "${dosage}" on ` +
-          `${med.name} — not found in transcript`,
+        "[validateExtraction] Cleared suspicious dosage — " +
+          "not found in transcript",
       );
       dosage = "";
       cleared = true;
@@ -1161,8 +1239,8 @@ export function validateExtraction(
       !_valueGrounded(_norm(frequency), transcriptNorm)
     ) {
       console.warn(
-        `[validateExtraction] Cleared suspicious frequency "${frequency}" on ` +
-          `${med.name} — not found in transcript`,
+        "[validateExtraction] Cleared suspicious frequency — " +
+          "not found in transcript",
       );
       frequency = "";
       cleared = true;
@@ -1172,8 +1250,8 @@ export function validateExtraction(
       !_valueGrounded(_norm(duration), transcriptNorm)
     ) {
       console.warn(
-        `[validateExtraction] Cleared suspicious duration "${duration}" on ` +
-          `${med.name} — not found in transcript`,
+        "[validateExtraction] Cleared suspicious duration — " +
+          "not found in transcript",
       );
       duration = "";
       cleared = true;
@@ -1183,8 +1261,8 @@ export function validateExtraction(
       !_valueGrounded(_norm(timing), transcriptNorm)
     ) {
       console.warn(
-        `[validateExtraction] Cleared suspicious timing "${timing}" on ` +
-          `${med.name} — not found in transcript`,
+        "[validateExtraction] Cleared suspicious timing — " +
+          "not found in transcript",
       );
       timing = "";
       cleared = true;
@@ -1216,7 +1294,7 @@ export function validateExtraction(
     const anyPresent = significant.some((w) => transcriptNorm.includes(w));
     if (significant.length > 0 && !anyPresent) {
       console.warn(
-        `[validateExtraction] Cleared unsupported diagnosis "${diagnosis}" — ` +
+        "[validateExtraction] Cleared unsupported diagnosis — " +
           "no significant word found in transcript",
       );
       diagnosis = "";
