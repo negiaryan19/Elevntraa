@@ -902,20 +902,203 @@ const _SUSPICIOUS_FREQUENCIES = new Set([
   "oncedaily",
 ]);
 const _SUSPICIOUS_DURATIONS = new Set(["3days", "5days", "7days"]);
-const _SUSPICIOUS_TIMINGS = new Set(["afterfood", "beforefood"]);
+const _SUSPICIOUS_TIMINGS = new Set([
+  "afterfood",
+  "beforefood",
+  "emptystomach",
+  "beforebed",
+]);
 
 // Romanized/vernacular source phrases for timing so a correctly-translated
-// value isn't wrongly cleared on a Hindi/Telugu consult.
+// value isn't wrongly cleared on a vernacular consult. Every alias is stored
+// already normalized (lowercase, non-alphanumeric stripped) to match _norm on
+// the transcript. Covers all 8 supported languages: Hindi, Telugu, Tamil,
+// Kannada, Bengali, Odia, Gujarati, Marathi.
 const _TIMING_ALIASES: Record<string, string[]> = {
-  afterfood: ["afterfood", "aftermeal", "khanakhanekebaad", "khanekebaad", "khanebaad", "bhojankebaad", "bhojanamtaruvata"],
-  beforefood: ["beforefood", "beforemeal", "khanakhanesepehle", "khanesepehle", "bhojansepehle", "bhojanammundu"],
+  afterfood: [
+    "afterfood", "aftermeal",
+    // Hindi
+    "khanakhanekebaad", "khanekebaad", "khanebaad", "bhojankebaad", "bhojankhanekebaad",
+    // Telugu
+    "bhojanamtaruvata", "bhojanamtarvata", "thinakatarvata",
+    // Tamil
+    "sappaatukkuappuram", "sappaadukkuapuram", "unavuvakkupiraghu",
+    // Kannada
+    "ootaaadamele", "utaadamelay",
+    // Bengali
+    "khabarpare", "khawarpore",
+    // Odia
+    "khanaparey", "khaibapare",
+    // Gujarati
+    "jamanpachhi", "jamyapachhi",
+    // Marathi
+    "jevanaantar", "jevannantar",
+  ],
+  beforefood: [
+    "beforefood", "beforemeal",
+    // Hindi
+    "khanakhanesepehle", "khanesepehle", "bhojansepehle",
+    // Telugu
+    "bhojanammundu", "thinakamundu",
+    // Tamil
+    "sappaatukkumunbu", "unavuvakkumunnaal",
+    // Kannada
+    "ootaaagodumunche", "utaagodmunche",
+    // Bengali
+    "khabaraage", "khawaraagey",
+    // Odia
+    "khanaaagaru", "khaibaagaru",
+    // Gujarati
+    "jamanpehla", "jamtapehla",
+    // Marathi
+    "jevanaapurvi", "jevanaadhi",
+  ],
+  emptystomach: [
+    "emptystomach",
+    // Hindi
+    "khalipet", "khalipetmein",
+    // Telugu
+    "khalikaddupputho", "pustekadduppu",
+    // Tamil
+    "verumvayitril", "verumvayiru",
+    // Kannada
+    "khalihotte", "bareehotteyalli",
+    // Bengali
+    "khalipete", "khaalipete",
+    // Odia
+    "bhokapetare", "khalipetare",
+    // Gujarati
+    "khalipate", "khalipet",
+    // Marathi
+    "upashipoti", "rikaamyapoti",
+  ],
+  beforebed: [
+    "beforebed", "atbedtime", "atnight",
+    // Hindi
+    "sonesepehle", "raatkosonesepehle",
+    // Telugu
+    "padukonemundu", "nidramundu",
+    // Tamil
+    "thoongumunnaal", "thookathukkumunbu",
+    // Kannada
+    "malagumunche", "niddemadodumunche",
+    // Bengali
+    "ghumabaraage", "shobaraagey",
+    // Odia
+    "suibaaagaru", "suibapurba",
+    // Gujarati
+    "sutaapehla", "suvapehla",
+    // Marathi
+    "zhopanyapurvi", "zopaychiaadhi",
+  ],
+};
+
+// Romanized/vernacular source phrases for frequency across all 8 languages.
+const _FREQUENCY_ALIASES: Record<string, string[]> = {
+  twicedaily: [
+    "twicedaily", "twiceaday", "bid",
+    // Hindi
+    "dinmeindobaar",
+    // Telugu
+    "rojukirendusarlu",
+    // Tamil
+    "naalukkuirandumurai", "dinathukkurendumurai",
+    // Kannada
+    "dinakkeeradusarti",
+    // Bengali
+    "dinaydubar",
+    // Odia
+    "dinakuduibaar",
+    // Gujarati
+    "divasmaabevaar",
+    // Marathi
+    "diwasatundonvela",
+  ],
+  threetimesaday: [
+    "threetimesaday", "thricedaily", "tid",
+    // Hindi
+    "dinmeinteenbaar",
+    // Telugu
+    "rojukimoodusarlu",
+    // Tamil
+    "naalukkumoondrumurai",
+    // Kannada
+    "dinakkemoorusarti",
+    // Bengali
+    "dinaytinbar",
+    // Odia
+    "dinakutinibaar",
+    // Gujarati
+    "divasmaatranvaar",
+    // Marathi
+    "diwasatuntinvela",
+  ],
+  oncedaily: [
+    "oncedaily", "onceaday", "od",
+    // Hindi
+    "dinmeinekbaar",
+    // Telugu
+    "rojukiokasari",
+    // Tamil
+    "naalukkuorumurai",
+    // Kannada
+    "dinakkeondusarti",
+    // Bengali
+    "dinayekbar",
+    // Odia
+    "dinakuekbaar",
+    // Gujarati
+    "divasmaaekvaar",
+    // Marathi
+    "diwasatunekvela",
+  ],
+};
+
+// Romanized number-word + day-word combos so a spoken vernacular duration
+// (e.g. "paanch din") grounds the corresponding English value ("5 days").
+const _DURATION_ALIASES: Record<string, string[]> = {
+  "3days": [
+    "3days", "threedays",
+    // Hindi / Bengali / Odia / Gujarati / Marathi (Devanagari-family)
+    "teendin", "teendivas", "tindin", "tinidina", "trandivas",
+    // Telugu
+    "moodurojulu",
+    // Tamil
+    "moonrunaal", "moonrunaalkal",
+    // Kannada
+    "moorudina", "moorudinagalu",
+  ],
+  "5days": [
+    "5days", "fivedays",
+    // Hindi / Bengali / Gujarati / Marathi / Odia
+    "paanchdin", "paanchdivas", "paachdivas", "paachdivsanche", "panchadina",
+    // Telugu
+    "aidurojulu",
+    // Tamil
+    "ainthunaal", "ainthunaalkal",
+    // Kannada
+    "aidudina", "aidudinagalu",
+  ],
+  "7days": [
+    "7days", "sevendays", "oneweek",
+    // Hindi / Bengali / Odia / Gujarati / Marathi
+    "saatdin", "saatdivas", "shaatdin", "saatadina",
+    // Telugu
+    "edurojulu",
+    // Tamil
+    "ezhunaal", "ezhunaalkal",
+    // Kannada
+    "eludina", "eludinagalu",
+  ],
 };
 
 // A suspicious default is "grounded" if the value itself, a known romanized
 // alias, or its multi-digit number appears in the transcript.
 function _valueGrounded(normValue: string, transcriptNorm: string): boolean {
   if (transcriptNorm.includes(normValue)) return true;
-  const aliases = _TIMING_ALIASES[normValue];
+  const aliases = _TIMING_ALIASES[normValue] ??
+    _FREQUENCY_ALIASES[normValue] ??
+    _DURATION_ALIASES[normValue];
   if (aliases) {
     for (const a of aliases) if (transcriptNorm.includes(a)) return true;
   }
