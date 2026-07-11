@@ -1772,7 +1772,7 @@ class _MedicineRowState extends State<_MedicineRow> {
                   _dosage,
                   (v) => widget.onChanged(_med.copyWith(dosage: v)),
                   () => widget.onCommit(_med.copyWith(dosage: _dosage.text)),
-                  hint: '650 mg',
+                  hint: 'Enter dosage',
                 ),
               ),
               const SizedBox(width: AppSpacing.s),
@@ -1783,7 +1783,7 @@ class _MedicineRowState extends State<_MedicineRow> {
                   (v) => widget.onChanged(_med.copyWith(duration: v)),
                   () =>
                       widget.onCommit(_med.copyWith(duration: _duration.text)),
-                  hint: '5 days',
+                  hint: 'Enter duration',
                 ),
               ),
             ],
@@ -1795,7 +1795,7 @@ class _MedicineRowState extends State<_MedicineRow> {
             _freq,
             (v) => widget.onChanged(_med.copyWith(frequency: v)),
             () => widget.onCommit(_med.copyWith(frequency: _freq.text)),
-            hint: 'Three times a day',
+            hint: 'Enter frequency',
           ),
           const SizedBox(height: AppSpacing.s),
           // Row 4: Meal-timing chips
