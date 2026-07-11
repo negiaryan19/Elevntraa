@@ -352,6 +352,10 @@ void main() {
       s.length >= width ? s : s + ' ' * (width - s.length);
 
   test('on-device diagnostic pipeline — stress eval (20 adversarial cases)', () {
+    // Reporting harness only (no strict gate): skip in CI so its large
+    // per-case dump and summary table don't bloat CI logs.
+    if (Platform.environment['CI'] == 'true') return;
+
     // Column widths for the summary table.
     const wLabel = 19;
     const wCode = 8;

@@ -929,8 +929,12 @@ void main() {
     );
     sb.writeln('═' * 90);
 
-    // ignore: avoid_print
-    print(sb.toString());
+    // Skip the large report dump in CI to avoid bloating logs; the
+    // assertions below still run and gate the suite.
+    if (Platform.environment['CI'] != 'true') {
+      // ignore: avoid_print
+      print(sb.toString());
+    }
 
     // The test PASSES if no unexpected nulls and no expectation failures
     expect(

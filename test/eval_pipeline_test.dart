@@ -116,6 +116,10 @@ void main() {
   test(
     'on-device diagnostic pipeline eval (ICD mapper + differential engine)',
     () {
+      // Reporting harness only (no strict gate): skip in CI so its large
+      // per-case dump and summary table don't bloat CI logs.
+      if (Platform.environment['CI'] == 'true') return;
+
       var pass = 0;
       var fail = 0;
 

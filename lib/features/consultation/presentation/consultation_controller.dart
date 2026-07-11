@@ -74,8 +74,15 @@ class ConsultationState {
       languageCode: languageCode ?? this.languageCode,
       elapsed: elapsed ?? this.elapsed,
       error: clearError ? null : (error ?? this.error),
+      // Differential suggestions are decision support tied to a completed
+      // consultation. Preserve them only while the state remains (or becomes)
+      // `done`; any other stage transition clears them so stale suggestions
+      // never leak into a new recording/processing cycle.
       differentialSuggestions:
-          differentialSuggestions ?? this.differentialSuggestions,
+          differentialSuggestions ??
+          ((stage ?? this.stage) == ConsultationStage.done
+              ? this.differentialSuggestions
+              : const <DifferentialMatch>[]),
     );
   }
 }
