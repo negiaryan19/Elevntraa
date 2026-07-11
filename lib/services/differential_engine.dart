@@ -54,17 +54,17 @@ class _Rule {
   });
 
   factory _Rule.fromJson(Map<String, dynamic> json) => _Rule(
-        id: json['id'] as String,
-        category: json['category'] as String,
-        name: json['name'] as String,
-        icdCode: json['icdCode'] as String,
-        icdDescription: json['icdDescription'] as String,
-        symptoms: (json['symptoms'] as List).cast<String>(),
-        anchorSymptoms: (json['anchorSymptoms'] as List).cast<String>(),
-        minSymptoms: json['minSymptoms'] as int,
-        reason: json['reason'] as String,
-        redFlag: json['redFlag'] as String?,
-      );
+    id: json['id'] as String,
+    category: json['category'] as String,
+    name: json['name'] as String,
+    icdCode: json['icdCode'] as String,
+    icdDescription: json['icdDescription'] as String,
+    symptoms: (json['symptoms'] as List).cast<String>(),
+    anchorSymptoms: (json['anchorSymptoms'] as List).cast<String>(),
+    minSymptoms: json['minSymptoms'] as int,
+    reason: json['reason'] as String,
+    redFlag: json['redFlag'] as String?,
+  );
 }
 
 /// On-device differential-diagnosis engine.
@@ -86,8 +86,9 @@ class DifferentialEngine {
 
   /// Load from the bundled Flutter asset.
   static Future<DifferentialEngine> load() async {
-    final raw =
-        await rootBundle.loadString('assets/data/differential_rules.json');
+    final raw = await rootBundle.loadString(
+      'assets/data/differential_rules.json',
+    );
     return DifferentialEngine._parse(raw);
   }
 
@@ -132,9 +133,7 @@ class DifferentialEngine {
       // At least one anchor must be present in the patient's symptoms.
       // Direction: patient symptom CONTAINS anchor keyword (FIX 2).
       final anchorHit = rule.anchorSymptoms.any(
-        (anchor) => normalized.any(
-          (ps) => ps.contains(anchor.toLowerCase()),
-        ),
+        (anchor) => normalized.any((ps) => ps.contains(anchor.toLowerCase())),
       );
       if (!anchorHit) continue;
 
@@ -160,16 +159,18 @@ class DifferentialEngine {
       // Score = fraction of the rule's symptom list that matched.
       final score = matched.length / rule.symptoms.length;
 
-      matches.add(DifferentialMatch(
-        name: rule.name,
-        icdCode: rule.icdCode,
-        icdDescription: rule.icdDescription,
-        reason: rule.reason,
-        matchedSymptoms: matched,
-        redFlag: rule.redFlag,
-        score: score,
-        category: rule.category,
-      ));
+      matches.add(
+        DifferentialMatch(
+          name: rule.name,
+          icdCode: rule.icdCode,
+          icdDescription: rule.icdDescription,
+          reason: rule.reason,
+          matchedSymptoms: matched,
+          redFlag: rule.redFlag,
+          score: score,
+          category: rule.category,
+        ),
+      );
     }
 
     // Sort by score descending (strongest match first).

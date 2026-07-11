@@ -11,14 +11,8 @@ class IcdMatch {
   final String? code;
   final String? description;
   final String? confidence; // "high" | "medium" | null
-  final String? matchedOn; // which synonym/term matched (debug/telemetry)
 
-  const IcdMatch({
-    this.code,
-    this.description,
-    this.confidence,
-    this.matchedOn,
-  });
+  const IcdMatch({this.code, this.description, this.confidence});
 
   static const IcdMatch none = IcdMatch();
 
@@ -57,8 +51,7 @@ class Icd10LocalMapper {
         code: e['code'] as String,
         name: e['name'] as String,
         description: e['description'] as String,
-        synonyms:
-            (e['synonyms'] as List).map((s) => s.toString()).toList(),
+        synonyms: (e['synonyms'] as List).map((s) => s.toString()).toList(),
       );
       entries.add(entry);
       // exact index: canonical name + every synonym
@@ -86,7 +79,6 @@ class Icd10LocalMapper {
         code: exact.code,
         description: exact.description,
         confidence: 'high',
-        matchedOn: q,
       );
     }
 
@@ -103,13 +95,11 @@ class Icd10LocalMapper {
           code: entry.code,
           description: entry.description,
           confidence: specific ? 'high' : 'medium',
-          matchedOn: term,
         );
       }
     }
 
     // 3) Fuzzy match against every term -> medium confidence.
-    String? bestTerm;
     _IcdEntry? bestEntry;
     double best = 0;
     for (final entry in _entries) {
@@ -119,7 +109,6 @@ class Icd10LocalMapper {
         final score = _similarity(q, t);
         if (score > best) {
           best = score;
-          bestTerm = t;
           bestEntry = entry;
         }
       }
@@ -129,7 +118,6 @@ class Icd10LocalMapper {
         code: bestEntry.code,
         description: bestEntry.description,
         confidence: 'medium',
-        matchedOn: bestTerm,
       );
     }
 

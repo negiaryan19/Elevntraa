@@ -22,8 +22,9 @@ void main() {
     final icdList = (icdMap['entries'] as List).cast<Map<String, dynamic>>();
     mapper = Icd10LocalMapper.fromJsonList(icdList);
 
-    final diffRaw =
-        File('assets/data/differential_rules.json').readAsStringSync();
+    final diffRaw = File(
+      'assets/data/differential_rules.json',
+    ).readAsStringSync();
     engine = DifferentialEngine.fromJsonString(diffRaw);
   });
 
@@ -112,128 +113,131 @@ void main() {
   String truncate(String s, int n) =>
       s.length > n ? '${s.substring(0, n)}...' : s;
 
-  test('on-device diagnostic pipeline eval (ICD mapper + differential engine)',
-      () {
-    var pass = 0;
-    var fail = 0;
+  test(
+    'on-device diagnostic pipeline eval (ICD mapper + differential engine)',
+    () {
+      var pass = 0;
+      var fail = 0;
 
-    for (var i = 0; i < cases.length; i++) {
-      final c = cases[i];
-      final title = c['title'] as String;
-      final diagnosis = c['diagnosis'] as String;
-      final symptoms = (c['symptoms'] as List).cast<String>();
-      final expectedIcd = c['expectedIcd'] as String?;
-      final icdAny = c['icdAny'] as bool;
-      final expectDiff = c['expectDiff'] as bool;
-      final expectRedFlag = c['expectRedFlag'] as bool;
+      for (var i = 0; i < cases.length; i++) {
+        final c = cases[i];
+        final title = c['title'] as String;
+        final diagnosis = c['diagnosis'] as String;
+        final symptoms = (c['symptoms'] as List).cast<String>();
+        final expectedIcd = c['expectedIcd'] as String?;
+        final icdAny = c['icdAny'] as bool;
+        final expectDiff = c['expectDiff'] as bool;
+        final expectRedFlag = c['expectRedFlag'] as bool;
 
-      // ── Run the deterministic layer ──────────────────────────────────────
-      final m = mapper.lookup(diagnosis);
-      final suggestions = engine.suggest(symptoms);
+        // ── Run the deterministic layer ──────────────────────────────────────
+        final m = mapper.lookup(diagnosis);
+        final suggestions = engine.suggest(symptoms);
 
-      // ── Evaluate ─────────────────────────────────────────────────────────
-      final bool icdPass;
-      if (icdAny) {
-        icdPass = true;
-      } else if (expectedIcd == null) {
-        icdPass = m.code == null;
-      } else {
-        icdPass = m.code == expectedIcd;
-      }
-
-      final fired = suggestions.isNotEmpty;
-      final hasRedFlag = suggestions.any((s) => s.isRedFlag);
-      final bool diffPass;
-      if (expectDiff) {
-        diffPass = fired && (!expectRedFlag || hasRedFlag);
-      } else {
-        diffPass = !fired;
-      }
-
-      final casePass = icdPass && diffPass;
-      if (casePass) {
-        pass++;
-      } else {
-        fail++;
-      }
-
-      // ── Print report card ────────────────────────────────────────────────
-      // ignore: avoid_print
-      print('══════════════════════════════════════════════════');
-      // ignore: avoid_print
-      print('CASE ${i + 1}: $title');
-      // ignore: avoid_print
-      print('──────────────────────────────────────────────────');
-      // ignore: avoid_print
-      print('Diagnosis input: "$diagnosis"');
-      // ignore: avoid_print
-      print('Symptoms input:  [${symptoms.join(', ')}]');
-      // ignore: avoid_print
-      print('');
-      // ignore: avoid_print
-      print('ICD MAPPER RESULT:');
-      // ignore: avoid_print
-      print(
-        '  Code: ${m.code ?? 'null'} | '
-        'Desc: ${m.description ?? '-'} | '
-        'Confidence: ${m.confidence ?? 'null'}',
-      );
-      final expectedLabel =
-          icdAny ? 'any (fuzzy)' : (expectedIcd ?? 'null');
-      // ignore: avoid_print
-      print(
-        '  Expected: $expectedLabel  →  ${icdPass ? '✅' : '❌'} '
-        '(got ${m.code ?? 'null'})',
-      );
-      // ignore: avoid_print
-      print('');
-      // ignore: avoid_print
-      print('DIFFERENTIAL SUGGESTIONS:');
-      if (suggestions.isEmpty) {
-        // ignore: avoid_print
-        print('  (none)');
-      } else {
-        for (var j = 0; j < suggestions.length; j++) {
-          final s = suggestions[j];
-          // ignore: avoid_print
-          print(
-            '  ${j + 1}. ${s.name} (${s.icdCode}) — '
-            'score: ${s.score.toStringAsFixed(2)} — '
-            '${truncate(s.reason, 60)}'
-            '${s.isRedFlag ? '  [🚩 RED FLAG]' : ''}',
-          );
+        // ── Evaluate ─────────────────────────────────────────────────────────
+        final bool icdPass;
+        if (icdAny) {
+          icdPass = true;
+        } else if (expectedIcd == null) {
+          icdPass = m.code == null;
+        } else {
+          icdPass = m.code == expectedIcd;
         }
+
+        final fired = suggestions.isNotEmpty;
+        final hasRedFlag = suggestions.any((s) => s.isRedFlag);
+        final bool diffPass;
+        if (expectDiff) {
+          diffPass = fired && (!expectRedFlag || hasRedFlag);
+        } else {
+          diffPass = !fired;
+        }
+
+        final casePass = icdPass && diffPass;
+        if (casePass) {
+          pass++;
+        } else {
+          fail++;
+        }
+
+        // ── Print report card ────────────────────────────────────────────────
+        // ignore: avoid_print
+        print('══════════════════════════════════════════════════');
+        // ignore: avoid_print
+        print('CASE ${i + 1}: $title');
+        // ignore: avoid_print
+        print('──────────────────────────────────────────────────');
+        // ignore: avoid_print
+        print('Diagnosis input: "$diagnosis"');
+        // ignore: avoid_print
+        print('Symptoms input:  [${symptoms.join(', ')}]');
+        // ignore: avoid_print
+        print('');
+        // ignore: avoid_print
+        print('ICD MAPPER RESULT:');
+        // ignore: avoid_print
+        print(
+          '  Code: ${m.code ?? 'null'} | '
+          'Desc: ${m.description ?? '-'} | '
+          'Confidence: ${m.confidence ?? 'null'}',
+        );
+        final expectedLabel = icdAny ? 'any (fuzzy)' : (expectedIcd ?? 'null');
+        // ignore: avoid_print
+        print(
+          '  Expected: $expectedLabel  →  ${icdPass ? '✅' : '❌'} '
+          '(got ${m.code ?? 'null'})',
+        );
+        // ignore: avoid_print
+        print('');
+        // ignore: avoid_print
+        print('DIFFERENTIAL SUGGESTIONS:');
+        if (suggestions.isEmpty) {
+          // ignore: avoid_print
+          print('  (none)');
+        } else {
+          for (var j = 0; j < suggestions.length; j++) {
+            final s = suggestions[j];
+            // ignore: avoid_print
+            print(
+              '  ${j + 1}. ${s.name} (${s.icdCode}) — '
+              'score: ${s.score.toStringAsFixed(2)} — '
+              '${truncate(s.reason, 60)}'
+              '${s.isRedFlag ? '  [🚩 RED FLAG]' : ''}',
+            );
+          }
+        }
+        // ignore: avoid_print
+        print('');
+        final icdMark = icdPass ? '✅' : '❌';
+        final diffMark = diffPass ? '✅' : '❌';
+        final firedLabel = expectDiff
+            ? (expectRedFlag ? 'fired + red flag' : 'fired')
+            : 'stayed empty';
+        // ignore: avoid_print
+        print(
+          '$icdMark ICD matched expected  |  '
+          '$diffMark Differentials $firedLabel  →  '
+          '${casePass ? 'PASS' : 'FAIL'}',
+        );
+        // ignore: avoid_print
+        print('══════════════════════════════════════════════════');
+        // ignore: avoid_print
+        print('');
       }
+
+      // ── Summary ────────────────────────────────────────────────────────────
       // ignore: avoid_print
-      print('');
-      final icdMark = icdPass ? '✅' : '❌';
-      final diffMark = diffPass ? '✅' : '❌';
-      final firedLabel = expectDiff
-          ? (expectRedFlag ? 'fired + red flag' : 'fired')
-          : 'stayed empty';
+      print('╔══════════════════════════════════════════════════╗');
       // ignore: avoid_print
       print(
-        '$icdMark ICD matched expected  |  '
-        '$diffMark Differentials $firedLabel  →  '
-        '${casePass ? 'PASS' : 'FAIL'}',
+        '  SUMMARY:  PASS: $pass/${cases.length}  |  '
+        'FAIL: $fail/${cases.length}',
       );
       // ignore: avoid_print
-      print('══════════════════════════════════════════════════');
-      // ignore: avoid_print
-      print('');
-    }
+      print('╚══════════════════════════════════════════════════╝');
 
-    // ── Summary ────────────────────────────────────────────────────────────
-    // ignore: avoid_print
-    print('╔══════════════════════════════════════════════════╗');
-    // ignore: avoid_print
-    print('  SUMMARY:  PASS: $pass/${cases.length}  |  '
-        'FAIL: $fail/${cases.length}');
-    // ignore: avoid_print
-    print('╚══════════════════════════════════════════════════╝');
-
-    // This is a reporting harness, not a gate: it always completes so the
-    // full table is printed. Per-case PASS/FAIL is shown above.
-    expect(cases.length, 6);
-  });
+      // This is a reporting harness, not a gate: it always completes so the
+      // full table is printed. Per-case PASS/FAIL is shown above.
+      expect(cases.length, 6);
+    },
+  );
 }

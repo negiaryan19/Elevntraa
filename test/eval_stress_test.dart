@@ -27,8 +27,9 @@ void main() {
     final icdList = (icdMap['entries'] as List).cast<Map<String, dynamic>>();
     mapper = Icd10LocalMapper.fromJsonList(icdList);
 
-    final diffRaw =
-        File('assets/data/differential_rules.json').readAsStringSync();
+    final diffRaw = File(
+      'assets/data/differential_rules.json',
+    ).readAsStringSync();
     engine = DifferentialEngine.fromJsonString(diffRaw);
   });
 
@@ -350,8 +351,7 @@ void main() {
   String padRight(String s, int width) =>
       s.length >= width ? s : s + ' ' * (width - s.length);
 
-  test('on-device diagnostic pipeline — stress eval (20 adversarial cases)',
-      () {
+  test('on-device diagnostic pipeline — stress eval (20 adversarial cases)', () {
     // Column widths for the summary table.
     const wLabel = 19;
     const wCode = 8;
@@ -392,7 +392,8 @@ void main() {
       // ── Grade differentials ──────────────────────────────────────────────
       final fired = suggestions.isNotEmpty;
       final hasRedFlag = suggestions.any((s) => s.isRedFlag);
-      final forbiddenFired = mustNotFire != null &&
+      final forbiddenFired =
+          mustNotFire != null &&
           suggestions.any((s) => s.icdCode == mustNotFire);
 
       var diffOk = (fired == expDiff);
@@ -447,9 +448,11 @@ void main() {
 
       // ── One-line verdict ─────────────────────────────────────────────────
       final verdictBits = <String>[];
-      verdictBits.add(icdOk
-          ? 'ICD ${gotCode ? m.code : 'null'} ✅'
-          : 'ICD ${gotCode ? m.code : 'null'} ❌ (expected ${expIcd ? 'a code' : 'null'})');
+      verdictBits.add(
+        icdOk
+            ? 'ICD ${gotCode ? m.code : 'null'} ✅'
+            : 'ICD ${gotCode ? m.code : 'null'} ❌ (expected ${expIcd ? 'a code' : 'null'})',
+      );
       if (diffOk) {
         final rf = hasRedFlag ? ' + 🚩' : '';
         verdictBits.add('${suggestions.length} differential(s)$rf ✅');
@@ -460,13 +463,16 @@ void main() {
           verdictBits.add('missing red flag ❌');
         } else {
           verdictBits.add(
-              '${suggestions.length} fired, expected ${expDiff ? '>=1' : '0'} ❌');
+            '${suggestions.length} fired, expected ${expDiff ? '>=1' : '0'} ❌',
+          );
         }
       }
       final caseOk = icdOk && diffOk;
       // ignore: avoid_print
-      print('VERDICT: ${verdictBits.join(' | ')}  →  '
-          '${caseOk ? 'PASS' : 'FAIL'}');
+      print(
+        'VERDICT: ${verdictBits.join(' | ')}  →  '
+        '${caseOk ? 'PASS' : 'FAIL'}',
+      );
       // ignore: avoid_print
       print('══════════════════════════════════════════════════');
       // ignore: avoid_print
@@ -487,19 +493,27 @@ void main() {
     // ignore: avoid_print
     print('SUMMARY');
     // ignore: avoid_print
-    print('┌──────┬─────────────────────┬──────────┬──────────────┬───────────────────────────┐');
+    print(
+      '┌──────┬─────────────────────┬──────────┬──────────────┬───────────────────────────┐',
+    );
     // ignore: avoid_print
-    print('│ ${padRight('Case', 4)} │ ${padRight('Label', wLabel)} '
-        '│ ${padRight('ICD Code', wCode)} │ ${padRight('Differentials', wDiff)} '
-        '│ ${padRight('Notes', wNotes)} │');
+    print(
+      '│ ${padRight('Case', 4)} │ ${padRight('Label', wLabel)} '
+      '│ ${padRight('ICD Code', wCode)} │ ${padRight('Differentials', wDiff)} '
+      '│ ${padRight('Notes', wNotes)} │',
+    );
     // ignore: avoid_print
-    print('├──────┼─────────────────────┼──────────┼──────────────┼───────────────────────────┤');
+    print(
+      '├──────┼─────────────────────┼──────────┼──────────────┼───────────────────────────┤',
+    );
     for (final row in summaryRows) {
       // ignore: avoid_print
       print(row);
     }
     // ignore: avoid_print
-    print('└──────┴─────────────────────┴──────────┴──────────────┴───────────────────────────┘');
+    print(
+      '└──────┴─────────────────────┴──────────┴──────────────┴───────────────────────────┘',
+    );
 
     // ignore: avoid_print
     print(

@@ -6,8 +6,9 @@ void main() {
   late DifferentialEngine engine;
 
   setUpAll(() {
-    final jsonString =
-        File('assets/data/differential_rules.json').readAsStringSync();
+    final jsonString = File(
+      'assets/data/differential_rules.json',
+    ).readAsStringSync();
     engine = DifferentialEngine.fromJsonString(jsonString);
   });
 
@@ -35,8 +36,7 @@ void main() {
   group('DifferentialEngine — anchor gating', () {
     test('TB does NOT fire on just fever + sweating + weight loss', () {
       // These are TB symptoms but NOT anchors — cough/hemoptysis is required
-      final results =
-          engine.suggest(['fever', 'night sweats', 'weight loss']);
+      final results = engine.suggest(['fever', 'night sweats', 'weight loss']);
       final tb = results.where((r) => r.icdCode == 'A15.0');
       expect(tb, isEmpty, reason: 'TB must not fire without cough anchor');
     });
@@ -58,8 +58,11 @@ void main() {
       // "itching".contains("intense itching at night") is false.
       final results = engine.suggest(['itching', 'rash']);
       final scabies = results.where((r) => r.icdCode == 'B86');
-      expect(scabies, isEmpty,
-          reason: 'Scabies needs nocturnal/finger-web anchor');
+      expect(
+        scabies,
+        isEmpty,
+        reason: 'Scabies needs nocturnal/finger-web anchor',
+      );
     });
 
     test('scabies DOES fire with nocturnal itching', () {
@@ -73,8 +76,7 @@ void main() {
   });
 
   group('DifferentialEngine — correct substring direction', () {
-    test('generic "khujli" does NOT satisfy "raat ko bahut khujli" anchor',
-        () {
+    test('generic "khujli" does NOT satisfy "raat ko bahut khujli" anchor', () {
       // ps = "khujli", anchor = "raat ko bahut khujli"
       // "khujli".contains("raat ko bahut khujli") → false ✓
       final results = engine.suggest(['khujli', 'daane']);
@@ -108,16 +110,23 @@ void main() {
         icdCounts[r.icdCode] = (icdCounts[r.icdCode] ?? 0) + 1;
       }
       for (final entry in icdCounts.entries) {
-        expect(entry.value, equals(1),
-            reason: '${entry.key} appeared ${entry.value} times');
+        expect(
+          entry.value,
+          equals(1),
+          reason: '${entry.key} appeared ${entry.value} times',
+        );
       }
     });
   });
 
   group('DifferentialEngine — common presentations', () {
     test('URTI for cold + sore throat + sneezing', () {
-      final results =
-          engine.suggest(['cold', 'sore throat', 'sneezing', 'mild fever']);
+      final results = engine.suggest([
+        'cold',
+        'sore throat',
+        'sneezing',
+        'mild fever',
+      ]);
       expect(results, isNotEmpty);
       expect(results.first.icdCode, equals('J06.9'));
     });
@@ -163,17 +172,19 @@ void main() {
       expect(migraine, isNotEmpty);
     });
 
-    test('diabetes for frequent urination + excessive thirst + weight loss',
-        () {
-      final results = engine.suggest([
-        'frequent urination',
-        'excessive thirst',
-        'weight loss',
-        'fatigue',
-      ]);
-      final dm = results.where((r) => r.icdCode == 'E11.9');
-      expect(dm, isNotEmpty);
-    });
+    test(
+      'diabetes for frequent urination + excessive thirst + weight loss',
+      () {
+        final results = engine.suggest([
+          'frequent urination',
+          'excessive thirst',
+          'weight loss',
+          'fatigue',
+        ]);
+        final dm = results.where((r) => r.icdCode == 'E11.9');
+        expect(dm, isNotEmpty);
+      },
+    );
   });
 
   group('DifferentialEngine — red flags', () {
@@ -263,10 +274,12 @@ void main() {
       ]);
       for (final r in results) {
         expect(r.reason, isNotEmpty, reason: '${r.name} missing reason');
-        expect(r.matchedSymptoms, isNotEmpty,
-            reason: '${r.name} missing matched symptoms');
-        expect(r.icdCode, isNotEmpty,
-            reason: '${r.name} missing ICD code');
+        expect(
+          r.matchedSymptoms,
+          isNotEmpty,
+          reason: '${r.name} missing matched symptoms',
+        );
+        expect(r.icdCode, isNotEmpty, reason: '${r.name} missing ICD code');
         expect(r.name, isNotEmpty);
         expect(r.category, isNotEmpty);
       }
@@ -283,17 +296,24 @@ void main() {
       ]);
       if (results.length > 1) {
         for (int i = 0; i < results.length - 1; i++) {
-          expect(results[i].score, greaterThanOrEqualTo(results[i + 1].score),
-              reason: 'Results should be sorted by score descending');
+          expect(
+            results[i].score,
+            greaterThanOrEqualTo(results[i + 1].score),
+            reason: 'Results should be sorted by score descending',
+          );
         }
       }
     });
 
     test('maxResults limits output', () {
-      final results = engine.suggest(
-        ['fever', 'cold', 'sore throat', 'sneezing', 'body ache', 'cough'],
-        maxResults: 2,
-      );
+      final results = engine.suggest([
+        'fever',
+        'cold',
+        'sore throat',
+        'sneezing',
+        'body ache',
+        'cough',
+      ], maxResults: 2);
       expect(results.length, lessThanOrEqualTo(2));
     });
   });
