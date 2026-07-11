@@ -19,6 +19,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _openProfileEditor() async {
     final current = ref.read(doctorProfileControllerProvider);
+    final notifier = ref.read(doctorProfileControllerProvider.notifier);
     final updated = await showModalBottomSheet<DoctorProfile>(
       context: context,
       isScrollControlled: true,
@@ -30,8 +31,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       useRootNavigator: true,
       builder: (_) => _EditProfileSheet(initial: current),
     );
+    if (!mounted) return;
     if (updated != null) {
-      await ref.read(doctorProfileControllerProvider.notifier).update(updated);
+      await notifier.update(updated);
       if (mounted) {
         ScaffoldMessenger.of(
           context,

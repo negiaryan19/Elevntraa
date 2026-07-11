@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -198,6 +199,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       return;
     }
 
+    HapticFeedback.mediumImpact();
     _heardVoice = false;
     _ampWatch?.cancel();
     _ampWatch = ref.read(recordingServiceProvider).amplitude.listen((a) {
@@ -255,6 +257,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       return;
     }
 
+    HapticFeedback.heavyImpact();
     _ticker?.cancel();
     _ampWatch?.cancel();
     _stopPulse();
@@ -892,6 +895,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                               // Timer
                               Text(
                                 _fmt(state.elapsed),
+                                textScaler: MediaQuery.textScalerOf(context)
+                                    .clamp(
+                                      minScaleFactor: 0.85,
+                                      maxScaleFactor: 1.2,
+                                    ),
                                 style: AppTypography.displayMedium.copyWith(
                                   color: isActiveRecording
                                       ? Theme.of(context).colorScheme.primary

@@ -75,3 +75,6 @@ GoogleService-Info.plist
 # Build artifacts and editor configs
 android/build/
 .vscode/
+
+# Kilo Code tool artifact (local only)
+.kilo/
