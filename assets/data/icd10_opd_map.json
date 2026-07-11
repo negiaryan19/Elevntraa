@@ -1,0 +1,1938 @@
+{
+  "version": "1.0.0",
+  "standard": "WHO ICD-10 (India). NOT ICD-10-CM.",
+  "disclaimer": "Curated OPD seed set. Every code must be validated by a clinician against the WHO ICD-10 browser before production use. Codes are doctor-facing only and never printed on the patient PDF.",
+  "count": 133,
+  "entries": [
+    {
+      "code": "J06.9",
+      "name": "Acute upper respiratory infection",
+      "description": "Acute upper respiratory infection, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "cold",
+        "common cold",
+        "gale me kharash",
+        "jalubu",
+        "jukam",
+        "naak behna",
+        "negalige",
+        "runny nose",
+        "sali janni",
+        "sardi",
+        "sheetla",
+        "thanda",
+        "throat and cold",
+        "upper respiratory infection",
+        "uri",
+        "zukam"
+      ]
+    },
+    {
+      "code": "J00",
+      "name": "Common cold",
+      "description": "Acute nasopharyngitis (common cold)",
+      "category": "Respiratory",
+      "synonyms": [
+        "blocked nose",
+        "head cold",
+        "naak band",
+        "nasopharyngitis",
+        "sardi zukam"
+      ]
+    },
+    {
+      "code": "J02.9",
+      "name": "Acute pharyngitis",
+      "description": "Acute pharyngitis, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "gala kharab",
+        "gale me dard",
+        "pharyngitis",
+        "sore throat",
+        "throat infection",
+        "throat pain"
+      ]
+    },
+    {
+      "code": "J03.9",
+      "name": "Acute tonsillitis",
+      "description": "Acute tonsillitis, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "gale ki sujan",
+        "swollen tonsils",
+        "tonsil",
+        "tonsillitis",
+        "tonsils"
+      ]
+    },
+    {
+      "code": "J04.0",
+      "name": "Acute laryngitis",
+      "description": "Acute laryngitis",
+      "category": "Respiratory",
+      "synonyms": [
+        "awaz baithna",
+        "hoarse voice",
+        "hoarseness",
+        "laryngitis",
+        "voice loss"
+      ]
+    },
+    {
+      "code": "J01.9",
+      "name": "Acute sinusitis",
+      "description": "Acute sinusitis, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "blocked sinus",
+        "sinus",
+        "sinus infection",
+        "sinusitis"
+      ]
+    },
+    {
+      "code": "J32.9",
+      "name": "Chronic sinusitis",
+      "description": "Chronic sinusitis, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "chronic sinusitis",
+        "long standing sinus"
+      ]
+    },
+    {
+      "code": "J20.9",
+      "name": "Acute bronchitis",
+      "description": "Acute bronchitis, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "braan ki tis",
+        "bronchitis",
+        "chest cold",
+        "chest infection",
+        "seene me infection"
+      ]
+    },
+    {
+      "code": "J18.9",
+      "name": "Pneumonia",
+      "description": "Pneumonia, unspecified organism",
+      "category": "Respiratory",
+      "synonyms": [
+        "fefdo me infection",
+        "lung infection",
+        "new monia",
+        "nimonia",
+        "pneumonia"
+      ]
+    },
+    {
+      "code": "J45.9",
+      "name": "Asthma",
+      "description": "Asthma, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "asthama",
+        "asthama attack",
+        "asthma",
+        "breathing problem",
+        "dama",
+        "damma",
+        "kabam",
+        "reactive airway",
+        "saans ki bimari",
+        "ushirswaasa",
+        "wheezing"
+      ]
+    },
+    {
+      "code": "J44.9",
+      "name": "COPD",
+      "description": "Chronic obstructive pulmonary disease, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "chronic bronchitis emphysema",
+        "copd",
+        "obstructive lung disease",
+        "smoker's lung"
+      ]
+    },
+    {
+      "code": "J42",
+      "name": "Chronic bronchitis",
+      "description": "Unspecified chronic bronchitis",
+      "category": "Respiratory",
+      "synonyms": [
+        "chronic bronchitis",
+        "chronic cough smoker"
+      ]
+    },
+    {
+      "code": "J30.4",
+      "name": "Allergic rhinitis",
+      "description": "Allergic rhinitis, unspecified",
+      "category": "Respiratory",
+      "synonyms": [
+        "allergic rhinitis",
+        "chheenk",
+        "dust allergy",
+        "hay fever",
+        "naak ki allergy",
+        "nasal allergy",
+        "sneezing allergy"
+      ]
+    },
+    {
+      "code": "R05",
+      "name": "Cough",
+      "description": "Cough",
+      "category": "Symptom",
+      "synonyms": [
+        "cough",
+        "daggu",
+        "dry cough",
+        "irumal",
+        "kashi",
+        "kasi",
+        "kemmu",
+        "khaansi",
+        "khansi",
+        "khoklaa",
+        "sukhi khansi",
+        "wet cough"
+      ]
+    },
+    {
+      "code": "U07.1",
+      "name": "COVID-19",
+      "description": "COVID-19, virus identified",
+      "category": "Respiratory",
+      "synonyms": [
+        "corona",
+        "coronavirus",
+        "covid",
+        "covid-19",
+        "sars-cov-2"
+      ]
+    },
+    {
+      "code": "J11.1",
+      "name": "Influenza",
+      "description": "Influenza with respiratory manifestations, virus not identified",
+      "category": "Respiratory",
+      "synonyms": [
+        "flu",
+        "influenza",
+        "seasonal flu",
+        "viral flu"
+      ]
+    },
+    {
+      "code": "R50.9",
+      "name": "Fever",
+      "description": "Fever, unspecified",
+      "category": "Symptom",
+      "synonyms": [
+        "bachchar jor",
+        "body mein aag",
+        "bukhaar",
+        "bukhar",
+        "chhokra ne tav",
+        "fever",
+        "high fever",
+        "jara",
+        "jor",
+        "jvaram",
+        "jwara",
+        "jwaram",
+        "kaichal",
+        "pyrexia",
+        "taap",
+        "tav",
+        "temperature",
+        "tez bukhar"
+      ]
+    },
+    {
+      "code": "B34.9",
+      "name": "Viral infection",
+      "description": "Viral infection, unspecified site",
+      "category": "Infectious",
+      "synonyms": [
+        "seasonal viral",
+        "vayral",
+        "viral",
+        "viral fever",
+        "viral infection"
+      ]
+    },
+    {
+      "code": "A90",
+      "name": "Dengue fever",
+      "description": "Dengue fever [classical dengue]",
+      "category": "Infectious",
+      "synonyms": [
+        "break bone fever",
+        "dengu",
+        "dengue",
+        "platelet fever"
+      ]
+    },
+    {
+      "code": "A91",
+      "name": "Dengue haemorrhagic fever",
+      "description": "Dengue haemorrhagic fever",
+      "category": "Infectious",
+      "synonyms": [
+        "dengue haemorrhagic",
+        "dhf",
+        "severe dengue"
+      ]
+    },
+    {
+      "code": "B54",
+      "name": "Malaria",
+      "description": "Unspecified malaria",
+      "category": "Infectious",
+      "synonyms": [
+        "fever with chills",
+        "malaria",
+        "maleria",
+        "mlaria",
+        "thand lagke bukhar"
+      ]
+    },
+    {
+      "code": "A01.0",
+      "name": "Typhoid fever",
+      "description": "Typhoid fever",
+      "category": "Infectious",
+      "synonyms": [
+        "enteric fever",
+        "motijhara",
+        "taifaid",
+        "typhoid"
+      ]
+    },
+    {
+      "code": "A09",
+      "name": "Gastroenteritis",
+      "description": "Diarrhoea and gastroenteritis of presumed infectious origin",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "dast",
+        "diarrhea",
+        "diarrhoea",
+        "food poisoning",
+        "gastro",
+        "gastroenteritis",
+        "loose motion",
+        "loose motions",
+        "pet kharab",
+        "stomach infection"
+      ]
+    },
+    {
+      "code": "B15.9",
+      "name": "Hepatitis A",
+      "description": "Hepatitis A without hepatic coma",
+      "category": "Infectious",
+      "synonyms": [
+        "hepatitis a",
+        "jaundice",
+        "jaundice viral",
+        "piliya"
+      ]
+    },
+    {
+      "code": "B01.9",
+      "name": "Chickenpox",
+      "description": "Varicella without complication",
+      "category": "Infectious",
+      "synonyms": [
+        "aakulu jabbu",
+        "ammai",
+        "basanta",
+        "chechak",
+        "chhoti mata",
+        "chicken pox",
+        "chickenpox",
+        "devi",
+        "jol boshonto",
+        "oree",
+        "sannipat",
+        "varicella"
+      ]
+    },
+    {
+      "code": "A15.9",
+      "name": "Respiratory tuberculosis",
+      "description": "Respiratory tuberculosis, unspecified",
+      "category": "Infectious",
+      "synonyms": [
+        "kshay rog",
+        "pulmonary tb",
+        "tb",
+        "tb chest",
+        "tb ki shanka",
+        "tuberculosis"
+      ]
+    },
+    {
+      "code": "B37.9",
+      "name": "Candidiasis",
+      "description": "Candidiasis, unspecified",
+      "category": "Infectious",
+      "synonyms": [
+        "candida",
+        "candidiasis",
+        "fungal infection oral",
+        "thrush"
+      ]
+    },
+    {
+      "code": "B82.9",
+      "name": "Intestinal parasitism",
+      "description": "Intestinal parasitism, unspecified",
+      "category": "Infectious",
+      "synonyms": [
+        "helminthiasis",
+        "hotte kirumi",
+        "intestinal worms",
+        "kide",
+        "krimi",
+        "pet ke kide",
+        "pet ma kida",
+        "pet me keede",
+        "pet mein chuhe daud rahe",
+        "pet mein keede",
+        "peta kiraa",
+        "vayiru la puzhukkal",
+        "worms"
+      ]
+    },
+    {
+      "code": "K21.9",
+      "name": "GERD",
+      "description": "Gastro-oesophageal reflux disease without oesophagitis",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "acid reflux",
+        "acidity",
+        "gerd",
+        "heartburn",
+        "khatti dakar",
+        "pitta perugudala",
+        "reflux",
+        "seene me jalan",
+        "vaigattru noi"
+      ]
+    },
+    {
+      "code": "K30",
+      "name": "Dyspepsia",
+      "description": "Functional dyspepsia",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "apach",
+        "badhazmi",
+        "bloating",
+        "dyspepsia",
+        "gas",
+        "gas banti hai",
+        "indigestion",
+        "khana nahi pachta",
+        "pet er gas",
+        "pet phulna",
+        "stomach mein gas",
+        "uppindham",
+        "uppindham gas"
+      ]
+    },
+    {
+      "code": "K29.7",
+      "name": "Gastritis",
+      "description": "Gastritis, unspecified",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "gastric",
+        "gastritis",
+        "pet me jalan",
+        "stomach inflammation"
+      ]
+    },
+    {
+      "code": "K29.1",
+      "name": "Acute gastritis",
+      "description": "Other acute gastritis",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "acute gastritis",
+        "acidity",
+        "pet mein jalan",
+        "stomach inflammation"
+      ]
+    },
+    {
+      "code": "K59.0",
+      "name": "Constipation",
+      "description": "Constipation",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "badhdhakosht",
+        "constipation",
+        "hard stool",
+        "kabajee",
+        "kabajiyat",
+        "kabj",
+        "kabz",
+        "kobji",
+        "mala bandha",
+        "malabandham",
+        "malachchikkalam",
+        "not passing motion"
+      ]
+    },
+    {
+      "code": "K58.9",
+      "name": "Irritable bowel syndrome",
+      "description": "Irritable bowel syndrome without diarrhoea",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "ibs",
+        "irritable bowel",
+        "spastic colon"
+      ]
+    },
+    {
+      "code": "R10.4",
+      "name": "Abdominal pain",
+      "description": "Other and unspecified abdominal pain",
+      "category": "Symptom",
+      "synonyms": [
+        "abdominal pain",
+        "belly pain",
+        "hotte noovu",
+        "kadupu noppi",
+        "pet byatha",
+        "pet dard",
+        "pet me dard",
+        "pet mein gola",
+        "pet mein marod",
+        "peta bedha",
+        "potaat dukhte",
+        "stomach pain",
+        "tummy ache",
+        "vayiru vali"
+      ]
+    },
+    {
+      "code": "R11.1",
+      "name": "Vomiting",
+      "description": "Vomiting",
+      "category": "Symptom",
+      "synonyms": [
+        "emesis",
+        "throwing up",
+        "ulti",
+        "ulty",
+        "vomit",
+        "vomiting"
+      ]
+    },
+    {
+      "code": "R11.0",
+      "name": "Nausea",
+      "description": "Nausea",
+      "category": "Symptom",
+      "synonyms": [
+        "feeling of vomiting",
+        "ji michlana",
+        "matli",
+        "nausea"
+      ]
+    },
+    {
+      "code": "K52.9",
+      "name": "Non-infective gastroenteritis",
+      "description": "Noninfective gastroenteritis and colitis, unspecified",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "colitis",
+        "non infective gastroenteritis",
+        "non-infectious loose motion"
+      ]
+    },
+    {
+      "code": "K80.2",
+      "name": "Gallstones",
+      "description": "Calculus of gallbladder without cholecystitis",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "cholelithiasis",
+        "gallstone",
+        "gallstones",
+        "pittaasayam raatlu",
+        "pittashay ki pathri",
+        "pittha kal",
+        "pittotholi pathor"
+      ]
+    },
+    {
+      "code": "K37",
+      "name": "Appendicitis",
+      "description": "Unspecified appendicitis",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "appendicitis",
+        "appendix",
+        "appendix pain"
+      ]
+    },
+    {
+      "code": "K64.9",
+      "name": "Haemorrhoids",
+      "description": "Haemorrhoids, unspecified",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "arsha rog",
+        "arsha roga",
+        "bawaseer",
+        "bawasir",
+        "haemorrhoids",
+        "hemorrhoids",
+        "moolapupu",
+        "mulai noi",
+        "mulai vali",
+        "mulvyadhi",
+        "mulwyadh",
+        "piles"
+      ]
+    },
+    {
+      "code": "K12.1",
+      "name": "Stomatitis",
+      "description": "Other forms of stomatitis",
+      "category": "Gastrointestinal",
+      "synonyms": [
+        "chhale",
+        "mouth ulcer",
+        "mouth ulcers",
+        "muh ke chhale",
+        "stomatitis"
+      ]
+    },
+    {
+      "code": "E11.9",
+      "name": "Type 2 diabetes mellitus",
+      "description": "Type 2 diabetes mellitus without complications",
+      "category": "Endocrine",
+      "synonyms": [
+        "blood sugar",
+        "diabetes",
+        "high sugar",
+        "madhu meho",
+        "madhumeh",
+        "sakkare kayile",
+        "sarkkarai noi",
+        "seeraga kuraippu",
+        "shugar",
+        "sugar",
+        "t2dm",
+        "type 2 diabetes"
+      ]
+    },
+    {
+      "code": "E10.9",
+      "name": "Type 1 diabetes mellitus",
+      "description": "Type 1 diabetes mellitus without complications",
+      "category": "Endocrine",
+      "synonyms": [
+        "insulin dependent diabetes",
+        "juvenile diabetes",
+        "t1dm",
+        "type 1 diabetes"
+      ]
+    },
+    {
+      "code": "E14.9",
+      "name": "Diabetes mellitus, unspecified",
+      "description": "Unspecified diabetes mellitus without complications",
+      "category": "Endocrine",
+      "synonyms": [
+        "diabetes mellitus",
+        "diabetes unspecified"
+      ]
+    },
+    {
+      "code": "E03.9",
+      "name": "Hypothyroidism",
+      "description": "Hypothyroidism, unspecified",
+      "category": "Endocrine",
+      "synonyms": [
+        "hypothyroidism",
+        "low thyroid",
+        "thyriod",
+        "thyroid",
+        "thyroid kam",
+        "underactive thyroid"
+      ]
+    },
+    {
+      "code": "E05.9",
+      "name": "Hyperthyroidism",
+      "description": "Thyrotoxicosis, unspecified",
+      "category": "Endocrine",
+      "synonyms": [
+        "hyperthyroidism",
+        "overactive thyroid",
+        "thyroid zyada",
+        "thyrotoxicosis"
+      ]
+    },
+    {
+      "code": "E66.9",
+      "name": "Obesity",
+      "description": "Obesity, unspecified",
+      "category": "Endocrine",
+      "synonyms": [
+        "beshi motey",
+        "motapa",
+        "obesity",
+        "overweight",
+        "udal paruththal",
+        "weight gain"
+      ]
+    },
+    {
+      "code": "E78.5",
+      "name": "Hyperlipidaemia",
+      "description": "Hyperlipidaemia, unspecified",
+      "category": "Endocrine",
+      "synonyms": [
+        "cholesterol",
+        "colestrol",
+        "colestrol high",
+        "dyslipidemia",
+        "high cholesterol",
+        "hyperlipidemia",
+        "lipid"
+      ]
+    },
+    {
+      "code": "E86.0",
+      "name": "Dehydration",
+      "description": "Dehydration",
+      "category": "Endocrine",
+      "synonyms": [
+        "dehydration",
+        "dry mouth low urine",
+        "fluid loss",
+        "garmi lagi",
+        "jol shotonto",
+        "neer varadchi",
+        "neeru kammi",
+        "paani kami",
+        "paanyachi kami",
+        "pani ki kami",
+        "volume depletion",
+        "weakness dehydration"
+      ]
+    },
+    {
+      "code": "E55.9",
+      "name": "Vitamin D deficiency",
+      "description": "Vitamin D deficiency, unspecified",
+      "category": "Nutritional",
+      "synonyms": [
+        "low vitamin d",
+        "vit d deficiency",
+        "vitamin chahiye",
+        "vitamin d deficiency",
+        "vitamin d takkuva",
+        "vitamin kammi",
+        "vitamin ki kami"
+      ]
+    },
+    {
+      "code": "D51.9",
+      "name": "Vitamin B12 deficiency anaemia",
+      "description": "Vitamin B12 deficiency anaemia, unspecified",
+      "category": "Nutritional",
+      "synonyms": [
+        "b12 deficiency",
+        "low b12",
+        "vitamin b12 deficiency"
+      ]
+    },
+    {
+      "code": "D50.9",
+      "name": "Iron deficiency anaemia",
+      "description": "Iron deficiency anaemia, unspecified",
+      "category": "Nutritional",
+      "synonyms": [
+        "anaemia",
+        "anemia",
+        "iron deficiency",
+        "khoon ki kami",
+        "low haemoglobin",
+        "low hb"
+      ]
+    },
+    {
+      "code": "D64.9",
+      "name": "Anaemia",
+      "description": "Anaemia, unspecified",
+      "category": "Nutritional",
+      "synonyms": [
+        "anaemia unspecified",
+        "anemia unspecified",
+        "kamzori khoon",
+        "lohi kami",
+        "pandu rogam",
+        "panduroga",
+        "raktaheen",
+        "raktaheenatay",
+        "ratthasogai",
+        "roko soktoni"
+      ]
+    },
+    {
+      "code": "E50.9",
+      "name": "Vitamin A deficiency",
+      "description": "Vitamin A deficiency, unspecified",
+      "category": "Nutritional",
+      "synonyms": [
+        "night blindness",
+        "ratundhi",
+        "vitamin a deficiency"
+      ]
+    },
+    {
+      "code": "E44.9",
+      "name": "Malnutrition",
+      "description": "Protein-energy malnutrition of unspecified degree",
+      "category": "Nutritional",
+      "synonyms": [
+        "baccha kamzor hai",
+        "bacche ka weight nahi",
+        "kuposhan",
+        "malnutrition",
+        "undernutrition"
+      ]
+    },
+    {
+      "code": "I10",
+      "name": "Hypertension",
+      "description": "Essential (primary) hypertension",
+      "category": "Cardiovascular",
+      "synonyms": [
+        "blood pressure",
+        "bp",
+        "bp badh gaya",
+        "bp ekkuva",
+        "bp hechchu",
+        "bp high",
+        "bp jaasthi",
+        "bp problem",
+        "bp problem ide",
+        "bp vadhu",
+        "bp wadhla",
+        "high blood pressure",
+        "high bp",
+        "hypertension",
+        "rakta chapa",
+        "rakta chapa badhiba",
+        "raktapottu",
+        "raktapottu ekkuva",
+        "raktchaap",
+        "raththa aluttham",
+        "uchcho rokto chap"
+      ]
+    },
+    {
+      "code": "I25.9",
+      "name": "Chronic ischaemic heart disease",
+      "description": "Chronic ischaemic heart disease, unspecified",
+      "category": "Cardiovascular",
+      "synonyms": [
+        "cad",
+        "coronary artery disease",
+        "dil ki bimari",
+        "heart disease",
+        "heart problem",
+        "hriday samasyaa",
+        "hrudaya samasyaa",
+        "ihd",
+        "ischaemic heart disease"
+      ]
+    },
+    {
+      "code": "I48",
+      "name": "Atrial fibrillation",
+      "description": "Atrial fibrillation and flutter",
+      "category": "Cardiovascular",
+      "synonyms": [
+        "afib",
+        "atrial fibrillation",
+        "irregular heartbeat",
+        "palpitations irregular"
+      ]
+    },
+    {
+      "code": "I50.9",
+      "name": "Heart failure",
+      "description": "Heart failure, unspecified",
+      "category": "Cardiovascular",
+      "synonyms": [
+        "cardiac failure",
+        "chf",
+        "heart failure",
+        "hridrogo",
+        "weak heart"
+      ]
+    },
+    {
+      "code": "R07.4",
+      "name": "Chest pain",
+      "description": "Chest pain, unspecified",
+      "category": "Symptom",
+      "synonyms": [
+        "buk byatha",
+        "chest discomfort",
+        "chest pain",
+        "gunde noovu",
+        "gunde noppi",
+        "maarbu vali",
+        "seene me dard",
+        "seene mein bhari"
+      ]
+    },
+    {
+      "code": "R00.2",
+      "name": "Palpitations",
+      "description": "Palpitations",
+      "category": "Symptom",
+      "synonyms": [
+        "dhadkan tez",
+        "fast heartbeat",
+        "heart racing",
+        "palpitations"
+      ]
+    },
+    {
+      "code": "M54.5",
+      "name": "Low back pain",
+      "description": "Low back pain",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "back pain",
+        "bena noovu",
+        "benaadhi noppi",
+        "iduppu vali",
+        "kamar bedha",
+        "kamar dard",
+        "kamar dukhte",
+        "kamar me dard",
+        "kamar no dukhaavo",
+        "kamar tod dard",
+        "komore byatha",
+        "low back pain",
+        "lower back pain",
+        "lumbago",
+        "veepu noppi"
+      ]
+    },
+    {
+      "code": "M54.2",
+      "name": "Cervicalgia",
+      "description": "Cervicalgia",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "cervical",
+        "cervical pain",
+        "gardan dard",
+        "gardan me dard",
+        "guddi noppi",
+        "neck pain"
+      ]
+    },
+    {
+      "code": "M25.5",
+      "name": "Joint pain",
+      "description": "Pain in joint",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "anguthi bedha",
+        "arthralgia",
+        "ghoothna dard",
+        "ghutne me dard",
+        "gudghyaat dukhte",
+        "haddiyon ka dard",
+        "hatu byatha",
+        "jodo me dard",
+        "joint pain",
+        "kanda noppi",
+        "knee pain",
+        "mogalu noovu",
+        "mokalu noppi",
+        "moottu vali",
+        "musula vyaadhi"
+      ]
+    },
+    {
+      "code": "M79.1",
+      "name": "Myalgia",
+      "description": "Myalgia",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "badan dard",
+        "body ache",
+        "body pain",
+        "dard dard dard dard",
+        "left hand",
+        "manspeshi dard",
+        "muscle pain",
+        "myalgia"
+      ]
+    },
+    {
+      "code": "M17.9",
+      "name": "Osteoarthritis of knee",
+      "description": "Gonarthrosis, unspecified",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "budhape ka ghutna dard",
+        "ghutne ghis gaye",
+        "ghutne ka gathiya",
+        "knee osteoarthritis",
+        "oa knee",
+        "osteoarthritis knee"
+      ]
+    },
+    {
+      "code": "M06.9",
+      "name": "Rheumatoid arthritis",
+      "description": "Rheumatoid arthritis, unspecified",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "gathiya",
+        "joint swelling arthritis",
+        "ra",
+        "rheumatoid arthritis"
+      ]
+    },
+    {
+      "code": "M10.9",
+      "name": "Gout",
+      "description": "Gout, unspecified",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "gaut",
+        "gout",
+        "gout attack",
+        "high uric acid",
+        "kathirveechcham",
+        "uric acid"
+      ]
+    },
+    {
+      "code": "M13.9",
+      "name": "Arthritis",
+      "description": "Arthritis, unspecified",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "arthritis",
+        "gathiya",
+        "joint inflammation"
+      ]
+    },
+    {
+      "code": "M62.6",
+      "name": "Muscle strain",
+      "description": "Muscle strain",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "chilla",
+        "koddi noppi",
+        "manspeshi khichna",
+        "muscle strain",
+        "pulled muscle",
+        "sprain muscle"
+      ]
+    },
+    {
+      "code": "M79.7",
+      "name": "Fibromyalgia",
+      "description": "Fibromyalgia",
+      "category": "Musculoskeletal",
+      "synonyms": [
+        "fibromyalgia",
+        "widespread body pain"
+      ]
+    },
+    {
+      "code": "B35.9",
+      "name": "Dermatophytosis",
+      "description": "Dermatophytosis, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "chamda roga",
+        "chamdi rog",
+        "charma rog",
+        "daad",
+        "daaz",
+        "dabbalu",
+        "dad",
+        "daddarlu",
+        "dermatophytosis",
+        "fungal infection",
+        "fungal skin",
+        "padai",
+        "ringworm",
+        "tinagalu",
+        "tinea"
+      ]
+    },
+    {
+      "code": "B86",
+      "name": "Scabies",
+      "description": "Scabies",
+      "category": "Skin",
+      "synonyms": [
+        "cheolcha",
+        "gajji",
+        "itch mite",
+        "khaaj",
+        "khai roga",
+        "kharaj rog",
+        "khujli",
+        "scabies",
+        "soranaithol"
+      ]
+    },
+    {
+      "code": "L50.9",
+      "name": "Urticaria",
+      "description": "Urticaria, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "allergic rash welts",
+        "hives",
+        "pitti",
+        "sheet pitta",
+        "tatthu thadippu",
+        "uddi gudde",
+        "urticaria"
+      ]
+    },
+    {
+      "code": "L23.9",
+      "name": "Allergic contact dermatitis",
+      "description": "Allergic contact dermatitis, unspecified cause",
+      "category": "Skin",
+      "synonyms": [
+        "allergic skin reaction",
+        "contact dermatitis",
+        "skin allergy"
+      ]
+    },
+    {
+      "code": "L30.9",
+      "name": "Dermatitis",
+      "description": "Dermatitis, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "chamata vyadhi",
+        "charma samasse",
+        "dermatitis",
+        "rash unspecified",
+        "skin inflammation",
+        "skin la arichhal",
+        "twachaa rog"
+      ]
+    },
+    {
+      "code": "L20.9",
+      "name": "Atopic dermatitis",
+      "description": "Atopic dermatitis, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "atopic dermatitis",
+        "dry itchy skin",
+        "eczema"
+      ]
+    },
+    {
+      "code": "L70.9",
+      "name": "Acne",
+      "description": "Acne, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "acne",
+        "dane",
+        "muhase",
+        "parukal",
+        "pimples"
+      ]
+    },
+    {
+      "code": "L03.9",
+      "name": "Cellulitis",
+      "description": "Cellulitis, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "biddalu",
+        "cellulitis",
+        "red swollen skin infection",
+        "skin infection spreading"
+      ]
+    },
+    {
+      "code": "L40.9",
+      "name": "Psoriasis",
+      "description": "Psoriasis, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "chambal",
+        "psoriasis",
+        "scaly skin patches"
+      ]
+    },
+    {
+      "code": "B02.9",
+      "name": "Herpes zoster",
+      "description": "Zoster without complication",
+      "category": "Skin",
+      "synonyms": [
+        "dad fungal no",
+        "herpes zoster",
+        "nagin",
+        "shingles"
+      ]
+    },
+    {
+      "code": "B00.9",
+      "name": "Herpes simplex",
+      "description": "Herpesviral infection, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "cold sore",
+        "fever blister",
+        "herpes simplex"
+      ]
+    },
+    {
+      "code": "L21.9",
+      "name": "Seborrhoeic dermatitis",
+      "description": "Seborrhoeic dermatitis, unspecified",
+      "category": "Skin",
+      "synonyms": [
+        "dandruff",
+        "hubbu",
+        "khusuki",
+        "munda khusiki",
+        "podugu",
+        "rusi",
+        "scalp flaking",
+        "seborrhoeic dermatitis"
+      ]
+    },
+    {
+      "code": "R21",
+      "name": "Rash",
+      "description": "Rash and other nonspecific skin eruption",
+      "category": "Symptom",
+      "synonyms": [
+        "chakatte",
+        "daane",
+        "rash",
+        "red spots",
+        "skin rash"
+      ]
+    },
+    {
+      "code": "H66.9",
+      "name": "Otitis media",
+      "description": "Otitis media, unspecified",
+      "category": "ENT",
+      "synonyms": [
+        "chevi noppi",
+        "ear infection",
+        "kaadhu vali",
+        "kaan bah raha hai",
+        "kaan dard",
+        "kaan dukhto",
+        "kaan me dard",
+        "kan bedha",
+        "kaner byatha",
+        "kivi noovu",
+        "kivi noppi",
+        "middle ear infection",
+        "otitis media"
+      ]
+    },
+    {
+      "code": "H60.9",
+      "name": "Otitis externa",
+      "description": "Otitis externa, unspecified",
+      "category": "ENT",
+      "synonyms": [
+        "otitis externa",
+        "outer ear infection",
+        "swimmer's ear"
+      ]
+    },
+    {
+      "code": "H61.2",
+      "name": "Impacted cerumen",
+      "description": "Impacted cerumen",
+      "category": "ENT",
+      "synonyms": [
+        "cerumen",
+        "ear wax",
+        "impacted wax",
+        "kaan ka mail"
+      ]
+    },
+    {
+      "code": "H10.9",
+      "name": "Conjunctivitis",
+      "description": "Conjunctivitis, unspecified",
+      "category": "Eye",
+      "synonyms": [
+        "aankh aana",
+        "aankh laal",
+        "aankhein laal",
+        "chokh lal",
+        "conjunctivitis",
+        "dolaa laal",
+        "eye flu",
+        "kallu erruppu",
+        "kallu manduthunnaayi",
+        "kan sivappu",
+        "kannu kempu",
+        "pink eye",
+        "red eye",
+        "sigappu kan"
+      ]
+    },
+    {
+      "code": "H57.1",
+      "name": "Eye pain",
+      "description": "Ocular pain",
+      "category": "Eye",
+      "synonyms": [
+        "aankh me dard",
+        "eye pain",
+        "kan vali",
+        "sore eye"
+      ]
+    },
+    {
+      "code": "H52.1",
+      "name": "Myopia",
+      "description": "Myopia",
+      "category": "Eye",
+      "synonyms": [
+        "chokhe dekhi na",
+        "door ka nahi dikhta",
+        "myopia",
+        "nazar kamzor",
+        "nearsighted",
+        "short sightedness"
+      ]
+    },
+    {
+      "code": "H52.4",
+      "name": "Presbyopia",
+      "description": "Presbyopia",
+      "category": "Eye",
+      "synonyms": [
+        "old age reading vision",
+        "paas ka nahi dikhta",
+        "presbyopia"
+      ]
+    },
+    {
+      "code": "H25.9",
+      "name": "Cataract",
+      "description": "Age-related cataract, unspecified",
+      "category": "Eye",
+      "synonyms": [
+        "cataract",
+        "cloudy lens",
+        "motiabind",
+        "safed motia"
+      ]
+    },
+    {
+      "code": "H40.9",
+      "name": "Glaucoma",
+      "description": "Glaucoma, unspecified",
+      "category": "Eye",
+      "synonyms": [
+        "glaucoma",
+        "high eye pressure",
+        "kala motia"
+      ]
+    },
+    {
+      "code": "K02.9",
+      "name": "Dental caries",
+      "description": "Dental caries, unspecified",
+      "category": "Dental",
+      "synonyms": [
+        "cavity",
+        "daant ka dard cavity",
+        "daant me keeda",
+        "dental caries",
+        "tooth decay"
+      ]
+    },
+    {
+      "code": "K04.7",
+      "name": "Periapical abscess",
+      "description": "Periapical abscess without sinus",
+      "category": "Dental",
+      "synonyms": [
+        "daant me pus",
+        "dental abscess",
+        "pus in tooth",
+        "tooth abscess"
+      ]
+    },
+    {
+      "code": "K05.1",
+      "name": "Chronic gingivitis",
+      "description": "Chronic gingivitis",
+      "category": "Dental",
+      "synonyms": [
+        "bleeding gums",
+        "gingivitis",
+        "gum disease",
+        "gum swelling",
+        "masudo se khoon"
+      ]
+    },
+    {
+      "code": "K08.8",
+      "name": "Toothache",
+      "description": "Other specified disorders of teeth",
+      "category": "Dental",
+      "synonyms": [
+        "daant dard",
+        "daant me dard",
+        "daat byatha",
+        "daat dukhto",
+        "danta bedha",
+        "hallu noovu",
+        "pal vali",
+        "pannu noppi",
+        "tooth pain",
+        "toothache"
+      ]
+    },
+    {
+      "code": "R51",
+      "name": "Headache",
+      "description": "Headache",
+      "category": "Symptom",
+      "synonyms": [
+        "dokyaat dukhte",
+        "head pain",
+        "headache",
+        "matha byatha",
+        "mathanu dard",
+        "munda bedha",
+        "sar dard",
+        "sar me dard",
+        "sir dard",
+        "tala noppi",
+        "tale noovu",
+        "thalai vali"
+      ]
+    },
+    {
+      "code": "G43.9",
+      "name": "Migraine",
+      "description": "Migraine, unspecified",
+      "category": "Neurology",
+      "synonyms": [
+        "aadhe sar ka dard",
+        "adha sisi",
+        "ardha shishi",
+        "artha sisi",
+        "half head pain",
+        "migraine"
+      ]
+    },
+    {
+      "code": "G44.2",
+      "name": "Tension headache",
+      "description": "Tension-type headache",
+      "category": "Neurology",
+      "synonyms": [
+        "stress headache",
+        "tension headache",
+        "tension type headache"
+      ]
+    },
+    {
+      "code": "R42",
+      "name": "Dizziness",
+      "description": "Dizziness and giddiness",
+      "category": "Symptom",
+      "synonyms": [
+        "chakkar",
+        "dizziness",
+        "giddiness",
+        "lahu dab",
+        "lahu dab kamm",
+        "light headed",
+        "vertigo feeling"
+      ]
+    },
+    {
+      "code": "G40.9",
+      "name": "Epilepsy",
+      "description": "Epilepsy, unspecified",
+      "category": "Neurology",
+      "synonyms": [
+        "daura",
+        "epilepsy",
+        "fits",
+        "mirgi",
+        "seizure",
+        "sidilu biddaru"
+      ]
+    },
+    {
+      "code": "I63.9",
+      "name": "Stroke",
+      "description": "Cerebral infarction, unspecified",
+      "category": "Neurology",
+      "synonyms": [
+        "brain stroke",
+        "cerebral infarction",
+        "lakwa",
+        "paralysis attack",
+        "stroke"
+      ]
+    },
+    {
+      "code": "G62.9",
+      "name": "Polyneuropathy",
+      "description": "Polyneuropathy, unspecified",
+      "category": "Neurology",
+      "synonyms": [
+        "jhunjhuni",
+        "kaalu manthalu",
+        "neuropathy",
+        "numbness tingling",
+        "polyneuropathy",
+        "sunnpan"
+      ]
+    },
+    {
+      "code": "F41.9",
+      "name": "Anxiety disorder",
+      "description": "Anxiety disorder, unspecified",
+      "category": "Mental Health",
+      "synonyms": [
+        "anxiety",
+        "anxiety disorder",
+        "bechaini",
+        "dushchinta",
+        "ghabrahat",
+        "panic",
+        "payanam bayam",
+        "tension mental"
+      ]
+    },
+    {
+      "code": "F32.9",
+      "name": "Depression",
+      "description": "Depressive episode, unspecified",
+      "category": "Mental Health",
+      "synonyms": [
+        "bishada",
+        "bishonnota",
+        "depression",
+        "depressive episode",
+        "low mood",
+        "man udas rehta",
+        "manachorsvu",
+        "manasika odiddam",
+        "manasika samasse",
+        "nairaashya",
+        "sadness clinical",
+        "udasi"
+      ]
+    },
+    {
+      "code": "F41.2",
+      "name": "Mixed anxiety and depression",
+      "description": "Mixed anxiety and depressive disorder",
+      "category": "Mental Health",
+      "synonyms": [
+        "anxiety and depression",
+        "mixed anxiety depression"
+      ]
+    },
+    {
+      "code": "F51.0",
+      "name": "Insomnia",
+      "description": "Nonorganic insomnia",
+      "category": "Mental Health",
+      "synonyms": [
+        "cant sleep",
+        "insomnia",
+        "neend na aana",
+        "neend nahi",
+        "neend nahi aati",
+        "niddre baralla",
+        "nidra raadu",
+        "sleep problem",
+        "sleeplessness"
+      ]
+    },
+    {
+      "code": "F10.2",
+      "name": "Alcohol dependence",
+      "description": "Mental and behavioural disorders due to alcohol, dependence syndrome",
+      "category": "Mental Health",
+      "synonyms": [
+        "alcohol addiction",
+        "alcohol dependence",
+        "alcoholism",
+        "sharab ki lat"
+      ]
+    },
+    {
+      "code": "N39.0",
+      "name": "Urinary tract infection",
+      "description": "Urinary tract infection, site not specified",
+      "category": "Genitourinary",
+      "synonyms": [
+        "burning urination",
+        "laghvi la jaalne",
+        "moothrada sutta",
+        "moothram lo manta",
+        "muthra re jala",
+        "neelu postunte manta",
+        "peshab me jalan",
+        "peshab ruk ruk ke",
+        "prosbab jvalani",
+        "siruneer errichchal",
+        "urinary infection",
+        "urine infection",
+        "urine me jalan",
+        "uti"
+      ]
+    },
+    {
+      "code": "N30.9",
+      "name": "Cystitis",
+      "description": "Cystitis, unspecified",
+      "category": "Genitourinary",
+      "synonyms": [
+        "bladder infection",
+        "cystitis"
+      ]
+    },
+    {
+      "code": "N20.0",
+      "name": "Kidney stone",
+      "description": "Calculus of kidney",
+      "category": "Genitourinary",
+      "synonyms": [
+        "gurde ki pathri",
+        "kidney kal",
+        "kidney kallu",
+        "kidney khadaa",
+        "kidney pathara",
+        "kidney pathor",
+        "kidney stone",
+        "nephrolithiasis",
+        "pathri",
+        "renal calculi",
+        "renal calculus",
+        "renal stone"
+      ]
+    },
+    {
+      "code": "N23",
+      "name": "Renal colic",
+      "description": "Unspecified renal colic",
+      "category": "Genitourinary",
+      "synonyms": [
+        "kidney pain colic",
+        "renal colic",
+        "stone pain"
+      ]
+    },
+    {
+      "code": "N18.9",
+      "name": "Chronic kidney disease",
+      "description": "Chronic kidney disease, unspecified",
+      "category": "Genitourinary",
+      "synonyms": [
+        "chronic kidney disease",
+        "ckd",
+        "gurde ki bimari",
+        "kidney failure chronic"
+      ]
+    },
+    {
+      "code": "N40",
+      "name": "Benign prostatic hyperplasia",
+      "description": "Hyperplasia of prostate",
+      "category": "Genitourinary",
+      "synonyms": [
+        "bph",
+        "enlarged prostate",
+        "muule noovu",
+        "prostate",
+        "prostate enlargement"
+      ]
+    },
+    {
+      "code": "N94.6",
+      "name": "Dysmenorrhoea",
+      "description": "Dysmenorrhoea, unspecified",
+      "category": "Gynaecology",
+      "synonyms": [
+        "dysmenorrhoea",
+        "mahwari dard",
+        "mahwari me bahut dard",
+        "masik dard",
+        "painful periods",
+        "period pain"
+      ]
+    },
+    {
+      "code": "N92.0",
+      "name": "Menorrhagia",
+      "description": "Excessive and frequent menstruation with regular cycle",
+      "category": "Gynaecology",
+      "synonyms": [
+        "heavy bleeding periods",
+        "heavy periods",
+        "menorrhagia"
+      ]
+    },
+    {
+      "code": "N91.2",
+      "name": "Amenorrhoea",
+      "description": "Amenorrhoea, unspecified",
+      "category": "Gynaecology",
+      "synonyms": [
+        "amenorrhoea",
+        "mahine band ho gaye",
+        "mahwari band",
+        "missed periods",
+        "periods not coming"
+      ]
+    },
+    {
+      "code": "E28.2",
+      "name": "Polycystic ovarian syndrome",
+      "description": "Polycystic ovarian syndrome",
+      "category": "Gynaecology",
+      "synonyms": [
+        "pcod",
+        "pcos",
+        "polycystic ovarian syndrome",
+        "polycystic ovary"
+      ]
+    },
+    {
+      "code": "N76.0",
+      "name": "Vaginitis",
+      "description": "Acute vaginitis",
+      "category": "Gynaecology",
+      "synonyms": [
+        "leucorrhoea",
+        "safed pani",
+        "vaginal infection",
+        "vaginitis",
+        "white discharge"
+      ]
+    },
+    {
+      "code": "N95.1",
+      "name": "Menopausal symptoms",
+      "description": "Menopausal and female climacteric states",
+      "category": "Gynaecology",
+      "synonyms": [
+        "hot flashes",
+        "menopausal symptoms",
+        "menopause"
+      ]
+    },
+    {
+      "code": "Z34",
+      "name": "Normal pregnancy",
+      "description": "Supervision of normal pregnancy",
+      "category": "Obstetrics",
+      "synonyms": [
+        "antenatal",
+        "garbham",
+        "garbhavastha",
+        "normal pregnancy",
+        "pregnancy",
+        "pregnancy checkup"
+      ]
+    },
+    {
+      "code": "T78.4",
+      "name": "Allergy",
+      "description": "Allergy, unspecified",
+      "category": "Allergy",
+      "synonyms": [
+        "allergic",
+        "allergic reaction",
+        "allergy",
+        "allergy unspecified"
+      ]
+    },
+    {
+      "code": "R53",
+      "name": "Fatigue",
+      "description": "Malaise and fatigue",
+      "category": "Symptom",
+      "synonyms": [
+        "fatigue",
+        "kamzori",
+        "lethargy",
+        "malaise",
+        "thakan",
+        "tiredness",
+        "weakness"
+      ]
+    },
+    {
+      "code": "R06.0",
+      "name": "Breathlessness",
+      "description": "Dyspnoea",
+      "category": "Symptom",
+      "synonyms": [
+        "breathlessness",
+        "difficulty breathing",
+        "dyspnoea",
+        "moochi thinaral",
+        "saans ki takleef",
+        "saans phoolna",
+        "shortness of breath",
+        "shwas koshto",
+        "swaasa problema"
+      ]
+    },
+    {
+      "code": "R60.9",
+      "name": "Oedema",
+      "description": "Oedema, unspecified",
+      "category": "Symptom",
+      "synonyms": [
+        "edema",
+        "oedema",
+        "pair sooj gaye",
+        "pairo me sujan",
+        "sujan",
+        "swelling",
+        "water retention"
+      ]
+    },
+    {
+      "code": "R63.0",
+      "name": "Loss of appetite",
+      "description": "Anorexia",
+      "category": "Symptom",
+      "synonyms": [
+        "anorexia",
+        "bhookh na lagna",
+        "loss of appetite",
+        "no appetite"
+      ]
+    },
+    {
+      "code": "R19.7",
+      "name": "Diarrhoea (symptom)",
+      "description": "Diarrhoea, unspecified",
+      "category": "Symptom",
+      "synonyms": [
+        "athisaram",
+        "bedi",
+        "diarrhoea symptom",
+        "jhada",
+        "judulabh",
+        "kazhichal",
+        "loose stool",
+        "pagla hawa",
+        "patla dast",
+        "virechanalu"
+      ]
+    },
+    {
+      "code": "R20.2",
+      "name": "Tingling",
+      "description": "Paraesthesia of skin",
+      "category": "Symptom",
+      "synonyms": [
+        "jhunjhuni",
+        "numbness tingling skin",
+        "pins and needles",
+        "tingling"
+      ]
+    },
+    {
+      "code": "Z23",
+      "name": "Immunization",
+      "description": "Need for immunization against single bacterial diseases",
+      "category": "Preventive",
+      "synonyms": [
+        "immunization",
+        "teeka",
+        "tika",
+        "vaccination",
+        "vaccine"
+      ]
+    },
+    {
+      "code": "Z00.0",
+      "name": "General examination",
+      "description": "General medical examination",
+      "category": "Preventive",
+      "synonyms": [
+        "bhoolne ki bimari",
+        "full body checkup",
+        "general checkup",
+        "health checkup",
+        "poora checkup",
+        "routine exam",
+        "shobkichu check"
+      ]
+    },
+    {
+      "code": "T14.9",
+      "name": "Injury",
+      "description": "Injury, unspecified",
+      "category": "Injury",
+      "synonyms": [
+        "aghaat",
+        "chot",
+        "chot lagi",
+        "injury",
+        "naak se khoon",
+        "paambu kaatu",
+        "telu kaatu",
+        "trauma unspecified",
+        "wound"
+      ]
+    }
+  ]
+}

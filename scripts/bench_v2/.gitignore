@@ -1,0 +1,11 @@
+# Generated synthetic audio (TTS output — cached, costs money to regenerate).
+audio/
+
+# Grading output (regenerated on every run).
+results/
+
+# Local secrets — Sarvam + Gemini keys. Never commit. (Also matched by the
+# repo-root .gitignore, but pinned here explicitly for safety.)
+.env
+.env.*
+

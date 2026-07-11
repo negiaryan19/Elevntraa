@@ -3,8 +3,24 @@ import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
+import '../../../services/differential_engine.dart';
+import '../../../services/icd10_local_mapper.dart';
 import '../data/pipeline_service.dart';
 import '../data/recording_service.dart';
+
+/// On-device WHO ICD-10 lookup table, loaded once from the bundled asset and
+/// cached for the app's lifetime. The LLM extracts the diagnosis TEXT only;
+/// this deterministic mapper assigns the code. See [Icd10LocalMapper].
+final icd10MapperProvider = FutureProvider<Icd10LocalMapper>(
+  (ref) => Icd10LocalMapper.load(),
+);
+
+/// On-device differential-diagnosis engine, loaded once from the bundled
+/// rules asset. Turns the extracted symptoms into ranked, doctor-only
+/// decision-support suggestions. See [DifferentialEngine].
+final differentialEngineProvider = FutureProvider<DifferentialEngine>(
+  (ref) => DifferentialEngine.load(),
+);
 
 enum ConsultationStage {
   idle,
@@ -31,6 +47,7 @@ class ConsultationState {
     this.languageCode = 'unknown',
     this.elapsed = Duration.zero,
     this.error,
+    this.differentialSuggestions = const [],
   });
 
   final ConsultationStage stage;
@@ -38,18 +55,27 @@ class ConsultationState {
   final Duration elapsed;
   final String? error;
 
+  /// Doctor-only differential-diagnosis suggestions from [DifferentialEngine],
+  /// computed from the extracted symptoms after processing. These are decision
+  /// support: they never auto-fill the diagnosis and never reach the patient
+  /// PDF (they live only on this transient state, not on the visit/insight).
+  final List<DifferentialMatch> differentialSuggestions;
+
   ConsultationState copyWith({
     ConsultationStage? stage,
     String? languageCode,
     Duration? elapsed,
     String? error,
     bool clearError = false,
+    List<DifferentialMatch>? differentialSuggestions,
   }) {
     return ConsultationState(
       stage: stage ?? this.stage,
       languageCode: languageCode ?? this.languageCode,
       elapsed: elapsed ?? this.elapsed,
       error: clearError ? null : (error ?? this.error),
+      differentialSuggestions:
+          differentialSuggestions ?? this.differentialSuggestions,
     );
   }
 }
@@ -116,13 +142,33 @@ class ConsultationController extends Notifier<ConsultationState> {
             previousTranscript: previous.trim().isEmpty ? null : previous,
           );
 
+      // ICD-10 is assigned on-device from a curated WHO map, not by the LLM.
+      // The mapper output ALWAYS overwrites the extractor's ICD fields —
+      // including clearing all three when there is no confident match — so the
+      // doctor never sees a guessed code. On IcdMatch.none the field is left
+      // null for the doctor to fill, exactly like today.
+      final mapper = await ref.read(icd10MapperProvider.future);
+      final icd = mapper.lookup(result.insight.diagnosis);
+      final insight = result.insight.copyWith(
+        icdCode: icd.code,
+        icdDescription: icd.description,
+        icdConfidence: icd.confidence,
+      );
+
+      // Differential-diagnosis decision support — computed on-device from the
+      // extracted symptoms. Doctor-only: held on transient state, never written
+      // to the visit/insight and never rendered on the patient PDF, and it
+      // never auto-fills the diagnosis field.
+      final diffEngine = await ref.read(differentialEngineProvider.future);
+      final suggestions = diffEngine.suggest(result.insight.symptoms);
+
       final current = await _visits.byId(visitId);
       if (current == null) {
         throw const StorageFailure('Visit record missing from local DB.');
       }
       final updated = current.copyWith(
         transcript: result.transcript,
-        insight: result.insight,
+        insight: insight,
       );
       await _visits.upsert(updated);
 
@@ -131,7 +177,10 @@ class ConsultationController extends Notifier<ConsultationState> {
       // backend returns the full combined transcript, so store that verbatim.
       ref.read(cumulativeTranscriptProvider.notifier).state = result.transcript;
 
-      state = state.copyWith(stage: ConsultationStage.done);
+      state = state.copyWith(
+        stage: ConsultationStage.done,
+        differentialSuggestions: suggestions,
+      );
     } catch (e) {
       state = state.copyWith(
         stage: ConsultationStage.error,

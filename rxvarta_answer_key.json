@@ -1,0 +1,174 @@
+{
+  "_comment": "Ground-truth answer key for RxVarta eval harness. Each entry = one test script. The grading tool compares the app's extraction against 'expected' fields. 'accept' arrays list acceptable variants (case-insensitive, fuzzy). Trap cases assert empty/null to prove the app does NOT hallucinate.",
+  "meta": {
+    "language": "hinglish",
+    "total_scripts": 12,
+    "categories": ["easy", "medium", "hard", "trap"]
+  },
+  "scripts": [
+    {
+      "id": "script_01",
+      "category": "easy",
+      "text": "PATIENT: Doctor, mujhe sardi ho gayi hai aur sar bhi dard kar raha hai. DOCTOR: Kab se hai ye problem? PATIENT: Kal se doctor. DOCTOR: Bukhar bhi hai kya? PATIENT: Thoda thoda, 99 ke aas paas. DOCTOR: Normal viral hai. Crocin lo ek tablet din mein do baar, khana khane ke baad. Aur Cetrizine ek tablet raat ko sone se pehle. Dono teen din tak. Paani zyada piyo. Teen din baad theek na ho toh wapas aana.",
+      "expected": {
+        "medications": [
+          {"name": "Crocin", "accept_name": ["crocin", "paracetamol"], "dosage": "1 tablet", "frequency": "twice a day", "duration": "3 days", "timing": "After food"},
+          {"name": "Cetrizine", "accept_name": ["cetrizine", "cetirizine"], "dosage": "1 tablet", "frequency": "once daily", "duration": "3 days", "timing": "Before bed"}
+        ],
+        "followUpDays": 3,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_02",
+      "category": "easy",
+      "text": "PATIENT: Doctor, khana khane ke baad seene mein jalan hoti hai. DOCTOR: Kitne din se? PATIENT: Ek hafte se. DOCTOR: Pantoprazole lo ek tablet subah khali pet, khane se aadha ghanta pehle. Ek hafta tak. Tel-masala kam karo.",
+      "expected": {
+        "medications": [
+          {"name": "Pantoprazole", "accept_name": ["pantoprazole", "pan", "pantop"], "dosage": "1 tablet", "frequency": "once daily", "duration": "1 week", "timing": "Empty stomach"}
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_03",
+      "category": "easy",
+      "text": "PATIENT: Doctor, poore badan mein dard hai, kamzori lag rahi hai. DOCTOR: Bukhar hai? PATIENT: Nahi doctor. DOCTOR: Dolo 650 lo ek tablet din mein do baar khane ke baad, do din tak.",
+      "expected": {
+        "medications": [
+          {"name": "Dolo 650", "accept_name": ["dolo 650", "dolo", "paracetamol 650"], "dosage": "1 tablet", "frequency": "twice a day", "duration": "2 days", "timing": "After food"}
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_04",
+      "category": "medium",
+      "text": "PATIENT: Doctor, gale mein bahut dard hai aur khaate waqt takleef hoti hai. DOCTOR: Bukhar? PATIENT: Haan raat ko badh jaata hai. DOCTOR: Throat infection hai. Augmentin 625 ek tablet din mein do baar. Dolo 650 bukhar ke liye ek tablet din mein teen baar. Aur ek Betadine gargle din mein do baar. Antibiotic aur Dolo dono paanch din tak lena, khane ke baad.",
+      "expected": {
+        "medications": [
+          {"name": "Augmentin 625", "accept_name": ["augmentin 625", "augmentin"], "dosage": "1 tablet", "frequency": "twice a day", "duration": "5 days", "timing": "After food"},
+          {"name": "Dolo 650", "accept_name": ["dolo 650", "dolo"], "dosage": "1 tablet", "frequency": "three times a day", "duration": "5 days", "timing": "After food"},
+          {"name": "Betadine gargle", "accept_name": ["betadine gargle", "betadine"], "dosage": "", "frequency": "twice a day", "duration": "", "timing": ""}
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_05",
+      "category": "medium",
+      "text": "PATIENT: Doctor, do din se loose motion ho raha hai aur pet dard bhi. DOCTOR: Ulti bhi hui? PATIENT: Ek do baar. DOCTOR: Ofloxacin-Ornidazole ki tablet subah shaam teen din. ORS ka packet paani mein daal ke din bhar piyo. Zinc ki tablet ek roz das din. Hafte baad dobara dikhana agar zaroorat pade.",
+      "expected": {
+        "medications": [
+          {"name": "Ofloxacin-Ornidazole", "accept_name": ["ofloxacin-ornidazole", "ofloxacin ornidazole", "ofloxacin", "o2"], "dosage": "1 tablet", "frequency": "twice a day", "duration": "3 days", "timing": ""},
+          {"name": "ORS", "accept_name": ["ors", "oral rehydration"], "dosage": "1 packet", "frequency": "", "duration": "", "timing": ""},
+          {"name": "Zinc", "accept_name": ["zinc"], "dosage": "1 tablet", "frequency": "once daily", "duration": "10 days", "timing": ""}
+        ],
+        "followUpDays": 7,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_06",
+      "category": "medium",
+      "text": "PATIENT: Doctor, BP check karwana tha, sar bhaari lag raha hai. DOCTOR: BP thoda high hai. Aap jo Telma 40 le rahe ho wahi continue karo, ek tablet subah. Namak kam karo, roz walk karo. Ek mahine baad wapas aana BP dekhne.",
+      "expected": {
+        "medications": [
+          {"name": "Telma 40", "accept_name": ["telma 40", "telma"], "dosage": "1 tablet", "frequency": "once daily", "duration": "continue", "timing": ""}
+        ],
+        "followUpDays": 30,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_07",
+      "category": "medium",
+      "text": "PATIENT: Doctor, haath pe khujli aur laal chakatte ho gaye hain. DOCTOR: Kuch naya khaya ya lagaya? PATIENT: Naya sabun use kiya tha. DOCTOR: Allergy hai. Levocetirizine ek tablet raat ko, paanch din. Aur Candid cream din mein do baar laga do jahan khujli hai. Wo sabun band kar do.",
+      "expected": {
+        "medications": [
+          {"name": "Levocetirizine", "accept_name": ["levocetirizine", "levocet"], "dosage": "1 tablet", "frequency": "once daily", "duration": "5 days", "timing": "Before bed"},
+          {"name": "Candid cream", "accept_name": ["candid cream", "candid"], "dosage": "", "frequency": "twice a day", "duration": "", "timing": ""}
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_08",
+      "category": "hard",
+      "text": "PATIENT: Doctor, sugar ki dawai chal rahi thi, thakan bahut ho rahi hai aajkal. DOCTOR: Sugar fasting kitna aaya report mein? PATIENT: Ek sau saath ke aas paas. DOCTOR: Metformin 500 subah shaam khane ke baad continue karo. Glimepiride ek subah khane se pehle. Ek Vitamin D ka sachet hafte mein ek baar aath hafte tak. Pandrah din baad sugar dobara check karwa ke aana.",
+      "expected": {
+        "medications": [
+          {"name": "Metformin 500", "accept_name": ["metformin 500", "metformin"], "dosage": "1 tablet", "frequency": "twice a day", "duration": "continue", "timing": "After food"},
+          {"name": "Glimepiride", "accept_name": ["glimepiride"], "dosage": "1 tablet", "frequency": "once daily", "duration": "", "timing": "Before food"},
+          {"name": "Vitamin D", "accept_name": ["vitamin d", "vitamin d sachet"], "dosage": "1 sachet", "frequency": "once a week", "duration": "8 weeks", "timing": ""}
+        ],
+        "followUpDays": 15,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_09",
+      "category": "hard",
+      "text": "PATIENT: Doctor, khaansi bahut hai, seene mein jakadan si hai, raat ko neend nahi aati khaansi se. DOCTOR: Balgam aa raha hai? PATIENT: Haan peela sa. DOCTOR: Azithromycin 500 ek tablet din mein ek baar teen din. Ascoril cough syrup do chammach din mein teen baar. Montek LC ek tablet raat ko paanch din. Garam paani se gargle karo. Paanch din baad batana.",
+      "expected": {
+        "medications": [
+          {"name": "Azithromycin 500", "accept_name": ["azithromycin 500", "azithromycin", "azee"], "dosage": "1 tablet", "frequency": "once daily", "duration": "3 days", "timing": ""},
+          {"name": "Ascoril", "accept_name": ["ascoril", "ascoril syrup", "ascoril cough syrup"], "dosage": "2 spoons", "frequency": "three times a day", "duration": "", "timing": ""},
+          {"name": "Montek LC", "accept_name": ["montek lc", "montek"], "dosage": "1 tablet", "frequency": "once daily", "duration": "5 days", "timing": "Before bed"}
+        ],
+        "followUpDays": 5,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_10",
+      "category": "hard",
+      "text": "PATIENT: Doctor, ek taraf sar mein tez dard, roshni se aur badh jaata hai, ulti jaisa lagta hai. DOCTOR: Migraine lag raha hai. Dard ke waqt Vasograin ek tablet le lena, zaroorat pade toh aath ghante baad ek aur, din mein do se zyada nahi. Roz raat ko Propranolol das mg ek tablet, ek mahine. Neend poori lo.",
+      "expected": {
+        "medications": [
+          {"name": "Vasograin", "accept_name": ["vasograin"], "dosage": "1 tablet", "frequency": "as needed", "duration": "", "timing": "As directed"},
+          {"name": "Propranolol 10mg", "accept_name": ["propranolol 10mg", "propranolol", "propranolol 10 mg"], "dosage": "1 tablet", "frequency": "once daily", "duration": "1 month", "timing": "Before bed"}
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "script_11",
+      "category": "trap",
+      "_trap_purpose": "Vague complaint, no real diagnosis. App must NOT invent an ICD code. Only the multivitamin should appear.",
+      "text": "PATIENT: Doctor, kuch theek nahi lag raha, bas accha nahi feel ho raha. DOCTOR: Koi khaas takleef? PATIENT: Pata nahi, bas thakan si. DOCTOR: Multivitamin lo ek tablet roz subah. Aaram karo, paani piyo.",
+      "expected": {
+        "medications": [
+          {"name": "Multivitamin", "accept_name": ["multivitamin"], "dosage": "1 tablet", "frequency": "once daily", "duration": "", "timing": ""}
+        ],
+        "followUpDays": null,
+        "icdConfidence_required": null,
+        "assert_icd_is_null": true
+      }
+    },
+    {
+      "id": "script_12",
+      "category": "trap",
+      "_trap_purpose": "Only advice, ZERO medicine. App must NOT invent any medicine. medications list must be empty.",
+      "text": "PATIENT: Doctor, subah uthne ke baad thodi kamar akad jaati hai, kaam karte karte theek ho jaati hai. DOCTOR: Koi chot lagi thi? PATIENT: Nahi doctor. DOCTOR: Ye posture ki wajah se hai. Koi dawai ki zaroorat nahi. Subah stretching karo, garam sikayi do, seedha baith ke kaam karo. Zyada dikkat ho toh dikhana.",
+      "expected": {
+        "medications": [],
+        "assert_medications_empty": true,
+        "followUpDays": null,
+        "assert_icd_is_null": true
+      }
+    }
+  ],
+  "grading_rules": {
+    "medicine_name": "case-insensitive; match against name + accept_name array; fuzzy allowed (Levenshtein <= 2) to absorb STT spelling drift",
+    "dosage_frequency_duration_timing": "normalize before compare: lowercase, strip punctuation, map synonyms (e.g. 'din mein do baar'='twice a day'='BD'='1-0-1'). Count as correct if normalized strings match.",
+    "followUpDays": "exact integer match; null must match null",
+    "trap_assertions": "assert_medications_empty and assert_icd_is_null are PASS only if app returns empty/null. Any invented medicine or ICD code = FAIL and must be highlighted in red in the report.",
+    "per_field_score": "report accuracy separately for: medicine_name, dosage, frequency, duration, timing, followUp, icd, trap_safety"
+  }
+}

@@ -14,6 +14,8 @@ import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/medication.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../services/differential_engine.dart';
+import '../../consultation/presentation/consultation_controller.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kBlue300 = Color(0xFF6B8FFF);
@@ -78,6 +80,22 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     await ref
         .read(patientRepositoryProvider)
         .upsert(updated.copyWith(updatedAt: DateTime.now()));
+  }
+
+  /// The doctor confirms a differential suggestion. Fills the diagnosis text
+  /// and ICD fields on the draft. [icdConfidence] is set to null because the
+  /// doctor now owns the code — same as a manual ICD edit. The section then
+  /// collapses itself (handled inside [_DifferentialsSection]).
+  void _acceptDifferential(DifferentialMatch match) {
+    setState(() {
+      _draft = _draft.copyWith(
+        diagnosis: match.name,
+        icdCode: match.icdCode,
+        icdDescription: match.icdDescription,
+        icdConfidence: null,
+      );
+    });
+    _save();
   }
 
   // ── Medicine helpers ───────────────────────────────────────────────────────
@@ -202,6 +220,11 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final signed = _visit!.signed;
     final gap = AppSpacing.adaptive(context, AppSpacing.md);
+    // Doctor-only differential suggestions produced during processing; held on
+    // the memoized consultation state so they survive navigation to Review.
+    final differentials = ref
+        .watch(consultationControllerProvider(widget.visitId))
+        .differentialSuggestions;
 
     return PopScope(
       canPop: false,
@@ -354,6 +377,16 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         },
                       ),
                       SizedBox(height: gap),
+                      // Doctor-only decision support — read from the transient
+                      // consultation state, never persisted to the visit and
+                      // never rendered in the PDF. Hidden entirely when empty.
+                      if (differentials.isNotEmpty) ...[
+                        _DifferentialsSection(
+                          suggestions: differentials,
+                          onAccept: _acceptDifferential,
+                        ),
+                        SizedBox(height: gap),
+                      ],
                       _medicinesCard(),
                       SizedBox(height: gap),
                       _EditableBullets(
@@ -2241,6 +2274,297 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Collapsible "Suggested Differentials" section — doctor-only decision
+/// support shown below the diagnosis. Rendered only on the review screen; it
+/// is never part of the persisted insight and never appears in the PDF.
+class _DifferentialsSection extends StatefulWidget {
+  const _DifferentialsSection({
+    required this.suggestions,
+    required this.onAccept,
+  });
+
+  final List<DifferentialMatch> suggestions;
+  final void Function(DifferentialMatch match) onAccept;
+
+  @override
+  State<_DifferentialsSection> createState() => _DifferentialsSectionState();
+}
+
+class _DifferentialsSectionState extends State<_DifferentialsSection> {
+  bool _expanded = true;
+
+  void _handleAccept(DifferentialMatch match) {
+    widget.onAccept(match);
+    // The doctor has confirmed one — collapse the section.
+    setState(() => _expanded = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return _InfoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header — tap anywhere to expand/collapse.
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Suggested Differentials',
+                        style: AppTypography.titleSmall.copyWith(
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      Text(
+                        'AI Suggestion — Verify',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  _expanded
+                      ? Icons.expand_less_rounded
+                      : Icons.expand_more_rounded,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+          if (_expanded) ...[
+            const SizedBox(height: AppSpacing.s),
+            Text(
+              'Based on reported symptoms. Doctor must verify.',
+              style: AppTypography.bodySmall.copyWith(
+                color: scheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.m),
+            for (var i = 0; i < widget.suggestions.length; i++) ...[
+              if (i > 0) const SizedBox(height: AppSpacing.s),
+              _DifferentialCard(
+                match: widget.suggestions[i],
+                onAccept: () => _handleAccept(widget.suggestions[i]),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// One differential-diagnosis card: red-flag banner (if any), name + ICD chip,
+/// plain-language reason, matched-symptom tags, and an Accept button.
+class _DifferentialCard extends StatelessWidget {
+  const _DifferentialCard({required this.match, required this.onAccept});
+
+  final DifferentialMatch match;
+  final VoidCallback onAccept;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: scheme.outline),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Red-flag accent bar at the top of the card.
+          if (match.isRedFlag)
+            Container(
+              width: double.infinity,
+              color: Colors.red.shade50,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.m,
+                vertical: AppSpacing.s,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 16,
+                    color: Colors.red.shade700,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      match.redFlag!,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.w600,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.m),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        match.name,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: scheme.onSurface,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _MiniIcdChip(code: match.icdCode),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  match.reason,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                    height: 1.35,
+                  ),
+                ),
+                if (match.matchedSymptoms.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.s),
+                  Wrap(
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      for (final symptom in match.matchedSymptoms)
+                        _SymptomTag(label: symptom),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.m),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: _AcceptButton(onTap: onAccept),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small grey ICD-10 chip — the compact sibling of [_IcdChip], shown next to a
+/// differential's name.
+class _MiniIcdChip extends StatelessWidget {
+  const _MiniIcdChip({required this.code});
+
+  final String code;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: scheme.outline),
+      ),
+      child: Text(
+        'ICD-10: $code',
+        style: AppTypography.labelSmall.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+/// A matched-symptom tag — small grey pill.
+class _SymptomTag extends StatelessWidget {
+  const _SymptomTag({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.labelSmall.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+/// Teal "Accept" pill — the doctor confirming a differential.
+class _AcceptButton extends StatelessWidget {
+  const _AcceptButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: _kTeal600,
+      borderRadius: AppSpacing.radiusMd,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppSpacing.radiusMd,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.s,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_rounded, size: 16, color: Colors.white),
+              const SizedBox(width: AppSpacing.xxs),
+              Text(
+                'Accept',
+                style: AppTypography.labelSmall.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
