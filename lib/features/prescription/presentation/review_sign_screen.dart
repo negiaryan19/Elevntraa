@@ -155,18 +155,16 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     final goBack = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Go back to recording?'),
-        content: const Text(
-          'You can add more to this consultation or start a new recording.',
-        ),
+        title: Text(AppLocalizations.of(ctx)!.goBackToRecording),
+        content: Text(AppLocalizations.of(ctx)!.goBackToRecordingBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Stay'),
+            child: Text(AppLocalizations.of(ctx)!.stay),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Go Back'),
+            child: Text(AppLocalizations.of(ctx)!.goBack),
           ),
         ],
       ),
@@ -207,11 +205,12 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+    final t = AppLocalizations.of(context)!;
     if (_visit == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Review')),
-        body: const EmptyState(
-          title: 'Visit not found',
+        appBar: AppBar(title: Text(t.reviewTitle)),
+        body: EmptyState(
+          title: t.visitNotFound,
           icon: Icons.search_off_rounded,
         ),
       );
@@ -285,13 +284,13 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Review Prescription',
+                              t.reviewPrescription,
                               style: AppTypography.headlineMedium.copyWith(
                                 color: scheme.onSurface,
                               ),
                             ),
                             Text(
-                              'Verify and edit transcribed details',
+                              t.verifyDetails,
                               style: AppTypography.bodySmall.copyWith(
                                 color: scheme.onSurfaceVariant,
                               ),
@@ -391,13 +390,11 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       _medicinesCard(),
                       SizedBox(height: gap),
                       _EditableBullets(
-                        title: 'Advice',
+                        title: t.adviceTitle,
                         icon: Icons.tips_and_updates_rounded,
                         items: _draft.advice,
-                        placeholder: 'No advice yet — tap ✏️ to add',
-                        hint:
-                            'General guidance — one per line\n'
-                            'e.g. Take adequate rest\nAvoid oily food',
+                        placeholder: t.noAdviceTapPencil,
+                        hint: t.adviceHint,
                         onSave: (v) {
                           setState(() => _draft = _draft.copyWith(advice: v));
                           _save();
@@ -405,14 +402,11 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       ),
                       SizedBox(height: gap),
                       _EditableBullets(
-                        title: 'Instructions',
+                        title: t.instructionsTitle,
                         icon: Icons.checklist_rounded,
                         items: _draft.instructions,
-                        placeholder: 'No instructions yet — tap ✏️ to add',
-                        hint:
-                            'Clinical directives — one per line\n'
-                            'e.g. Take medication after meals\n'
-                            'Review after 3 days if symptoms persist',
+                        placeholder: t.noInstructionsTapPencil,
+                        hint: t.instructionsHint,
                         onSave: (v) {
                           setState(
                             () => _draft = _draft.copyWith(instructions: v),
@@ -452,6 +446,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
 
   Widget _medicinesCard() {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,7 +456,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
               Icon(Icons.medication_rounded, color: _accent(context), size: 20),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                'Prescribed Medicines',
+                t.prescribedMedicines,
                 style: AppTypography.titleMedium.copyWith(
                   color: scheme.onSurface,
                 ),
@@ -473,7 +468,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.s),
               child: Text(
-                'No medications recorded yet.',
+                t.noMedicationsYet,
                 style: AppTypography.bodySmall.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
@@ -490,7 +485,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
             const SizedBox(height: AppSpacing.s),
           ],
           _OutlineButton(
-            label: 'Add Medicine',
+            label: t.addMedicine,
             icon: Icons.add_rounded,
             onTap: _addMedicine,
           ),
@@ -506,17 +501,18 @@ class _StepProgressBar extends StatelessWidget {
   const _StepProgressBar({required this.activeStep});
 
   final int activeStep;
-  static const _steps = ['Details', 'Recording', 'Review', 'Share'];
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    final steps = [t.stepDetails, t.stepRecording, t.stepReview, t.stepShare];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
-            for (var i = 0; i < _steps.length; i++) ...[
+            for (var i = 0; i < steps.length; i++) ...[
               if (i > 0) const SizedBox(width: AppSpacing.s),
               Expanded(
                 child: Container(
@@ -537,9 +533,9 @@ class _StepProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(
-            _steps.length,
+            steps.length,
             (i) => Text(
-              _steps[i],
+              steps[i],
               style: AppTypography.labelSmall.copyWith(
                 color: i == activeStep
                     ? _kTeal600
@@ -612,7 +608,7 @@ class _InlineEditable extends StatefulWidget {
     required this.value,
     required this.onSave,
     this.style,
-    this.placeholder = 'Tap pencil to add',
+    this.placeholder = '',
     this.maxLines = 1,
     this.hint = '',
   });
