@@ -420,11 +420,20 @@ export const PLAIN_INSTRUCTION =
   "never add clinical information that was not spoken. " +
   "Never infer or add anything unspoken. Use empty list/string when absent " +
   "(null followUpDays). Output strict JSON per schema. " +
+  "CRITICAL: If any medicine field (dosage, frequency, duration, timing) is " +
+  "not explicitly and clearly spoken in the transcript, return an empty " +
+  'string for that field. NEVER guess or fill in common defaults like "500mg", ' +
+  '"650mg", "twice daily", or "5 days". A missing field is always safer than ' +
+  "a hallucinated one. " +
+  "If the transcript is garbled, unclear, or mostly background noise, return " +
+  "empty arrays and empty strings. Do not attempt to extract from " +
+  "unintelligible audio. An empty result is correct when the input is " +
+  "unclear. " +
   "For the instructions field, write in simple, clear prescription language " +
   'that a doctor would naturally write on a prescription pad. Use "Take" not ' +
   '"Administer". Use "before bed" not "prior to sleep". Keep each instruction ' +
   "short and direct. Examples of good instruction style: " +
-  '"Take Paracetamol 650mg after food", "Take Cetirizine at bedtime", ' +
+  '"Take medication after food", "Take Cetirizine at bedtime", ' +
   '"Drink plenty of water and take rest", "Avoid cold food and drinks", ' +
   '"Return after 3 days if fever persists". ' +
   "Do not repeat dosage, frequency, or duration details that are already " +
@@ -485,11 +494,20 @@ export const DIARIZED_INSTRUCTION =
   "never add clinical information that was not spoken. " +
   "Never infer or add anything unspoken. Use empty list/string when absent " +
   "(null followUpDays). Output strict JSON per schema. " +
+  "CRITICAL: If any medicine field (dosage, frequency, duration, timing) is " +
+  "not explicitly and clearly spoken in the transcript, return an empty " +
+  'string for that field. NEVER guess or fill in common defaults like "500mg", ' +
+  '"650mg", "twice daily", or "5 days". A missing field is always safer than ' +
+  "a hallucinated one. " +
+  "If the transcript is garbled, unclear, or mostly background noise, return " +
+  "empty arrays and empty strings. Do not attempt to extract from " +
+  "unintelligible audio. An empty result is correct when the input is " +
+  "unclear. " +
   "For the instructions field, write in simple, clear prescription language " +
   'that a doctor would naturally write on a prescription pad. Use "Take" not ' +
   '"Administer". Use "before bed" not "prior to sleep". Keep each instruction ' +
   "short and direct. Examples of good instruction style: " +
-  '"Take Paracetamol 650mg after food", "Take Cetirizine at bedtime", ' +
+  '"Take medication after food", "Take Cetirizine at bedtime", ' +
   '"Drink plenty of water and take rest", "Avoid cold food and drinks", ' +
   '"Return after 3 days if fever persists". ' +
   "Do not repeat dosage, frequency, or duration details that are already " +
@@ -772,11 +790,280 @@ function _emptyInsight(): MedicalInsight {
   };
 }
 
+// Guards against feeding noise/garbage to Gemini. A bad STT decode of heavy
+// background noise (e.g. noisy Telugu audio) produces short or repetitive
+// gibberish; extracting from it makes the model hallucinate medicines. When
+// this returns true we skip extraction entirely and return an empty insight —
+// an empty result is always safer than a fabricated one.
+export function isLowQualityTranscript(transcript: string): boolean {
+  // Strip speaker labels so they don't count as spoken content.
+  const content = transcript
+    .replace(/SPEAKER_\d+:/g, " ")
+    .replace(/\b(?:Doctor|Patient|Speaker):/g, " ")
+    .trim();
+
+  // Too short to hold a real consultation.
+  if (content.length < 10) return true;
+
+  // Ignore whitespace when inspecting the actual characters decoded.
+  const compact = content.replace(/\s+/g, "");
+  if (compact.length < 10) return true;
+
+  // Noise often decodes to one repeated character/symbol ("aaaaaa", "......",
+  // "। । ।"). Real speech uses many distinct characters.
+  const distinctChars = new Set(compact.toLowerCase()).size;
+  if (distinctChars < 4) return true;
+
+  // Repeated-token gibberish ("ha ha ha ha", "na na na na"): almost no lexical
+  // variety across several words.
+  const words = content.toLowerCase().split(/\s+/).filter((w) => w.length > 0);
+  if (words.length >= 4) {
+    const distinctWords = new Set(words).size;
+    if (distinctWords / words.length < 0.2) return true;
+  }
+
+  return false;
+}
+
+// ── Post-extraction validation (defense-in-depth anti-hallucination) ───────
+// Runs AFTER Gemini returns. Even with a careful prompt the model can invent a
+// medicine, a stock dosage, or a diagnosis that was never spoken. This layer
+// cross-references every extracted field against the original transcript and
+// strips anything it cannot ground. Philosophy: an empty field is always
+// correct; a hallucinated field is never acceptable.
+
+// Lowercase + drop everything but [a-z0-9] so spacing/punctuation/case drift
+// between transcript and extraction never blocks a match ("500 mg" -> "500mg").
+function _norm(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Strip speaker labels so they aren't counted as spoken content.
+function _spokenText(transcript: string): string {
+  return transcript
+    .replace(/SPEAKER_\d+:/g, " ")
+    .replace(/\b(?:Doctor|Patient|Speaker):/g, " ")
+    .trim();
+}
+
+// Common Indian OTC/Rx drugs -> frequent STT / romanization / brand variants.
+// The transcript is romanized Hindi/vernacular while Gemini outputs canonical
+// English names, so we must match phonetically, not just literally.
+const _MEDICINE_VARIANTS: Record<string, string[]> = {
+  paracetamol: ["paracetamol", "paracetemol", "parcetamol", "paracitamol", "pcm", "dolo", "calpol"],
+  cetirizine: ["cetirizine", "cetrizine", "citrizine", "cetzine", "cetiriz"],
+  amoxicillin: ["amoxicillin", "amoxicilin", "amoxycillin", "amox", "moxikind"],
+  azithromycin: ["azithromycin", "azithromicin", "azithro", "azee"],
+  pantoprazole: ["pantoprazole", "pantoprazol", "pantop", "pan"],
+  omeprazole: ["omeprazole", "omeprazol", "omez"],
+  ibuprofen: ["ibuprofen", "ibuprofin", "brufen", "ibugesic"],
+  metformin: ["metformin", "metformine", "glycomet"],
+  amlodipine: ["amlodipine", "amlodipin", "amlong"],
+  ranitidine: ["ranitidine", "rantidine", "rantac", "aciloc"],
+  domperidone: ["domperidone", "domperidon", "domstal"],
+  ondansetron: ["ondansetron", "ondensetron", "emeset"],
+  diclofenac: ["diclofenac", "diclofenak", "voveran"],
+};
+
+// True when the medicine name is plausibly present in the transcript.
+function _medicineFoundInTranscript(
+  name: string,
+  transcriptNorm: string,
+): boolean {
+  const nameNorm = _norm(name);
+  // Too short to cross-reference reliably — keep it rather than risk dropping
+  // a legitimate short name.
+  if (nameNorm.length < 4) return true;
+
+  // Direct (normalized) substring.
+  if (transcriptNorm.includes(nameNorm)) return true;
+
+  // Phonetic / brand variants for common medicines.
+  for (const [canonical, variants] of Object.entries(_MEDICINE_VARIANTS)) {
+    if (nameNorm.includes(canonical) || canonical.includes(nameNorm)) {
+      for (const v of variants) {
+        if (transcriptNorm.includes(v)) return true;
+      }
+    }
+  }
+
+  // Transliteration tolerance: any leading substring of >= 4 chars present.
+  for (let k = nameNorm.length; k >= 4; k--) {
+    if (transcriptNorm.includes(nameNorm.slice(0, k))) return true;
+  }
+  return false;
+}
+
+// Stock values Gemini tends to invent (normalized, spaces removed).
+const _SUSPICIOUS_DOSAGES = new Set(["500mg", "650mg", "325mg"]);
+const _SUSPICIOUS_FREQUENCIES = new Set([
+  "twicedaily",
+  "threetimesaday",
+  "oncedaily",
+]);
+const _SUSPICIOUS_DURATIONS = new Set(["3days", "5days", "7days"]);
+const _SUSPICIOUS_TIMINGS = new Set(["afterfood", "beforefood"]);
+
+// Romanized/vernacular source phrases for timing so a correctly-translated
+// value isn't wrongly cleared on a Hindi/Telugu consult.
+const _TIMING_ALIASES: Record<string, string[]> = {
+  afterfood: ["afterfood", "aftermeal", "khanakhanekebaad", "khanekebaad", "khanebaad", "bhojankebaad", "bhojanamtaruvata"],
+  beforefood: ["beforefood", "beforemeal", "khanakhanesepehle", "khanesepehle", "bhojansepehle", "bhojanammundu"],
+};
+
+// A suspicious default is "grounded" if the value itself, a known romanized
+// alias, or its multi-digit number appears in the transcript.
+function _valueGrounded(normValue: string, transcriptNorm: string): boolean {
+  if (transcriptNorm.includes(normValue)) return true;
+  const aliases = _TIMING_ALIASES[normValue];
+  if (aliases) {
+    for (const a of aliases) if (transcriptNorm.includes(a)) return true;
+  }
+  // A specific multi-digit number (e.g. "500") is a strong signal; a single
+  // digit (e.g. "3") is far too common to trust.
+  const digits = normValue.replace(/[^0-9]/g, "");
+  if (digits.length >= 3 && transcriptNorm.includes(digits)) return true;
+  return false;
+}
+
+export function validateExtraction(
+  insight: MedicalInsight,
+  transcript: string,
+): MedicalInsight {
+  const spoken = _spokenText(transcript);
+
+  // Belt-and-suspenders behind isLowQualityTranscript: a transcript with almost
+  // no meaningful content can never justify any extraction, whatever Gemini
+  // returned.
+  if (spoken.replace(/\s+/g, "").length < 15) {
+    console.warn(
+      "[validateExtraction] transcript below 15 meaningful chars — " +
+        "discarding entire extraction",
+    );
+    return _emptyInsight();
+  }
+
+  const transcriptNorm = _norm(spoken);
+
+  // ── Medications: drop hallucinated names, clear ungrounded stock values ──
+  const medications: Medication[] = [];
+  for (const med of insight.medications) {
+    if (!_medicineFoundInTranscript(med.name, transcriptNorm)) {
+      console.warn(
+        `[validateExtraction] Removed hallucinated medicine: ${med.name} — ` +
+          "not found in transcript",
+      );
+      continue;
+    }
+
+    let dosage = med.dosage;
+    let frequency = med.frequency;
+    let duration = med.duration;
+    let timing = med.timing;
+    let cleared = false;
+
+    if (
+      _SUSPICIOUS_DOSAGES.has(_norm(dosage)) &&
+      !_valueGrounded(_norm(dosage), transcriptNorm)
+    ) {
+      console.warn(
+        `[validateExtraction] Cleared suspicious dosage "${dosage}" on ` +
+          `${med.name} — not found in transcript`,
+      );
+      dosage = "";
+      cleared = true;
+    }
+    if (
+      _SUSPICIOUS_FREQUENCIES.has(_norm(frequency)) &&
+      !_valueGrounded(_norm(frequency), transcriptNorm)
+    ) {
+      console.warn(
+        `[validateExtraction] Cleared suspicious frequency "${frequency}" on ` +
+          `${med.name} — not found in transcript`,
+      );
+      frequency = "";
+      cleared = true;
+    }
+    if (
+      _SUSPICIOUS_DURATIONS.has(_norm(duration)) &&
+      !_valueGrounded(_norm(duration), transcriptNorm)
+    ) {
+      console.warn(
+        `[validateExtraction] Cleared suspicious duration "${duration}" on ` +
+          `${med.name} — not found in transcript`,
+      );
+      duration = "";
+      cleared = true;
+    }
+    if (
+      _SUSPICIOUS_TIMINGS.has(_norm(timing)) &&
+      !_valueGrounded(_norm(timing), transcriptNorm)
+    ) {
+      console.warn(
+        `[validateExtraction] Cleared suspicious timing "${timing}" on ` +
+          `${med.name} — not found in transcript`,
+      );
+      timing = "";
+      cleared = true;
+    }
+
+    medications.push({
+      ...med,
+      dosage,
+      frequency,
+      duration,
+      timing,
+      // Flag any medicine we edited so the review screen can highlight it.
+      needsReview: med.needsReview || cleared,
+    });
+  }
+
+  // ── Diagnosis: must share at least one significant word with the transcript.
+  let diagnosis = insight.diagnosis;
+  let icdCode = insight.icdCode;
+  let icdDescription = insight.icdDescription;
+  let icdConfidence = insight.icdConfidence;
+  if (diagnosis.trim() !== "") {
+    const stop = new Set(["the", "and", "with", "from"]);
+    const significant = diagnosis
+      .toLowerCase()
+      .split(/\s+/)
+      .map((w) => w.replace(/[^a-z0-9]/g, ""))
+      .filter((w) => w.length > 3 && !stop.has(w));
+    const anyPresent = significant.some((w) => transcriptNorm.includes(w));
+    if (significant.length > 0 && !anyPresent) {
+      console.warn(
+        `[validateExtraction] Cleared unsupported diagnosis "${diagnosis}" — ` +
+          "no significant word found in transcript",
+      );
+      diagnosis = "";
+      // The ICD was derived from this diagnosis, so it is equally ungrounded.
+      console.warn(
+        "Cleared ICD — diagnosis was not grounded in transcript",
+      );
+      icdCode = null;
+      icdDescription = null;
+      icdConfidence = null;
+    }
+  }
+
+  return {
+    ...insight,
+    medications,
+    diagnosis,
+    icdCode,
+    icdDescription,
+    icdConfidence,
+  };
+}
+
 export async function extractInsight(
   transcript: string,
   geminiKey: string,
 ): Promise<ExtractionResult> {
-  if (transcript.trim() === "") {
+  // Skip Gemini on empty, too-short, or garbage transcripts — this both avoids
+  // a wasted LLM call on noise and prevents hallucination from bad input.
+  if (isLowQualityTranscript(transcript)) {
     return { transcript, insight: _emptyInsight() };
   }
 
@@ -825,7 +1112,10 @@ export async function extractInsight(
     ).trim();
 
     const relabeled = _relabelTranscript(transcript, doctorId, patientId);
-    const insight = coerce(decoded) as unknown as MedicalInsight;
+    const insight = validateExtraction(
+      coerce(decoded) as unknown as MedicalInsight,
+      transcript,
+    );
 
     return { transcript: relabeled, insight };
   }
@@ -864,7 +1154,10 @@ export async function extractInsight(
   const data = (await res.json()) as Record<string, unknown>;
   const raw = _extractGeminiText(data);
   const decoded = JSON.parse(raw) as Record<string, unknown>;
-  const insight = coerce(decoded) as unknown as MedicalInsight;
+  const insight = validateExtraction(
+    coerce(decoded) as unknown as MedicalInsight,
+    transcript,
+  );
 
   return { transcript, insight };
 }
