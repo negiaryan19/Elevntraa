@@ -602,4 +602,191 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get startNewConsultationCta => 'ಹೊಸ ಸಮಾಲೋಚನೆ ಪ್ರಾರಂಭಿಸಿ';
+
+  @override
+  String get reviewPrescription => 'ಔಷಧಿ ಚೀಟಿ ಪರಿಶೀಲನೆ';
+
+  @override
+  String get verifyDetails => 'ಲಿಪ್ಯಂತರಿಸಿದ ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಸಂಪಾದಿಸಿ';
+
+  @override
+  String get reviewTitle => 'ಪರಿಶೀಲನೆ';
+
+  @override
+  String get visitNotFound => 'ಭೇಟಿ ಸಿಗಲಿಲ್ಲ';
+
+  @override
+  String get goBackToRecording => 'ರೆಕಾರ್ಡಿಂಗ್‌ಗೆ ಹಿಂತಿರುಗಬೇಕೇ?';
+
+  @override
+  String get goBackToRecordingBody =>
+      'ಈ ಸಮಾಲೋಚನೆಗೆ ಹೆಚ್ಚು ಸೇರಿಸಬಹುದು ಅಥವಾ ಹೊಸ ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಬಹುದು.';
+
+  @override
+  String get stay => 'ಇಲ್ಲಿಯೇ ಇರಿ';
+
+  @override
+  String get goBack => 'ಹಿಂತಿರುಗಿ';
+
+  @override
+  String get consultationSummary => 'ಸಮಾಲೋಚನೆ ಸಾರಾಂಶ';
+
+  @override
+  String get tapToAddSummary => 'ಸಾರಾಂಶ ಸೇರಿಸಲು ಪೆನ್ಸಿಲ್ ಒತ್ತಿ';
+
+  @override
+  String get summaryHint =>
+      'ರೋಗಿ ಏಕೆ ಬಂದರು ಮತ್ತು ಯೋಜನೆಯನ್ನು ಸಂಕ್ಷಿಪ್ತವಾಗಿ ಬರೆಯಿರಿ';
+
+  @override
+  String get patientInformation => 'ರೋಗಿಯ ಮಾಹಿತಿ';
+
+  @override
+  String get nameLabel => 'ಹೆಸರು';
+
+  @override
+  String get yearsLabel => 'ವರ್ಷಗಳು';
+
+  @override
+  String get whatsappLabel => 'ವಾಟ್ಸಾಪ್';
+
+  @override
+  String get mobileNumber => 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ';
+
+  @override
+  String get tapToSet => 'ಹೊಂದಿಸಲು ಒತ್ತಿ';
+
+  @override
+  String get diagnosisHint => 'ಉದಾ. ವೈರಲ್ ಜ್ವರ';
+
+  @override
+  String get noDiagnosisTapPencil => 'ರೋಗನಿರ್ಣಯವಿಲ್ಲ — ಸೇರಿಸಲು ಪೆನ್ಸಿಲ್ ಒತ್ತಿ';
+
+  @override
+  String get adviceTitle => 'ಸಲಹೆ';
+
+  @override
+  String get noAdviceTapPencil => 'ಇನ್ನೂ ಸಲಹೆ ಇಲ್ಲ — ಸೇರಿಸಲು ಪೆನ್ಸಿಲ್ ಒತ್ತಿ';
+
+  @override
+  String get adviceHint => 'ಸಾಮಾನ್ಯ ಮಾರ್ಗದರ್ಶನ — ಪ್ರತಿ ಸಾಲಿಗೆ ಒಂದು';
+
+  @override
+  String get instructionsTitle => 'ಸೂಚನೆಗಳು';
+
+  @override
+  String get noInstructionsTapPencil =>
+      'ಇನ್ನೂ ಸೂಚನೆಗಳಿಲ್ಲ — ಸೇರಿಸಲು ಪೆನ್ಸಿಲ್ ಒತ್ತಿ';
+
+  @override
+  String get instructionsHint => 'ವೈದ್ಯಕೀಯ ನಿರ್ದೇಶನಗಳು — ಪ್ರತಿ ಸಾಲಿಗೆ ಒಂದು';
+
+  @override
+  String get noFollowUpSet => 'ಮುಂದಿನ ಭೇಟಿ ಹೊಂದಿಸಿಲ್ಲ';
+
+  @override
+  String get daysSuffix => 'ದಿನಗಳು';
+
+  @override
+  String get prescribedMedicines => 'ಸೂಚಿಸಿದ ಔಷಧಿಗಳು';
+
+  @override
+  String get noMedicationsYet => 'ಇನ್ನೂ ಔಷಧಿಗಳು ದಾಖಲಾಗಿಲ್ಲ.';
+
+  @override
+  String get addMedicine => 'ಔಷಧಿ ಸೇರಿಸಿ';
+
+  @override
+  String get medicineLabel => 'ಔಷಧಿ';
+
+  @override
+  String get removeMedicine => 'ಔಷಧಿ ತೆಗೆದುಹಾಕಿ';
+
+  @override
+  String get dosageLabel => 'ಪ್ರಮಾಣ';
+
+  @override
+  String get durationLabel => 'ಅವಧಿ';
+
+  @override
+  String get frequencyLabel => 'ಆವರ್ತನೆ';
+
+  @override
+  String get timingLabel => 'ಸಮಯ';
+
+  @override
+  String get timingBeforeFood => 'ಊಟಕ್ಕೆ ಮೊದಲು';
+
+  @override
+  String get timingAfterFood => 'ಊಟದ ನಂತರ';
+
+  @override
+  String get timingWithFood => 'ಊಟದೊಂದಿಗೆ';
+
+  @override
+  String get timingEmptyStomach => 'ಖಾಲಿ ಹೊಟ್ಟೆಯಲ್ಲಿ';
+
+  @override
+  String get timingBeforeBed => 'ಮಲಗುವ ಮೊದಲು';
+
+  @override
+  String get timingAsDirected => 'ಸೂಚಿಸಿದಂತೆ';
+
+  @override
+  String get aiDisclaimer =>
+      'AI ವೈದ್ಯರು ಹೇಳಿದ್ದನ್ನು ಮಾತ್ರ ಹೊರತೆಗೆಯುತ್ತದೆ. ಸಹಿ ಮಾಡುವ ಮೊದಲು ಸಾರಾಂಶ ಮತ್ತು ಔಷಧಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.';
+
+  @override
+  String get generatePdf => 'ಔಷಧಿ ಚೀಟಿ PDF ರಚಿಸಿ';
+
+  @override
+  String get signAndGeneratePdf => 'ಸಹಿ ಮಾಡಿ PDF ರಚಿಸಿ';
+
+  @override
+  String get icdCodeTitle => 'ICD-10 ಕೋಡ್';
+
+  @override
+  String get icdVerifyWarning => 'AI ಸಲಹೆ — ಇದನ್ನು ನಂಬುವ ಮೊದಲು ಕೋಡ್ ಪರಿಶೀಲಿಸಿ.';
+
+  @override
+  String get icdCodeField => 'ಕೋಡ್ (ಉದಾ. B34.9)';
+
+  @override
+  String get descriptionField => 'ವಿವರಣೆ';
+
+  @override
+  String get icdFooterNote =>
+      'ಈ ಕೋಡ್ ಅನ್ನು ರೋಗನಿರ್ಣಯದ ಆಧಾರದ ಮೇಲೆ AI ಸೂಚಿಸಿದೆ. ವೈದ್ಯಕೀಯ ಅಥವಾ ಬಿಲ್ಲಿಂಗ್ ಬಳಕೆಗೆ ಮೊದಲು ನಿಖರತೆ ಪರಿಶೀಲಿಸಿ.';
+
+  @override
+  String get suggestedDifferentials => 'ಸೂಚಿಸಿದ ವಿಭಿನ್ನ ರೋಗನಿರ್ಣಯಗಳು';
+
+  @override
+  String get aiSuggestionVerify => 'AI ಸಲಹೆ — ಪರಿಶೀಲಿಸಿ';
+
+  @override
+  String get differentialsBasedOn =>
+      'ವರದಿ ಮಾಡಿದ ಲಕ್ಷಣಗಳ ಆಧಾರದ ಮೇಲೆ. ವೈದ್ಯರು ಪರಿಶೀಲಿಸಬೇಕು.';
+
+  @override
+  String get accept => 'ಸ್ವೀಕರಿಸಿ';
+
+  @override
+  String get prescriptionReady => 'ಔಷಧಿ ಚೀಟಿ ಸಿದ್ಧ';
+
+  @override
+  String get reviewAndShare => 'ಪರಿಶೀಲಿಸಿ ರೋಗಿಗೆ ಕಳುಹಿಸಿ';
+
+  @override
+  String get generatingPdfLong => 'ಔಷಧಿ ಚೀಟಿ PDF ರಚಿಸಲಾಗುತ್ತಿದೆ…';
+
+  @override
+  String get couldNotGeneratePdf => 'PDF ರಚಿಸಲಾಗಲಿಲ್ಲ';
+
+  @override
+  String get welcomeToRxvarta => 'Rxvartaಗೆ ಸ್ವಾಗತ';
+
+  @override
+  String get onboardingMessage =>
+      'ವೈದ್ಯರ ಪ್ರೊಫೈಲ್ ಮತ್ತು API ಕೀ ಸೆಟಪ್ ಇಲ್ಲಿ ಇರುತ್ತದೆ.';
 }

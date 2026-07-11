@@ -601,4 +601,192 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startNewConsultationCta => 'Start New Consultation';
+
+  @override
+  String get reviewPrescription => 'Review Prescription';
+
+  @override
+  String get verifyDetails => 'Verify and edit transcribed details';
+
+  @override
+  String get reviewTitle => 'Review';
+
+  @override
+  String get visitNotFound => 'Visit not found';
+
+  @override
+  String get goBackToRecording => 'Go back to recording?';
+
+  @override
+  String get goBackToRecordingBody =>
+      'You can add more to this consultation or start a new recording.';
+
+  @override
+  String get stay => 'Stay';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get consultationSummary => 'Consultation Summary';
+
+  @override
+  String get tapToAddSummary => 'Tap the pencil to add a consultation summary';
+
+  @override
+  String get summaryHint =>
+      'Summarise what the patient came in for and the plan';
+
+  @override
+  String get patientInformation => 'Patient Information';
+
+  @override
+  String get nameLabel => 'Name';
+
+  @override
+  String get yearsLabel => 'Years';
+
+  @override
+  String get whatsappLabel => 'WhatsApp';
+
+  @override
+  String get mobileNumber => 'Mobile number';
+
+  @override
+  String get tapToSet => 'Tap to set';
+
+  @override
+  String get diagnosisHint => 'e.g. Viral fever';
+
+  @override
+  String get noDiagnosisTapPencil => 'No diagnosis — tap the pencil to add';
+
+  @override
+  String get adviceTitle => 'Advice';
+
+  @override
+  String get noAdviceTapPencil => 'No advice yet — tap the pencil to add';
+
+  @override
+  String get adviceHint => 'General guidance — one per line';
+
+  @override
+  String get instructionsTitle => 'Instructions';
+
+  @override
+  String get noInstructionsTapPencil =>
+      'No instructions yet — tap the pencil to add';
+
+  @override
+  String get instructionsHint => 'Clinical directives — one per line';
+
+  @override
+  String get noFollowUpSet => 'No follow-up set';
+
+  @override
+  String get daysSuffix => 'days';
+
+  @override
+  String get prescribedMedicines => 'Prescribed Medicines';
+
+  @override
+  String get noMedicationsYet => 'No medications recorded yet.';
+
+  @override
+  String get addMedicine => 'Add Medicine';
+
+  @override
+  String get medicineLabel => 'Medicine';
+
+  @override
+  String get removeMedicine => 'Remove medicine';
+
+  @override
+  String get dosageLabel => 'Dosage';
+
+  @override
+  String get durationLabel => 'Duration';
+
+  @override
+  String get frequencyLabel => 'Frequency';
+
+  @override
+  String get timingLabel => 'Timing';
+
+  @override
+  String get timingBeforeFood => 'Before food';
+
+  @override
+  String get timingAfterFood => 'After food';
+
+  @override
+  String get timingWithFood => 'With food';
+
+  @override
+  String get timingEmptyStomach => 'Empty stomach';
+
+  @override
+  String get timingBeforeBed => 'Before bed';
+
+  @override
+  String get timingAsDirected => 'As directed';
+
+  @override
+  String get aiDisclaimer =>
+      'AI extracts only what the doctor said. Review the summary and medicines before signing.';
+
+  @override
+  String get generatePdf => 'Generate Prescription PDF';
+
+  @override
+  String get signAndGeneratePdf => 'Sign & Generate PDF';
+
+  @override
+  String get icdCodeTitle => 'ICD-10 Code';
+
+  @override
+  String get icdVerifyWarning =>
+      'AI suggestion - please verify this code before relying on it.';
+
+  @override
+  String get icdCodeField => 'Code (e.g. B34.9)';
+
+  @override
+  String get descriptionField => 'Description';
+
+  @override
+  String get icdFooterNote =>
+      'This code was suggested by AI based on the diagnosis text. Please verify accuracy before clinical or billing use.';
+
+  @override
+  String get suggestedDifferentials => 'Suggested Differentials';
+
+  @override
+  String get aiSuggestionVerify => 'AI Suggestion — Verify';
+
+  @override
+  String get differentialsBasedOn =>
+      'Based on reported symptoms. Doctor must verify.';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get prescriptionReady => 'Prescription Ready';
+
+  @override
+  String get reviewAndShare => 'Review and share with patient';
+
+  @override
+  String get generatingPdfLong => 'Generating prescription PDF…';
+
+  @override
+  String get couldNotGeneratePdf => 'Could not generate PDF';
+
+  @override
+  String get welcomeToRxvarta => 'Welcome to Rxvarta';
+
+  @override
+  String get onboardingMessage =>
+      'Doctor profile and API key setup will live here.';
 }

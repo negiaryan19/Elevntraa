@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -14,10 +15,8 @@ class OnboardingScreen extends StatelessWidget {
         child: Padding(
           padding: AppSpacing.screenPadding,
           child: EmptyState(
-            title: 'Welcome to Rxvarta',
-            message:
-                'Doctor profile + API key setup will live here. Coming in '
-                'milestone 3.',
+            title: AppLocalizations.of(context)!.welcomeToRxvarta,
+            message: AppLocalizations.of(context)!.onboardingMessage,
             icon: Icons.medical_services_outlined,
           ),
         ),

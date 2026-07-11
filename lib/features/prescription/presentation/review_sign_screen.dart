@@ -14,6 +14,7 @@ import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/medication.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../services/differential_engine.dart';
 import '../../consultation/presentation/consultation_controller.dart';
 
@@ -745,6 +746,7 @@ class _EditActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = AppLocalizations.of(context)!;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -753,7 +755,7 @@ class _EditActions extends StatelessWidget {
           _kTeal600,
           isDark ? const Color(0xFF0D3D2E) : const Color(0xFFE6FBF6),
           onSave,
-          'Save',
+          t.save,
         ),
         const SizedBox(width: AppSpacing.s),
         _btn(
@@ -761,7 +763,7 @@ class _EditActions extends StatelessWidget {
           scheme.onSurfaceVariant,
           scheme.surfaceContainerHigh,
           onCancel,
-          'Cancel',
+          t.cancel,
         ),
       ],
     );
@@ -841,7 +843,7 @@ class _SummaryCardState extends State<_SummaryCard> {
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Text(
-                  'Consultation Summary',
+                  AppLocalizations.of(context)!.consultationSummary,
                   style: AppTypography.titleSmall.copyWith(color: accent),
                 ),
               ),
@@ -865,8 +867,8 @@ class _SummaryCardState extends State<_SummaryCard> {
             value: widget.summary,
             onSave: widget.onSave,
             maxLines: 5,
-            placeholder: 'Tap ✏️ to add a consultation summary',
-            hint: 'Summarise what the patient came in for and the plan',
+            placeholder: AppLocalizations.of(context)!.tapToAddSummary,
+            hint: AppLocalizations.of(context)!.summaryHint,
             style: AppTypography.bodyMedium.copyWith(
               color: isDark ? scheme.onSurface : const Color(0xFF1E3A5F),
               height: 1.5,
@@ -959,16 +961,17 @@ class _PatientCardState extends State<_PatientCard> {
     });
   }
 
-  String _sexLabel(Sex? s) => switch (s) {
-    Sex.male => 'Male',
-    Sex.female => 'Female',
-    Sex.other => 'Other',
+  String _sexLabel(AppLocalizations t, Sex? s) => switch (s) {
+    Sex.male => t.male,
+    Sex.female => t.female,
+    Sex.other => t.other,
     null => '—',
   };
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     final titleStyle = AppTypography.titleSmall.copyWith(
       color: scheme.onSurface,
     );
@@ -979,7 +982,7 @@ class _PatientCardState extends State<_PatientCard> {
           Row(
             children: [
               Text(
-                'Patient Information',
+                t.patientInformation,
                 style: AppTypography.titleMedium.copyWith(
                   color: scheme.onSurface,
                 ),
@@ -1008,13 +1011,13 @@ class _PatientCardState extends State<_PatientCard> {
             children: [
               Expanded(
                 child: _LabeledField(
-                  label: 'Name',
+                  label: t.nameLabel,
                   child: _editing
                       ? TextField(
                           controller: _name,
                           style: titleStyle,
                           keyboardType: TextInputType.name,
-                          decoration: _fieldDeco(context, 'Patient name'),
+                          decoration: _fieldDeco(context, t.patientName),
                         )
                       : Text(
                           _name.text.isEmpty ? '—' : _name.text,
@@ -1025,13 +1028,13 @@ class _PatientCardState extends State<_PatientCard> {
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: _LabeledField(
-                  label: 'Age',
+                  label: t.age,
                   child: _editing
                       ? TextField(
                           controller: _age,
                           style: titleStyle,
                           keyboardType: TextInputType.number,
-                          decoration: _fieldDeco(context, 'Years'),
+                          decoration: _fieldDeco(context, t.yearsLabel),
                         )
                       : Text(
                           _age.text.isEmpty ? '—' : _age.text,
@@ -1047,25 +1050,25 @@ class _PatientCardState extends State<_PatientCard> {
             children: [
               Expanded(
                 child: _LabeledField(
-                  label: 'Gender',
+                  label: t.gender,
                   child: _editing
                       ? _GenderField(
                           value: _sex,
                           onChanged: (s) => setState(() => _sex = s),
                         )
-                      : Text(_sexLabel(_sex), style: titleStyle),
+                      : Text(_sexLabel(t, _sex), style: titleStyle),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: _LabeledField(
-                  label: 'WhatsApp',
+                  label: t.whatsappLabel,
                   child: _editing
                       ? TextField(
                           controller: _whatsapp,
                           style: titleStyle,
                           keyboardType: TextInputType.phone,
-                          decoration: _fieldDeco(context, 'Mobile number'),
+                          decoration: _fieldDeco(context, t.mobileNumber),
                         )
                       : Text(
                           _whatsapp.text.isEmpty
@@ -1169,6 +1172,7 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1176,7 +1180,7 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
           Row(
             children: [
               Text(
-                'Diagnosis',
+                t.diagnosisLabel,
                 style: AppTypography.titleSmall.copyWith(
                   color: scheme.onSurface,
                 ),
@@ -1213,7 +1217,7 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
                 autofocus: true,
                 decoration: InputDecoration(
                   isDense: true,
-                  hintText: 'e.g. Viral fever',
+                  hintText: t.diagnosisHint,
                   hintStyle: AppTypography.bodySmall.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -1229,7 +1233,7 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
             )
           else if (widget.diagnosis.trim().isEmpty)
             Text(
-              'No diagnosis — tap ✏️ to add',
+              t.noDiagnosisTapPencil,
               style: AppTypography.bodyMedium.copyWith(
                 color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
@@ -1262,15 +1266,16 @@ class _GenderField extends StatelessWidget {
   final Sex? value;
   final ValueChanged<Sex?> onChanged;
 
-  String _label(Sex s) => switch (s) {
-    Sex.male => 'Male',
-    Sex.female => 'Female',
-    Sex.other => 'Other',
+  String _label(AppLocalizations t, Sex s) => switch (s) {
+    Sex.male => t.male,
+    Sex.female => t.female,
+    Sex.other => t.other,
   };
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return DropdownButtonHideUnderline(
       child: DropdownButton<Sex>(
         value: value,
@@ -1281,7 +1286,7 @@ class _GenderField extends StatelessWidget {
           color: scheme.onSurfaceVariant,
         ),
         hint: Text(
-          'Tap to set',
+          t.tapToSet,
           style: AppTypography.titleSmall.copyWith(
             color: scheme.onSurfaceVariant,
             fontStyle: FontStyle.italic,
@@ -1290,7 +1295,7 @@ class _GenderField extends StatelessWidget {
         style: AppTypography.titleSmall.copyWith(color: scheme.onSurface),
         items: [
           for (final s in Sex.values)
-            DropdownMenuItem(value: s, child: Text(_label(s))),
+            DropdownMenuItem(value: s, child: Text(_label(t, s))),
         ],
         onChanged: onChanged,
       ),
@@ -1536,7 +1541,7 @@ class _FollowUpCardState extends State<_FollowUpCard> {
               ),
               const SizedBox(width: AppSpacing.s),
               Text(
-                'Follow-up',
+                AppLocalizations.of(context)!.followUpLabel,
                 style: AppTypography.titleMedium.copyWith(
                   color: scheme.onSurface,
                 ),
@@ -1552,7 +1557,7 @@ class _FollowUpCardState extends State<_FollowUpCard> {
           const SizedBox(height: AppSpacing.xs),
           if (!_enabled)
             Text(
-              'No follow-up set',
+              AppLocalizations.of(context)!.noFollowUpSet,
               style: AppTypography.bodyMedium.copyWith(
                 color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
@@ -1574,7 +1579,7 @@ class _FollowUpCardState extends State<_FollowUpCard> {
                       ),
                       decoration: InputDecoration(
                         isDense: true,
-                        suffixText: 'days',
+                        suffixText: AppLocalizations.of(context)!.daysSuffix,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
@@ -1596,7 +1601,11 @@ class _FollowUpCardState extends State<_FollowUpCard> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'After ${widget.days} day${widget.days == 1 ? '' : 's'}',
+                  widget.days == 1
+                      ? AppLocalizations.of(context)!.afterDaysOne
+                      : AppLocalizations.of(
+                          context,
+                        )!.afterDaysMany(widget.days!),
                   style: AppTypography.bodyMedium.copyWith(
                     color: scheme.onSurface,
                   ),
@@ -1652,6 +1661,8 @@ class _MedicineRowState extends State<_MedicineRow> {
   late final TextEditingController _freq;
   late final TextEditingController _duration;
 
+  /// Canonical values stored on the Medication and printed on the PDF —
+  /// always English. Only the chip label shown to the doctor is localized.
   static const _timings = [
     'Before food',
     'After food',
@@ -1660,6 +1671,25 @@ class _MedicineRowState extends State<_MedicineRow> {
     'Before bed',
     'As directed',
   ];
+
+  static String _timingLabel(AppLocalizations t, String value) {
+    switch (value) {
+      case 'Before food':
+        return t.timingBeforeFood;
+      case 'After food':
+        return t.timingAfterFood;
+      case 'With food':
+        return t.timingWithFood;
+      case 'Empty stomach':
+        return t.timingEmptyStomach;
+      case 'Before bed':
+        return t.timingBeforeBed;
+      case 'As directed':
+        return t.timingAsDirected;
+      default:
+        return value;
+    }
+  }
 
   @override
   void initState() {
@@ -1701,6 +1731,7 @@ class _MedicineRowState extends State<_MedicineRow> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -1716,7 +1747,7 @@ class _MedicineRowState extends State<_MedicineRow> {
             children: [
               Expanded(
                 child: _field(
-                  'Medicine',
+                  t.medicineLabel,
                   _name,
                   (v) => widget.onChanged(_med.copyWith(name: v)),
                   () => widget.onCommit(_med.copyWith(name: _name.text)),
@@ -1727,7 +1758,7 @@ class _MedicineRowState extends State<_MedicineRow> {
               const SizedBox(width: AppSpacing.xs),
               IconButton(
                 onPressed: widget.onDelete,
-                tooltip: 'Remove medicine',
+                tooltip: t.removeMedicine,
                 visualDensity: VisualDensity.compact,
                 constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 padding: EdgeInsets.zero,
@@ -1741,7 +1772,7 @@ class _MedicineRowState extends State<_MedicineRow> {
             children: [
               Expanded(
                 child: _field(
-                  'Dosage',
+                  t.dosageLabel,
                   _dosage,
                   (v) => widget.onChanged(_med.copyWith(dosage: v)),
                   () => widget.onCommit(_med.copyWith(dosage: _dosage.text)),
@@ -1751,7 +1782,7 @@ class _MedicineRowState extends State<_MedicineRow> {
               const SizedBox(width: AppSpacing.s),
               Expanded(
                 child: _field(
-                  'Duration',
+                  t.durationLabel,
                   _duration,
                   (v) => widget.onChanged(_med.copyWith(duration: v)),
                   () =>
@@ -1764,7 +1795,7 @@ class _MedicineRowState extends State<_MedicineRow> {
           const SizedBox(height: AppSpacing.s),
           // Row 3: Frequency (full width)
           _field(
-            'Frequency',
+            t.frequencyLabel,
             _freq,
             (v) => widget.onChanged(_med.copyWith(frequency: v)),
             () => widget.onCommit(_med.copyWith(frequency: _freq.text)),
@@ -1772,18 +1803,18 @@ class _MedicineRowState extends State<_MedicineRow> {
           ),
           const SizedBox(height: AppSpacing.s),
           // Row 4: Meal-timing chips
-          Text('Timing', style: _labelStyle),
+          Text(t.timingLabel, style: _labelStyle),
           const SizedBox(height: AppSpacing.xs),
           Wrap(
             spacing: AppSpacing.s,
             runSpacing: AppSpacing.xs,
             children: [
-              for (final t in _timings)
+              for (final value in _timings)
                 _TimingChip(
-                  label: t,
-                  selected: _med.timing == t,
+                  label: _timingLabel(t, value),
+                  selected: _med.timing == value,
                   onTap: () => widget.onCommit(
-                    _med.copyWith(timing: _med.timing == t ? '' : t),
+                    _med.copyWith(timing: _med.timing == value ? '' : value),
                   ),
                 ),
             ],
@@ -1885,6 +1916,7 @@ class _BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: scheme.surface,
@@ -1906,8 +1938,7 @@ class _BottomBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'AI extracts only what the doctor said. Review the summary and '
-            'medicines before signing.',
+            t.aiDisclaimer,
             textAlign: TextAlign.center,
             style: AppTypography.bodySmall.copyWith(
               color: scheme.onSurfaceVariant,
@@ -1915,14 +1946,14 @@ class _BottomBar extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s),
           _GradientCta(
-            label: signed ? 'Generate Prescription PDF' : 'Sign & Generate PDF',
+            label: signed ? t.generatePdf : t.signAndGeneratePdf,
             trailingIcon: Icons.arrow_forward_rounded,
             onTap: onSign,
           ),
           if (showShare) ...[
             const SizedBox(height: AppSpacing.s),
             _OutlineButton(
-              label: 'Share on WhatsApp',
+              label: t.shareOnWhatsapp,
               icon: Icons.share_rounded,
               onTap: onShare,
             ),
@@ -2196,7 +2227,7 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'ICD-10 Code',
+            AppLocalizations.of(context)!.icdCodeTitle,
             style: AppTypography.titleMedium.copyWith(color: scheme.onSurface),
           ),
           const SizedBox(height: 16),
@@ -2218,8 +2249,7 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'AI suggestion - please verify this code before relying '
-                      'on it.',
+                      AppLocalizations.of(context)!.icdVerifyWarning,
                       style: AppTypography.bodySmall.copyWith(
                         color: isDark
                             ? const Color(0xFFFBBF24)
@@ -2234,8 +2264,8 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
           ],
           TextField(
             controller: _codeCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Code (e.g. B34.9)',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.icdCodeField,
               isDense: true,
             ),
             style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
@@ -2244,16 +2274,15 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
           const SizedBox(height: 12),
           TextField(
             controller: _descCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Description',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.descriptionField,
               isDense: true,
             ),
             style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
           ),
           const SizedBox(height: 16),
           Text(
-            'This code was suggested by AI based on the diagnosis text. '
-            'Please verify accuracy before clinical or billing use.',
+            AppLocalizations.of(context)!.icdFooterNote,
             style: AppTypography.bodySmall.copyWith(
               color: scheme.onSurfaceVariant,
             ),
@@ -2270,7 +2299,7 @@ class _IcdEditSheetState extends State<_IcdEditSheet> {
                 }
                 Navigator.of(context).pop();
               },
-              child: const Text('Save'),
+              child: Text(AppLocalizations.of(context)!.save),
             ),
           ),
         ],
@@ -2323,14 +2352,14 @@ class _DifferentialsSectionState extends State<_DifferentialsSection> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Suggested Differentials',
+                        AppLocalizations.of(context)!.suggestedDifferentials,
                         style: AppTypography.titleSmall.copyWith(
                           color: scheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
-                        'AI Suggestion — Verify',
+                        AppLocalizations.of(context)!.aiSuggestionVerify,
                         style: AppTypography.bodySmall.copyWith(
                           color: scheme.onSurfaceVariant,
                           fontStyle: FontStyle.italic,
@@ -2351,7 +2380,7 @@ class _DifferentialsSectionState extends State<_DifferentialsSection> {
           if (_expanded) ...[
             const SizedBox(height: AppSpacing.s),
             Text(
-              'Based on reported symptoms. Doctor must verify.',
+              AppLocalizations.of(context)!.differentialsBasedOn,
               style: AppTypography.bodySmall.copyWith(
                 color: scheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
@@ -2556,7 +2585,7 @@ class _AcceptButton extends StatelessWidget {
               const Icon(Icons.check_rounded, size: 16, color: Colors.white),
               const SizedBox(width: AppSpacing.xxs),
               Text(
-                'Accept',
+                AppLocalizations.of(context)!.accept,
                 style: AppTypography.labelSmall.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

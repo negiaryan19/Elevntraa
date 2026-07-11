@@ -1243,6 +1243,366 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start New Consultation'**
   String get startNewConsultationCta;
+
+  /// No description provided for @reviewPrescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Prescription'**
+  String get reviewPrescription;
+
+  /// No description provided for @verifyDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify and edit transcribed details'**
+  String get verifyDetails;
+
+  /// No description provided for @reviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get reviewTitle;
+
+  /// No description provided for @visitNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit not found'**
+  String get visitNotFound;
+
+  /// No description provided for @goBackToRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back to recording?'**
+  String get goBackToRecording;
+
+  /// No description provided for @goBackToRecordingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add more to this consultation or start a new recording.'**
+  String get goBackToRecordingBody;
+
+  /// No description provided for @stay.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get stay;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @consultationSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation Summary'**
+  String get consultationSummary;
+
+  /// No description provided for @tapToAddSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the pencil to add a consultation summary'**
+  String get tapToAddSummary;
+
+  /// No description provided for @summaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Summarise what the patient came in for and the plan'**
+  String get summaryHint;
+
+  /// No description provided for @patientInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Information'**
+  String get patientInformation;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get nameLabel;
+
+  /// No description provided for @yearsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Years'**
+  String get yearsLabel;
+
+  /// No description provided for @whatsappLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsappLabel;
+
+  /// No description provided for @mobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get mobileNumber;
+
+  /// No description provided for @tapToSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to set'**
+  String get tapToSet;
+
+  /// No description provided for @diagnosisHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Viral fever'**
+  String get diagnosisHint;
+
+  /// No description provided for @noDiagnosisTapPencil.
+  ///
+  /// In en, this message translates to:
+  /// **'No diagnosis — tap the pencil to add'**
+  String get noDiagnosisTapPencil;
+
+  /// No description provided for @adviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Advice'**
+  String get adviceTitle;
+
+  /// No description provided for @noAdviceTapPencil.
+  ///
+  /// In en, this message translates to:
+  /// **'No advice yet — tap the pencil to add'**
+  String get noAdviceTapPencil;
+
+  /// No description provided for @adviceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'General guidance — one per line'**
+  String get adviceHint;
+
+  /// No description provided for @instructionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get instructionsTitle;
+
+  /// No description provided for @noInstructionsTapPencil.
+  ///
+  /// In en, this message translates to:
+  /// **'No instructions yet — tap the pencil to add'**
+  String get noInstructionsTapPencil;
+
+  /// No description provided for @instructionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical directives — one per line'**
+  String get instructionsHint;
+
+  /// No description provided for @noFollowUpSet.
+  ///
+  /// In en, this message translates to:
+  /// **'No follow-up set'**
+  String get noFollowUpSet;
+
+  /// No description provided for @daysSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get daysSuffix;
+
+  /// No description provided for @prescribedMedicines.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescribed Medicines'**
+  String get prescribedMedicines;
+
+  /// No description provided for @noMedicationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No medications recorded yet.'**
+  String get noMedicationsYet;
+
+  /// No description provided for @addMedicine.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Medicine'**
+  String get addMedicine;
+
+  /// No description provided for @medicineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine'**
+  String get medicineLabel;
+
+  /// No description provided for @removeMedicine.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove medicine'**
+  String get removeMedicine;
+
+  /// No description provided for @dosageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosage'**
+  String get dosageLabel;
+
+  /// No description provided for @durationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get durationLabel;
+
+  /// No description provided for @frequencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get frequencyLabel;
+
+  /// No description provided for @timingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Timing'**
+  String get timingLabel;
+
+  /// No description provided for @timingBeforeFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Before food'**
+  String get timingBeforeFood;
+
+  /// No description provided for @timingAfterFood.
+  ///
+  /// In en, this message translates to:
+  /// **'After food'**
+  String get timingAfterFood;
+
+  /// No description provided for @timingWithFood.
+  ///
+  /// In en, this message translates to:
+  /// **'With food'**
+  String get timingWithFood;
+
+  /// No description provided for @timingEmptyStomach.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty stomach'**
+  String get timingEmptyStomach;
+
+  /// No description provided for @timingBeforeBed.
+  ///
+  /// In en, this message translates to:
+  /// **'Before bed'**
+  String get timingBeforeBed;
+
+  /// No description provided for @timingAsDirected.
+  ///
+  /// In en, this message translates to:
+  /// **'As directed'**
+  String get timingAsDirected;
+
+  /// No description provided for @aiDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'AI extracts only what the doctor said. Review the summary and medicines before signing.'**
+  String get aiDisclaimer;
+
+  /// No description provided for @generatePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Prescription PDF'**
+  String get generatePdf;
+
+  /// No description provided for @signAndGeneratePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign & Generate PDF'**
+  String get signAndGeneratePdf;
+
+  /// No description provided for @icdCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ICD-10 Code'**
+  String get icdCodeTitle;
+
+  /// No description provided for @icdVerifyWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'AI suggestion - please verify this code before relying on it.'**
+  String get icdVerifyWarning;
+
+  /// No description provided for @icdCodeField.
+  ///
+  /// In en, this message translates to:
+  /// **'Code (e.g. B34.9)'**
+  String get icdCodeField;
+
+  /// No description provided for @descriptionField.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionField;
+
+  /// No description provided for @icdFooterNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This code was suggested by AI based on the diagnosis text. Please verify accuracy before clinical or billing use.'**
+  String get icdFooterNote;
+
+  /// No description provided for @suggestedDifferentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Differentials'**
+  String get suggestedDifferentials;
+
+  /// No description provided for @aiSuggestionVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Suggestion — Verify'**
+  String get aiSuggestionVerify;
+
+  /// No description provided for @differentialsBasedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on reported symptoms. Doctor must verify.'**
+  String get differentialsBasedOn;
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @prescriptionReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescription Ready'**
+  String get prescriptionReady;
+
+  /// No description provided for @reviewAndShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and share with patient'**
+  String get reviewAndShare;
+
+  /// No description provided for @generatingPdfLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating prescription PDF…'**
+  String get generatingPdfLong;
+
+  /// No description provided for @couldNotGeneratePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not generate PDF'**
+  String get couldNotGeneratePdf;
+
+  /// No description provided for @welcomeToRxvarta.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Rxvarta'**
+  String get welcomeToRxvarta;
+
+  /// No description provided for @onboardingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor profile and API key setup will live here.'**
+  String get onboardingMessage;
 }
 
 class _AppLocalizationsDelegate

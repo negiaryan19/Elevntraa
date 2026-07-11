@@ -608,4 +608,195 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get startNewConsultationCta => 'புதிய ஆலோசனையைத் தொடங்கு';
+
+  @override
+  String get reviewPrescription => 'மருந்துச்சீட்டு மதிப்பாய்வு';
+
+  @override
+  String get verifyDetails =>
+      'படியெடுக்கப்பட்ட விவரங்களைச் சரிபார்த்துத் திருத்தவும்';
+
+  @override
+  String get reviewTitle => 'மதிப்பாய்வு';
+
+  @override
+  String get visitNotFound => 'வருகை கிடைக்கவில்லை';
+
+  @override
+  String get goBackToRecording => 'பதிவுக்குத் திரும்பவா?';
+
+  @override
+  String get goBackToRecordingBody =>
+      'இந்த ஆலோசனையில் மேலும் சேர்க்கலாம் அல்லது புதிய பதிவைத் தொடங்கலாம்.';
+
+  @override
+  String get stay => 'இங்கேயே இரு';
+
+  @override
+  String get goBack => 'திரும்பு';
+
+  @override
+  String get consultationSummary => 'ஆலோசனைச் சுருக்கம்';
+
+  @override
+  String get tapToAddSummary => 'சுருக்கம் சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get summaryHint =>
+      'நோயாளி ஏன் வந்தார், திட்டம் என்ன என்பதைச் சுருக்கமாக எழுதுங்கள்';
+
+  @override
+  String get patientInformation => 'நோயாளி தகவல்';
+
+  @override
+  String get nameLabel => 'பெயர்';
+
+  @override
+  String get yearsLabel => 'ஆண்டுகள்';
+
+  @override
+  String get whatsappLabel => 'வாட்ஸ்அப்';
+
+  @override
+  String get mobileNumber => 'கைபேசி எண்';
+
+  @override
+  String get tapToSet => 'அமைக்க தட்டவும்';
+
+  @override
+  String get diagnosisHint => 'எ.கா. வைரல் காய்ச்சல்';
+
+  @override
+  String get noDiagnosisTapPencil =>
+      'நோயறிதல் இல்லை — சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get adviceTitle => 'அறிவுரை';
+
+  @override
+  String get noAdviceTapPencil =>
+      'இன்னும் அறிவுரை இல்லை — சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get adviceHint => 'பொது வழிகாட்டுதல் — வரிக்கு ஒன்று';
+
+  @override
+  String get instructionsTitle => 'அறிவுறுத்தல்கள்';
+
+  @override
+  String get noInstructionsTapPencil =>
+      'இன்னும் அறிவுறுத்தல்கள் இல்லை — சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get instructionsHint => 'மருத்துவ அறிவுறுத்தல்கள் — வரிக்கு ஒன்று';
+
+  @override
+  String get noFollowUpSet => 'தொடர் சந்திப்பு அமைக்கப்படவில்லை';
+
+  @override
+  String get daysSuffix => 'நாட்கள்';
+
+  @override
+  String get prescribedMedicines => 'பரிந்துரைக்கப்பட்ட மருந்துகள்';
+
+  @override
+  String get noMedicationsYet => 'இன்னும் மருந்துகள் பதிவு செய்யப்படவில்லை.';
+
+  @override
+  String get addMedicine => 'மருந்து சேர்';
+
+  @override
+  String get medicineLabel => 'மருந்து';
+
+  @override
+  String get removeMedicine => 'மருந்தை நீக்கு';
+
+  @override
+  String get dosageLabel => 'அளவு';
+
+  @override
+  String get durationLabel => 'கால அளவு';
+
+  @override
+  String get frequencyLabel => 'அதிர்வெண்';
+
+  @override
+  String get timingLabel => 'நேரம்';
+
+  @override
+  String get timingBeforeFood => 'உணவுக்கு முன்';
+
+  @override
+  String get timingAfterFood => 'உணவுக்குப் பின்';
+
+  @override
+  String get timingWithFood => 'உணவுடன்';
+
+  @override
+  String get timingEmptyStomach => 'வெறும் வயிற்றில்';
+
+  @override
+  String get timingBeforeBed => 'தூங்குவதற்கு முன்';
+
+  @override
+  String get timingAsDirected => 'அறிவுறுத்தலின்படி';
+
+  @override
+  String get aiDisclaimer =>
+      'AI மருத்துவர் சொன்னதை மட்டுமே எடுக்கிறது. கையொப்பமிடும் முன் சுருக்கத்தையும் மருந்துகளையும் மதிப்பாய்வு செய்யவும்.';
+
+  @override
+  String get generatePdf => 'மருந்துச்சீட்டு PDF உருவாக்கு';
+
+  @override
+  String get signAndGeneratePdf => 'கையொப்பமிட்டு PDF உருவாக்கு';
+
+  @override
+  String get icdCodeTitle => 'ICD-10 குறியீடு';
+
+  @override
+  String get icdVerifyWarning =>
+      'AI பரிந்துரை — இதை நம்புவதற்கு முன் குறியீட்டைச் சரிபார்க்கவும்.';
+
+  @override
+  String get icdCodeField => 'குறியீடு (எ.கா. B34.9)';
+
+  @override
+  String get descriptionField => 'விளக்கம்';
+
+  @override
+  String get icdFooterNote =>
+      'இந்தக் குறியீட்டை நோயறிதலின் அடிப்படையில் AI பரிந்துரைத்தது. மருத்துவ அல்லது கட்டண பயன்பாட்டுக்கு முன் துல்லியத்தைச் சரிபார்க்கவும்.';
+
+  @override
+  String get suggestedDifferentials => 'பரிந்துரைக்கப்பட்ட வேறுபாட்டு நோயறிதல்';
+
+  @override
+  String get aiSuggestionVerify => 'AI பரிந்துரை — சரிபார்க்கவும்';
+
+  @override
+  String get differentialsBasedOn =>
+      'தெரிவிக்கப்பட்ட அறிகுறிகளின் அடிப்படையில். மருத்துவர் சரிபார்க்க வேண்டும்.';
+
+  @override
+  String get accept => 'ஏற்றுக்கொள்';
+
+  @override
+  String get prescriptionReady => 'மருந்துச்சீட்டு தயார்';
+
+  @override
+  String get reviewAndShare => 'மதிப்பாய்வு செய்து நோயாளிக்கு அனுப்பு';
+
+  @override
+  String get generatingPdfLong => 'மருந்துச்சீட்டு PDF உருவாக்கப்படுகிறது…';
+
+  @override
+  String get couldNotGeneratePdf => 'PDF உருவாக்க முடியவில்லை';
+
+  @override
+  String get welcomeToRxvarta => 'Rxvarta-க்கு வரவேற்கிறோம்';
+
+  @override
+  String get onboardingMessage =>
+      'மருத்துவர் சுயவிவரம் மற்றும் API விசை அமைப்பு இங்கே இருக்கும்.';
 }
