@@ -149,15 +149,6 @@ class ConsultationController extends Notifier<ConsultationState> {
             previousTranscript: previous.trim().isEmpty ? null : previous,
           );
 
-      // ===== DEBUG (temporary) — POINT A: raw from server, pre-processing =====
-      print('=== RAW FROM SERVER ===');
-      print('Diagnosis: ${result.insight.diagnosis}');
-      print('Medications: ${result.insight.medications.length}');
-      print('Instructions: ${result.insight.instructions}');
-      print('Advice: ${result.insight.advice}');
-      print('FollowUp: ${result.insight.followUpDays}');
-      print('Summary: ${result.insight.consultationSummary}');
-
       // NOTE: There is no validateExtraction() step in this controller, so
       // POINT B does not exist — data cannot be lost to validation here.
 
@@ -180,14 +171,6 @@ class ConsultationController extends Notifier<ConsultationState> {
       // never auto-fills the diagnosis field.
       final diffEngine = await ref.read(differentialEngineProvider.future);
       final suggestions = diffEngine.suggest(result.insight.symptoms);
-
-      // ===== DEBUG (temporary) — POINT C: after ICD mapper + differential =====
-      // `insight` is the mapped object that actually gets saved to the DB, so
-      // an ICD-mapper overwrite bug would show up here (result.insight is
-      // unchanged by the mapper — copyWith returns a new object).
-      print('=== AFTER ICD+DIFF ===');
-      print('Diagnosis: ${insight.diagnosis}');
-      print('Medications: ${insight.medications.length}');
 
       final current = await _visits.byId(visitId);
       if (current == null) {
