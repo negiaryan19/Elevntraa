@@ -1206,22 +1206,32 @@ export function validateExtraction(
 
   const transcriptNorm = _norm(spoken);
 
-  // ── Medications: drop hallucinated names, clear ungrounded stock values ──
+  // ── Medications: keep every extracted medicine (flagging ungrounded names
+  // for review) and clear only suspicious ungrounded stock values ──
   const medications: Medication[] = [];
   for (const med of insight.medications) {
-    if (!_medicineFoundInTranscript(med.name, transcriptNorm)) {
+    // Previously an ungrounded medicine name was DROPPED here (`continue`),
+    // which silently deleted real prescriptions whenever the romanized /
+    // vernacular transcript spelled the drug differently from Gemini's canonical
+    // name (e.g. "crocin" / "paracitamol" vs "Paracetamol"). We now KEEP the
+    // medicine and flag it for review so the doctor always sees it and can
+    // verify, rather than it vanishing from the prescription.
+    const nameUngrounded = !_medicineFoundInTranscript(
+      med.name,
+      transcriptNorm,
+    );
+    if (nameUngrounded) {
       console.warn(
-        "[validateExtraction] Removed hallucinated medicine — " +
-          "not found in transcript",
+        "[validateExtraction] Ungrounded medicine kept for review — " +
+          "name not found in transcript",
       );
-      continue;
     }
 
     let dosage = med.dosage;
     let frequency = med.frequency;
     let duration = med.duration;
     let timing = med.timing;
-    let cleared = false;
+    let cleared = nameUngrounded;
 
     if (
       _SUSPICIOUS_DOSAGES.has(_norm(dosage)) &&
@@ -1279,11 +1289,17 @@ export function validateExtraction(
     });
   }
 
-  // ── Diagnosis: must share at least one significant word with the transcript.
-  let diagnosis = insight.diagnosis;
-  let icdCode = insight.icdCode;
-  let icdDescription = insight.icdDescription;
-  let icdConfidence = insight.icdConfidence;
+  // ── Diagnosis: grounding is now advisory only. Previously an ungrounded
+  // diagnosis (no significant word shared with the transcript) was CLEARED —
+  // which, for romanized/vernacular transcripts where the doctor states the
+  // diagnosis in English, wiped legitimate diagnoses. We now KEEP the diagnosis
+  // and only log when it looks ungrounded, leaving verification to the doctor.
+  // (The ICD code is re-derived on-device from this diagnosis by the client
+  // mapper regardless, so the backend ICD fields are advisory here too.)
+  const diagnosis = insight.diagnosis;
+  const icdCode = insight.icdCode;
+  const icdDescription = insight.icdDescription;
+  const icdConfidence = insight.icdConfidence;
   if (diagnosis.trim() !== "") {
     const stop = new Set(["the", "and", "with", "from"]);
     const significant = diagnosis
@@ -1294,17 +1310,9 @@ export function validateExtraction(
     const anyPresent = significant.some((w) => transcriptNorm.includes(w));
     if (significant.length > 0 && !anyPresent) {
       console.warn(
-        "[validateExtraction] Cleared unsupported diagnosis — " +
+        "[validateExtraction] Ungrounded diagnosis kept for review — " +
           "no significant word found in transcript",
       );
-      diagnosis = "";
-      // The ICD was derived from this diagnosis, so it is equally ungrounded.
-      console.warn(
-        "Cleared ICD — diagnosis was not grounded in transcript",
-      );
-      icdCode = null;
-      icdDescription = null;
-      icdConfidence = null;
     }
   }
 
