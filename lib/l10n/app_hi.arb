@@ -205,6 +205,8 @@
   "stay": "यहीं रहें",
   "goBack": "वापस जाएँ",
   "consultationSummary": "परामर्श सारांश",
+  "transcriptTitle": "प्रतिलेख",
+  "transcriptSubtitle": "जैसा Sarvam STT ने सुना",
   "tapToAddSummary": "सारांश जोड़ने के लिए पेंसिल दबाएँ",
   "summaryHint": "मरीज़ क्यों आया और आगे की योजना संक्षेप में लिखें",
   "patientInformation": "मरीज़ की जानकारी",

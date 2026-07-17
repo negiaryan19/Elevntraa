@@ -205,6 +205,8 @@
   "stay": "এখানেই থাকুন",
   "goBack": "ফিরে যান",
   "consultationSummary": "পরামর্শের সারাংশ",
+  "transcriptTitle": "প্রতিলিপি",
+  "transcriptSubtitle": "Sarvam STT দ্বারা যেমন শোনা হয়েছে",
   "tapToAddSummary": "সারাংশ যোগ করতে পেন্সিল চাপুন",
   "summaryHint": "রোগী কেন এসেছেন ও পরিকল্পনা সংক্ষেপে লিখুন",
   "patientInformation": "রোগীর তথ্য",

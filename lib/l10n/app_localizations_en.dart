@@ -631,6 +631,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consultationSummary => 'Consultation Summary';
 
   @override
+  String get transcriptTitle => 'Transcript';
+
+  @override
+  String get transcriptSubtitle => 'As heard by Sarvam STT';
+
+  @override
   String get tapToAddSummary => 'Tap the pencil to add a consultation summary';
 
   @override

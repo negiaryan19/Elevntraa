@@ -205,6 +205,8 @@
   "stay": "Stay",
   "goBack": "Go Back",
   "consultationSummary": "Consultation Summary",
+  "transcriptTitle": "Transcript",
+  "transcriptSubtitle": "As heard by Sarvam STT",
   "tapToAddSummary": "Tap the pencil to add a consultation summary",
   "summaryHint": "Summarise what the patient came in for and the plan",
   "patientInformation": "Patient Information",

@@ -1298,6 +1298,18 @@ abstract class AppLocalizations {
   /// **'Consultation Summary'**
   String get consultationSummary;
 
+  /// No description provided for @transcriptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript'**
+  String get transcriptTitle;
+
+  /// No description provided for @transcriptSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'As heard by Sarvam STT'**
+  String get transcriptSubtitle;
+
   /// No description provided for @tapToAddSummary.
   ///
   /// In en, this message translates to:

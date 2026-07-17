@@ -636,6 +636,12 @@ class AppLocalizationsMr extends AppLocalizations {
   String get consultationSummary => 'सल्लामसलत सारांश';
 
   @override
+  String get transcriptTitle => 'प्रतिलेखन';
+
+  @override
+  String get transcriptSubtitle => 'Sarvam STT ने ऐकल्याप्रमाणे';
+
+  @override
   String get tapToAddSummary => 'सारांश जोडण्यासाठी पेन्सिल दाबा';
 
   @override

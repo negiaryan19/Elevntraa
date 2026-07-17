@@ -632,6 +632,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get consultationSummary => 'ಸಮಾಲೋಚನೆ ಸಾರಾಂಶ';
 
   @override
+  String get transcriptTitle => 'ಪ್ರತಿಲೇಖನ';
+
+  @override
+  String get transcriptSubtitle => 'Sarvam STT ಕೇಳಿದಂತೆ';
+
+  @override
   String get tapToAddSummary => 'ಸಾರಾಂಶ ಸೇರಿಸಲು ಪೆನ್ಸಿಲ್ ಒತ್ತಿ';
 
   @override

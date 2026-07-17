@@ -639,6 +639,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get consultationSummary => 'ஆலோசனைச் சுருக்கம்';
 
   @override
+  String get transcriptTitle => 'படியெடுப்பு';
+
+  @override
+  String get transcriptSubtitle => 'Sarvam STT கேட்டபடி';
+
+  @override
   String get tapToAddSummary => 'சுருக்கம் சேர்க்க பென்சிலைத் தட்டவும்';
 
   @override
