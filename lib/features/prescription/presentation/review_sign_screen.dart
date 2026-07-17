@@ -340,6 +340,15 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         },
                       ),
                       SizedBox(height: gap),
+                      // Raw STT transcript, collapsed by default. Read-only
+                      // reference for the doctor; hidden when the visit has no
+                      // transcript. Not part of the prescription/PDF.
+                      if ((_visit!.transcript ?? '').trim().isNotEmpty) ...[
+                        _TranscriptCard(
+                          transcript: _visit!.transcript!.trim(),
+                        ),
+                        SizedBox(height: gap),
+                      ],
                       if (_patient != null) ...[
                         _PatientCard(patient: _patient!, onSave: _savePatient),
                         SizedBox(height: gap),
@@ -870,6 +879,81 @@ class _SummaryCardState extends State<_SummaryCard> {
               height: 1.5,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Collapsible, read-only card showing the raw STT transcript. Collapsed by
+/// default — the transcript is a reference for the doctor, not part of the
+/// prescription — and expands in place when the header is tapped.
+class _TranscriptCard extends StatefulWidget {
+  const _TranscriptCard({required this.transcript});
+  final String transcript;
+
+  @override
+  State<_TranscriptCard> createState() => _TranscriptCardState();
+}
+
+class _TranscriptCardState extends State<_TranscriptCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return _InfoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => setState(() => _expanded = !_expanded),
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.record_voice_over_rounded,
+                  color: _accent(context),
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    'Transcript',
+                    style: AppTypography.titleMedium.copyWith(
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: _expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: scheme.onSurfaceVariant,
+                    size: 24,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_expanded) ...[
+            const SizedBox(height: AppSpacing.s),
+            Text(
+              'As heard by Sarvam STT',
+              style: AppTypography.labelSmall.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            SelectableText(
+              widget.transcript,
+              style: AppTypography.bodySmall.copyWith(
+                color: scheme.onSurfaceVariant,
+                height: 1.5,
+              ),
+            ),
+          ],
         ],
       ),
     );
