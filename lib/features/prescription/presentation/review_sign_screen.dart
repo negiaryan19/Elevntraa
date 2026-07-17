@@ -344,9 +344,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       // reference for the doctor; hidden when the visit has no
                       // transcript. Not part of the prescription/PDF.
                       if ((_visit!.transcript ?? '').trim().isNotEmpty) ...[
-                        _TranscriptCard(
-                          transcript: _visit!.transcript!.trim(),
-                        ),
+                        _TranscriptCard(transcript: _visit!.transcript!.trim()),
                         SizedBox(height: gap),
                       ],
                       if (_patient != null) ...[
