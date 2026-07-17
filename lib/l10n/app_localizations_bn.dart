@@ -628,6 +628,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get consultationSummary => 'পরামর্শের সারাংশ';
 
   @override
+  String get transcriptTitle => 'প্রতিলিপি';
+
+  @override
+  String get transcriptSubtitle => 'Sarvam STT দ্বারা যেমন শোনা হয়েছে';
+
+  @override
   String get tapToAddSummary => 'সারাংশ যোগ করতে পেন্সিল চাপুন';
 
   @override

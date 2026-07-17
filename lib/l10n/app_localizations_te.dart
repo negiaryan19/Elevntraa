@@ -635,6 +635,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get consultationSummary => 'సంప్రదింపు సారాంశం';
 
   @override
+  String get transcriptTitle => 'ట్రాన్‌స్క్రిప్ట్';
+
+  @override
+  String get transcriptSubtitle => 'Sarvam STT విన్న విధంగా';
+
+  @override
   String get tapToAddSummary => 'సారాంశం జోడించడానికి పెన్సిల్ నొక్కండి';
 
   @override

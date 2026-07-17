@@ -627,6 +627,12 @@ class AppLocalizationsGu extends AppLocalizations {
   String get consultationSummary => 'પરામર્શ સારાંશ';
 
   @override
+  String get transcriptTitle => 'ટ્રાન્સક્રિપ્ટ';
+
+  @override
+  String get transcriptSubtitle => 'Sarvam STT દ્વારા સાંભળ્યા મુજબ';
+
+  @override
   String get tapToAddSummary => 'સારાંશ ઉમેરવા પેન્સિલ દબાવો';
 
   @override

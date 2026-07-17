@@ -900,6 +900,7 @@ class _TranscriptCardState extends State<_TranscriptCard> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
     return _InfoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -917,7 +918,7 @@ class _TranscriptCardState extends State<_TranscriptCard> {
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
-                    'Transcript',
+                    t.transcriptTitle,
                     style: AppTypography.titleMedium.copyWith(
                       color: scheme.onSurface,
                     ),
@@ -938,7 +939,7 @@ class _TranscriptCardState extends State<_TranscriptCard> {
           if (_expanded) ...[
             const SizedBox(height: AppSpacing.s),
             Text(
-              'As heard by Sarvam STT',
+              t.transcriptSubtitle,
               style: AppTypography.labelSmall.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
