@@ -31,8 +31,8 @@ class DrugMatch {
 ///   assets:
 ///     - assets/data/drug_dictionary.json
 class DrugNameCorrector {
-  final Map<String, String> _exactIndex;  // norm'd variant → canonical
-  final Map<String, String> _romanIndex;  // romanNorm'd variant → canonical
+  final Map<String, String> _exactIndex; // norm'd variant → canonical
+  final Map<String, String> _romanIndex; // romanNorm'd variant → canonical
 
   DrugNameCorrector._(this._exactIndex, this._romanIndex);
 
@@ -53,8 +53,7 @@ class DrugNameCorrector {
     for (final e in list) {
       final entry = _DrugEntry(
         canonical: e['canonical'] as String,
-        variants:
-            (e['variants'] as List).map((v) => v.toString()).toList(),
+        variants: (e['variants'] as List).map((v) => v.toString()).toList(),
       );
       // Index canonical name + every variant
       for (final term in [entry.canonical, ...entry.variants]) {
@@ -175,10 +174,7 @@ class DrugNameCorrector {
         .replaceAll('sh', 's')
         .replaceAll('ch', 'c');
     // Vowel simplification
-    out = out
-        .replaceAll('ee', 'i')
-        .replaceAll('oo', 'u')
-        .replaceAll('aa', 'a');
+    out = out.replaceAll('ee', 'i').replaceAll('oo', 'u').replaceAll('aa', 'a');
     // Double-consonant collapse
     out = out.replaceAll(RegExp(r'(.)\1+'), r'$1');
     return out;
