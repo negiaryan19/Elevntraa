@@ -5,6 +5,7 @@ import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../services/differential_engine.dart';
 import '../../../services/icd10_local_mapper.dart';
+import '../../../services/drug_name_corrector.dart';
 import '../data/pipeline_service.dart';
 import '../data/recording_service.dart';
 
@@ -13,6 +14,13 @@ import '../data/recording_service.dart';
 /// this deterministic mapper assigns the code. See [Icd10LocalMapper].
 final icd10MapperProvider = FutureProvider<Icd10LocalMapper>(
   (ref) => Icd10LocalMapper.load(),
+);
+
+/// Loads the romanization-aware drug-name corrector. Maps mangled / romanized
+/// STT drug names to their canonical forms on-device, so mangled names get
+/// fixed regardless of which STT produced them. See [DrugNameCorrector].
+final drugCorrectorProvider = FutureProvider<DrugNameCorrector>(
+  (ref) => DrugNameCorrector.load(),
 );
 
 /// On-device differential-diagnosis engine, loaded once from the bundled
@@ -157,9 +165,19 @@ class ConsultationController extends Notifier<ConsultationState> {
       // including clearing all three when there is no confident match — so the
       // doctor never sees a guessed code. On IcdMatch.none the field is left
       // null for the doctor to fill, exactly like today.
+      // Correct mangled / romanized drug names to canonical forms on-device.
+      // Same matching engine the backend validateExtraction uses, so a name
+      // gets fixed no matter which STT produced it.
+      final corrector = await ref.read(drugCorrectorProvider.future);
+      final correctedMeds = [
+        for (final med in result.insight.medications)
+          med.copyWith(name: corrector.correctNames([med.name]).first),
+      ];
+
       final mapper = await ref.read(icd10MapperProvider.future);
       final icd = mapper.lookup(result.insight.diagnosis);
       final insight = result.insight.copyWith(
+        medications: correctedMeds,
         icdCode: icd.code,
         icdDescription: icd.description,
         icdConfidence: icd.confidence,

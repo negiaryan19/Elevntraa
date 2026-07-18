@@ -31,11 +31,10 @@ class DrugMatch {
 ///   assets:
 ///     - assets/data/drug_dictionary.json
 class DrugNameCorrector {
-  final List<_DrugEntry> _entries;
   final Map<String, String> _exactIndex;  // norm'd variant → canonical
   final Map<String, String> _romanIndex;  // romanNorm'd variant → canonical
 
-  DrugNameCorrector._(this._entries, this._exactIndex, this._romanIndex);
+  DrugNameCorrector._(this._exactIndex, this._romanIndex);
 
   /// Load from the bundled asset.
   static Future<DrugNameCorrector> load({
@@ -49,7 +48,6 @@ class DrugNameCorrector {
 
   /// Build directly from decoded JSON (used in tests, no rootBundle needed).
   static DrugNameCorrector fromJsonList(List<Map<String, dynamic>> list) {
-    final entries = <_DrugEntry>[];
     final exact = <String, String>{};
     final roman = <String, String>{};
     for (final e in list) {
@@ -58,7 +56,6 @@ class DrugNameCorrector {
         variants:
             (e['variants'] as List).map((v) => v.toString()).toList(),
       );
-      entries.add(entry);
       // Index canonical name + every variant
       for (final term in [entry.canonical, ...entry.variants]) {
         final n = _normalize(term);
@@ -67,7 +64,7 @@ class DrugNameCorrector {
         if (r.isNotEmpty) roman.putIfAbsent(r, () => entry.canonical);
       }
     }
-    return DrugNameCorrector._(entries, exact, roman);
+    return DrugNameCorrector._(exact, roman);
   }
 
   /// Correct a (possibly mangled) drug name to its canonical form.
@@ -119,6 +116,20 @@ class DrugNameCorrector {
     }
 
     return null;
+  }
+
+  /// Correct a batch of raw drug-name strings to their canonical forms.
+  ///
+  /// Returns a list the same length and order as [names]. Each result is the
+  /// canonical name when a confident match is found, or the original string
+  /// unchanged when not. Kept model-agnostic (plain strings) so this service
+  /// has no dependency on domain models — the caller folds the results back
+  /// into its own freezed types via copyWith.
+  List<String> correctNames(List<String> names) {
+    return names.map((n) {
+      final match = correct(n);
+      return (match != null && match.canonical != n) ? match.canonical : n;
+    }).toList();
   }
 
   /// Correct all medication names in a list. Returns a new list with
