@@ -1140,21 +1140,23 @@ export function validateExtraction(
     // medicine and flag it for review so the doctor always sees it and can
     // verify, rather than it vanishing from the prescription.
     const drugResult = drugMatcher.findInTranscript(med.name, transcriptNorm);
-    const nameUngrounded = !drugResult.found;
-    // If the matcher identified a canonical name, correct it.
-    const correctedName = drugResult.canonical ?? med.name;
-    if (nameUngrounded) {
+    if (!drugResult.found) {
+      // Genuinely ungrounded — Gemini invented a medicine not in the transcript.
+      // The matcher already handles romanized/vernacular forms; false here means
+      // the drug was truly never spoken. Drop it.
       console.warn(
-        "[validateExtraction] Ungrounded medicine kept for review — " +
-          "name not found in transcript",
+        "[validateExtraction] Dropping invented medicine — " +
+          "not found in transcript even after romanized matching",
       );
+      continue;
     }
+    const correctedName = drugResult.canonical ?? med.name;
 
     let dosage = med.dosage;
     let frequency = med.frequency;
     let duration = med.duration;
     let timing = med.timing;
-    let cleared = nameUngrounded;
+    let cleared = false;
 
     if (
       _SUSPICIOUS_DOSAGES.has(_norm(dosage)) &&

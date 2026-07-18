@@ -171,7 +171,15 @@ class ConsultationController extends Notifier<ConsultationState> {
       final corrector = await ref.read(drugCorrectorProvider.future);
       final correctedMeds = [
         for (final med in result.insight.medications)
-          med.copyWith(name: corrector.correctNames([med.name]).first),
+          () {
+            final corrected = corrector.correct(med.name);
+            return corrected != null && corrected.canonical != med.name
+                ? med.copyWith(
+                    name: corrected.canonical,
+                    originalName: med.name,
+                  )
+                : med;
+          }(),
       ];
 
       final mapper = await ref.read(icd10MapperProvider.future);

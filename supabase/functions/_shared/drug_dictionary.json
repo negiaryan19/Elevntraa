@@ -1,0 +1,134 @@
+{
+  "entries": [
+    {
+      "canonical": "Paracetamol",
+      "variants": [
+        "paracetamol",
+        "paracetemol",
+        "parcetamol",
+        "paracitamol",
+        "parasitamol",
+        "parasitamal",
+        "parasetamol",
+        "pcm"
+      ]
+    },
+    {
+      "canonical": "Cetirizine",
+      "variants": [
+        "cetirizine",
+        "cetrizine",
+        "citrizine",
+        "cetrizin",
+        "setirizin",
+        "cetzine"
+      ]
+    },
+    {
+      "canonical": "Amoxicillin",
+      "variants": [
+        "amoxicillin",
+        "amoxicilin",
+        "amoxycillin",
+        "amoxicellin",
+        "amoxiselin",
+        "amox"
+      ]
+    },
+    {
+      "canonical": "Azithromycin",
+      "variants": [
+        "azithromycin",
+        "azithromicin",
+        "azitromycin",
+        "azithromisin",
+        "azithro"
+      ]
+    },
+    {
+      "canonical": "Pantoprazole",
+      "variants": [
+        "pantoprazole",
+        "pantoprazol",
+        "pantoprajol",
+        "pentoprazol",
+        "pantop"
+      ]
+    },
+    {
+      "canonical": "Omeprazole",
+      "variants": ["omeprazole", "omeprazol", "omiprazol", "omeprajol"]
+    },
+    {
+      "canonical": "Ibuprofen",
+      "variants": ["ibuprofen", "ibuprofin", "ibuprofein", "ibupropin"]
+    },
+    {
+      "canonical": "Metformin",
+      "variants": ["metformin", "metformine", "metphormin", "metaformin"]
+    },
+    {
+      "canonical": "Amlodipine",
+      "variants": ["amlodipine", "amlodipin", "amlodipen", "amlodepine"]
+    },
+    {
+      "canonical": "Ranitidine",
+      "variants": ["ranitidine", "rantidine", "ranitidin", "ranitideen"]
+    },
+    {
+      "canonical": "Domperidone",
+      "variants": ["domperidone", "domperidon", "domperidoan", "domparidon"]
+    },
+    {
+      "canonical": "Ondansetron",
+      "variants": ["ondansetron", "ondensetron", "ondansetran", "ondansetrin"]
+    },
+    {
+      "canonical": "Diclofenac",
+      "variants": ["diclofenac", "diclofenak", "diclofenack", "diclofenic"]
+    },
+    {
+      "canonical": "Montelukast",
+      "variants": ["montelukast", "montelucast", "montelukest", "montilukast"]
+    },
+    {
+      "canonical": "Levocetirizine",
+      "variants": ["levocetirizine", "levocetrizine", "levosetirizin"]
+    },
+    {
+      "canonical": "Doxycycline",
+      "variants": ["doxycycline", "doxicycline", "doxiciclin", "doxisaiklin"]
+    },
+    {
+      "canonical": "Metronidazole",
+      "variants": [
+        "metronidazole",
+        "metronidazol",
+        "metranidazol",
+        "metronidajol"
+      ]
+    },
+    {
+      "canonical": "Ciprofloxacin",
+      "variants": [
+        "ciprofloxacin",
+        "ciprofloxasin",
+        "siprofloksasin",
+        "ciprofloxacine"
+      ]
+    },
+    {
+      "canonical": "Atorvastatin",
+      "variants": [
+        "atorvastatin",
+        "atorvastatine",
+        "atorvastaten",
+        "atorvastetin"
+      ]
+    },
+    {
+      "canonical": "Vitamin C",
+      "variants": ["vitaminc", "vitaminsi", "ascorbicacid"]
+    }
+  ]
+}
