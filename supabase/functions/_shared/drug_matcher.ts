@@ -18,7 +18,7 @@ interface DrugEntry {
 
 // Single source of truth for drug data.
 // Update drug_dictionary.json (one file) when the full list lands.
-import dictJson from "./drug_dictionary.json" assert { type: "json" };
+import dictJson from "./drug_dictionary.json" with { type: "json" };
 
 const DRUG_DICTIONARY: DrugEntry[] =
   (dictJson as unknown as { entries: DrugEntry[] }).entries;
