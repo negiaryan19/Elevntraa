@@ -23,6 +23,72 @@ import dictJson from "./drug_dictionary.json" assert { type: "json" };
 const DRUG_DICTIONARY: DrugEntry[] =
   (dictJson as unknown as { entries: DrugEntry[] }).entries;
 
+// ── Normalization ─────────────────────────────────────────────────────────
+
+/** Strip to lowercase alphanumeric only. */
+function norm(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Romanization-aware normalization. Collapses common Indian transliteration
+ * variants so "parasitamol" and "paracetamol" end up closer in edit distance.
+ */
+function romanNorm(s: string): string {
+  let out = norm(s);
+  out = out.replace(/ph/g, "f");
+  out = out.replace(/th/g, "t");
+  out = out.replace(/dh/g, "d");
+  out = out.replace(/bh/g, "b");
+  out = out.replace(/kh/g, "k");
+  out = out.replace(/gh/g, "g");
+  out = out.replace(/sh/g, "s");
+  out = out.replace(/ch/g, "c");
+  out = out.replace(/ee/g, "i");
+  out = out.replace(/oo/g, "u");
+  out = out.replace(/aa/g, "a");
+  out = out.replace(/(.)+/g, "$1");
+  return out;
+}
+
+// ── Similarity (mirrored from Icd10LocalMapper) ───────────────────────────
+
+function levenshtein(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const prev = Array.from({ length: n + 1 }, (_, i) => i);
+  const curr = new Array<number>(n + 1).fill(0);
+  for (let i = 1; i <= m; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+    }
+    for (let j = 0; j <= n; j++) prev[j] = curr[j];
+  }
+  return prev[n];
+}
+
+function levRatio(a: string, b: string): number {
+  const d = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return maxLen === 0 ? 1.0 : 1.0 - d / maxLen;
+}
+
+function similarity(a: string, b: string): number {
+  if (a === b) return 1.0;
+  const ta = new Set(a.split(/\s+/).filter((w) => w.length > 0));
+  const tb = new Set(b.split(/\s+/).filter((w) => w.length > 0));
+  let inter = 0;
+  for (const w of ta) if (tb.has(w)) inter++;
+  const union = new Set([...ta, ...tb]).size;
+  const jaccard = union === 0 ? 0.0 : inter / union;
+  const lev = levRatio(a, b);
+  const blend = 0.55 * jaccard + 0.45 * lev;
+  return blend > lev ? blend : lev;
+}
+
 // ── Matcher ───────────────────────────────────────────────────────────────
 
 export interface DrugMatch {
