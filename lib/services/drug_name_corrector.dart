@@ -31,10 +31,11 @@ class DrugMatch {
 ///   assets:
 ///     - assets/data/drug_dictionary.json
 class DrugNameCorrector {
-  final Map<String, String> _exactIndex; // norm'd variant → canonical
-  final Map<String, String> _romanIndex; // romanNorm'd variant → canonical
+  final List<_DrugEntry> _entries;
+  final Map<String, int> _exactIndex; // norm'd generic/variant/brand → entry ix
+  final Map<String, int> _romanIndex; // romanNorm'd term → entry index
 
-  DrugNameCorrector._(this._exactIndex, this._romanIndex);
+  DrugNameCorrector._(this._entries, this._exactIndex, this._romanIndex);
 
   /// Load from the bundled asset.
   static Future<DrugNameCorrector> load({
@@ -48,42 +49,47 @@ class DrugNameCorrector {
 
   /// Build directly from decoded JSON (used in tests, no rootBundle needed).
   static DrugNameCorrector fromJsonList(List<Map<String, dynamic>> list) {
-    final exact = <String, String>{};
-    final roman = <String, String>{};
+    final entries = <_DrugEntry>[];
+    final exact = <String, int>{};
+    final roman = <String, int>{};
     for (final e in list) {
       final entry = _DrugEntry(
-        canonical: e['canonical'] as String,
-        variants: (e['variants'] as List).map((v) => v.toString()).toList(),
+        generic: e['generic'] as String,
+        brands: (e['brands'] as List? ?? const [])
+            .map((v) => v.toString())
+            .toList(),
+        variants: (e['variants'] as List? ?? const [])
+            .map((v) => v.toString())
+            .toList(),
       );
-      // Index canonical name + every variant
-      for (final term in [entry.canonical, ...entry.variants]) {
+      final ix = entries.length;
+      entries.add(entry);
+      // Index generic + variants + brands for RECOGNITION/grounding. The
+      // brand-guard in [correct] decides separately whether a match may be
+      // rewritten to the generic. First-write wins (putIfAbsent).
+      for (final term in [entry.generic, ...entry.variants, ...entry.brands]) {
         final n = _normalize(term);
-        if (n.isNotEmpty) exact.putIfAbsent(n, () => entry.canonical);
+        if (n.isNotEmpty) exact.putIfAbsent(n, () => ix);
         final r = _romanNorm(term);
-        if (r.isNotEmpty) roman.putIfAbsent(r, () => entry.canonical);
+        if (r.isNotEmpty) roman.putIfAbsent(r, () => ix);
       }
     }
-    return DrugNameCorrector._(exact, roman);
+    return DrugNameCorrector._(entries, exact, roman);
   }
 
-  /// Correct a (possibly mangled) drug name to its canonical form.
-  ///
-  /// Returns null if no match above threshold — the doctor fills it manually.
-  DrugMatch? correct(String input) {
+  /// Recognize which entry an input best corresponds to (recognition only — no
+  /// brand-guard), using the same three stages as [correct] describes. Returns
+  /// the entry index + confidence, or null if nothing matches above threshold.
+  ({int idx, String confidence})? _recognize(String input) {
     final q = _normalize(input);
     if (q.length < 3) return null;
 
     // Stage 1: exact match
     final exactHit = _exactIndex[q];
-    if (exactHit != null) {
-      return DrugMatch(canonical: exactHit, confidence: 'high');
-    }
-    // Also try romanNorm for exact
+    if (exactHit != null) return (idx: exactHit, confidence: 'high');
     final qr = _romanNorm(input);
     final romanHit = _romanIndex[qr];
-    if (romanHit != null) {
-      return DrugMatch(canonical: romanHit, confidence: 'high');
-    }
+    if (romanHit != null) return (idx: romanHit, confidence: 'high');
 
     // Stage 2: substring containment
     for (final entry in _exactIndex.entries) {
@@ -92,29 +98,58 @@ class DrugNameCorrector {
       if (q == term) continue;
       if (q.contains(term) || term.contains(q)) {
         final specific = term.length >= 6;
-        return DrugMatch(
-          canonical: entry.value,
-          confidence: specific ? 'high' : 'medium',
-        );
+        return (idx: entry.value, confidence: specific ? 'high' : 'medium');
       }
     }
 
     // Stage 3: fuzzy with romanization normalization
-    String? bestCanonical;
+    int? bestIdx;
     double bestScore = 0;
     for (final entry in _romanIndex.entries) {
       if (entry.key.length < 3) continue;
       final score = _similarity(qr, entry.key);
       if (score > bestScore) {
         bestScore = score;
-        bestCanonical = entry.value;
+        bestIdx = entry.value;
       }
     }
-    if (bestCanonical != null && bestScore >= 0.82) {
-      return DrugMatch(canonical: bestCanonical, confidence: 'medium');
+    if (bestIdx != null && bestScore >= 0.82) {
+      return (idx: bestIdx, confidence: 'medium');
     }
 
     return null;
+  }
+
+  /// Brand-guard: variants exist for RECOGNITION only, so a recognized input is
+  /// rewritten to the generic ONLY when it is a plain (mis)spelling of the
+  /// generic — not a brand and not a romanized look-alike of one. Returns true
+  /// when [input] must be LEFT AS-IS because it is (or resembles) a brand of
+  /// [entry]. e.g. "crocin" (exact brand) and "dollo" (romanNorm → "dolo", a
+  /// brand) both return true; "parcetamol" returns false so it corrects.
+  bool _isBrandLike(String input, _DrugEntry entry) {
+    final qn = _normalize(input);
+    for (final b in entry.brands) {
+      if (_normalize(b) == qn) return true;
+    }
+    final qr = _romanNorm(input);
+    for (final b in entry.brands) {
+      if (_similarity(qr, _romanNorm(b)) >= 0.82) return true;
+    }
+    return false;
+  }
+
+  /// Correct a (possibly mangled) drug name to its canonical generic form.
+  ///
+  /// Returns null when there is no confident match OR when the brand-guard says
+  /// the input is a brand (or brand look-alike) that must be kept verbatim —
+  /// the doctor fills / keeps it manually.
+  DrugMatch? correct(String input) {
+    final m = _recognize(input);
+    if (m == null) return null;
+    final entry = _entries[m.idx];
+    // Recognized, but a brand / brand look-alike: keep the original name.
+    if (_isBrandLike(input, entry)) return null;
+    return DrugMatch(canonical: entry.generic, confidence: m.confidence);
   }
 
   /// Correct a batch of raw drug-name strings to their canonical forms.
@@ -175,8 +210,11 @@ class DrugNameCorrector {
         .replaceAll('ch', 'c');
     // Vowel simplification
     out = out.replaceAll('ee', 'i').replaceAll('oo', 'u').replaceAll('aa', 'a');
-    // Double-consonant collapse
-    out = out.replaceAll(RegExp(r'(.)\1+'), r'$1');
+    // Double-consonant collapse ("dollo" -> "dolo"). Must use replaceAllMapped:
+    // String.replaceAll treats the replacement literally, so r'$1' inserted the
+    // text "$1" instead of the captured char, silently breaking double-letter
+    // names (and the brand-guard's "dollo" case).
+    out = out.replaceAllMapped(RegExp(r'(.)\1+'), (m) => m.group(1)!);
     return out;
   }
 
@@ -226,7 +264,12 @@ class DrugNameCorrector {
 }
 
 class _DrugEntry {
-  final String canonical;
+  final String generic;
+  final List<String> brands;
   final List<String> variants;
-  const _DrugEntry({required this.canonical, required this.variants});
+  const _DrugEntry({
+    required this.generic,
+    required this.brands,
+    required this.variants,
+  });
 }

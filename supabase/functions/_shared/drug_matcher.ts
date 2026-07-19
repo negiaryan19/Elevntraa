@@ -12,7 +12,13 @@
 // ── Dictionary ────────────────────────────────────────────────────────────
 
 interface DrugEntry {
-  canonical: string;
+  // Canonical generic name — the only value we ever REWRITE a mangled input to.
+  generic: string;
+  // Commercial brand names (e.g. "Crocin"). Indexed for RECOGNITION/grounding
+  // but never rewritten to the generic — see the brand-guard in `correct`.
+  brands: string[];
+  // Spelling / romanization variants used for RECOGNITION/grounding. May include
+  // brand strings too; the brand-guard keeps those from being rewritten.
   variants: string[];
 }
 
@@ -47,7 +53,11 @@ function romanNorm(s: string): string {
   out = out.replace(/ee/g, "i");
   out = out.replace(/oo/g, "u");
   out = out.replace(/aa/g, "a");
-  out = out.replace(/(.)+/g, "$1");
+  // Collapse runs of the same character ("dollo" -> "dolo"), mirroring the Dart
+  // corrector's `(.)\1+`. This backreference had been corrupted to a literal
+  // SOH byte, so doubles were never collapsed and the brand-guard's "dollo"
+  // case (romanNorm must equal brand "dolo") silently failed.
+  out = out.replace(/(.)\1+/g, "$1");
   return out;
 }
 
@@ -99,115 +109,153 @@ export interface DrugMatch {
 const MIN_FUZZY = 0.82;
 
 class DrugMatcher {
-  /** normalized variant → canonical name */
-  private _exactIndex = new Map<string, string>();
-  /** romanNorm'd variant → canonical name */
-  private _romanIndex = new Map<string, string>();
+  /** normalized generic/variant/brand → entry */
+  private _exactIndex = new Map<string, DrugEntry>();
+  /** romanNorm'd generic/variant/brand → entry */
+  private _romanIndex = new Map<string, DrugEntry>();
   private _entries: DrugEntry[];
 
   constructor(entries: DrugEntry[]) {
     this._entries = entries;
     for (const entry of entries) {
-      for (const v of entry.variants) {
-        const n = norm(v);
-        if (n.length > 0) this._exactIndex.set(n, entry.canonical);
-        const r = romanNorm(v);
-        if (r.length > 0) this._romanIndex.set(r, entry.canonical);
+      // Index generic + variants + brands for RECOGNITION/grounding. The
+      // brand-guard in `correct` decides separately whether a match may be
+      // rewritten to the generic. First-write wins so an earlier entry keeps
+      // ownership of a shared string (mirrors the Dart loader's putIfAbsent).
+      for (const term of [entry.generic, ...entry.variants, ...entry.brands]) {
+        const n = norm(term);
+        if (n.length > 0 && !this._exactIndex.has(n)) {
+          this._exactIndex.set(n, entry);
+        }
+        const r = romanNorm(term);
+        if (r.length > 0 && !this._romanIndex.has(r)) {
+          this._romanIndex.set(r, entry);
+        }
       }
-      // Also index the canonical name itself
-      const cn = norm(entry.canonical);
-      if (cn.length > 0) this._exactIndex.set(cn, entry.canonical);
-      const cr = romanNorm(entry.canonical);
-      if (cr.length > 0) this._romanIndex.set(cr, entry.canonical);
     }
   }
 
   /**
-   * Correct a (possibly mangled) drug name to its canonical form.
-   * Returns null if no match above threshold.
-   *
-   * Three stages (mirrors Icd10LocalMapper.lookup):
+   * Recognize which dictionary entry an input best corresponds to, using the
+   * same three stages as Icd10LocalMapper.lookup. Recognition only — it does
+   * NOT apply the brand-guard, so callers that ground (findInTranscript) can
+   * still locate an entry from a brand string.
    *   1. Exact match on normalized name → high
    *   2. Substring containment → high/medium
    *   3. Fuzzy (Jaccard + Levenshtein blend ≥ 0.82) → medium
    */
-  correct(input: string): DrugMatch | null {
+  private _recognize(
+    input: string,
+  ): { entry: DrugEntry; confidence: "high" | "medium" } | null {
     const q = norm(input);
     if (q.length < 3) return null;
 
     // Stage 1: exact
     const exact = this._exactIndex.get(q);
-    if (exact) return { canonical: exact, confidence: "high" };
+    if (exact) return { entry: exact, confidence: "high" };
 
-    // Also try romanNorm for exact
     const qr = romanNorm(input);
     const romanExact = this._romanIndex.get(qr);
-    if (romanExact) return { canonical: romanExact, confidence: "high" };
+    if (romanExact) return { entry: romanExact, confidence: "high" };
 
-    // Stage 2: substring (query contains a known variant, or vice versa)
-    for (const [term, canonical] of this._exactIndex.entries()) {
+    // Stage 2: substring (query contains a known term, or vice versa)
+    for (const [term, entry] of this._exactIndex.entries()) {
       if (term.length < 4 || q.length < 4) continue;
       if (q === term) continue;
       if (q.includes(term) || term.includes(q)) {
         const specific = term.length >= 6;
-        return { canonical, confidence: specific ? "high" : "medium" };
+        return { entry, confidence: specific ? "high" : "medium" };
       }
     }
 
     // Stage 3: fuzzy with romanization normalization
-    let bestCanonical: string | null = null;
+    let bestEntry: DrugEntry | null = null;
     let bestScore = 0;
-    for (const [term, canonical] of this._romanIndex.entries()) {
+    for (const [term, entry] of this._romanIndex.entries()) {
       if (term.length < 3) continue;
       const score = similarity(qr, term);
       if (score > bestScore) {
         bestScore = score;
-        bestCanonical = canonical;
+        bestEntry = entry;
       }
     }
-    if (bestCanonical && bestScore >= MIN_FUZZY) {
-      return { canonical: bestCanonical, confidence: "medium" };
+    if (bestEntry && bestScore >= MIN_FUZZY) {
+      return { entry: bestEntry, confidence: "medium" };
     }
 
     return null;
   }
 
   /**
+   * Brand-guard: variants exist for RECOGNITION only, so a recognized input is
+   * rewritten to the generic ONLY when it is a plain (mis)spelling of the
+   * generic — not a brand and not a romanized look-alike of one. Returns true
+   * when `input` must be LEFT AS-IS because it is (or resembles) a brand of
+   * `entry`. Examples: "crocin" (exact brand) and "dollo" (romanNorm → "dolo",
+   * a brand) both return true; "parcetamol" returns false so it corrects.
+   */
+  private _isBrandLike(input: string, entry: DrugEntry): boolean {
+    const qn = norm(input);
+    for (const b of entry.brands) {
+      if (norm(b) === qn) return true;
+    }
+    const qr = romanNorm(input);
+    for (const b of entry.brands) {
+      if (similarity(qr, romanNorm(b)) >= MIN_FUZZY) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Correct a (possibly mangled) drug name to its canonical generic form.
+   * Returns null when there is no confident match OR when the brand-guard says
+   * the input is a brand (or brand look-alike) that must be kept verbatim.
+   */
+  correct(input: string): DrugMatch | null {
+    const m = this._recognize(input);
+    if (!m) return null;
+    // Recognized, but a brand / brand look-alike: keep the original name.
+    if (this._isBrandLike(input, m.entry)) return null;
+    return { canonical: m.entry.generic, confidence: m.confidence };
+  }
+
+  /**
    * Check if a drug name (from Gemini output) is plausibly present in a
-   * normalized transcript. Replaces the old _medicineFoundInTranscript +
-   * hardcoded _MEDICINE_VARIANTS approach.
+   * normalized transcript. Grounding uses generic + variants + brands, so a
+   * brand mentioned in the transcript still grounds the medicine.
    *
-   * Returns the canonical name if matched, or null if the drug is not
-   * grounded in the transcript.
+   * `canonical` is the brand-guarded rewrite target (the generic) when the name
+   * may be corrected, or null when it should be kept verbatim (brand / no
+   * confident rewrite). `found` reports whether the drug is grounded at all.
    */
   findInTranscript(
     drugName: string,
     transcriptNorm: string,
   ): { found: boolean; canonical: string | null } {
     const nameNorm = norm(drugName);
+
+    // Recognize the entry for grounding, and derive the brand-guarded rewrite.
+    const m = this._recognize(drugName);
+    const canonical = m && !this._isBrandLike(drugName, m.entry)
+      ? m.entry.generic
+      : null;
+
     // Too short to cross-reference reliably — keep it.
-    if (nameNorm.length < 4) return { found: true, canonical: null };
+    if (nameNorm.length < 4) return { found: true, canonical };
 
     // Direct normalized substring in transcript
     if (transcriptNorm.includes(nameNorm)) {
-      return { found: true, canonical: null };
+      return { found: true, canonical };
     }
 
-    // Check every known variant of every drug that matches this name
-    const match = this.correct(drugName);
-    if (match) {
-      // We know which drug this is — check if ANY of its variants appear
-      // in the transcript
-      const entry = this._entries.find((e) => e.canonical === match.canonical);
-      if (entry) {
-        for (const v of entry.variants) {
-          if (transcriptNorm.includes(norm(v))) {
-            return { found: true, canonical: match.canonical };
-          }
-        }
-        // Also check canonical name itself
-        if (transcriptNorm.includes(norm(entry.canonical))) {
-          return { found: true, canonical: match.canonical };
+    // We know which drug this is — check if ANY of its generic/variant/brand
+    // spellings appear in the transcript.
+    if (m) {
+      for (
+        const term of [m.entry.generic, ...m.entry.variants, ...m.entry.brands]
+      ) {
+        if (transcriptNorm.includes(norm(term))) {
+          return { found: true, canonical };
         }
       }
     }
@@ -215,16 +263,14 @@ class DrugMatcher {
     // Leading-prefix tolerance (transliteration may truncate)
     for (let k = nameNorm.length; k >= 4; k--) {
       if (transcriptNorm.includes(nameNorm.slice(0, k))) {
-        return { found: true, canonical: match?.canonical ?? null };
+        return { found: true, canonical };
       }
     }
 
-    // Fuzzy: check if any dictionary variant is close to any word cluster
-    // in the transcript. This catches romanized forms the dictionary doesn't
-    // explicitly list.
+    // Fuzzy: check if the name is close to any word cluster in the transcript.
+    // This catches romanized forms the dictionary doesn't explicitly list.
     const nameRoman = romanNorm(drugName);
     if (nameRoman.length >= 4) {
-      // Slide a window over the transcript looking for fuzzy matches
       for (let i = 0; i <= transcriptNorm.length - 4; i++) {
         const windowLen = Math.min(
           nameRoman.length + 3,
@@ -232,12 +278,12 @@ class DrugMatcher {
         );
         const window = transcriptNorm.slice(i, i + windowLen);
         if (levRatio(nameRoman, romanNorm(window)) >= MIN_FUZZY) {
-          return { found: true, canonical: match?.canonical ?? null };
+          return { found: true, canonical };
         }
       }
     }
 
-    return { found: false, canonical: match?.canonical ?? null };
+    return { found: false, canonical };
   }
 }
 

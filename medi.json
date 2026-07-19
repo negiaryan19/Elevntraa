@@ -1,0 +1,9194 @@
+{
+  "entries": [
+    {
+      "generic": "Paracetamol",
+      "brands": [
+        "Calpol",
+        "Dolo",
+        "Crocin",
+        "Pacimol"
+      ],
+      "variants": [
+        "paracetamol",
+        "paracitamol",
+        "paracetomol",
+        "calpol",
+        "dolo",
+        "crocin",
+        "pacimol",
+        "dolo 650",
+        "calpol 500",
+        "dollo",
+        "crocine"
+      ]
+    },
+    {
+      "generic": "Amoxicillin",
+      "brands": [
+        "Mox",
+        "Novamox",
+        "Amoxipen"
+      ],
+      "variants": [
+        "amoxicillin",
+        "amoxicilin",
+        "amoxycillin",
+        "amoxycilin",
+        "mox",
+        "novamox",
+        "amoxipen",
+        "amox",
+        "novamax",
+        "amoxypen"
+      ]
+    },
+    {
+      "generic": "Amoxicillin + Clavulanic Acid",
+      "brands": [
+        "Augmentin",
+        "Clavam",
+        "Advent"
+      ],
+      "variants": [
+        "amoxicillin + clavulanic acid",
+        "amoxicillin and clavulanic acid",
+        "augmentin",
+        "clavam",
+        "advent",
+        "amoxyclav",
+        "augmentin 625",
+        "clavam 625",
+        "amox clav",
+        "amox-clav"
+      ]
+    },
+    {
+      "generic": "Pantoprazole",
+      "brands": [
+        "Pan",
+        "Pantocid",
+        "Pantosec",
+        "Pantodac"
+      ],
+      "variants": [
+        "pantoprazole",
+        "pantoprazol",
+        "pentoprazole",
+        "pan",
+        "pantocid",
+        "pantosec",
+        "pantodac",
+        "pan 40",
+        "pantocid 40",
+        "pantop"
+      ]
+    },
+    {
+      "generic": "Omeprazole",
+      "brands": [
+        "Omez",
+        "Omee",
+        "Lokit"
+      ],
+      "variants": [
+        "omeprazole",
+        "omeprazol",
+        "omiprazole",
+        "omez",
+        "omee",
+        "lokit",
+        "omez 20",
+        "omi",
+        "omeez"
+      ]
+    },
+    {
+      "generic": "Cetirizine",
+      "brands": [
+        "Cetzine",
+        "Okacet",
+        "Alerid"
+      ],
+      "variants": [
+        "cetirizine",
+        "cetrizine",
+        "ceterizine",
+        "setrin",
+        "cetzine",
+        "okacet",
+        "alerid",
+        "cetzine 10",
+        "okaset",
+        "setzine"
+      ]
+    },
+    {
+      "generic": "Levocetirizine",
+      "brands": [
+        "Teczine",
+        "Levocet",
+        "L-Hist",
+        "Vozet"
+      ],
+      "variants": [
+        "levocetirizine",
+        "levocetrizine",
+        "levoceterizine",
+        "teczine",
+        "levocet",
+        "l-hist",
+        "vozet",
+        "teczin",
+        "l hist",
+        "levoset"
+      ]
+    },
+    {
+      "generic": "Levocetirizine + Montelukast",
+      "brands": [
+        "Montek LC",
+        "Monticope",
+        "Montair LC"
+      ],
+      "variants": [
+        "levocetirizine + montelukast",
+        "levocetirizine and montelukast",
+        "montek lc",
+        "monticope",
+        "montair lc",
+        "montek-lc",
+        "montair-lc",
+        "levocet m",
+        "montelucast"
+      ]
+    },
+    {
+      "generic": "Metformin",
+      "brands": [
+        "Glycomet",
+        "Obimet",
+        "Gluformin"
+      ],
+      "variants": [
+        "metformin",
+        "metfomin",
+        "glycomet",
+        "obimet",
+        "gluformin",
+        "glycomet 500",
+        "metformin sr",
+        "glycamet",
+        "obymet"
+      ]
+    },
+    {
+      "generic": "Atorvastatin",
+      "brands": [
+        "Atorva",
+        "Lipicure",
+        "Tonact",
+        "Storvas"
+      ],
+      "variants": [
+        "atorvastatin",
+        "atorvastin",
+        "atorva",
+        "lipicure",
+        "tonact",
+        "storvas",
+        "lipicur",
+        "atorva 10",
+        "atorva 20"
+      ]
+    },
+    {
+      "generic": "Amlodipine",
+      "brands": [
+        "Amlopin",
+        "Stamlo",
+        "Amtas",
+        "Amlosafe"
+      ],
+      "variants": [
+        "amlodipine",
+        "amlodipin",
+        "amlopin",
+        "stamlo",
+        "amtas",
+        "amlosafe",
+        "stamlo 5",
+        "amlopin 5",
+        "amlosef"
+      ]
+    },
+    {
+      "generic": "Telmisartan",
+      "brands": [
+        "Telma",
+        "Tazloc",
+        "Telvas",
+        "Telmikind"
+      ],
+      "variants": [
+        "telmisartan",
+        "telmisartin",
+        "telmisarton",
+        "telma",
+        "tazloc",
+        "telvas",
+        "telmikind",
+        "telma 40",
+        "telma 80",
+        "telvas 40"
+      ]
+    },
+    {
+      "generic": "Telmisartan + Amlodipine",
+      "brands": [
+        "Telma AM",
+        "Tazloc AM",
+        "Telvas AM"
+      ],
+      "variants": [
+        "telmisartan + amlodipine",
+        "telmisartan and amlodipine",
+        "telma am",
+        "tazloc am",
+        "telvas am",
+        "telma-am",
+        "tazloc-am",
+        "telvas-am",
+        "telmaam"
+      ]
+    },
+    {
+      "generic": "Glimepiride",
+      "brands": [
+        "Amaryl",
+        "Glimy",
+        "GP",
+        "Glimisave"
+      ],
+      "variants": [
+        "glimepiride",
+        "glimepirid",
+        "amaryl",
+        "glimy",
+        "gp",
+        "glimisave",
+        "gp 1",
+        "gp 2",
+        "amaryl 1",
+        "amaryl 2",
+        "glimysave"
+      ]
+    },
+    {
+      "generic": "Diclofenac",
+      "brands": [
+        "Voveran",
+        "Reactin",
+        "Dynapar"
+      ],
+      "variants": [
+        "diclofenac",
+        "diclofenac sodium",
+        "dylofenac",
+        "voveran",
+        "reactin",
+        "dynapar",
+        "voveran sr",
+        "dynapar aq",
+        "voveran gel",
+        "voveron"
+      ]
+    },
+    {
+      "generic": "Ibuprofen",
+      "brands": [
+        "Brufen",
+        "Ibugesic"
+      ],
+      "variants": [
+        "ibuprofen",
+        "ibubrufen",
+        "ibuprufen",
+        "brufen",
+        "ibugesic",
+        "brufen 400",
+        "ibugesic plus",
+        "brufin"
+      ]
+    },
+    {
+      "generic": "Aceclofenac + Paracetamol",
+      "brands": [
+        "Zerodol P",
+        "Aceclo Plus",
+        "Acemiz Plus"
+      ],
+      "variants": [
+        "aceclofenac + paracetamol",
+        "aceclofenac and paracetamol",
+        "zerodol p",
+        "aceclo plus",
+        "acemiz plus",
+        "zerodol-p",
+        "acecloplus",
+        "zerodol p tablet",
+        "zerodolp"
+      ]
+    },
+    {
+      "generic": "Pantoprazole + Domperidone",
+      "brands": [
+        "Pan-D",
+        "Pantocid D",
+        "Pantocid DSR",
+        "Pantosec D"
+      ],
+      "variants": [
+        "pantoprazole + domperidone",
+        "pantoprazole and domperidone",
+        "pan-d",
+        "pantocid d",
+        "pantocid dsr",
+        "pantosec d",
+        "pan d",
+        "pantocid-d",
+        "pantocid-dsr",
+        "pand"
+      ]
+    },
+    {
+      "generic": "Azithromycin",
+      "brands": [
+        "Azithral",
+        "Azee",
+        "Azibact"
+      ],
+      "variants": [
+        "azithromycin",
+        "azithromicin",
+        "azithral",
+        "azithril",
+        "aji thral",
+        "azee",
+        "azibact",
+        "azee 500",
+        "azithral 500",
+        "azibact 500"
+      ]
+    },
+    {
+      "generic": "Ciprofloxacin",
+      "brands": [
+        "Ciplox",
+        "Cifran",
+        "Ciprodac"
+      ],
+      "variants": [
+        "ciprofloxacin",
+        "ciprofloxicin",
+        "ciprofloxacine",
+        "ciplox",
+        "cifran",
+        "ciprodac",
+        "ciplox 500",
+        "cifran 500",
+        "cyplox"
+      ]
+    },
+    {
+      "generic": "Ofloxacin",
+      "brands": [
+        "Oflox",
+        "Tarivid",
+        "Zenflox"
+      ],
+      "variants": [
+        "ofloxacin",
+        "ofloxicin",
+        "ofloxacine",
+        "oflox",
+        "tarivid",
+        "zenflox",
+        "zenflox 200",
+        "oflox 200",
+        "ofloxin"
+      ]
+    },
+    {
+      "generic": "Ofloxacin + Ornidazole",
+      "brands": [
+        "O2",
+        "Zenflox OZ",
+        "Oflomac OZ"
+      ],
+      "variants": [
+        "ofloxacin + ornidazole",
+        "ofloxacin and ornidazole",
+        "o2",
+        "zenflox oz",
+        "oflomac oz",
+        "o2 tablet",
+        "zenflox-oz",
+        "oflomac-oz",
+        "otoo"
+      ]
+    },
+    {
+      "generic": "Ranitidine",
+      "brands": [
+        "Rantac",
+        "Aciloc",
+        "Zinetac"
+      ],
+      "variants": [
+        "ranitidine",
+        "ranitidin",
+        "rantac",
+        "aciloc",
+        "zinetac",
+        "rantac 150",
+        "aciloc 150",
+        "rantack",
+        "asiloc"
+      ]
+    },
+    {
+      "generic": "Metronidazole",
+      "brands": [
+        "Flagyl",
+        "Metrogyl",
+        "Metron"
+      ],
+      "variants": [
+        "metronidazole",
+        "metronidazol",
+        "metrogyl",
+        "flagyl",
+        "metrogyl 400",
+        "flagyl 400",
+        "metrogyle",
+        "metrogil",
+        "metron",
+        "metrogyl gel"
+      ]
+    },
+    {
+      "generic": "Calcium + Vitamin D3",
+      "brands": [
+        "Shelcal",
+        "Gemcal"
+      ],
+      "variants": [
+        "calcium + vitamin d3",
+        "calcium and vitamin d3",
+        "calcium and cholecalciferol",
+        "shelcal",
+        "gemcal",
+        "shelcal 500",
+        "gemcal d3"
+      ]
+    },
+    {
+      "generic": "Multivitamins",
+      "brands": [
+        "Becosules",
+        "Cobadex",
+        "Zincovit",
+        "Autrin"
+      ],
+      "variants": [
+        "multivitamins",
+        "multivitamin",
+        "becosules",
+        "cobadex",
+        "zincovit",
+        "autrin",
+        "becosule",
+        "zincovite",
+        "b complex",
+        "b-complex"
+      ]
+    },
+    {
+      "generic": "Iron + Folic Acid",
+      "brands": [
+        "Dexorange",
+        "Orofer XT",
+        "Cheri"
+      ],
+      "variants": [
+        "iron + folic acid",
+        "iron and folic acid",
+        "dexorange",
+        "orofer xt",
+        "cheri",
+        "dexorange syrup",
+        "orofer-xt",
+        "oroferxt",
+        "dexorang"
+      ]
+    },
+    {
+      "generic": "Levosalbutamol + Budesonide",
+      "brands": [
+        "Duolin",
+        "Aerocort"
+      ],
+      "variants": [
+        "levosalbutamol + budesonide",
+        "levosalbutamol and budesonide",
+        "duolin",
+        "aerocort",
+        "duolin inhaler",
+        "aerocort inhaler",
+        "duolin respules",
+        "aerocort rotacaps"
+      ]
+    },
+    {
+      "generic": "Montelukast",
+      "brands": [
+        "Montek",
+        "Montair",
+        "Montas"
+      ],
+      "variants": [
+        "montelukast",
+        "montelucast",
+        "montelukast sodium",
+        "montek",
+        "montair",
+        "montas",
+        "montair 10",
+        "montek 10"
+      ]
+    },
+    {
+      "generic": "Salbutamol",
+      "brands": [
+        "Asthalin",
+        "Ventorlin"
+      ],
+      "variants": [
+        "salbutamol",
+        "salbutamol inhaler",
+        "asthalin",
+        "ventorlin",
+        "asthalin inhaler",
+        "asthalin tablet",
+        "albuterol",
+        "asthaline"
+      ]
+    },
+    {
+      "generic": "Budesonide",
+      "brands": [
+        "Pulmicort",
+        "Budecort"
+      ],
+      "variants": [
+        "budesonide",
+        "budecort",
+        "pulmicort",
+        "budicort",
+        "pulmicort respules",
+        "budecort inhaler",
+        "budesonid"
+      ]
+    },
+    {
+      "generic": "Fluticasone",
+      "brands": [
+        "Flomist",
+        "Flohale",
+        "Fluticone",
+        "Fezoflo"
+      ],
+      "variants": [
+        "fluticasone",
+        "fluticasone nasal spray",
+        "flomist",
+        "flohale",
+        "fluticone",
+        "flomist nasal spray",
+        "fluticason",
+        "fezoflo"
+      ]
+    },
+    {
+      "generic": "Domperidone",
+      "brands": [
+        "Domstal",
+        "Motinorm",
+        "Domperi"
+      ],
+      "variants": [
+        "domperidone",
+        "domperidon",
+        "domstal",
+        "motinorm",
+        "domperi",
+        "domstal 10",
+        "domperon"
+      ]
+    },
+    {
+      "generic": "Ondansetron",
+      "brands": [
+        "Ondem",
+        "Vomikind",
+        "Zofer"
+      ],
+      "variants": [
+        "ondansetron",
+        "ondansitron",
+        "ondem",
+        "vomikind",
+        "zofer",
+        "ondem md",
+        "vomikind md",
+        "ondem tablet",
+        "zofer md"
+      ]
+    },
+    {
+      "generic": "Itraconazole",
+      "brands": [
+        "Canditral",
+        "Itaspor",
+        "Sporanox",
+        "Itracip"
+      ],
+      "variants": [
+        "itraconazole",
+        "itraconazol",
+        "canditral",
+        "itaspor",
+        "sporanox",
+        "canditral 200",
+        "canditral 100",
+        "itaspor 100",
+        "itracip"
+      ]
+    },
+    {
+      "generic": "Fluconazole",
+      "brands": [
+        "Syscan",
+        "Forcan",
+        "Flucos",
+        "Diflucan"
+      ],
+      "variants": [
+        "fluconazole",
+        "fluconazol",
+        "syscan",
+        "forcan",
+        "flucos",
+        "forcan 150",
+        "syscan 150",
+        "flucanazole",
+        "diflucan",
+        "flucos 150",
+        "fluconazole 150"
+      ]
+    },
+    {
+      "generic": "Clotrimazole",
+      "brands": [
+        "Candid",
+        "Surfaz",
+        "Clocip"
+      ],
+      "variants": [
+        "clotrimazole",
+        "clotrimazol",
+        "candid",
+        "surfaz",
+        "clocip",
+        "candid powder",
+        "candid b",
+        "surfaz sn"
+      ]
+    },
+    {
+      "generic": "Permethrin",
+      "brands": [
+        "Permite",
+        "Scabigard"
+      ],
+      "variants": [
+        "permethrin",
+        "permethrin cream",
+        "permite",
+        "scabigard",
+        "permite cream",
+        "permethrin 5%",
+        "scabigard cream"
+      ]
+    },
+    {
+      "generic": "Levofloxacin",
+      "brands": [
+        "Loxof",
+        "Levoflox",
+        "Levomac"
+      ],
+      "variants": [
+        "levofloxacin",
+        "levofloxicin",
+        "loxof",
+        "levoflox",
+        "levomac",
+        "levomac 500",
+        "loxof 500",
+        "levoflox 500"
+      ]
+    },
+    {
+      "generic": "Rabeprazole",
+      "brands": [
+        "Rabeloc",
+        "Veloz",
+        "Happi",
+        "Rabicip"
+      ],
+      "variants": [
+        "rabeprazole",
+        "rabeprazol",
+        "rabeloc",
+        "veloz",
+        "happi",
+        "rabicip",
+        "rabeloc 20",
+        "veloz 20",
+        "happi 20"
+      ]
+    },
+    {
+      "generic": "Rabeprazole + Domperidone",
+      "brands": [
+        "Rabeloc RD",
+        "Veloz D",
+        "Happi D",
+        "Rabicip D"
+      ],
+      "variants": [
+        "rabeprazole + domperidone",
+        "rabeprazole and domperidone",
+        "rabeloc rd",
+        "veloz d",
+        "happi d",
+        "rabicip d",
+        "rabeloc-rd",
+        "veloz-d",
+        "happi-d",
+        "rabelocrd"
+      ]
+    },
+    {
+      "generic": "Losartan",
+      "brands": [
+        "Covance",
+        "Tozaar",
+        "Losar"
+      ],
+      "variants": [
+        "losartan",
+        "losartin",
+        "losartan potassium",
+        "covance",
+        "tozaar",
+        "losar",
+        "losar 50",
+        "losar 25",
+        "covance 50"
+      ]
+    },
+    {
+      "generic": "Atorvastatin + Clopidogrel",
+      "brands": [
+        "Atorva Gold",
+        "Clopilet A",
+        "Deplatt A"
+      ],
+      "variants": [
+        "atorvastatin + clopidogrel",
+        "atorvastatin and clopidogrel",
+        "atorva gold",
+        "clopilet a",
+        "deplatt a",
+        "clopilet-a",
+        "atorva-gold",
+        "deplatt-a",
+        "clopileta"
+      ]
+    },
+    {
+      "generic": "Voglibose",
+      "brands": [
+        "Volibo",
+        "Voglitas",
+        "Voglistar",
+        "Prism"
+      ],
+      "variants": [
+        "voglibose",
+        "voglibos",
+        "volibo",
+        "voglitas",
+        "voglistar",
+        "prism",
+        "volibo 0.2",
+        "volibo 0.3",
+        "voglitas 0.2"
+      ]
+    },
+    {
+      "generic": "Teneligliptin",
+      "brands": [
+        "Dynaglipt",
+        "Tenglyn",
+        "Tenefit",
+        "Teniva"
+      ],
+      "variants": [
+        "teneligliptin",
+        "teneligliptine",
+        "dynaglipt",
+        "tenglyn",
+        "tenefit",
+        "teniva",
+        "teneligliptin 20",
+        "tenglyn 20"
+      ]
+    },
+    {
+      "generic": "Sitagliptin",
+      "brands": [
+        "Januvia",
+        "Istavel",
+        "Sitara"
+      ],
+      "variants": [
+        "sitagliptin",
+        "sitagliptine",
+        "januvia",
+        "istavel",
+        "sitara",
+        "januvia 50",
+        "januvia 100",
+        "istavel 50"
+      ]
+    },
+    {
+      "generic": "Albendazole",
+      "brands": [
+        "Zentel",
+        "Bandy",
+        "Noworm"
+      ],
+      "variants": [
+        "albendazole",
+        "albendazol",
+        "zentel",
+        "bandy",
+        "noworm",
+        "albendazole 400",
+        "zentel 400",
+        "bandy 400",
+        "albandazole",
+        "zentel tablet",
+        "bandy plus"
+      ]
+    },
+    {
+      "generic": "Ivermectin",
+      "brands": [
+        "Ivecop",
+        "Vermact",
+        "Ivel",
+        "Ivrea"
+      ],
+      "variants": [
+        "ivermectin",
+        "ivermectine",
+        "ivecop",
+        "vermact",
+        "ivel",
+        "ivecop 6",
+        "ivecop 12",
+        "vermact 12",
+        "ivermectyn",
+        "ivrea",
+        "ivrea cream"
+      ]
+    },
+    {
+      "generic": "Deflazacort",
+      "brands": [
+        "Defcort",
+        "Orthocort",
+        "Decort"
+      ],
+      "variants": [
+        "deflazacort",
+        "deflazacorte",
+        "defcort",
+        "orthocort",
+        "decort",
+        "defcort 6",
+        "defcort 30",
+        "deflazacort 6"
+      ]
+    },
+    {
+      "generic": "Spironolactone",
+      "brands": [
+        "Aldactone",
+        "Lasilactone",
+        "Spiron",
+        "Spiroctan"
+      ],
+      "variants": [
+        "spironolactone",
+        "spironolacton",
+        "aldactone",
+        "lasilactone",
+        "aldactone 25",
+        "aldactone 50",
+        "lasilactone 50",
+        "spirnolactone",
+        "spiron",
+        "spiroctan",
+        "aldactone 100"
+      ]
+    },
+    {
+      "generic": "Rosuvastatin",
+      "brands": [
+        "Rosuvas",
+        "Crevast",
+        "Novastat",
+        "Roseday"
+      ],
+      "variants": [
+        "rosuvastatin",
+        "rosuvastin",
+        "rosuvas",
+        "crevast",
+        "novastat",
+        "roseday",
+        "roseday 10",
+        "rosuvas 10",
+        "rosuvas 20",
+        "rosevastatin",
+        "novastatin"
+      ]
+    },
+    {
+      "generic": "Cefixime",
+      "brands": [
+        "Taxim O",
+        "Zifi",
+        "Milixim",
+        "Cefi"
+      ],
+      "variants": [
+        "cefixime",
+        "cefixim",
+        "cefexime",
+        "taxim o",
+        "zifi",
+        "milixim",
+        "cefi",
+        "taxim-o",
+        "zifi 200",
+        "taxim o 200",
+        "cefexim",
+        "zeefi"
+      ]
+    },
+    {
+      "generic": "Gliclazide",
+      "brands": [
+        "Diamicron",
+        "Glizid"
+      ],
+      "variants": [
+        "gliclazide",
+        "gliclazid",
+        "glyclazide",
+        "diamicron",
+        "glizid",
+        "glizid 80",
+        "diamicron xr",
+        "glycizide"
+      ]
+    },
+    {
+      "generic": "Glipizide",
+      "brands": [
+        "Glynase",
+        "Glucotrol",
+        "Minidiab"
+      ],
+      "variants": [
+        "glipizide",
+        "glipizid",
+        "glynas",
+        "glynase",
+        "glucotrol",
+        "minidiab",
+        "glynase 5"
+      ]
+    },
+    {
+      "generic": "Pioglitazone",
+      "brands": [
+        "Pio",
+        "Pioglit",
+        "Pioz"
+      ],
+      "variants": [
+        "pioglitazone",
+        "pioglitazon",
+        "pyoglitazone",
+        "pio",
+        "pioglit",
+        "pioz",
+        "pioz 15",
+        "pioglit 15"
+      ]
+    },
+    {
+      "generic": "Metformin + Glimepiride",
+      "brands": [
+        "Glycomet GP",
+        "Glimisave Max",
+        "Gemer"
+      ],
+      "variants": [
+        "metformin + glimepiride",
+        "metformin and glimepiride",
+        "glycomet gp",
+        "glimisave max",
+        "gemer",
+        "glycomet gp 1",
+        "glycomet gp 2",
+        "glimisave max 2",
+        "gemer 1",
+        "gemer 2",
+        "glycomet-gp"
+      ]
+    },
+    {
+      "generic": "Metformin + Teneligliptin",
+      "brands": [
+        "Tenglyn M",
+        "Dynaglipt M",
+        "Teniva M"
+      ],
+      "variants": [
+        "metformin + teneligliptin",
+        "metformin and teneligliptin",
+        "tenglyn m",
+        "dynaglipt m",
+        "teniva m",
+        "tenglyn-m",
+        "dynaglipt-m",
+        "teniva-m"
+      ]
+    },
+    {
+      "generic": "Metformin + Vildagliptin",
+      "brands": [
+        "Galvus Met",
+        "Jalra M",
+        "Zomelis Met"
+      ],
+      "variants": [
+        "metformin + vildagliptin",
+        "metformin and vildagliptin",
+        "galvus met",
+        "jalra m",
+        "zomelis met",
+        "galvusmet",
+        "jalra-m",
+        "jalram",
+        "galvus met 50/500"
+      ]
+    },
+    {
+      "generic": "Rosuvastatin + Fenofibrate",
+      "brands": [
+        "Rosuvas F",
+        "Crevast F",
+        "Roseday F"
+      ],
+      "variants": [
+        "rosuvastatin + fenofibrate",
+        "rosuvastatin and fenofibrate",
+        "rosuvas f",
+        "crevast f",
+        "roseday f",
+        "rosuvas-f",
+        "crevast-f",
+        "roseday-f"
+      ]
+    },
+    {
+      "generic": "Olmesartan",
+      "brands": [
+        "Olmesar",
+        "Olmy",
+        "Ometec"
+      ],
+      "variants": [
+        "olmesartan",
+        "olmesartin",
+        "olmesar",
+        "olmy",
+        "ometec",
+        "olmesar 20",
+        "olmesar 40",
+        "olmy 20"
+      ]
+    },
+    {
+      "generic": "Ramipril",
+      "brands": [
+        "Cardace",
+        "Ramistar",
+        "Hopace"
+      ],
+      "variants": [
+        "ramipril",
+        "cardace",
+        "ramistar",
+        "hopace",
+        "cardace 2.5",
+        "cardace 5",
+        "ramistar 5"
+      ]
+    },
+    {
+      "generic": "Enalapril",
+      "brands": [
+        "Enam",
+        "Nuril",
+        "Dilvas"
+      ],
+      "variants": [
+        "enalapril",
+        "enam",
+        "nuril",
+        "dilvas",
+        "enam 5",
+        "enam 2.5",
+        "enam 10"
+      ]
+    },
+    {
+      "generic": "Losartan + Hydrochlorothiazide",
+      "brands": [
+        "Losar H",
+        "Covance H",
+        "Tozaar H"
+      ],
+      "variants": [
+        "losartan + hydrochlorothiazide",
+        "losartan and hydrochlorothiazide",
+        "losar h",
+        "covance h",
+        "tozaar h",
+        "losar-h",
+        "covance-h",
+        "losarh"
+      ]
+    },
+    {
+      "generic": "Telmisartan + Hydrochlorothiazide",
+      "brands": [
+        "Telma H",
+        "Tazloc H",
+        "Telvas H"
+      ],
+      "variants": [
+        "telmisartan + hydrochlorothiazide",
+        "telmisartan and hydrochlorothiazide",
+        "telma h",
+        "tazloc h",
+        "telvas h",
+        "telma-h",
+        "tazloc-h",
+        "telvas-h",
+        "telmah"
+      ]
+    },
+    {
+      "generic": "Metoprolol",
+      "brands": [
+        "Metolar",
+        "Seloken",
+        "Metpure",
+        "Starpress"
+      ],
+      "variants": [
+        "metoprolol",
+        "metoprolol succinate",
+        "metolar",
+        "seloken",
+        "metpure",
+        "starpress",
+        "metolar xr",
+        "metolar 25",
+        "metolar 50"
+      ]
+    },
+    {
+      "generic": "Atenolol",
+      "brands": [
+        "Aten",
+        "Betacard",
+        "Atenova"
+      ],
+      "variants": [
+        "atenolol",
+        "atenol",
+        "aten",
+        "betacard",
+        "atenova",
+        "aten 50",
+        "aten 25"
+      ]
+    },
+    {
+      "generic": "Bisoprolol",
+      "brands": [
+        "Concor",
+        "Biselect",
+        "Bisocad"
+      ],
+      "variants": [
+        "bisoprolol",
+        "bisoprolol fumarate",
+        "concor",
+        "biselect",
+        "bisocad",
+        "concor 5",
+        "concor 2.5"
+      ]
+    },
+    {
+      "generic": "Clopidogrel",
+      "brands": [
+        "Clopilet",
+        "Deplatt",
+        "Clopivas"
+      ],
+      "variants": [
+        "clopidogrel",
+        "clopidogril",
+        "clopilet",
+        "deplatt",
+        "clopivas",
+        "deplatt 75",
+        "clopilet 75"
+      ]
+    },
+    {
+      "generic": "Aspirin",
+      "brands": [
+        "Ecosprin",
+        "Loprin",
+        "Colsprin"
+      ],
+      "variants": [
+        "aspirin",
+        "asprin",
+        "ecosprin",
+        "loprin",
+        "colsprin",
+        "ecosprin 75",
+        "ecosprin 150",
+        "aspreen"
+      ]
+    },
+    {
+      "generic": "Aspirin + Atorvastatin",
+      "brands": [
+        "Ecosprin Gold",
+        "Atorva Asp",
+        "Lipicure AS"
+      ],
+      "variants": [
+        "aspirin + atorvastatin",
+        "aspirin and atorvastatin",
+        "ecosprin gold",
+        "atorva asp",
+        "lipicure as",
+        "ecosprin-gold",
+        "atorva-asp"
+      ]
+    },
+    {
+      "generic": "Esomeprazole",
+      "brands": [
+        "Sompraz",
+        "Izra",
+        "Esomac"
+      ],
+      "variants": [
+        "esomeprazole",
+        "esomeprazol",
+        "sompraz",
+        "izra",
+        "esomac",
+        "sompraz 40",
+        "sompraz 20",
+        "isomeprazole"
+      ]
+    },
+    {
+      "generic": "Esomeprazole + Domperidone",
+      "brands": [
+        "Sompraz D",
+        "Izra D",
+        "Esomac D",
+        "Sompraz DSR",
+        "Esogress D"
+      ],
+      "variants": [
+        "esomeprazole + domperidone",
+        "esomeprazole and domperidone",
+        "sompraz d",
+        "izra d",
+        "esomac d",
+        "sompraz-d",
+        "izra-d",
+        "sompraz dsr",
+        "domperidone + esomeprazole",
+        "domperidone and esomeprazole",
+        "esogress d",
+        "sompraz-dsr",
+        "sompraz dsr 40"
+      ]
+    },
+    {
+      "generic": "Famotidine",
+      "brands": [
+        "Famocid",
+        "Famtac",
+        "Facid"
+      ],
+      "variants": [
+        "famotidine",
+        "famotidin",
+        "famocid",
+        "famtac",
+        "facid",
+        "famocid 20",
+        "famocid 40"
+      ]
+    },
+    {
+      "generic": "Sucralfate",
+      "brands": [
+        "Sucrafil",
+        "Sparacid",
+        "Sucrace"
+      ],
+      "variants": [
+        "sucralfate",
+        "sucralfat",
+        "sucrafil",
+        "sparacid",
+        "sucrace",
+        "sucrafil suspension"
+      ]
+    },
+    {
+      "generic": "Dicyclomine + Paracetamol",
+      "brands": [
+        "Cyclopam",
+        "Spasmonil",
+        "Colimex"
+      ],
+      "variants": [
+        "dicyclomine + paracetamol",
+        "dicyclomine and paracetamol",
+        "cyclopam",
+        "spasmonil",
+        "colimex",
+        "cyclopam tablet",
+        "spasmonil tablet"
+      ]
+    },
+    {
+      "generic": "Mefenamic Acid",
+      "brands": [
+        "Meftal",
+        "Ponstan",
+        "Mefkind"
+      ],
+      "variants": [
+        "mefenamic acid",
+        "mefanamic acid",
+        "meftal",
+        "ponstan",
+        "mefkind",
+        "meftal 500",
+        "meftal spas"
+      ]
+    },
+    {
+      "generic": "Loperamide",
+      "brands": [
+        "Lopamide",
+        "Imodium",
+        "Eldoper"
+      ],
+      "variants": [
+        "loperamide",
+        "loperamid",
+        "lopamide",
+        "imodium",
+        "eldoper",
+        "eldoper capsule",
+        "imoduim"
+      ]
+    },
+    {
+      "generic": "ORS (Oral Rehydration Salts)",
+      "brands": [
+        "Electral",
+        "Walyte",
+        "ORS"
+      ],
+      "variants": [
+        "ors (oral rehydration salts)",
+        "ors",
+        "oral rehydration salts",
+        "electral",
+        "walyte",
+        "electral powder",
+        "ors sachet"
+      ]
+    },
+    {
+      "generic": "Bacillus Clausii",
+      "brands": [
+        "Enterogermina",
+        "Ecogermina",
+        "Tufpro"
+      ],
+      "variants": [
+        "bacillus clausii",
+        "enterogermina",
+        "ecogermina",
+        "tufpro",
+        "enterogermina suspension"
+      ]
+    },
+    {
+      "generic": "Lactulose",
+      "brands": [
+        "Duphalac",
+        "Looz",
+        "Cremaffin Fresh"
+      ],
+      "variants": [
+        "lactulose",
+        "lactulose syrup",
+        "duphalac",
+        "looz",
+        "cremaffin fresh"
+      ]
+    },
+    {
+      "generic": "Bisacodyl",
+      "brands": [
+        "Dulcolax",
+        "Bowelax",
+        "Gerbisa"
+      ],
+      "variants": [
+        "bisacodyl",
+        "bisacodil",
+        "dulcolax",
+        "bowelax",
+        "gerbisa",
+        "dulcolax tablet",
+        "gerbisa tablet"
+      ]
+    },
+    {
+      "generic": "Levofloxacin + Ornidazole",
+      "brands": [
+        "Loxof OZ",
+        "Levomac OZ",
+        "Levoflox OZ"
+      ],
+      "variants": [
+        "levofloxacin + ornidazole",
+        "levofloxacin and ornidazole",
+        "loxof oz",
+        "levomac oz",
+        "levoflox oz",
+        "loxof-oz",
+        "levomac-oz"
+      ]
+    },
+    {
+      "generic": "Cefpodoxime Proxetil",
+      "brands": [
+        "Monocef O",
+        "Gudcef",
+        "Doxcef"
+      ],
+      "variants": [
+        "cefpodoxime proxetil",
+        "cefpodoxime",
+        "monocef o",
+        "gudcef",
+        "doxcef",
+        "monocef-o",
+        "gudcef 200",
+        "monocef o 200"
+      ]
+    },
+    {
+      "generic": "Cefuroxime Axetil",
+      "brands": [
+        "Ceftum",
+        "Pulmocef",
+        "Cetil"
+      ],
+      "variants": [
+        "cefuroxime axetil",
+        "cefuroxime",
+        "ceftum",
+        "pulmocef",
+        "cetil",
+        "ceftum 500",
+        "ceftum 250"
+      ]
+    },
+    {
+      "generic": "Doxycycline",
+      "brands": [
+        "Doxy 1 LDR",
+        "Microdox",
+        "Doxt"
+      ],
+      "variants": [
+        "doxycycline",
+        "doxycyclin",
+        "doxy-1",
+        "doxy 1",
+        "microdox",
+        "doxt",
+        "microdox-lbx",
+        "doxycycline 100",
+        "doxy 1 ldr"
+      ]
+    },
+    {
+      "generic": "Roxithromycin",
+      "brands": [
+        "Rulide",
+        "Roxybact",
+        "Roxid"
+      ],
+      "variants": [
+        "roxithromycin",
+        "roxithromicin",
+        "rulide",
+        "roxybact",
+        "roxid",
+        "roxid 150",
+        "roxid 300"
+      ]
+    },
+    {
+      "generic": "Clarithromycin",
+      "brands": [
+        "Crixan",
+        "Claribid",
+        "Clarinova"
+      ],
+      "variants": [
+        "clarithromycin",
+        "clarithromicin",
+        "crixan",
+        "claribid",
+        "clarinova",
+        "crixan 500",
+        "claribid 500"
+      ]
+    },
+    {
+      "generic": "Nitrofurantoin",
+      "brands": [
+        "Martifur",
+        "Uribid",
+        "Nifty"
+      ],
+      "variants": [
+        "nitrofurantoin",
+        "nitrofurantion",
+        "martifur",
+        "uribid",
+        "nifty",
+        "martifur mr",
+        "uribid 100"
+      ]
+    },
+    {
+      "generic": "Terbinafine",
+      "brands": [
+        "Sebifin",
+        "Terbinaforce",
+        "Tyza"
+      ],
+      "variants": [
+        "terbinafine",
+        "terbinafin",
+        "sebifin",
+        "terbinaforce",
+        "tyza",
+        "terbinaforce 250",
+        "sebifin 250",
+        "tyza 250",
+        "terbinafine cream"
+      ]
+    },
+    {
+      "generic": "Ketoconazole",
+      "brands": [
+        "Ketocip",
+        "Nizoral",
+        "Danruff",
+        "Nizral"
+      ],
+      "variants": [
+        "ketoconazole",
+        "ketoconazol",
+        "ketocip",
+        "nizoral",
+        "danruff",
+        "ketocip shampoo",
+        "ketoconazole cream",
+        "nizral",
+        "nizral shampoo",
+        "ketoconazole shampoo"
+      ]
+    },
+    {
+      "generic": "Griseofulvin",
+      "brands": [
+        "Grisovin FP",
+        "Grisorich",
+        "Grisactin",
+        "Griseo"
+      ],
+      "variants": [
+        "griseofulvin",
+        "griseofulvin fp",
+        "grisovin fp",
+        "grisorich",
+        "grisovin",
+        "grisactin",
+        "griseo",
+        "grisovin 250",
+        "grisovin 500"
+      ]
+    },
+    {
+      "generic": "Loratadine",
+      "brands": [
+        "Loratin",
+        "Alastin",
+        "Loric"
+      ],
+      "variants": [
+        "loratadine",
+        "loratadin",
+        "loratin",
+        "alastin",
+        "loric",
+        "alastin 10"
+      ]
+    },
+    {
+      "generic": "Fexofenadine",
+      "brands": [
+        "Allegra",
+        "Fexa",
+        "Fexofast"
+      ],
+      "variants": [
+        "fexofenadine",
+        "fexofenadin",
+        "allegra",
+        "fexa",
+        "fexofast",
+        "allegra 120",
+        "allegra 180"
+      ]
+    },
+    {
+      "generic": "Hydroxyzine",
+      "brands": [
+        "Atarax",
+        "Hicope"
+      ],
+      "variants": [
+        "hydroxyzine",
+        "hydroxyzin",
+        "atarax",
+        "hicope",
+        "atarax 25",
+        "atarax 10",
+        "hicope 25"
+      ]
+    },
+    {
+      "generic": "Pheniramine Maleate",
+      "brands": [
+        "Avil"
+      ],
+      "variants": [
+        "pheniramine maleate",
+        "pheniramine",
+        "avil",
+        "avil 25",
+        "avil 50",
+        "avil tablet"
+      ]
+    },
+    {
+      "generic": "Dextromethorphan + Chlorpheniramine",
+      "brands": [
+        "Ascoril D Plus",
+        "Corex DX",
+        "Grilinctus DX"
+      ],
+      "variants": [
+        "dextromethorphan + chlorpheniramine",
+        "dextromethorphan and chlorpheniramine",
+        "ascoril d",
+        "ascoril d plus",
+        "corex dx",
+        "grilinctus dx",
+        "ascoril-d",
+        "corex-dx"
+      ]
+    },
+    {
+      "generic": "Ambroxol + Levosalbutamol + Guaiphenesin",
+      "brands": [
+        "Ascoril LS",
+        "Solvin LS",
+        "Alex LS"
+      ],
+      "variants": [
+        "ambroxol + levosalbutamol + guaiphenesin",
+        "ambroxol levosalbutamol guaiphenesin",
+        "ascoril ls",
+        "solvin ls",
+        "alex ls",
+        "ascoril-ls",
+        "solvin-ls",
+        "ascoril ls syrup"
+      ]
+    },
+    {
+      "generic": "Terbutaline + Bromhexine + Guaiphenesin",
+      "brands": [
+        "Grilinctus BM",
+        "Ascoril",
+        "Kofilet"
+      ],
+      "variants": [
+        "terbutaline + bromhexine + guaiphenesin",
+        "terbutaline bromhexine guaiphenesin",
+        "grilinctus bm",
+        "ascoril",
+        "kofilet",
+        "grilinctus-bm",
+        "grilinctus syrup"
+      ]
+    },
+    {
+      "generic": "Allopurinol",
+      "brands": [
+        "Zyloric",
+        "Alorich",
+        "Cyloric",
+        "Zyloprim"
+      ],
+      "variants": [
+        "allopurinol",
+        "zyloric",
+        "alorich",
+        "cyloric",
+        "zyloric 100",
+        "zyloric 300",
+        "zyloprim"
+      ]
+    },
+    {
+      "generic": "Levothyroxine Sodium",
+      "brands": [
+        "Thyronorm",
+        "Eltroxin",
+        "Thyrox"
+      ],
+      "variants": [
+        "levothyroxine sodium",
+        "levothyroxine",
+        "thyronorm",
+        "eltroxin",
+        "thyrox",
+        "thyronorm 50",
+        "thyronorm 100",
+        "thyronorm 25",
+        "thyronorm 75",
+        "thyronorm 12.5"
+      ]
+    },
+    {
+      "generic": "Carvedilol",
+      "brands": [
+        "Carca",
+        "Cardivas",
+        "Carvil"
+      ],
+      "variants": [
+        "carvedilol",
+        "carvedilol tablet",
+        "carca",
+        "cardivas",
+        "carvil",
+        "carca 3.125",
+        "carca 6.25",
+        "carca 12.5"
+      ]
+    },
+    {
+      "generic": "Chlorthalidone",
+      "brands": [
+        "Thalix",
+        "CTD",
+        "Chlortone"
+      ],
+      "variants": [
+        "chlorthalidone",
+        "chlorthalidon",
+        "clorthalidone",
+        "thalix",
+        "ctd",
+        "chlortone",
+        "ctd 12.5",
+        "ctd 6.25"
+      ]
+    },
+    {
+      "generic": "Spironolactone + Torasemide",
+      "brands": [
+        "Dytor Plus",
+        "Torget Plus",
+        "Tide Plus"
+      ],
+      "variants": [
+        "spironolactone + torasemide",
+        "spironolactone and torasemide",
+        "dytor plus",
+        "torget plus",
+        "tide plus",
+        "dytor plus 10",
+        "dytor plus 5",
+        "dytor-plus"
+      ]
+    },
+    {
+      "generic": "Torasemide",
+      "brands": [
+        "Dytor",
+        "Torget",
+        "Tide"
+      ],
+      "variants": [
+        "torasemide",
+        "torasemid",
+        "torsemide",
+        "dytor",
+        "torget",
+        "tide",
+        "dytor 10",
+        "dytor 5",
+        "dytor 20"
+      ]
+    },
+    {
+      "generic": "Indapamide",
+      "brands": [
+        "Natrilix SR",
+        "Lorvas",
+        "Inditel"
+      ],
+      "variants": [
+        "indapamide",
+        "indapamid",
+        "natrilix sr",
+        "lorvas",
+        "inditel",
+        "natrilix",
+        "natrilix-sr"
+      ]
+    },
+    {
+      "generic": "Cilnidipine",
+      "brands": [
+        "Cilacar",
+        "Cilaheart",
+        "Cilny"
+      ],
+      "variants": [
+        "cilnidipine",
+        "cilnidipin",
+        "silnidipine",
+        "cilacar",
+        "cilaheart",
+        "cilny",
+        "cilacar 10",
+        "cilacar 5",
+        "cilacar 20"
+      ]
+    },
+    {
+      "generic": "Cilnidipine + Telmisartan",
+      "brands": [
+        "Cilacar T",
+        "Telma LN",
+        "Cilny T"
+      ],
+      "variants": [
+        "cilnidipine + telmisartan",
+        "cilnidipine and telmisartan",
+        "cilacar t",
+        "telma ln",
+        "cilny t",
+        "cilacar-t",
+        "telma-ln"
+      ]
+    },
+    {
+      "generic": "Clonidine",
+      "brands": [
+        "Arkamin",
+        "Clonipress"
+      ],
+      "variants": [
+        "clonidine",
+        "clonidin",
+        "arkamin",
+        "clonipress",
+        "arkamin tablet"
+      ]
+    },
+    {
+      "generic": "Methyldopa",
+      "brands": [
+        "Alphadopa",
+        "Medopa"
+      ],
+      "variants": [
+        "methyldopa",
+        "methyldopa tablet",
+        "alphadopa",
+        "medopa",
+        "alphadopa 250"
+      ]
+    },
+    {
+      "generic": "Nebivolol",
+      "brands": [
+        "Nebicard",
+        "Nebistar",
+        "Nebilet"
+      ],
+      "variants": [
+        "nebivolol",
+        "nebivolol tablet",
+        "nebicard",
+        "nebistar",
+        "nebilet",
+        "nebicard 5",
+        "nebistar 5"
+      ]
+    },
+    {
+      "generic": "Nitroglycerin",
+      "brands": [
+        "Angispan TR",
+        "Myonit SR",
+        "Nitrocontin"
+      ],
+      "variants": [
+        "nitroglycerin",
+        "nitroglycerine",
+        "gtn",
+        "angispan tr",
+        "myonit sr",
+        "nitrocontin",
+        "nitrocontin 2.6",
+        "nitrocontin 6.4",
+        "angispan"
+      ]
+    },
+    {
+      "generic": "Isosorbide Dinitrate",
+      "brands": [
+        "Sorbitrate",
+        "Isordil"
+      ],
+      "variants": [
+        "isosorbide dinitrate",
+        "sorbitrate",
+        "isordil",
+        "sorbitrate 10",
+        "sorbitrate 5",
+        "sublingual sorbitrate"
+      ]
+    },
+    {
+      "generic": "Isosorbide Mononitrate",
+      "brands": [
+        "Ismo",
+        "Monotrate",
+        "Monoket"
+      ],
+      "variants": [
+        "isosorbide mononitrate",
+        "ismo",
+        "monotrate",
+        "monoket",
+        "monotrate 20",
+        "monotrate od"
+      ]
+    },
+    {
+      "generic": "Ivabradine",
+      "brands": [
+        "Ivabrad",
+        "Inapure",
+        "Ivacard"
+      ],
+      "variants": [
+        "ivabradine",
+        "ivabradin",
+        "ivabrad",
+        "inapure",
+        "ivacard",
+        "ivabrad 5",
+        "ivabrad 7.5"
+      ]
+    },
+    {
+      "generic": "Nicorandil",
+      "brands": [
+        "Nikoran",
+        "Korandil",
+        "Nicostar"
+      ],
+      "variants": [
+        "nicorandil",
+        "nikoran",
+        "korandil",
+        "nicostar",
+        "nikoran 5",
+        "nikoran 10"
+      ]
+    },
+    {
+      "generic": "Metformin + Pioglitazone",
+      "brands": [
+        "Pioglar M",
+        "Pioz MF",
+        "Tripride"
+      ],
+      "variants": [
+        "metformin + pioglitazone",
+        "metformin and pioglitazone",
+        "pioglar m",
+        "pioz mf",
+        "tripride",
+        "pioglar-m",
+        "pioz-mf"
+      ]
+    },
+    {
+      "generic": "Vildagliptin",
+      "brands": [
+        "Galvus",
+        "Jalra",
+        "Zomelis"
+      ],
+      "variants": [
+        "vildagliptin",
+        "vildagliptine",
+        "galvus",
+        "jalra",
+        "zomelis",
+        "galvus 50"
+      ]
+    },
+    {
+      "generic": "Dapagliflozin",
+      "brands": [
+        "Forxiga",
+        "Gledapa",
+        "Dapa"
+      ],
+      "variants": [
+        "dapagliflozin",
+        "dapagliflozin tablet",
+        "forxiga",
+        "gledapa",
+        "dapa",
+        "forxiga 10",
+        "forxiga 5"
+      ]
+    },
+    {
+      "generic": "Empagliflozin",
+      "brands": [
+        "Jardiance",
+        "Gibtul",
+        "Empaco"
+      ],
+      "variants": [
+        "empagliflozin",
+        "empagliflozine",
+        "jardiance",
+        "gibtul",
+        "empaco",
+        "jardiance 10",
+        "jardiance 25"
+      ]
+    },
+    {
+      "generic": "Dapagliflozin + Metformin",
+      "brands": [
+        "Xigduo XR",
+        "Oxramet XR",
+        "Dapaz MF"
+      ],
+      "variants": [
+        "dapagliflozin + metformin",
+        "dapagliflozin and metformin",
+        "xigduo xr",
+        "oxramet xr",
+        "dapaz mf",
+        "xigduo",
+        "oxramet"
+      ]
+    },
+    {
+      "generic": "Glipizide + Metformin",
+      "brands": [
+        "Glynase MF",
+        "Glucotrol MF"
+      ],
+      "variants": [
+        "glipizide + metformin",
+        "glipizide and metformin",
+        "glynase mf",
+        "glucotrol mf",
+        "glynase-mf"
+      ]
+    },
+    {
+      "generic": "Voglibose + Metformin",
+      "brands": [
+        "Volibo M",
+        "PPG Met",
+        "Voglitas M"
+      ],
+      "variants": [
+        "voglibose + metformin",
+        "voglibose and metformin",
+        "volibo m",
+        "ppg met",
+        "voglitas m",
+        "volibo-m"
+      ]
+    },
+    {
+      "generic": "Alpha Lipoic Acid + Methylcobalamin + Pyridoxine + Folic Acid",
+      "brands": [
+        "Nurokind Plus RF",
+        "Rejunex CD",
+        "Mecofol OD"
+      ],
+      "variants": [
+        "alpha lipoic acid + methylcobalamin + pyridoxine + folic acid",
+        "nurokind plus rf",
+        "rejunex cd",
+        "mecofol od",
+        "nurokind plus",
+        "rejunex-cd",
+        "nurokind-plus"
+      ]
+    },
+    {
+      "generic": "Methylcobalamin",
+      "brands": [
+        "Nurokind OD",
+        "Mecobon",
+        "Meconerv"
+      ],
+      "variants": [
+        "methylcobalamin",
+        "mecobalamin",
+        "nurokind od",
+        "mecobon",
+        "meconerv",
+        "nurokind-od",
+        "b12"
+      ]
+    },
+    {
+      "generic": "Pregabalin",
+      "brands": [
+        "Lyrica",
+        "Pregabid",
+        "Maxgalin"
+      ],
+      "variants": [
+        "pregabalin",
+        "pregabaline",
+        "lyrica",
+        "pregabid",
+        "maxgalin",
+        "pregabid 75",
+        "maxgalin 75"
+      ]
+    },
+    {
+      "generic": "Pregabalin + Methylcobalamin",
+      "brands": [
+        "Nurokind P",
+        "Pregabid M",
+        "Pregeb M"
+      ],
+      "variants": [
+        "pregabalin + methylcobalamin",
+        "pregabalin and methylcobalamin",
+        "nurokind p",
+        "pregabid m",
+        "pregeb m",
+        "nurokind-p",
+        "pregabid-m"
+      ]
+    },
+    {
+      "generic": "Gabapentin",
+      "brands": [
+        "Gabapin",
+        "Neurontin",
+        "Pentatrop"
+      ],
+      "variants": [
+        "gabapentin",
+        "gabapentine",
+        "gabapin",
+        "neurontin",
+        "pentatrop",
+        "gabapin 300",
+        "gabapin 100"
+      ]
+    },
+    {
+      "generic": "Gabapentin + Methylcobalamin",
+      "brands": [
+        "Gabapin ME",
+        "Gabaneuron",
+        "Mecofit G"
+      ],
+      "variants": [
+        "gabapentin + methylcobalamin",
+        "gabapentin and methylcobalamin",
+        "gabapin me",
+        "gabaneuron",
+        "mecofit g",
+        "gabapin-me",
+        "gabaneuron 300"
+      ]
+    },
+    {
+      "generic": "Amitriptyline",
+      "brands": [
+        "Tryptomer",
+        "Amitone",
+        "Eliwel"
+      ],
+      "variants": [
+        "amitriptyline",
+        "amitriptiline",
+        "tryptomer",
+        "amitone",
+        "eliwel",
+        "tryptomer 10",
+        "tryptomer 25"
+      ]
+    },
+    {
+      "generic": "Nortriptyline",
+      "brands": [
+        "Sensival",
+        "Primox",
+        "Noritrip"
+      ],
+      "variants": [
+        "nortriptyline",
+        "nortriptiline",
+        "sensival",
+        "primox",
+        "noritrip",
+        "sensival 25"
+      ]
+    },
+    {
+      "generic": "Escitalopram",
+      "brands": [
+        "Nexito",
+        "Cilentra",
+        "Esdep"
+      ],
+      "variants": [
+        "escitalopram",
+        "escitalopram oxalate",
+        "nexito",
+        "cilentra",
+        "esdep",
+        "nexito 10",
+        "nexito 5",
+        "nexito 20"
+      ]
+    },
+    {
+      "generic": "Sertraline",
+      "brands": [
+        "Daxid",
+        "Serlift",
+        "Zoloft"
+      ],
+      "variants": [
+        "sertraline",
+        "sertralin",
+        "daxid",
+        "serlift",
+        "zoloft",
+        "daxid 50",
+        "serlift 50"
+      ]
+    },
+    {
+      "generic": "Clonazepam",
+      "brands": [
+        "Clonotril",
+        "Petril",
+        "Epitril"
+      ],
+      "variants": [
+        "clonazepam",
+        "clonazepam tablet",
+        "clonotril",
+        "petril",
+        "epitril",
+        "clonotril 0.5",
+        "clonotril 0.25"
+      ]
+    },
+    {
+      "generic": "Alprazolam",
+      "brands": [
+        "Alprax",
+        "Zolax",
+        "Trika"
+      ],
+      "variants": [
+        "alprazolam",
+        "alprazolam tablet",
+        "alprax",
+        "zolax",
+        "trika",
+        "alprax 0.5",
+        "alprax 0.25"
+      ]
+    },
+    {
+      "generic": "Lorazepam",
+      "brands": [
+        "Ativan",
+        "Larpose",
+        "Kabivan"
+      ],
+      "variants": [
+        "lorazepam",
+        "lorazepam tablet",
+        "ativan",
+        "larpose",
+        "kabivan",
+        "ativan 1",
+        "ativan 2"
+      ]
+    },
+    {
+      "generic": "Chlordiazepoxide",
+      "brands": [
+        "Librium",
+        "Clip",
+        "Equibrium"
+      ],
+      "variants": [
+        "chlordiazepoxide",
+        "librium",
+        "clip",
+        "equibrium",
+        "librium 10",
+        "librium 25"
+      ]
+    },
+    {
+      "generic": "Propranolol",
+      "brands": [
+        "Inderal",
+        "Betacap",
+        "Ciplar"
+      ],
+      "variants": [
+        "propranolol",
+        "propranalol",
+        "inderal",
+        "betacap",
+        "ciplar",
+        "ciplar 10",
+        "ciplar 40",
+        "ciplar la"
+      ]
+    },
+    {
+      "generic": "Etizolam",
+      "brands": [
+        "Etilaam",
+        "Etizola",
+        "Etisaf"
+      ],
+      "variants": [
+        "etizolam",
+        "etizolam tablet",
+        "etilaam",
+        "etizola",
+        "etisaf",
+        "etilaam 0.5",
+        "etilaam 0.25"
+      ]
+    },
+    {
+      "generic": "Flupentixol + Melitracen",
+      "brands": [
+        "Deanxit",
+        "Placida",
+        "Anxit"
+      ],
+      "variants": [
+        "flupentixol + melitracen",
+        "flupentixol and melitracen",
+        "deanxit",
+        "placida",
+        "anxit",
+        "deanxit tablet",
+        "placida tablet"
+      ]
+    },
+    {
+      "generic": "Zolpidem",
+      "brands": [
+        "Stilnoct",
+        "Zolfresh",
+        "Zonap"
+      ],
+      "variants": [
+        "zolpidem",
+        "zolpidem tartrate",
+        "stilnoct",
+        "zolfresh",
+        "zonap",
+        "zolfresh 10",
+        "zolfresh 5"
+      ]
+    },
+    {
+      "generic": "Hydrochlorothiazide",
+      "brands": [
+        "Aquazide",
+        "Hydrazide",
+        "HCTZ"
+      ],
+      "variants": [
+        "hydrochlorothiazide",
+        "hctz",
+        "aquazide",
+        "hydrazide",
+        "aquazide 12.5",
+        "aquazide 25"
+      ]
+    },
+    {
+      "generic": "Levonorgestrel",
+      "brands": [
+        "i-Pill",
+        "Unwanted-72",
+        "Klimostat"
+      ],
+      "variants": [
+        "levonorgestrel",
+        "i-pill",
+        "unwanted-72",
+        "unwanted 72",
+        "ipill",
+        "emergency contraceptive pill",
+        "klimostat"
+      ]
+    },
+    {
+      "generic": "Medroxyprogesterone Acetate",
+      "brands": [
+        "Deviry",
+        "Meprate",
+        "Modus"
+      ],
+      "variants": [
+        "medroxyprogesterone acetate",
+        "medroxyprogesterone",
+        "deviry",
+        "meprate",
+        "modus",
+        "deviry 10"
+      ]
+    },
+    {
+      "generic": "Progesterone",
+      "brands": [
+        "Susten",
+        "Gestofit",
+        "Naturogest"
+      ],
+      "variants": [
+        "progesterone",
+        "micronized progesterone",
+        "susten",
+        "gestofit",
+        "naturogest",
+        "susten 200",
+        "susten 300"
+      ]
+    },
+    {
+      "generic": "Cabergoline",
+      "brands": [
+        "Cabgolin",
+        "Dostinex",
+        "Caberlin"
+      ],
+      "variants": [
+        "cabergoline",
+        "cabergolin",
+        "cabgolin",
+        "dostinex",
+        "caberlin",
+        "cabgolin 0.5"
+      ]
+    },
+    {
+      "generic": "Clomifene",
+      "brands": [
+        "Clofert",
+        "Clome",
+        "Clomid"
+      ],
+      "variants": [
+        "clomifene",
+        "clomiphene",
+        "clofert",
+        "clome",
+        "clomid",
+        "clofert 50",
+        "clofert 100"
+      ]
+    },
+    {
+      "generic": "Cholecalciferol",
+      "brands": [
+        "Calcirol",
+        "D3 Must",
+        "Uprise D3"
+      ],
+      "variants": [
+        "cholecalciferol",
+        "vitamin d3",
+        "calcirol",
+        "d3 must",
+        "uprise d3",
+        "uprise-d3",
+        "calcirol sachet",
+        "60k"
+      ]
+    },
+    {
+      "generic": "Folic Acid",
+      "brands": [
+        "Folvite",
+        "Foli-5",
+        "Folitas"
+      ],
+      "variants": [
+        "folic acid",
+        "folvite",
+        "foli-5",
+        "folitas",
+        "folvite 5mg"
+      ]
+    },
+    {
+      "generic": "Carbonyl Iron + Zinc + Folic Acid",
+      "brands": [
+        "Feosol",
+        "Autrin XT",
+        "Fefol"
+      ],
+      "variants": [
+        "carbonyl iron + zinc + folic acid",
+        "carbonyl iron and zinc and folic acid",
+        "feosol",
+        "autrin xt",
+        "fefol",
+        "feosol capsule"
+      ]
+    },
+    {
+      "generic": "Zinc Acetate",
+      "brands": [
+        "Zinconia",
+        "Zincocid",
+        "Zincolife"
+      ],
+      "variants": [
+        "zinc acetate",
+        "zincocid",
+        "zinconia",
+        "zincolife",
+        "zinconia syrup"
+      ]
+    },
+    {
+      "generic": "Etoricoxib",
+      "brands": [
+        "Nucoxia",
+        "Etoshine",
+        "Ecoxib"
+      ],
+      "variants": [
+        "etoricoxib",
+        "etoricoxib tablet",
+        "nucoxia",
+        "etoshine",
+        "ecoxib",
+        "nucoxia 90",
+        "nucoxia 120",
+        "nucoxia 60",
+        "etoshine 90"
+      ]
+    },
+    {
+      "generic": "Etoricoxib + Paracetamol",
+      "brands": [
+        "Nucoxia P",
+        "Etoshine P",
+        "Ecoxib Plus"
+      ],
+      "variants": [
+        "etoricoxib + paracetamol",
+        "etoricoxib and paracetamol",
+        "nucoxia p",
+        "etoshine p",
+        "ecoxib plus",
+        "nucoxia-p",
+        "etoshine-p"
+      ]
+    },
+    {
+      "generic": "Trypsin Chymotrypsin",
+      "brands": [
+        "Chymoral Forte",
+        "Chymocip",
+        "Trypsin D"
+      ],
+      "variants": [
+        "trypsin chymotrypsin",
+        "trypsin-chymotrypsin",
+        "chymoral forte",
+        "chymocip",
+        "trypsin d",
+        "chymoral-forte"
+      ]
+    },
+    {
+      "generic": "Serratiopeptidase + Aceclofenac + Paracetamol",
+      "brands": [
+        "Zerodol SP",
+        "Aceclo SP",
+        "Signoflam"
+      ],
+      "variants": [
+        "serratiopeptidase + aceclofenac + paracetamol",
+        "aceclofenac paracetamol serratiopeptidase",
+        "zerodol sp",
+        "aceclo sp",
+        "signoflam",
+        "zerodol-sp",
+        "aceclo-sp"
+      ]
+    },
+    {
+      "generic": "Tramadol + Paracetamol",
+      "brands": [
+        "Ultracet",
+        "Calpol T",
+        "Trabest"
+      ],
+      "variants": [
+        "tramadol + paracetamol",
+        "tramadol and paracetamol",
+        "ultracet",
+        "calpol t",
+        "trabest",
+        "ultracet tablet",
+        "calpol-t"
+      ]
+    },
+    {
+      "generic": "Naproxen",
+      "brands": [
+        "Naprosyn",
+        "Xenobid",
+        "Naxedom"
+      ],
+      "variants": [
+        "naproxen",
+        "naprosyn",
+        "xenobid",
+        "naxedom",
+        "naprosyn 500",
+        "naprosyn 250"
+      ]
+    },
+    {
+      "generic": "Ketorolac",
+      "brands": [
+        "Ketanov",
+        "Ketorocin",
+        "Ketlur"
+      ],
+      "variants": [
+        "ketorolac",
+        "ketorolac tromethamine",
+        "ketanov",
+        "ketorocin",
+        "ketlur",
+        "ketanov tablet",
+        "ketanov dt"
+      ]
+    },
+    {
+      "generic": "Mefenamic Acid + Dicyclomine",
+      "brands": [
+        "Meftal Spas",
+        "Dysmen",
+        "Mefkind Spas"
+      ],
+      "variants": [
+        "mefenamic acid + dicyclomine",
+        "mefenamic acid and dicyclomine",
+        "meftal spas",
+        "dysmen",
+        "mefkind spas",
+        "meftal-spas"
+      ]
+    },
+    {
+      "generic": "Montelukast + Fexofenadine",
+      "brands": [
+        "Montair FX",
+        "Telekast F",
+        "Fexigra M"
+      ],
+      "variants": [
+        "montelukast + fexofenadine",
+        "montelukast and fexofenadine",
+        "montair fx",
+        "telekast f",
+        "fexigra m",
+        "montair-fx",
+        "telekast-f"
+      ]
+    },
+    {
+      "generic": "Budesonide + Formoterol",
+      "brands": [
+        "Foracort",
+        "Duoresp",
+        "Budetrol"
+      ],
+      "variants": [
+        "budesonide + formoterol",
+        "budesonide and formoterol",
+        "foracort",
+        "duoresp",
+        "budetrol",
+        "foracort 200",
+        "foracort 400",
+        "foracort inhaler",
+        "foracort rotacaps"
+      ]
+    },
+    {
+      "generic": "Fluticasone + Salmeterol",
+      "brands": [
+        "Seroflo",
+        "Esiflo",
+        "Combitide"
+      ],
+      "variants": [
+        "fluticasone + salmeterol",
+        "fluticasone and salmeterol",
+        "seroflo",
+        "esiflo",
+        "combitide",
+        "seroflo 250",
+        "seroflo 125",
+        "seroflo inhaler"
+      ]
+    },
+    {
+      "generic": "Phenylephrine + Chlorpheniramine + Paracetamol",
+      "brands": [
+        "Sinarest",
+        "Solvin Cold",
+        "Wikoryl"
+      ],
+      "variants": [
+        "phenylephrine + chlorpheniramine + paracetamol",
+        "cold tablet",
+        "sinarest",
+        "solvin cold",
+        "wikoryl",
+        "sinarest tablet",
+        "solvin-cold"
+      ]
+    },
+    {
+      "generic": "Carboxymethylcellulose",
+      "brands": [
+        "Refresh Tears",
+        "Add Tears",
+        "Lubistar"
+      ],
+      "variants": [
+        "carboxymethylcellulose",
+        "carboxymethylcellulose eye drops",
+        "refresh tears",
+        "add tears",
+        "lubistar",
+        "refresh-tears"
+      ]
+    },
+    {
+      "generic": "Olopatadine",
+      "brands": [
+        "Pataday",
+        "Olopat",
+        "Oloblu"
+      ],
+      "variants": [
+        "olopatadine",
+        "olopatadine eye drops",
+        "pataday",
+        "olopat",
+        "oloblu",
+        "pataday eye drops"
+      ]
+    },
+    {
+      "generic": "Ciprofloxacin Eye Drops",
+      "brands": [
+        "Ciplox Eye Drops",
+        "Zoxan Eye Drops",
+        "Ciprobid Eye Drops"
+      ],
+      "variants": [
+        "ciprofloxacin eye drops",
+        "ciplox",
+        "ciplox eye drop",
+        "zoxan",
+        "ciprobid",
+        "ciplox eye drops",
+        "zoxan eye drops",
+        "ciprobid eye drops"
+      ]
+    },
+    {
+      "generic": "Xylometazoline",
+      "brands": [
+        "Otrivin",
+        "Nasivion",
+        "Decongest"
+      ],
+      "variants": [
+        "xylometazoline",
+        "xylometazoline nasal drops",
+        "otrivin",
+        "nasivion",
+        "decongest",
+        "otrivin nasal spray",
+        "otrivin adult",
+        "otrivin pediatric"
+      ]
+    },
+    {
+      "generic": "Domperidone + Omeprazole",
+      "brands": [
+        "Omez Dsr",
+        "Omee D",
+        "Ocid D"
+      ],
+      "variants": [
+        "domperidone + omeprazole",
+        "domperidone and omeprazole",
+        "omez dsr",
+        "omee d",
+        "ocid d",
+        "omez-dsr"
+      ]
+    },
+    {
+      "generic": "Itopride",
+      "brands": [
+        "Ganaton",
+        "Itopro",
+        "Itza"
+      ],
+      "variants": [
+        "itopride",
+        "itopride hydrochloride",
+        "ganaton",
+        "itopro",
+        "itza",
+        "ganaton 50"
+      ]
+    },
+    {
+      "generic": "Mesalazine",
+      "brands": [
+        "Mesacol",
+        "Asacol",
+        "Pentasa"
+      ],
+      "variants": [
+        "mesalazine",
+        "mesalamine",
+        "mesacol",
+        "asacol",
+        "pentasa",
+        "mesacol od",
+        "mesacol 800",
+        "mesacol 400"
+      ]
+    },
+    {
+      "generic": "Ursodeoxycholic Acid",
+      "brands": [
+        "Udiliv",
+        "Ursocol",
+        "Actibile"
+      ],
+      "variants": [
+        "ursodeoxycholic acid",
+        "udca",
+        "udiliv",
+        "ursocol",
+        "actibile",
+        "udiliv 300",
+        "udiliv 150",
+        "ursocol 300"
+      ]
+    },
+    {
+      "generic": "Silymarin",
+      "brands": [
+        "Silybon",
+        "Limarin",
+        "Silibin"
+      ],
+      "variants": [
+        "silymarin",
+        "silybin",
+        "silybon",
+        "limarin",
+        "silibin",
+        "silybon 140",
+        "silybon 70"
+      ]
+    },
+    {
+      "generic": "Activated Charcoal",
+      "brands": [
+        "Charcocaps",
+        "Charcoal"
+      ],
+      "variants": [
+        "activated charcoal",
+        "charcocaps",
+        "charcoal tablet",
+        "charcoal"
+      ]
+    },
+    {
+      "generic": "Magnesium Hydroxide + Aluminium Hydroxide + Simethicone",
+      "brands": [
+        "Digene",
+        "Gelusil",
+        "Mucaine Gel"
+      ],
+      "variants": [
+        "magnesium hydroxide + aluminium hydroxide + simethicone",
+        "digene",
+        "gelusil",
+        "mucaine gel",
+        "digene tablet",
+        "digene syrup",
+        "gelusil tablet",
+        "gelusil liquid"
+      ]
+    },
+    {
+      "generic": "Cefadroxil",
+      "brands": [
+        "Odoxil",
+        "Cefadrox",
+        "Droxyl"
+      ],
+      "variants": [
+        "cefadroxil",
+        "odoxil",
+        "cefadrox",
+        "droxyl",
+        "odoxil 500",
+        "odoxil 250"
+      ]
+    },
+    {
+      "generic": "Cefaclor",
+      "brands": [
+        "Distaclor",
+        "Keflor",
+        "Cefact"
+      ],
+      "variants": [
+        "cefaclor",
+        "distaclor",
+        "keflor",
+        "cefact",
+        "distaclor 375",
+        "distaclor 250"
+      ]
+    },
+    {
+      "generic": "Clindamycin",
+      "brands": [
+        "Dalacin C",
+        "Clinka",
+        "Clindatime"
+      ],
+      "variants": [
+        "clindamycin",
+        "clindamicina",
+        "dalacin c",
+        "clinka",
+        "clindatime",
+        "dalacin c 300",
+        "clindamycin capsule"
+      ]
+    },
+    {
+      "generic": "Linezolid",
+      "brands": [
+        "Lizoforce",
+        "Linospan",
+        "Lizomed"
+      ],
+      "variants": [
+        "linezolid",
+        "lizoforce",
+        "linospan",
+        "lizomed",
+        "lizoforce 600",
+        "linospan 600"
+      ]
+    },
+    {
+      "generic": "Minocycline",
+      "brands": [
+        "Cynosure",
+        "Minolox",
+        "Minoz"
+      ],
+      "variants": [
+        "minocycline",
+        "minocycline hydrochloride",
+        "cynosure",
+        "minolox",
+        "minoz",
+        "minoz 50",
+        "minoz 100"
+      ]
+    },
+    {
+      "generic": "Rifaximin",
+      "brands": [
+        "Rifagut",
+        "Rcifax",
+        "Rifaxigem"
+      ],
+      "variants": [
+        "rifaximin",
+        "rifagut",
+        "rcifax",
+        "rifaxigem",
+        "rifagut 400",
+        "rifagut 550",
+        "rifagut 200"
+      ]
+    },
+    {
+      "generic": "Tinidazole",
+      "brands": [
+        "Tinizol",
+        "Tiniba",
+        "Fasigyn"
+      ],
+      "variants": [
+        "tinidazole",
+        "tinizol",
+        "tiniba",
+        "fasigyn",
+        "tiniba 500",
+        "tiniba 300"
+      ]
+    },
+    {
+      "generic": "Aciclovir",
+      "brands": [
+        "Acivir",
+        "Zovirax",
+        "Herpex"
+      ],
+      "variants": [
+        "aciclovir",
+        "acyclovir",
+        "acivir",
+        "zovirax",
+        "herpex",
+        "acivir 400",
+        "acivir 800"
+      ]
+    },
+    {
+      "generic": "Luliconazole",
+      "brands": [
+        "Lulifin",
+        "Lulican",
+        "Lulimac"
+      ],
+      "variants": [
+        "luliconazole",
+        "lulifin",
+        "lulican",
+        "lulimac",
+        "lulifin cream",
+        "luliconazole cream"
+      ]
+    },
+    {
+      "generic": "Amorolfine",
+      "brands": [
+        "Amorolfine Cream",
+        "Amolfin",
+        "Loceryl"
+      ],
+      "variants": [
+        "amorolfine",
+        "amolfin",
+        "loceryl",
+        "amorolfine cream",
+        "loceryl nail lacquer"
+      ]
+    },
+    {
+      "generic": "Eberconazole",
+      "brands": [
+        "Ebernet",
+        "Ebercos",
+        "Eberfun"
+      ],
+      "variants": [
+        "eberconazole",
+        "ebernet",
+        "ebercos",
+        "eberfun",
+        "ebernet cream"
+      ]
+    },
+    {
+      "generic": "Chlorthalidone + Telmisartan",
+      "brands": [
+        "Telma CT",
+        "Tazloc CT",
+        "Telvas CT"
+      ],
+      "variants": [
+        "chlorthalidone + telmisartan",
+        "telmisartan and chlorthalidone",
+        "telma ct",
+        "tazloc ct",
+        "telvas ct",
+        "telma-ct",
+        "tazloc-ct"
+      ]
+    },
+    {
+      "generic": "Indapamide + Telmisartan",
+      "brands": [
+        "Telma ND",
+        "Inditel AM",
+        "Lorvas T"
+      ],
+      "variants": [
+        "indapamide + telmisartan",
+        "telmisartan and indapamide",
+        "telma nd",
+        "inditel am",
+        "lorvas t",
+        "telma-nd"
+      ]
+    },
+    {
+      "generic": "Gliclazide + Metformin",
+      "brands": [
+        "Glyciphage G",
+        "Reclimet",
+        "Gliclahage"
+      ],
+      "variants": [
+        "gliclazide + metformin",
+        "gliclazide and metformin",
+        "glyciphage g",
+        "reclimet",
+        "gliclahage",
+        "glyciphage-g",
+        "reclimet xr"
+      ]
+    },
+    {
+      "generic": "Glimepiride + Metformin + Voglibose",
+      "brands": [
+        "Amryl M",
+        "Glimisave MV",
+        "Voglistar GM"
+      ],
+      "variants": [
+        "glimepiride + metformin + voglibose",
+        "glimepiride, metformin and voglibose",
+        "amryl m",
+        "glimisave mv",
+        "voglistar gm",
+        "glimisave-mv",
+        "amryl-m"
+      ]
+    },
+    {
+      "generic": "Canagliflozin",
+      "brands": [
+        "Invokana",
+        "Canazin",
+        "Canaglif"
+      ],
+      "variants": [
+        "canagliflozin",
+        "invokana",
+        "canazin",
+        "canaglif",
+        "invokana 100",
+        "invokana 300"
+      ]
+    },
+    {
+      "generic": "Linagliptin",
+      "brands": [
+        "Trajenta",
+        "Lina",
+        "Linajet"
+      ],
+      "variants": [
+        "linagliptin",
+        "trajenta",
+        "lina",
+        "linajet",
+        "trajenta 5"
+      ]
+    },
+    {
+      "generic": "Linagliptin + Metformin",
+      "brands": [
+        "Trajenta Duo",
+        "Linajet M",
+        "Linox M"
+      ],
+      "variants": [
+        "linagliptin + metformin",
+        "linagliptin and metformin",
+        "trajenta duo",
+        "linajet m",
+        "linox m",
+        "trajenta-duo"
+      ]
+    },
+    {
+      "generic": "Pregabalin + Nortriptyline",
+      "brands": [
+        "Sensival P",
+        "Pregabid NT",
+        "Pregeb NT"
+      ],
+      "variants": [
+        "pregabalin + nortriptyline",
+        "pregabalin and nortriptyline",
+        "sensival p",
+        "pregabid nt",
+        "pregeb nt",
+        "sensival-p",
+        "pregabid-nt"
+      ]
+    },
+    {
+      "generic": "Gabapentin + Nortriptyline",
+      "brands": [
+        "Gabaneuron NT",
+        "Gabapin NT",
+        "Mecofit NT"
+      ],
+      "variants": [
+        "gabapentin + nortriptyline",
+        "gabapentin and nortriptyline",
+        "gabaneuron nt",
+        "gabapin nt",
+        "mecofit nt",
+        "gabaneuron-nt",
+        "gabapin-nt"
+      ]
+    },
+    {
+      "generic": "Escitalopram + Clonazepam",
+      "brands": [
+        "Nexito Forte",
+        "Clonotril Plus",
+        "Nexito Plus"
+      ],
+      "variants": [
+        "escitalopram + clonazepam",
+        "escitalopram and clonazepam",
+        "nexito forte",
+        "clonotril plus",
+        "nexito plus",
+        "nexito-plus",
+        "clonotril-plus"
+      ]
+    },
+    {
+      "generic": "Paroxetine",
+      "brands": [
+        "Paxidep",
+        "Pari",
+        "Xet"
+      ],
+      "variants": [
+        "paroxetine",
+        "paxidep",
+        "pari",
+        "xet",
+        "paxidep cr",
+        "pari cr"
+      ]
+    },
+    {
+      "generic": "Duloxetine",
+      "brands": [
+        "Symbal",
+        "Duvanta",
+        "Delok"
+      ],
+      "variants": [
+        "duloxetine",
+        "symbal",
+        "duvanta",
+        "delok",
+        "symbal 30",
+        "symbal 20",
+        "symbal 60"
+      ]
+    },
+    {
+      "generic": "Venlafaxine",
+      "brands": [
+        "Venlor",
+        "Flavix",
+        "Ventab"
+      ],
+      "variants": [
+        "venlafaxine",
+        "venlor",
+        "flavix",
+        "ventab",
+        "venlor xr",
+        "venlor 75",
+        "venlor 37.5"
+      ]
+    },
+    {
+      "generic": "Sodium Valproate",
+      "brands": [
+        "Epival",
+        "Valparin",
+        "Encorate"
+      ],
+      "variants": [
+        "sodium valproate",
+        "valproic acid",
+        "epival",
+        "valparin",
+        "encorate",
+        "encorate chrono",
+        "encorate chrono 500",
+        "encorate chrono 300"
+      ]
+    },
+    {
+      "generic": "Carbamazepine",
+      "brands": [
+        "Tegretol",
+        "Mazetol",
+        "Zen"
+      ],
+      "variants": [
+        "carbamazepine",
+        "tegretol",
+        "mazetol",
+        "zen",
+        "tegretol cr",
+        "mazetol 200",
+        "mazetol sr"
+      ]
+    },
+    {
+      "generic": "Levetiracetam",
+      "brands": [
+        "Keppra",
+        "Levera",
+        "Levipil"
+      ],
+      "variants": [
+        "levetiracetam",
+        "keppra",
+        "levera",
+        "levipil",
+        "levipil 500",
+        "levipil 250",
+        "levera 500"
+      ]
+    },
+    {
+      "generic": "Clobazam",
+      "brands": [
+        "Frisium",
+        "Clobator",
+        "Lobazam"
+      ],
+      "variants": [
+        "clobazam",
+        "frisium",
+        "clobator",
+        "lobazam",
+        "frisium 10",
+        "frisium 5"
+      ]
+    },
+    {
+      "generic": "Donepezil",
+      "brands": [
+        "Donecept",
+        "Donamem",
+        "Aricept"
+      ],
+      "variants": [
+        "donepezil",
+        "donecept",
+        "donamem",
+        "aricept",
+        "donecept 5",
+        "donecept 10"
+      ]
+    },
+    {
+      "generic": "Memantine",
+      "brands": [
+        "Admenta",
+        "Mentane",
+        "Ebixa"
+      ],
+      "variants": [
+        "memantine",
+        "admenta",
+        "mentane",
+        "ebixa",
+        "admenta 10",
+        "admenta 5"
+      ]
+    },
+    {
+      "generic": "Tamsulosin",
+      "brands": [
+        "Urimax",
+        "Veltam",
+        "Flodart"
+      ],
+      "variants": [
+        "tamsulosin",
+        "urimax",
+        "veltam",
+        "flodart",
+        "urimax 0.4",
+        "veltam 0.4"
+      ]
+    },
+    {
+      "generic": "Tamsulosin + Dutasteride",
+      "brands": [
+        "Urimax D",
+        "Veltam Plus",
+        "Flodart Plus"
+      ],
+      "variants": [
+        "tamsulosin + dutasteride",
+        "tamsulosin and dutasteride",
+        "urimax d",
+        "veltam plus",
+        "flodart plus",
+        "urimax-d"
+      ]
+    },
+    {
+      "generic": "Finasteride",
+      "brands": [
+        "Finast",
+        "Proscar",
+        "Fincar"
+      ],
+      "variants": [
+        "finasteride",
+        "finast",
+        "proscar",
+        "fincar",
+        "finast 5",
+        "finast 1"
+      ]
+    },
+    {
+      "generic": "Solifenacin",
+      "brands": [
+        "Soliten",
+        "Solicept",
+        "Soliact"
+      ],
+      "variants": [
+        "solifenacin",
+        "soliten",
+        "solicept",
+        "soliact",
+        "soliten 5",
+        "soliten 10"
+      ]
+    },
+    {
+      "generic": "Sildenafil",
+      "brands": [
+        "Manforce",
+        "Viagra",
+        "Suhagra"
+      ],
+      "variants": [
+        "sildenafil",
+        "manforce",
+        "viagra",
+        "suhagra",
+        "manforce 50",
+        "manforce 100",
+        "suhagra 50"
+      ]
+    },
+    {
+      "generic": "Tadalafil",
+      "brands": [
+        "Megalis",
+        "Tadacip",
+        "Pulmopres"
+      ],
+      "variants": [
+        "tadalafil",
+        "megalis",
+        "tadacip",
+        "pulmopres",
+        "megalis 10",
+        "megalis 20"
+      ]
+    },
+    {
+      "generic": "Norethisterone",
+      "brands": [
+        "Regestrone",
+        "Primolut N",
+        "Sysron N"
+      ],
+      "variants": [
+        "norethisterone",
+        "regestrone",
+        "primolut n",
+        "sysron n",
+        "regestrone 5mg",
+        "primolut-n"
+      ]
+    },
+    {
+      "generic": "Ethinylestradiol + Desogestrel",
+      "brands": [
+        "Novelon",
+        "Femilon",
+        "Overal L"
+      ],
+      "variants": [
+        "ethinylestradiol + desogestrel",
+        "novelon",
+        "femilon",
+        "overal l",
+        "oral contraceptive pill"
+      ]
+    },
+    {
+      "generic": "Isoxsuprine",
+      "brands": [
+        "Duvadilan",
+        "Gestakind",
+        "Isopreg"
+      ],
+      "variants": [
+        "isoxsuprine",
+        "duvadilan",
+        "gestakind",
+        "isopreg",
+        "duvadilan retard"
+      ]
+    },
+    {
+      "generic": "Glucosamine + Chondroitin",
+      "brands": [
+        "Condro",
+        "Glusafe",
+        "Cartigen"
+      ],
+      "variants": [
+        "glucosamine + chondroitin",
+        "glucosamine and chondroitin",
+        "condro",
+        "glusafe",
+        "cartigen"
+      ]
+    },
+    {
+      "generic": "Evening Primrose Oil",
+      "brands": [
+        "Primosa",
+        "Evening Primrose",
+        "Primacare"
+      ],
+      "variants": [
+        "evening primrose oil",
+        "primosa",
+        "evening primrose",
+        "primosa 500",
+        "primosa 1000",
+        "primacare"
+      ]
+    },
+    {
+      "generic": "Hydroxychloroquine",
+      "brands": [
+        "HCQS",
+        "Zy Q",
+        "Oxeq"
+      ],
+      "variants": [
+        "hydroxychloroquine",
+        "hcqs",
+        "zy q",
+        "oxeq",
+        "hcqs 200",
+        "hcqs 300",
+        "hcqs 400"
+      ]
+    },
+    {
+      "generic": "L-Methylfolate + Methylcobalamin + Pyridoxal-5-Phosphate",
+      "brands": [
+        "Folvite Active",
+        "Mecofol Active",
+        "Rejunex Active"
+      ],
+      "variants": [
+        "l-methylfolate + methylcobalamin + pyridoxal-5-phosphate",
+        "l-methylfolate methylcobalamin pyridoxal 5 phosphate",
+        "folvite active",
+        "mecofol active",
+        "rejunex active"
+      ]
+    },
+    {
+      "generic": "Febuxostat",
+      "brands": [
+        "Febutaz",
+        "Feburic",
+        "Febuget"
+      ],
+      "variants": [
+        "febuxostat",
+        "febutaz",
+        "feburic",
+        "febuget",
+        "febutaz 40",
+        "febutaz 80"
+      ]
+    },
+    {
+      "generic": "Benzoyl Peroxide",
+      "brands": [
+        "Persol",
+        "Brevoxyl",
+        "Benzac AC"
+      ],
+      "variants": [
+        "benzoyl peroxide",
+        "persol",
+        "brevoxyl",
+        "benzac ac",
+        "persol 2.5",
+        "persol 5",
+        "benzac"
+      ]
+    },
+    {
+      "generic": "Salicylic Acid",
+      "brands": [
+        "Saliac",
+        "Sebogel",
+        "Salicyl"
+      ],
+      "variants": [
+        "salicylic acid",
+        "saliac",
+        "sebogel",
+        "salicyl",
+        "saliac face wash",
+        "salicylic acid gel"
+      ]
+    },
+    {
+      "generic": "Adapalene",
+      "brands": [
+        "Adaferin",
+        "Adiff Gel",
+        "Deriva"
+      ],
+      "variants": [
+        "adapalene",
+        "adaferin",
+        "adiff gel",
+        "deriva",
+        "adaferin gel",
+        "deriva ms"
+      ]
+    },
+    {
+      "generic": "Isotretinoin",
+      "brands": [
+        "Sotret",
+        "Tretiva",
+        "Isotroin"
+      ],
+      "variants": [
+        "isotretinoin",
+        "sotret",
+        "tretiva",
+        "isotroin",
+        "sotret 20",
+        "sotret 10",
+        "tretiva 20"
+      ]
+    },
+    {
+      "generic": "Eplerenone",
+      "brands": [
+        "Eptus",
+        "Planep",
+        "Eplecard"
+      ],
+      "variants": [
+        "eplerenone",
+        "eptus",
+        "planep",
+        "eplecard",
+        "eptus 25",
+        "eptus 50"
+      ]
+    },
+    {
+      "generic": "Methotrexate",
+      "brands": [
+        "Folitrax",
+        "Imutrex",
+        "Mext"
+      ],
+      "variants": [
+        "methotrexate",
+        "folitrax",
+        "imutrex",
+        "mext",
+        "folitrax 7.5",
+        "folitrax 15",
+        "folitrax 10"
+      ]
+    },
+    {
+      "generic": "Sulfasalazine",
+      "brands": [
+        "Saaz",
+        "Salazopyrin",
+        "Sazo"
+      ],
+      "variants": [
+        "sulfasalazine",
+        "saaz",
+        "salazopyrin",
+        "sazo",
+        "saaz ds",
+        "sazo 500"
+      ]
+    },
+    {
+      "generic": "Leflunomide",
+      "brands": [
+        "Lefra",
+        "Lefno",
+        "Arava"
+      ],
+      "variants": [
+        "leflunomide",
+        "lefra",
+        "lefno",
+        "arava",
+        "lefra 10",
+        "lefra 20"
+      ]
+    },
+    {
+      "generic": "Azathioprine",
+      "brands": [
+        "Azoran",
+        "Imuran",
+        "Azaprine"
+      ],
+      "variants": [
+        "azathioprine",
+        "azoran",
+        "imuran",
+        "azaprine",
+        "azoran 50"
+      ]
+    },
+    {
+      "generic": "Cyclosporine",
+      "brands": [
+        "Cyclophil ME",
+        "Sandimmun Neoral",
+        "Panimun Bioral"
+      ],
+      "variants": [
+        "cyclosporine",
+        "cyclosporin",
+        "cyclophil me",
+        "sandimmun neoral",
+        "panimun bioral",
+        "cyclophil 100",
+        "cyclophil 50"
+      ]
+    },
+    {
+      "generic": "Tacrolimus",
+      "brands": [
+        "Pangraf",
+        "Tacromus",
+        "Tacroz"
+      ],
+      "variants": [
+        "tacrolimus",
+        "pangraf",
+        "tacromus",
+        "tacroz",
+        "pangraf 1",
+        "pangraf 0.5",
+        "tacroz ointment"
+      ]
+    },
+    {
+      "generic": "Mycophenolate Mofetil",
+      "brands": [
+        "Cellcept",
+        "Mycept",
+        "Mofilet"
+      ],
+      "variants": [
+        "mycophenolate mofetil",
+        "cellcept",
+        "mycept",
+        "mofilet",
+        "mycept 500",
+        "cellcept 500"
+      ]
+    },
+    {
+      "generic": "Pyrazinamide",
+      "brands": [
+        "Pyzina",
+        "Coxina",
+        "Pza"
+      ],
+      "variants": [
+        "pyrazinamide",
+        "pyzina",
+        "coxina",
+        "pza",
+        "pyzina 750",
+        "pyzina 500"
+      ]
+    },
+    {
+      "generic": "Ethambutol",
+      "brands": [
+        "Combutol",
+        "Myambutol",
+        "Eambutol"
+      ],
+      "variants": [
+        "ethambutol",
+        "combutol",
+        "myambutol",
+        "eambutol",
+        "combutol 800",
+        "combutol 600"
+      ]
+    },
+    {
+      "generic": "Isoniazid",
+      "brands": [
+        "Solonex",
+        "Isoz",
+        "Nydrazid"
+      ],
+      "variants": [
+        "isoniazid",
+        "solonex",
+        "isoz",
+        "nydrazid",
+        "solonex 300",
+        "solonex 100"
+      ]
+    },
+    {
+      "generic": "Rifampicin",
+      "brands": [
+        "Ricin",
+        "Rifamycin",
+        "R-Cineex"
+      ],
+      "variants": [
+        "rifampicin",
+        "rifampin",
+        "ricin",
+        "rifamycin",
+        "r-cineex",
+        "ricin 450",
+        "ricin 600"
+      ]
+    },
+    {
+      "generic": "Voriconazole",
+      "brands": [
+        "Vfend",
+        "Vorier",
+        "Vozole"
+      ],
+      "variants": [
+        "voriconazole",
+        "vfend",
+        "vorier",
+        "vozole",
+        "vorier 200"
+      ]
+    },
+    {
+      "generic": "Mebendazole",
+      "brands": [
+        "Mebez",
+        "Wormin",
+        "Mebex"
+      ],
+      "variants": [
+        "mebendazole",
+        "mebez",
+        "wormin",
+        "mebex",
+        "mebex tablet"
+      ]
+    },
+    {
+      "generic": "Diethylcarbamazine",
+      "brands": [
+        "Banocide Forte",
+        "Hetrazan",
+        "Dec"
+      ],
+      "variants": [
+        "diethylcarbamazine",
+        "banocide forte",
+        "hetrazan",
+        "dec",
+        "banocide",
+        "banocide forte tablet"
+      ]
+    },
+    {
+      "generic": "Artemether + Lumefantrine",
+      "brands": [
+        "Lumerax",
+        "Falcigo Plus",
+        "Arh L"
+      ],
+      "variants": [
+        "artemether + lumefantrine",
+        "artemether and lumefantrine",
+        "lumerax",
+        "falcigo plus",
+        "arh l",
+        "lumerax 80",
+        "lumerax 40"
+      ]
+    },
+    {
+      "generic": "Chloroquine",
+      "brands": [
+        "Lariago",
+        "Resochin",
+        "Nivaquine"
+      ],
+      "variants": [
+        "chloroquine",
+        "lariago",
+        "resochin",
+        "nivaquine",
+        "lariago 250",
+        "lariago ds"
+      ]
+    },
+    {
+      "generic": "Primaquine",
+      "brands": [
+        "Malirid",
+        "Primarid",
+        "Primaline"
+      ],
+      "variants": [
+        "primaquine",
+        "malirid",
+        "primarid",
+        "primaline",
+        "malirid 7.5",
+        "malirid 15"
+      ]
+    },
+    {
+      "generic": "Secnidazole",
+      "brands": [
+        "Secnil",
+        "Seczol"
+      ],
+      "variants": [
+        "secnidazole",
+        "secnil",
+        "seczol",
+        "secnil 1g",
+        "secnil 2g"
+      ]
+    },
+    {
+      "generic": "Ornidazole",
+      "brands": [
+        "Ornigyl",
+        "Dazolic",
+        "Ornid"
+      ],
+      "variants": [
+        "ornidazole",
+        "ornigyl",
+        "dazolic",
+        "ornid",
+        "dazolic 500"
+      ]
+    },
+    {
+      "generic": "Diloxanide Furoate",
+      "brands": [
+        "Furamide",
+        "Dilox",
+        "Amicline"
+      ],
+      "variants": [
+        "diloxanide furoate",
+        "furamide",
+        "dilox",
+        "amicline",
+        "furamide 500"
+      ]
+    },
+    {
+      "generic": "Nitazoxanide",
+      "brands": [
+        "Nizonide",
+        "Nitax",
+        "Netazox"
+      ],
+      "variants": [
+        "nitazoxanide",
+        "nizonide",
+        "nitax",
+        "netazox",
+        "nizonide 500"
+      ]
+    },
+    {
+      "generic": "Sofosbuvir",
+      "brands": [
+        "Sovihep",
+        "Sovaldi",
+        "Hepcinat"
+      ],
+      "variants": [
+        "sofosbuvir",
+        "sovihep",
+        "sovaldi",
+        "hepcinat",
+        "sovihep 400"
+      ]
+    },
+    {
+      "generic": "Daclatasvir",
+      "brands": [
+        "Daclahep",
+        "Daklinza",
+        "Daclavel"
+      ],
+      "variants": [
+        "daclatasvir",
+        "daclahep",
+        "daklinza",
+        "daclavel",
+        "daclahep 60"
+      ]
+    },
+    {
+      "generic": "Tenofovir Disoproxil",
+      "brands": [
+        "Tenvir",
+        "Viread",
+        "Tenof"
+      ],
+      "variants": [
+        "tenofovir disoproxil",
+        "tenvir",
+        "viread",
+        "tenof",
+        "tenvir 300"
+      ]
+    },
+    {
+      "generic": "Entecavir",
+      "brands": [
+        "Entavir",
+        "Baraclude",
+        "Entehep"
+      ],
+      "variants": [
+        "entecavir",
+        "entavir",
+        "baraclude",
+        "entehep",
+        "entavir 0.5"
+      ]
+    },
+    {
+      "generic": "Lamivudine",
+      "brands": [
+        "Lamivir",
+        "Epivir",
+        "Heptavir"
+      ],
+      "variants": [
+        "lamivudine",
+        "lamivir",
+        "epivir",
+        "heptavir",
+        "lamivir 150"
+      ]
+    },
+    {
+      "generic": "Abacavir",
+      "brands": [
+        "Abamune",
+        "Ziagen",
+        "Abavec"
+      ],
+      "variants": [
+        "abacavir",
+        "abamune",
+        "ziagen",
+        "abavec",
+        "abamune 300"
+      ]
+    },
+    {
+      "generic": "Dolutegravir",
+      "brands": [
+        "Instgra",
+        "Tivicay",
+        "Naverol"
+      ],
+      "variants": [
+        "dolutegravir",
+        "instgra",
+        "tivicay",
+        "naverol",
+        "instgra 50"
+      ]
+    },
+    {
+      "generic": "Efavirenz",
+      "brands": [
+        "Eavir",
+        "Sustiva",
+        "Efavir"
+      ],
+      "variants": [
+        "efavirenz",
+        "eavir",
+        "sustiva",
+        "efavir",
+        "efavir 600"
+      ]
+    },
+    {
+      "generic": "Nevirapine",
+      "brands": [
+        "Nevimune",
+        "Viramune",
+        "Neval"
+      ],
+      "variants": [
+        "nevirapine",
+        "nevimune",
+        "viramune",
+        "neval",
+        "nevimune 200"
+      ]
+    },
+    {
+      "generic": "Ritonavir",
+      "brands": [
+        "Empetus",
+        "Norvir",
+        "Ritonovir"
+      ],
+      "variants": [
+        "ritonavir",
+        "empetus",
+        "norvir",
+        "ritonovir"
+      ]
+    },
+    {
+      "generic": "Valacyclovir",
+      "brands": [
+        "Valcivir",
+        "Valtrex",
+        "Valavir"
+      ],
+      "variants": [
+        "valacyclovir",
+        "valcivir",
+        "valtrex",
+        "valavir",
+        "valcivir 500",
+        "valcivir 1000"
+      ]
+    },
+    {
+      "generic": "Famciclovir",
+      "brands": [
+        "Famavir",
+        "Famvir",
+        "Favir"
+      ],
+      "variants": [
+        "famciclovir",
+        "famavir",
+        "famvir",
+        "favir",
+        "famavir 250",
+        "famavir 500"
+      ]
+    },
+    {
+      "generic": "Ganciclovir",
+      "brands": [
+        "Natclovir",
+        "Cytovene",
+        "Gancistar"
+      ],
+      "variants": [
+        "ganciclovir",
+        "natclovir",
+        "cytovene",
+        "gancistar",
+        "natclovir capsule"
+      ]
+    },
+    {
+      "generic": "Oseltamivir",
+      "brands": [
+        "Antiflu",
+        "Fluvir",
+        "Tamiflu"
+      ],
+      "variants": [
+        "oseltamivir",
+        "antiflu",
+        "fluvir",
+        "tamiflu",
+        "antiflu 75",
+        "fluvir 75"
+      ]
+    },
+    {
+      "generic": "Remdesivir",
+      "brands": [
+        "Covifor",
+        "Cipremi",
+        "Remdac"
+      ],
+      "variants": [
+        "remdesivir",
+        "covifor",
+        "cipremi",
+        "remdac",
+        "remdesivir injection"
+      ]
+    },
+    {
+      "generic": "Favipiravir",
+      "brands": [
+        "Fabiflu",
+        "Favivir",
+        "Favipira"
+      ],
+      "variants": [
+        "favipiravir",
+        "fabiflu",
+        "favivir",
+        "favipira",
+        "fabiflu 400",
+        "fabiflu 200"
+      ]
+    },
+    {
+      "generic": "Hydroxyurea",
+      "brands": [
+        "Cytodrox",
+        "Hydrea",
+        "Droxia"
+      ],
+      "variants": [
+        "hydroxyurea",
+        "cytodrox",
+        "hydrea",
+        "droxia",
+        "cytodrox 500"
+      ]
+    },
+    {
+      "generic": "Imatinib",
+      "brands": [
+        "Veenat",
+        "Glivec",
+        "Imatib"
+      ],
+      "variants": [
+        "imatinib",
+        "veenat",
+        "glivec",
+        "imatib",
+        "veenat 400",
+        "imatib 400"
+      ]
+    },
+    {
+      "generic": "Erlotinib",
+      "brands": [
+        "Erlocip",
+        "Tarceva",
+        "Erlonib"
+      ],
+      "variants": [
+        "erlotinib",
+        "erlocip",
+        "tarceva",
+        "erlonib",
+        "erlocip 150"
+      ]
+    },
+    {
+      "generic": "Gefitinib",
+      "brands": [
+        "Gefticip",
+        "Iressa",
+        "Gefitax"
+      ],
+      "variants": [
+        "gefitinib",
+        "gefticip",
+        "iressa",
+        "gefitax",
+        "gefticip 250"
+      ]
+    },
+    {
+      "generic": "Sorafenib",
+      "brands": [
+        "Soranib",
+        "Nexavar",
+        "Sorafekast"
+      ],
+      "variants": [
+        "sorafenib",
+        "soranib",
+        "nexavar",
+        "sorafekast",
+        "soranib 200"
+      ]
+    },
+    {
+      "generic": "Sunitinib",
+      "brands": [
+        "Sutent",
+        "Suninat",
+        "Sunitene"
+      ],
+      "variants": [
+        "sunitinib",
+        "sutent",
+        "suninat",
+        "sunitene",
+        "suninat 12.5",
+        "suninat 25"
+      ]
+    },
+    {
+      "generic": "Pazopanib",
+      "brands": [
+        "Votrient",
+        "Pazonib",
+        "Pazokast"
+      ],
+      "variants": [
+        "pazopanib",
+        "votrient",
+        "pazonib",
+        "pazokast",
+        "votrient 200",
+        "votrient 400"
+      ]
+    },
+    {
+      "generic": "Bortezomib",
+      "brands": [
+        "Bortecad",
+        "Velcade",
+        "Bortetrust"
+      ],
+      "variants": [
+        "bortezomib",
+        "bortecad",
+        "velcade",
+        "bortetrust",
+        "bortezomib injection"
+      ]
+    },
+    {
+      "generic": "Lenalidomide",
+      "brands": [
+        "Lenangio",
+        "Revlimid",
+        "Lenmid"
+      ],
+      "variants": [
+        "lenalidomide",
+        "lenangio",
+        "revlimid",
+        "lenmid",
+        "lenangio 10",
+        "lenangio 25"
+      ]
+    },
+    {
+      "generic": "Thalidomide",
+      "brands": [
+        "Thaloda",
+        "Thalomid",
+        "Thaangio"
+      ],
+      "variants": [
+        "thalidomide",
+        "thaloda",
+        "thalomid",
+        "thaangio",
+        "thaloda 100",
+        "thaloda 50"
+      ]
+    },
+    {
+      "generic": "Tamoxifen",
+      "brands": [
+        "Mamofen",
+        "Nolvadex",
+        "Tamodex"
+      ],
+      "variants": [
+        "tamoxifen",
+        "mamofen",
+        "nolvadex",
+        "tamodex",
+        "mamofen 20",
+        "tamodex 10"
+      ]
+    },
+    {
+      "generic": "Letrozole",
+      "brands": [
+        "Femara",
+        "Letoval",
+        "Letroz"
+      ],
+      "variants": [
+        "letrozole",
+        "femara",
+        "letoval",
+        "letroz",
+        "letoval 2.5",
+        "femara 2.5"
+      ]
+    },
+    {
+      "generic": "Anastrozole",
+      "brands": [
+        "Arimidex",
+        "Altraz",
+        "Anabrez"
+      ],
+      "variants": [
+        "anastrozole",
+        "arimidex",
+        "altraz",
+        "anabrez",
+        "altraz 1mg"
+      ]
+    },
+    {
+      "generic": "Exemestane",
+      "brands": [
+        "Aromasin",
+        "Xtane",
+        "Exemas"
+      ],
+      "variants": [
+        "exemestane",
+        "aromasin",
+        "xtane",
+        "exemas",
+        "xtane 25"
+      ]
+    },
+    {
+      "generic": "Bicalutamide",
+      "brands": [
+        "Calutide",
+        "Casodex",
+        "Bicalox"
+      ],
+      "variants": [
+        "bicalutamide",
+        "calutide",
+        "casodex",
+        "bicalox",
+        "calutide 50"
+      ]
+    },
+    {
+      "generic": "Flutamide",
+      "brands": [
+        "Cytomid",
+        "Eulexin",
+        "Flutide"
+      ],
+      "variants": [
+        "flutamide",
+        "cytomid",
+        "eulexin",
+        "flutide",
+        "cytomid 250"
+      ]
+    },
+    {
+      "generic": "Abiraterone",
+      "brands": [
+        "Abirapro",
+        "Zytiga",
+        "Abirakast"
+      ],
+      "variants": [
+        "abiraterone",
+        "abirapro",
+        "zytiga",
+        "abirakast",
+        "abirapro 250"
+      ]
+    },
+    {
+      "generic": "Enzalutamide",
+      "brands": [
+        "Glenza",
+        "Xtandi",
+        "Enzastran"
+      ],
+      "variants": [
+        "enzalutamide",
+        "glenza",
+        "xtandi",
+        "enzastran",
+        "glenza 40"
+      ]
+    },
+    {
+      "generic": "Leuprolide",
+      "brands": [
+        "Lupride",
+        "Lupron",
+        "Eligard"
+      ],
+      "variants": [
+        "leuprolide",
+        "leuprorelin",
+        "lupride",
+        "lupron",
+        "eligard",
+        "lupride depot",
+        "lupride 3.75"
+      ]
+    },
+    {
+      "generic": "Goserelin",
+      "brands": [
+        "Zoladex",
+        "Gosilin",
+        "Goserel"
+      ],
+      "variants": [
+        "goserelin",
+        "zoladex",
+        "gosilin",
+        "goserel",
+        "zoladex 3.6"
+      ]
+    },
+    {
+      "generic": "Degarelix",
+      "brands": [
+        "Firmagon",
+        "Degacure",
+        "Degarel"
+      ],
+      "variants": [
+        "degarelix",
+        "firmagon",
+        "degacure",
+        "degarel"
+      ]
+    },
+    {
+      "generic": "Octreotide",
+      "brands": [
+        "Sandostatin",
+        "Octride",
+        "Otide"
+      ],
+      "variants": [
+        "octreotide",
+        "sandostatin",
+        "octride",
+        "otide",
+        "octride depot"
+      ]
+    },
+    {
+      "generic": "Lanreotide",
+      "brands": [
+        "Somatuline",
+        "Lanre",
+        "Somatugex"
+      ],
+      "variants": [
+        "lanreotide",
+        "somatuline",
+        "lanre",
+        "somatugex"
+      ]
+    },
+    {
+      "generic": "Desmopressin",
+      "brands": [
+        "Minirin",
+        "D-Void",
+        "Desmospray"
+      ],
+      "variants": [
+        "desmopressin",
+        "minirin",
+        "d-void",
+        "desmospray",
+        "minirin tablet"
+      ]
+    },
+    {
+      "generic": "Terlipressin",
+      "brands": [
+        "Glypressin",
+        "Terlistat",
+        "Terlipres"
+      ],
+      "variants": [
+        "terlipressin",
+        "glypressin",
+        "terlistat",
+        "terlipres"
+      ]
+    },
+    {
+      "generic": "Somatropin",
+      "brands": [
+        "Genotropin",
+        "Humatrope",
+        "Headon"
+      ],
+      "variants": [
+        "somatropin",
+        "growth hormone",
+        "genotropin",
+        "humatrope",
+        "headon"
+      ]
+    },
+    {
+      "generic": "Liothyronine",
+      "brands": [
+        "Cytomel",
+        "Thyromel",
+        "L-Triiodothyronine"
+      ],
+      "variants": [
+        "liothyronine",
+        "t3",
+        "cytomel",
+        "thyromel",
+        "l-triiodothyronine"
+      ]
+    },
+    {
+      "generic": "Methimazole",
+      "brands": [
+        "Tapazole",
+        "Methimez"
+      ],
+      "variants": [
+        "methimazole",
+        "tapazole",
+        "methimez"
+      ]
+    },
+    {
+      "generic": "Carbimazole",
+      "brands": [
+        "Neo-Mercazole",
+        "Thyrocab",
+        "Carbazole"
+      ],
+      "variants": [
+        "carbimazole",
+        "neo-mercazole",
+        "thyrocab",
+        "carbazole",
+        "neo-mercazole 5",
+        "thyrocab 10"
+      ]
+    },
+    {
+      "generic": "Propylthiouracil",
+      "brands": [
+        "PTU",
+        "Propyl-Thyracil",
+        "PTU Tablet"
+      ],
+      "variants": [
+        "propylthiouracil",
+        "ptu",
+        "propyl-thyracil",
+        "ptu tablet"
+      ]
+    },
+    {
+      "generic": "Alendronate",
+      "brands": [
+        "Osteofos",
+        "Fosamax",
+        "Alendros"
+      ],
+      "variants": [
+        "alendronate",
+        "osteofos",
+        "fosamax",
+        "alendros",
+        "osteofos 70"
+      ]
+    },
+    {
+      "generic": "Risedronate",
+      "brands": [
+        "Actonel",
+        "Risofos",
+        "Risedron"
+      ],
+      "variants": [
+        "risedronate",
+        "actonel",
+        "risofos",
+        "risedron",
+        "risofos 35"
+      ]
+    },
+    {
+      "generic": "Ibandronate",
+      "brands": [
+        "Bandrone",
+        "Bonviva",
+        "Ibanic"
+      ],
+      "variants": [
+        "ibandronate",
+        "bandrone",
+        "bonviva",
+        "ibanic",
+        "bandrone 150"
+      ]
+    },
+    {
+      "generic": "Zoledronic Acid",
+      "brands": [
+        "Zoldria",
+        "Reclast",
+        "Zometa"
+      ],
+      "variants": [
+        "zoledronic acid",
+        "zoledronate",
+        "zoldria",
+        "reclast",
+        "zometa"
+      ]
+    },
+    {
+      "generic": "Denosumab",
+      "brands": [
+        "Prolia",
+        "Xgeva",
+        "Denogen"
+      ],
+      "variants": [
+        "denosumab",
+        "prolia",
+        "xgeva",
+        "denogen"
+      ]
+    },
+    {
+      "generic": "Teriparatide",
+      "brands": [
+        "Forteo",
+        "Bonmax",
+        "Terifrac"
+      ],
+      "variants": [
+        "teriparatide",
+        "forteo",
+        "bonmax",
+        "terifrac",
+        "teriparatide injection"
+      ]
+    },
+    {
+      "generic": "Calcitriol",
+      "brands": [
+        "Rocaltrol",
+        "Calcirol Calcitriol",
+        "Calcitrin"
+      ],
+      "variants": [
+        "calcitriol",
+        "rocaltrol",
+        "calcitrin",
+        "calcitriol capsule",
+        "calcirol calcitriol"
+      ]
+    },
+    {
+      "generic": "Sevelamer",
+      "brands": [
+        "Renvela",
+        "Sevcar",
+        "Sevelam"
+      ],
+      "variants": [
+        "sevelamer",
+        "sevelamer carbonate",
+        "renvela",
+        "sevcar",
+        "sevelam",
+        "sevcar 800",
+        "renvela 800"
+      ]
+    },
+    {
+      "generic": "Calcium Acetate",
+      "brands": [
+        "Phoslo",
+        "Calacet",
+        "Phoscut"
+      ],
+      "variants": [
+        "calcium acetate",
+        "phoslo",
+        "calacet",
+        "phoscut",
+        "calcium acetate tablet"
+      ]
+    },
+    {
+      "generic": "Lanthanum Carbonate",
+      "brands": [
+        "Fosnol",
+        "Lanum",
+        "Lanth"
+      ],
+      "variants": [
+        "lanthanum carbonate",
+        "fosnol",
+        "lanum",
+        "lanth"
+      ]
+    },
+    {
+      "generic": "Cinacalcet",
+      "brands": [
+        "Sensipar",
+        "Pthcut",
+        "Cinatrust"
+      ],
+      "variants": [
+        "cinacalcet",
+        "sensipar",
+        "pthcut",
+        "cinatrust",
+        "pthcut 30"
+      ]
+    },
+    {
+      "generic": "Erythropoietin",
+      "brands": [
+        "Eprex",
+        "Epofit",
+        "Erypro"
+      ],
+      "variants": [
+        "erythropoietin",
+        "epo",
+        "eprex",
+        "epofit",
+        "erypro",
+        "erythropoietin injection"
+      ]
+    },
+    {
+      "generic": "Darbepoetin Alfa",
+      "brands": [
+        "Cresp",
+        "Aranesp",
+        "Darbest"
+      ],
+      "variants": [
+        "darbepoetin alfa",
+        "cresp",
+        "aranesp",
+        "darbest",
+        "cresp 40",
+        "cresp 25"
+      ]
+    },
+    {
+      "generic": "Iron Sucrose",
+      "brands": [
+        "Orofer",
+        "Venofer",
+        "Ictas"
+      ],
+      "variants": [
+        "iron sucrose",
+        "orofer",
+        "venofer",
+        "ictas",
+        "iron sucrose injection"
+      ]
+    },
+    {
+      "generic": "Iron Isomaltoside",
+      "brands": [
+        "Monover",
+        "Isofer",
+        "Isomalt"
+      ],
+      "variants": [
+        "iron isomaltoside",
+        "monover",
+        "isofer",
+        "isomalt"
+      ]
+    },
+    {
+      "generic": "Ferric Carboxymaltose",
+      "brands": [
+        "Encicarb",
+        "Injectifer",
+        "FCM"
+      ],
+      "variants": [
+        "ferric carboxymaltose",
+        "encicarb",
+        "injectifer",
+        "fcm",
+        "encicarb injection"
+      ]
+    },
+    {
+      "generic": "Deferasirox",
+      "brands": [
+        "Asunra",
+        "Exjade",
+        "Desirox"
+      ],
+      "variants": [
+        "deferasirox",
+        "asunra",
+        "exjade",
+        "desirox",
+        "asunra 400",
+        "desirox 500"
+      ]
+    },
+    {
+      "generic": "Deferiprone",
+      "brands": [
+        "Kelfer",
+        "Deferipr"
+      ],
+      "variants": [
+        "deferiprone",
+        "kelfer",
+        "deferipr",
+        "kelfer 500"
+      ]
+    },
+    {
+      "generic": "Penicillamine",
+      "brands": [
+        "Cilamin",
+        "Artamin"
+      ],
+      "variants": [
+        "penicillamine",
+        "cilamin",
+        "artamin",
+        "cilamin 250"
+      ]
+    },
+    {
+      "generic": "Acetylcysteine",
+      "brands": [
+        "Mucomix",
+        "Nac Fil",
+        "Mucinac"
+      ],
+      "variants": [
+        "acetylcysteine",
+        "mucomix",
+        "nac fil",
+        "mucinac",
+        "mucinac 600",
+        "nac fil 600"
+      ]
+    },
+    {
+      "generic": "Pralidoxime",
+      "brands": [
+        "Pam Injection",
+        "Neopam"
+      ],
+      "variants": [
+        "pralidoxime",
+        "pam injection",
+        "neopam",
+        "pam"
+      ]
+    },
+    {
+      "generic": "Atropine",
+      "brands": [
+        "Atrorush",
+        "Tropine",
+        "Atropin"
+      ],
+      "variants": [
+        "atropine",
+        "atrorush",
+        "tropine",
+        "atropin",
+        "atropine injection"
+      ]
+    },
+    {
+      "generic": "Naloxone",
+      "brands": [
+        "Nex",
+        "Narcotan",
+        "Nalox"
+      ],
+      "variants": [
+        "naloxone",
+        "nex",
+        "narcotan",
+        "nalox",
+        "naloxone injection"
+      ]
+    },
+    {
+      "generic": "Flumazenil",
+      "brands": [
+        "Anexate",
+        "Flumaz"
+      ],
+      "variants": [
+        "flumazenil",
+        "anexate",
+        "flumaz",
+        "anexate injection"
+      ]
+    },
+    {
+      "generic": "Fomepizole",
+      "brands": [
+        "Antizol"
+      ],
+      "variants": [
+        "fomepizole",
+        "antizol"
+      ]
+    },
+    {
+      "generic": "Digoxin Immune Fab",
+      "brands": [
+        "Digibind",
+        "Digifab"
+      ],
+      "variants": [
+        "digoxin immune fab",
+        "digibind",
+        "digifab"
+      ]
+    },
+    {
+      "generic": "Neostigmine",
+      "brands": [
+        "Myostigmin",
+        "Tilstigmin"
+      ],
+      "variants": [
+        "neostigmine",
+        "myostigmin",
+        "tilstigmin",
+        "myostigmin injection"
+      ]
+    },
+    {
+      "generic": "Pyridostigmine",
+      "brands": [
+        "Distinon",
+        "Myestin"
+      ],
+      "variants": [
+        "pyridostigmine",
+        "distinon",
+        "myestin",
+        "distinon 60"
+      ]
+    },
+    {
+      "generic": "Edrophonium",
+      "brands": [
+        "Tensilon",
+        "Enlon"
+      ],
+      "variants": [
+        "edrophonium",
+        "tensilon",
+        "enlon"
+      ]
+    },
+    {
+      "generic": "Sugammadex",
+      "brands": [
+        "Bridion",
+        "Sugadex"
+      ],
+      "variants": [
+        "sugammadex",
+        "bridion",
+        "sugadex"
+      ]
+    },
+    {
+      "generic": "Succinylcholine",
+      "brands": [
+        "Scoline",
+        "Midarine"
+      ],
+      "variants": [
+        "succinylcholine",
+        "scoline",
+        "midarine",
+        "scoline injection"
+      ]
+    },
+    {
+      "generic": "Vecuronium",
+      "brands": [
+        "Norcuron",
+        "Vecuron"
+      ],
+      "variants": [
+        "vecuronium",
+        "norcuron",
+        "vecuron",
+        "vecuronium injection"
+      ]
+    },
+    {
+      "generic": "Atracurium",
+      "brands": [
+        "Tracrium",
+        "Artacil"
+      ],
+      "variants": [
+        "atracurium",
+        "tracrium",
+        "artacil",
+        "tracrium injection"
+      ]
+    },
+    {
+      "generic": "Cisatracurium",
+      "brands": [
+        "Nimbex",
+        "Cisatry"
+      ],
+      "variants": [
+        "cisatracurium",
+        "nimbex",
+        "cisatry",
+        "nimbex injection"
+      ]
+    },
+    {
+      "generic": "Pancuronium",
+      "brands": [
+        "Pavulon",
+        "Panuroni"
+      ],
+      "variants": [
+        "pancuronium",
+        "pavulon",
+        "panuroni"
+      ]
+    },
+    {
+      "generic": "Rocuronium",
+      "brands": [
+        "Esmeron",
+        "Rocun"
+      ],
+      "variants": [
+        "rocuronium",
+        "esmeron",
+        "rocun",
+        "esmeron injection"
+      ]
+    },
+    {
+      "generic": "Dantrolene",
+      "brands": [
+        "Dantrium",
+        "Revonto"
+      ],
+      "variants": [
+        "dantrolene",
+        "dantrium",
+        "revonto",
+        "dantrium 25"
+      ]
+    },
+    {
+      "generic": "Baclofen",
+      "brands": [
+        "Liofen",
+        "Baclof",
+        "Bakflex"
+      ],
+      "variants": [
+        "baclofen",
+        "liofen",
+        "baclof",
+        "bakflex",
+        "liofen 10",
+        "liofen 25"
+      ]
+    },
+    {
+      "generic": "Tizanidine",
+      "brands": [
+        "Tizan",
+        "Sirdalud",
+        "Tizaflex"
+      ],
+      "variants": [
+        "tizanidine",
+        "tizan",
+        "sirdalud",
+        "tizaflex",
+        "tizan 2",
+        "tizan 4"
+      ]
+    },
+    {
+      "generic": "Cyclobenzaprine",
+      "brands": [
+        "Myoflex",
+        "Flexeril"
+      ],
+      "variants": [
+        "cyclobenzaprine",
+        "myoflex",
+        "flexeril",
+        "myoflex 10"
+      ]
+    },
+    {
+      "generic": "Carisoprodol",
+      "brands": [
+        "Soma",
+        "Carisoma"
+      ],
+      "variants": [
+        "carisoprodol",
+        "soma",
+        "carisoma",
+        "soma 350"
+      ]
+    },
+    {
+      "generic": "Methocarbamol",
+      "brands": [
+        "Robaxin",
+        "Myolax"
+      ],
+      "variants": [
+        "methocarbamol",
+        "robaxin",
+        "myolax",
+        "robaxin 500"
+      ]
+    },
+    {
+      "generic": "Chlorzoxazone",
+      "brands": [
+        "Parafon",
+        "Orthoflex"
+      ],
+      "variants": [
+        "chlorzoxazone",
+        "parafon",
+        "orthoflex"
+      ]
+    },
+    {
+      "generic": "Trihexyphenidyl",
+      "brands": [
+        "Pacitane",
+        "Parkin"
+      ],
+      "variants": [
+        "trihexyphenidyl",
+        "pacitane",
+        "parkin",
+        "pacitane 2"
+      ]
+    },
+    {
+      "generic": "Benztropine",
+      "brands": [
+        "Cogentin"
+      ],
+      "variants": [
+        "benztropine",
+        "cogentin"
+      ]
+    },
+    {
+      "generic": "Levodopa + Carbidopa",
+      "brands": [
+        "Sydopa",
+        "Tidomet",
+        "Syncapone"
+      ],
+      "variants": [
+        "levodopa + carbidopa",
+        "levodopa and carbidopa",
+        "sydopa",
+        "tidomet",
+        "syncapone",
+        "sydopa 110",
+        "tidomet plus"
+      ]
+    },
+    {
+      "generic": "Entacapone",
+      "brands": [
+        "Entarone",
+        "Adcapone"
+      ],
+      "variants": [
+        "entacapone",
+        "entarone",
+        "adcapone",
+        "entarone 200"
+      ]
+    },
+    {
+      "generic": "Tolcapone",
+      "brands": [
+        "Tasmar"
+      ],
+      "variants": [
+        "tolcapone",
+        "tasmar"
+      ]
+    },
+    {
+      "generic": "Selegiline",
+      "brands": [
+        "Selgin",
+        "Eldepryl"
+      ],
+      "variants": [
+        "selegiline",
+        "selgin",
+        "eldepryl",
+        "selgin 5"
+      ]
+    },
+    {
+      "generic": "Rasagiline",
+      "brands": [
+        "Rasalect",
+        "Rasasal"
+      ],
+      "variants": [
+        "rasagiline",
+        "rasalect",
+        "rasasal",
+        "rasalect 1",
+        "rasalect 0.5"
+      ]
+    },
+    {
+      "generic": "Pramipexole",
+      "brands": [
+        "Pramipex",
+        "Sifrol",
+        "Pramipex ER"
+      ],
+      "variants": [
+        "pramipexole",
+        "pramipex",
+        "sifrol",
+        "pramipex 0.5",
+        "pramipex 0.25",
+        "pramipex 1",
+        "pramipex er"
+      ]
+    },
+    {
+      "generic": "Ropinirole",
+      "brands": [
+        "Ropark",
+        "Requip",
+        "Ropark XL"
+      ],
+      "variants": [
+        "ropinirole",
+        "ropark",
+        "requip",
+        "ropark 2",
+        "ropark 1",
+        "ropark 0.5",
+        "ropark xl"
+      ]
+    },
+    {
+      "generic": "Rotigotine",
+      "brands": [
+        "Neupro"
+      ],
+      "variants": [
+        "rotigotine",
+        "neupro",
+        "neupro patch"
+      ]
+    },
+    {
+      "generic": "Apomorphine",
+      "brands": [
+        "Apokyn",
+        "Apomorph"
+      ],
+      "variants": [
+        "apomorphine",
+        "apokyn",
+        "apomorph"
+      ]
+    },
+    {
+      "generic": "Amantadine",
+      "brands": [
+        "Amantrel",
+        "Symmetrel"
+      ],
+      "variants": [
+        "amantadine",
+        "amantrel",
+        "symmetrel",
+        "amantrel 100"
+      ]
+    },
+    {
+      "generic": "Tetrabenazine",
+      "brands": [
+        "Xenazine",
+        "Revocon"
+      ],
+      "variants": [
+        "tetrabenazine",
+        "xenazine",
+        "revocon",
+        "revocon 25"
+      ]
+    },
+    {
+      "generic": "Deutetrabenazine",
+      "brands": [
+        "Austedo",
+        "Deutetra"
+      ],
+      "variants": [
+        "deutetrabenazine",
+        "austedo",
+        "deutetra"
+      ]
+    },
+    {
+      "generic": "Valbenazine",
+      "brands": [
+        "Ingrezza",
+        "Valbena"
+      ],
+      "variants": [
+        "valbenazine",
+        "ingrezza",
+        "valbena"
+      ]
+    },
+    {
+      "generic": "Rivastigmine",
+      "brands": [
+        "Rivamer",
+        "Exelon"
+      ],
+      "variants": [
+        "rivastigmine",
+        "rivamer",
+        "exelon",
+        "rivamer 1.5",
+        "rivamer 3"
+      ]
+    },
+    {
+      "generic": "Galantamine",
+      "brands": [
+        "Galamer",
+        "Reminyl"
+      ],
+      "variants": [
+        "galantamine",
+        "galamer",
+        "reminyl",
+        "galamer 4",
+        "galamer 8"
+      ]
+    },
+    {
+      "generic": "Phenobarbital",
+      "brands": [
+        "Gardenal",
+        "Luminal",
+        "Phenobarbitone"
+      ],
+      "variants": [
+        "phenobarbital",
+        "gardenal",
+        "luminal",
+        "phenobarbitone",
+        "gardenal 30",
+        "gardenal 60"
+      ]
+    },
+    {
+      "generic": "Primidone",
+      "brands": [
+        "Mysoline",
+        "Primadex"
+      ],
+      "variants": [
+        "primidone",
+        "mysoline",
+        "primadex",
+        "mysoline 250"
+      ]
+    },
+    {
+      "generic": "Phenytoin",
+      "brands": [
+        "Dilantin",
+        "Epsolin",
+        "Phenytoin Sodium"
+      ],
+      "variants": [
+        "phenytoin",
+        "dilantin",
+        "epsolin",
+        "epsolin 100",
+        "dilantin 100",
+        "phenytoin sodium"
+      ]
+    },
+    {
+      "generic": "Fosphenytoin",
+      "brands": [
+        "Cerebyx",
+        "Fosolin"
+      ],
+      "variants": [
+        "fosphenytoin",
+        "cerebyx",
+        "fosolin",
+        "fosolin injection"
+      ]
+    },
+    {
+      "generic": "Oxcarbazepine",
+      "brands": [
+        "Trileptal",
+        "Oxetol",
+        "Acticalm"
+      ],
+      "variants": [
+        "oxcarbazepine",
+        "trileptal",
+        "oxetol",
+        "acticalm",
+        "oxetol 300",
+        "oxetol 150",
+        "oxetol 600"
+      ]
+    },
+    {
+      "generic": "Eslicarbazepine",
+      "brands": [
+        "Aptiom",
+        "Exal"
+      ],
+      "variants": [
+        "eslicarbazepine",
+        "aptiom",
+        "exal",
+        "exal 400",
+        "exal 600"
+      ]
+    },
+    {
+      "generic": "Divalproex Sodium",
+      "brands": [
+        "Divalpro",
+        "Depakote",
+        "Divalgress"
+      ],
+      "variants": [
+        "divalproex sodium",
+        "divalproex",
+        "divalpro",
+        "depakote",
+        "divalgress",
+        "divalpro xr 500",
+        "divalpro xr 250"
+      ]
+    },
+    {
+      "generic": "Ethosuximide",
+      "brands": [
+        "Zarontin"
+      ],
+      "variants": [
+        "ethosuximide",
+        "zarontin",
+        "zarontin syrup"
+      ]
+    },
+    {
+      "generic": "Topiramate",
+      "brands": [
+        "Topamac",
+        "Topirol",
+        "Topaz"
+      ],
+      "variants": [
+        "topiramate",
+        "topamac",
+        "topirol",
+        "topaz",
+        "topamac 25",
+        "topamac 50",
+        "topirol 25"
+      ]
+    },
+    {
+      "generic": "Zonisamide",
+      "brands": [
+        "Zonitest",
+        "Zonegran",
+        "Zonisep"
+      ],
+      "variants": [
+        "zonisamide",
+        "zonitest",
+        "zonegran",
+        "zonisep",
+        "zonisep 50",
+        "zonisep 100"
+      ]
+    },
+    {
+      "generic": "Lacosamide",
+      "brands": [
+        "Vimpat",
+        "Lacoset",
+        "Lacoxa"
+      ],
+      "variants": [
+        "lacosamide",
+        "vimpat",
+        "lacoset",
+        "lacoxa",
+        "lacoset 100",
+        "lacoset 50",
+        "lacoset 150"
+      ]
+    },
+    {
+      "generic": "Vigabatrin",
+      "brands": [
+        "Sabril",
+        "Vigadep"
+      ],
+      "variants": [
+        "vigabatrin",
+        "sabril",
+        "vigadep",
+        "sabril 500"
+      ]
+    },
+    {
+      "generic": "Tiagabine",
+      "brands": [
+        "Gabitril"
+      ],
+      "variants": [
+        "tiagabine",
+        "gabitril"
+      ]
+    },
+    {
+      "generic": "Rufinamide",
+      "brands": [
+        "Banzel",
+        "Rufimar",
+        "Rufide"
+      ],
+      "variants": [
+        "rufinamide",
+        "banzel",
+        "rufimar",
+        "rufide",
+        "rufimar 200",
+        "rufimar 400"
+      ]
+    },
+    {
+      "generic": "Midazolam",
+      "brands": [
+        "Mezolam",
+        "Versed",
+        "Midzee"
+      ],
+      "variants": [
+        "midazolam",
+        "mezolam",
+        "versed",
+        "midzee",
+        "mezolam injection",
+        "midzee nasal spray"
+      ]
+    },
+    {
+      "generic": "Temazepam",
+      "brands": [
+        "Restoril"
+      ],
+      "variants": [
+        "temazepam",
+        "restoril"
+      ]
+    },
+    {
+      "generic": "Triazolam",
+      "brands": [
+        "Halcion"
+      ],
+      "variants": [
+        "triazolam",
+        "halcion"
+      ]
+    },
+    {
+      "generic": "Flurazepam",
+      "brands": [
+        "Dalmane",
+        "Fluraz"
+      ],
+      "variants": [
+        "flurazepam",
+        "dalmane",
+        "fluraz"
+      ]
+    },
+    {
+      "generic": "Zopiclone",
+      "brands": [
+        "Imovane",
+        "Zopicon",
+        "Zopitab"
+      ],
+      "variants": [
+        "zopiclone",
+        "imovane",
+        "zopicon",
+        "zopitab",
+        "zopicon 7.5"
+      ]
+    },
+    {
+      "generic": "Eszopiclone",
+      "brands": [
+        "Lunesta",
+        "Eszopin",
+        "Eszofit"
+      ],
+      "variants": [
+        "eszopiclone",
+        "lunesta",
+        "eszopin",
+        "eszofit",
+        "eszopin 2",
+        "eszopin 3"
+      ]
+    },
+    {
+      "generic": "Zaleplon",
+      "brands": [
+        "Zaplon",
+        "Sonata",
+        "Zalep"
+      ],
+      "variants": [
+        "zaleplon",
+        "zaplon",
+        "sonata",
+        "zalep",
+        "zaplon 10",
+        "zaplon 5"
+      ]
+    },
+    {
+      "generic": "Ramelteon",
+      "brands": [
+        "Rozerem",
+        "Ramitax"
+      ],
+      "variants": [
+        "ramelteon",
+        "rozerem",
+        "ramitax",
+        "ramitax 8"
+      ]
+    },
+    {
+      "generic": "Suvorexant",
+      "brands": [
+        "Belsomra"
+      ],
+      "variants": [
+        "suvorexant",
+        "belsomra"
+      ]
+    },
+    {
+      "generic": "Melatonin",
+      "brands": [
+        "Meloset",
+        "Melasleep",
+        "Mela"
+      ],
+      "variants": [
+        "melatonin",
+        "meloset",
+        "melasleep",
+        "mela",
+        "meloset 3",
+        "meloset 5"
+      ]
+    },
+    {
+      "generic": "Buspirone",
+      "brands": [
+        "Buspin",
+        "Buspar"
+      ],
+      "variants": [
+        "buspirone",
+        "buspin",
+        "buspar",
+        "buspin 5",
+        "buspin 10"
+      ]
+    },
+    {
+      "generic": "Labetalol",
+      "brands": [
+        "Labecard",
+        "Normadate",
+        "Gravidol"
+      ],
+      "variants": [
+        "labetalol",
+        "labecard",
+        "normadate",
+        "gravidol",
+        "gravidol 100",
+        "labecard 100"
+      ]
+    },
+    {
+      "generic": "Esmolol",
+      "brands": [
+        "Brevibloc",
+        "Esmocard"
+      ],
+      "variants": [
+        "esmolol",
+        "brevibloc",
+        "esmocard",
+        "esmocard injection"
+      ]
+    },
+    {
+      "generic": "Sotalol",
+      "brands": [
+        "Sotagard",
+        "Sotalor"
+      ],
+      "variants": [
+        "sotalol",
+        "sotagard",
+        "sotalor",
+        "sotagard 40",
+        "sotagard 80"
+      ]
+    },
+    {
+      "generic": "Amiodarone",
+      "brands": [
+        "Cordarone",
+        "Aldarone",
+        "Tachyra"
+      ],
+      "variants": [
+        "amiodarone",
+        "cordarone",
+        "aldarone",
+        "tachyra",
+        "cordarone 100",
+        "cordarone 200"
+      ]
+    },
+    {
+      "generic": "Dronedarone",
+      "brands": [
+        "Multaq",
+        "Dronet"
+      ],
+      "variants": [
+        "dronedarone",
+        "multaq",
+        "dronet",
+        "multaq 400"
+      ]
+    },
+    {
+      "generic": "Flecainide",
+      "brands": [
+        "Tambocor",
+        "Flecarite",
+        "Flecain"
+      ],
+      "variants": [
+        "flecainide",
+        "tambocor",
+        "flecarite",
+        "flecain",
+        "flecain 50",
+        "flecain 100"
+      ]
+    },
+    {
+      "generic": "Propafenone",
+      "brands": [
+        "Rythmol",
+        "Propanorm"
+      ],
+      "variants": [
+        "propafenone",
+        "rythmol",
+        "propanorm",
+        "rythmol 150"
+      ]
+    },
+    {
+      "generic": "Mexiletine",
+      "brands": [
+        "Mexitil",
+        "Mexitest"
+      ],
+      "variants": [
+        "mexiletine",
+        "mexitil",
+        "mexitest",
+        "mexitil 150"
+      ]
+    },
+    {
+      "generic": "Quinidine",
+      "brands": [
+        "Natisedine",
+        "Quinidex"
+      ],
+      "variants": [
+        "quinidine",
+        "natisedine",
+        "quinidex"
+      ]
+    },
+    {
+      "generic": "Tiotropium",
+      "brands": [
+        "Tiova",
+        "Spiriva",
+        "Tioair"
+      ],
+      "variants": [
+        "tiotropium",
+        "tiova",
+        "spiriva",
+        "tioair",
+        "tiova inhaler",
+        "tiova rotacaps"
+      ]
+    },
+    {
+      "generic": "Ipratropium",
+      "brands": [
+        "Ipravent",
+        "Atrovent"
+      ],
+      "variants": [
+        "ipratropium",
+        "ipravent",
+        "atrovent",
+        "ipravent inhaler",
+        "ipravent respirator solution"
+      ]
+    },
+    {
+      "generic": "Glycopyrrolate",
+      "brands": [
+        "Glycolate",
+        "Robinul",
+        "Pyrolate"
+      ],
+      "variants": [
+        "glycopyrrolate",
+        "glycolate",
+        "robinul",
+        "pyrolate",
+        "glycolate 1",
+        "glycolate 2"
+      ]
+    },
+    {
+      "generic": "Formoterol",
+      "brands": [
+        "Foracort Rotacaps",
+        "Formoter",
+        "Formonide"
+      ],
+      "variants": [
+        "formoterol",
+        "foracort",
+        "formoter",
+        "formonide",
+        "foracort 200",
+        "foracort rotacaps"
+      ]
+    },
+    {
+      "generic": "Salmeterol",
+      "brands": [
+        "Seroflo Rotacaps",
+        "Salmet",
+        "Salmeter"
+      ],
+      "variants": [
+        "salmeterol",
+        "seroflo",
+        "salmet",
+        "salmeter",
+        "seroflo rotacaps"
+      ]
+    },
+    {
+      "generic": "Indacaterol",
+      "brands": [
+        "Onbrez",
+        "Indafit"
+      ],
+      "variants": [
+        "indacaterol",
+        "onbrez",
+        "indafit",
+        "onbrez breezhaler"
+      ]
+    },
+    {
+      "generic": "Vilanterol",
+      "brands": [
+        "Anoro Ellipta",
+        "Vilanter"
+      ],
+      "variants": [
+        "vilanterol",
+        "anoro ellipta",
+        "vilanter"
+      ]
+    },
+    {
+      "generic": "Roflumilast",
+      "brands": [
+        "Daxas",
+        "Roflum",
+        "Roflast"
+      ],
+      "variants": [
+        "roflumilast",
+        "daxas",
+        "roflum",
+        "roflast",
+        "daxas 500"
+      ]
+    },
+    {
+      "generic": "Theophylline",
+      "brands": [
+        "Theoped",
+        "Uniphyl",
+        "Theobid"
+      ],
+      "variants": [
+        "theophylline",
+        "theoped",
+        "uniphyl",
+        "theobid",
+        "theoped 300",
+        "theoped 400"
+      ]
+    },
+    {
+      "generic": "Aminophylline",
+      "brands": [
+        "Aminophylline Inj",
+        "Minophy"
+      ],
+      "variants": [
+        "aminophylline",
+        "aminophyline",
+        "minophy",
+        "aminophylline injection",
+        "aminophylline inj"
+      ]
+    },
+    {
+      "generic": "Aprepitant",
+      "brands": [
+        "Aprecap",
+        "Emend",
+        "Apremer"
+      ],
+      "variants": [
+        "aprepitant",
+        "aprecap",
+        "emend",
+        "apremer",
+        "aprecap capsule"
+      ]
+    },
+    {
+      "generic": "Fosaprepitant",
+      "brands": [
+        "Fosapre",
+        "Emend IV",
+        "Fosaprep"
+      ],
+      "variants": [
+        "fosaprepitant",
+        "fosapre",
+        "emend iv",
+        "fosaprep",
+        "fosaprepitant injection"
+      ]
+    },
+    {
+      "generic": "Netupitant",
+      "brands": [
+        "Akynzeo",
+        "Netupit"
+      ],
+      "variants": [
+        "netupitant",
+        "akynzeo",
+        "netupit"
+      ]
+    },
+    {
+      "generic": "Palonosetron",
+      "brands": [
+        "Palonex",
+        "Aloxi",
+        "Palonos"
+      ],
+      "variants": [
+        "palonosetron",
+        "palonex",
+        "aloxi",
+        "palonos",
+        "palonex injection"
+      ]
+    },
+    {
+      "generic": "Granisetron",
+      "brands": [
+        "Granicip",
+        "Kytril",
+        "Granitax"
+      ],
+      "variants": [
+        "granisetron",
+        "granicip",
+        "kytril",
+        "granitax",
+        "granicip 1",
+        "granicip injection"
+      ]
+    },
+    {
+      "generic": "Dolasetron",
+      "brands": [
+        "Anzemet",
+        "Dolas"
+      ],
+      "variants": [
+        "dolasetron",
+        "anzemet",
+        "dolas"
+      ]
+    },
+    {
+      "generic": "Lubiprostone",
+      "brands": [
+        "Lubilax",
+        "Amitiza",
+        "Lubipro"
+      ],
+      "variants": [
+        "lubiprostone",
+        "lubilax",
+        "amitiza",
+        "lubipro",
+        "lubilax 24",
+        "lubilax 8"
+      ]
+    },
+    {
+      "generic": "Linaclotide",
+      "brands": [
+        "Linzess",
+        "Linaclo"
+      ],
+      "variants": [
+        "linaclotide",
+        "linzess",
+        "linaclo"
+      ]
+    },
+    {
+      "generic": "Prucalopride",
+      "brands": [
+        "Prudila",
+        "Resolor",
+        "Prucare"
+      ],
+      "variants": [
+        "prucalopride",
+        "prudila",
+        "resolor",
+        "prucare",
+        "prudila 1",
+        "prudila 2"
+      ]
+    },
+    {
+      "generic": "Alosetron",
+      "brands": [
+        "Lotronex",
+        "Aloset"
+      ],
+      "variants": [
+        "alosetron",
+        "lotronex",
+        "aloset"
+      ]
+    },
+    {
+      "generic": "Tegaserod",
+      "brands": [
+        "Zelnorm",
+        "Tegaser"
+      ],
+      "variants": [
+        "tegaserod",
+        "zelnorm",
+        "tegaser"
+      ]
+    },
+    {
+      "generic": "Eluxadoline",
+      "brands": [
+        "Viberzi",
+        "Eluxa"
+      ],
+      "variants": [
+        "eluxadoline",
+        "viberzi",
+        "eluxa"
+      ]
+    },
+    {
+      "generic": "Nilotinib",
+      "brands": [
+        "Tasigna",
+        "Nilotib"
+      ],
+      "variants": [
+        "nilotinib",
+        "tasigna",
+        "nilotib",
+        "tasigna 200",
+        "tasigna 150"
+      ]
+    },
+    {
+      "generic": "Ceftriaxone",
+      "brands": [
+        "Monocef",
+        "Ceftrax",
+        "Zone"
+      ],
+      "variants": [
+        "ceftriaxone",
+        "monocef",
+        "ceftrax",
+        "monocef 1g",
+        "zone"
+      ]
+    },
+    {
+      "generic": "Cefotaxime",
+      "brands": [
+        "Taxim",
+        "Cefotax"
+      ],
+      "variants": [
+        "cefotaxime",
+        "taxim",
+        "cefotax",
+        "taxim 1g"
+      ]
+    },
+    {
+      "generic": "Piperacillin + Tazobactam",
+      "brands": [
+        "Pipzo",
+        "Tazact",
+        "Zosyn"
+      ],
+      "variants": [
+        "piperacillin + tazobactam",
+        "pipzo",
+        "tazact",
+        "zosyn",
+        "pipzo 4.5"
+      ]
+    },
+    {
+      "generic": "Meropenem",
+      "brands": [
+        "Meronem",
+        "Mepron",
+        "Meromac"
+      ],
+      "variants": [
+        "meropenem",
+        "meronem",
+        "mepron",
+        "meromac",
+        "meronem 1g"
+      ]
+    },
+    {
+      "generic": "Imipenem + Cilastatin",
+      "brands": [
+        "Primaxin",
+        "Cilanim",
+        "Cilasym"
+      ],
+      "variants": [
+        "imipenem + cilastatin",
+        "primaxin",
+        "cilanim",
+        "cilasym"
+      ]
+    },
+    {
+      "generic": "Vancomycin",
+      "brands": [
+        "Vancocin",
+        "Vanlid",
+        "Vanco"
+      ],
+      "variants": [
+        "vancomycin",
+        "vancocin",
+        "vanlid",
+        "vanco",
+        "vanlid 500"
+      ]
+    },
+    {
+      "generic": "Teicoplanin",
+      "brands": [
+        "Targocid",
+        "Teicoplan"
+      ],
+      "variants": [
+        "teicoplanin",
+        "targocid",
+        "teicoplan",
+        "targocid 400"
+      ]
+    },
+    {
+      "generic": "Tedizolid",
+      "brands": [
+        "Sivextro",
+        "Tediz"
+      ],
+      "variants": [
+        "tedizolid",
+        "sivextro",
+        "tediz"
+      ]
+    },
+    {
+      "generic": "Daptomycin",
+      "brands": [
+        "Dacin",
+        "Cubicin"
+      ],
+      "variants": [
+        "daptomycin",
+        "dacin",
+        "cubicin"
+      ]
+    },
+    {
+      "generic": "Colistin",
+      "brands": [
+        "Coly-Mycin",
+        "Colymon",
+        "Colistimethate"
+      ],
+      "variants": [
+        "colistin",
+        "coly-mycin",
+        "colymon",
+        "colistin injection",
+        "colistimethate"
+      ]
+    },
+    {
+      "generic": "Polymyxin B",
+      "brands": [
+        "Poly-B",
+        "Polymyxin"
+      ],
+      "variants": [
+        "polymyxin b",
+        "poly-b",
+        "polymyxin"
+      ]
+    },
+    {
+      "generic": "Amikacin",
+      "brands": [
+        "Amicip",
+        "Mikacin",
+        "Amikacin Inj"
+      ],
+      "variants": [
+        "amikacin",
+        "amicip",
+        "mikacin",
+        "amicip 500",
+        "amikacin inj"
+      ]
+    },
+    {
+      "generic": "Gentamicin",
+      "brands": [
+        "Garamycin",
+        "Genticyn",
+        "Genta"
+      ],
+      "variants": [
+        "gentamicin",
+        "garamycin",
+        "genticyn",
+        "genta",
+        "genticyn eye drops"
+      ]
+    },
+    {
+      "generic": "Tobramycin",
+      "brands": [
+        "Toba",
+        "Tobrin",
+        "Tobra"
+      ],
+      "variants": [
+        "tobramycin",
+        "toba",
+        "tobrin",
+        "tobra",
+        "toba eye drops"
+      ]
+    },
+    {
+      "generic": "Neomycin",
+      "brands": [
+        "Neosporin",
+        "Nemycin"
+      ],
+      "variants": [
+        "neomycin",
+        "neosporin",
+        "nemycin",
+        "neosporin ointment"
+      ]
+    },
+    {
+      "generic": "Streptomycin",
+      "brands": [
+        "Ambistryn",
+        "Strepto"
+      ],
+      "variants": [
+        "streptomycin",
+        "ambistryn",
+        "strepto",
+        "ambistryn 1g"
+      ]
+    },
+    {
+      "generic": "Aztreonam",
+      "brands": [
+        "Azactam",
+        "Azenam",
+        "Aztreo"
+      ],
+      "variants": [
+        "aztreonam",
+        "azactam",
+        "azenam",
+        "aztreo"
+      ]
+    },
+    {
+      "generic": "Fosfomycin",
+      "brands": [
+        "Fosirol",
+        "Monurol",
+        "Fosfocin"
+      ],
+      "variants": [
+        "fosfomycin",
+        "fosirol",
+        "monurol",
+        "fosfocin",
+        "fosirol sachet"
+      ]
+    },
+    {
+      "generic": "Tigecycline",
+      "brands": [
+        "Tygacil",
+        "Tigebax",
+        "Tigez"
+      ],
+      "variants": [
+        "tigecycline",
+        "tygacil",
+        "tigebax",
+        "tigez"
+      ]
+    },
+    {
+      "generic": "Tetracycline",
+      "brands": [
+        "Hostacycline",
+        "Tetra"
+      ],
+      "variants": [
+        "tetracycline",
+        "hostacycline",
+        "tetra",
+        "hostacycline 250"
+      ]
+    },
+    {
+      "generic": "Erythromycin",
+      "brands": [
+        "Althrocin",
+        "Erythrocin"
+      ],
+      "variants": [
+        "erythromycin",
+        "althrocin",
+        "erythrocin",
+        "althrocin 500"
+      ]
+    },
+    {
+      "generic": "Spiramycin",
+      "brands": [
+        "Rovamycin",
+        "Spiram"
+      ],
+      "variants": [
+        "spiramycin",
+        "rovamycin",
+        "spiram",
+        "rovamycin 1.5"
+      ]
+    },
+    {
+      "generic": "Trimethoprim + Sulfamethoxazole",
+      "brands": [
+        "Bactrim",
+        "Septran",
+        "Cotrimoxazole"
+      ],
+      "variants": [
+        "trimethoprim + sulfamethoxazole",
+        "bactrim",
+        "septran",
+        "cotrimoxazole",
+        "septran ds"
+      ]
+    },
+    {
+      "generic": "Spectinomycin",
+      "brands": [
+        "Trobicin",
+        "Spectino"
+      ],
+      "variants": [
+        "spectinomycin",
+        "trobicin",
+        "spectino"
+      ]
+    },
+    {
+      "generic": "Caspofungin",
+      "brands": [
+        "Cancidas",
+        "Caspogin"
+      ],
+      "variants": [
+        "caspofungin",
+        "cancidas",
+        "caspogin"
+      ]
+    },
+    {
+      "generic": "Micafungin",
+      "brands": [
+        "Mycamine",
+        "Micafung"
+      ],
+      "variants": [
+        "micafungin",
+        "mycamine",
+        "micafung"
+      ]
+    },
+    {
+      "generic": "Anidulafungin",
+      "brands": [
+        "Eraxis",
+        "Anidula"
+      ],
+      "variants": [
+        "anidulafungin",
+        "eraxis",
+        "anidula"
+      ]
+    },
+    {
+      "generic": "Amphotericin B",
+      "brands": [
+        "Fungizone",
+        "Amphotret",
+        "Ampholip"
+      ],
+      "variants": [
+        "amphotericin b",
+        "fungizone",
+        "amphotret",
+        "ampholip",
+        "amphotericin liposomal"
+      ]
+    },
+    {
+      "generic": "Flucytosine",
+      "brands": [
+        "Ancobon",
+        "Flucyt"
+      ],
+      "variants": [
+        "flucytosine",
+        "ancobon",
+        "flucyt"
+      ]
+    },
+    {
+      "generic": "Posaconazole",
+      "brands": [
+        "Noxafil",
+        "Posatral"
+      ],
+      "variants": [
+        "posaconazole",
+        "noxafil",
+        "posatral"
+      ]
+    },
+    {
+      "generic": "Isavuconazole",
+      "brands": [
+        "Cresemba",
+        "Isavu"
+      ],
+      "variants": [
+        "isavuconazole",
+        "cresemba",
+        "isavu"
+      ]
+    },
+    {
+      "generic": "Naftifine",
+      "brands": [
+        "Naftin",
+        "Nafti"
+      ],
+      "variants": [
+        "naftifine",
+        "naftin",
+        "nafti"
+      ]
+    },
+    {
+      "generic": "Tavaborole",
+      "brands": [
+        "Kerydin",
+        "Tavabor"
+      ],
+      "variants": [
+        "tavaborole",
+        "kerydin",
+        "tavabor"
+      ]
+    },
+    {
+      "generic": "Ciclopirox",
+      "brands": [
+        "Loprox",
+        "Batrafen"
+      ],
+      "variants": [
+        "ciclopirox",
+        "loprox",
+        "batrafen",
+        "ciclopirox cream"
+      ]
+    },
+    {
+      "generic": "Valganciclovir",
+      "brands": [
+        "Valcyte",
+        "Valgan"
+      ],
+      "variants": [
+        "valganciclovir",
+        "valcyte",
+        "valgan",
+        "valgan 450"
+      ]
+    },
+    {
+      "generic": "Cidofovir",
+      "brands": [
+        "Vistide",
+        "Cidof"
+      ],
+      "variants": [
+        "cidofovir",
+        "vistide",
+        "cidof"
+      ]
+    },
+    {
+      "generic": "Foscarnet",
+      "brands": [
+        "Foscavir",
+        "Foscar"
+      ],
+      "variants": [
+        "foscarnet",
+        "foscavir",
+        "foscar"
+      ]
+    },
+    {
+      "generic": "Maraviroc",
+      "brands": [
+        "Celsentri",
+        "Marav"
+      ],
+      "variants": [
+        "maraviroc",
+        "celsentri",
+        "marav"
+      ]
+    },
+    {
+      "generic": "Raltegravir",
+      "brands": [
+        "Isentress",
+        "Ralteg"
+      ],
+      "variants": [
+        "raltegravir",
+        "isentress",
+        "ralteg",
+        "isentress 400"
+      ]
+    },
+    {
+      "generic": "Elvitegravir",
+      "brands": [
+        "Vitekta",
+        "Elvite"
+      ],
+      "variants": [
+        "elvitegravir",
+        "vitekta",
+        "elvite"
+      ]
+    },
+    {
+      "generic": "Bictegravir",
+      "brands": [
+        "Biktarvy",
+        "Bicteg"
+      ],
+      "variants": [
+        "bictegravir",
+        "biktarvy",
+        "bicteg"
+      ]
+    },
+    {
+      "generic": "Etravirine",
+      "brands": [
+        "Intelence",
+        "Etrav"
+      ],
+      "variants": [
+        "etravirine",
+        "intelence",
+        "etrav"
+      ]
+    },
+    {
+      "generic": "Rilpivirine",
+      "brands": [
+        "Edurant",
+        "Rilpivir"
+      ],
+      "variants": [
+        "rilpivirine",
+        "edurant",
+        "rilpivir"
+      ]
+    },
+    {
+      "generic": "Doravirine",
+      "brands": [
+        "Pifeltro",
+        "Dorav"
+      ],
+      "variants": [
+        "doravirine",
+        "pifeltro",
+        "dorav"
+      ]
+    },
+    {
+      "generic": "Darunavir",
+      "brands": [
+        "Prezista",
+        "Daruvir"
+      ],
+      "variants": [
+        "darunavir",
+        "prezista",
+        "daruvir",
+        "prezista 600"
+      ]
+    },
+    {
+      "generic": "Atazanavir",
+      "brands": [
+        "Reyataz",
+        "Atazor"
+      ],
+      "variants": [
+        "atazanavir",
+        "reyataz",
+        "atazor",
+        "atazor 300"
+      ]
+    },
+    {
+      "generic": "Lopinavir + Ritonavir",
+      "brands": [
+        "Kaletra",
+        "Lopimune"
+      ],
+      "variants": [
+        "lopinavir + ritonavir",
+        "lopinavir and ritonavir",
+        "kaletra",
+        "lopimune"
+      ]
+    },
+    {
+      "generic": "Fosamprenavir",
+      "brands": [
+        "Lexiva",
+        "Fosamp"
+      ],
+      "variants": [
+        "fosamprenavir",
+        "lexiva",
+        "fosamp"
+      ]
+    },
+    {
+      "generic": "Tipranavir",
+      "brands": [
+        "Aptivus",
+        "Tipran"
+      ],
+      "variants": [
+        "tipranavir",
+        "aptivus",
+        "tipran"
+      ]
+    },
+    {
+      "generic": "Enfumirtide",
+      "brands": [
+        "Fuzeon",
+        "Enfumi"
+      ],
+      "variants": [
+        "enfumirtide",
+        "fuzeon",
+        "enfumi"
+      ]
+    },
+    {
+      "generic": "Maribavir",
+      "brands": [
+        "Livtencity",
+        "Marib"
+      ],
+      "variants": [
+        "maribavir",
+        "livtencity",
+        "marib"
+      ]
+    },
+    {
+      "generic": "Letermovir",
+      "brands": [
+        "Prevymis",
+        "Leterm"
+      ],
+      "variants": [
+        "letermovir",
+        "prevymis",
+        "leterm"
+      ]
+    },
+    {
+      "generic": "Hydralazine",
+      "brands": [
+        "Nepresol",
+        "Hydralin"
+      ],
+      "variants": [
+        "hydralazine",
+        "nepresol",
+        "hydralin"
+      ]
+    },
+    {
+      "generic": "Minoxidil",
+      "brands": [
+        "Mintop",
+        "Tugain"
+      ],
+      "variants": [
+        "minoxidil",
+        "mintop",
+        "tugain",
+        "mintop 5%",
+        "tugain 10%"
+      ]
+    },
+    {
+      "generic": "Sodium Nitroprusside",
+      "brands": [
+        "Nipruss",
+        "Nitroprusside"
+      ],
+      "variants": [
+        "sodium nitroprusside",
+        "nipruss",
+        "nitroprusside"
+      ]
+    },
+    {
+      "generic": "Diazoxide",
+      "brands": [
+        "Hyperstat",
+        "Proglicem"
+      ],
+      "variants": [
+        "diazoxide",
+        "hyperstat",
+        "proglicem"
+      ]
+    },
+    {
+      "generic": "Fenoldopam",
+      "brands": [
+        "Corlopam",
+        "Fenoldo"
+      ],
+      "variants": [
+        "fenoldopam",
+        "corlopam",
+        "fenoldo"
+      ]
+    },
+    {
+      "generic": "Aliskiren",
+      "brands": [
+        "Rasilez",
+        "Alis"
+      ],
+      "variants": [
+        "aliskiren",
+        "rasilez",
+        "alis"
+      ]
+    },
+    {
+      "generic": "Bosentan",
+      "brands": [
+        "Bozetan",
+        "Bosentas"
+      ],
+      "variants": [
+        "bosentan",
+        "bozetan",
+        "bosentas",
+        "bozetan 62.5"
+      ]
+    },
+    {
+      "generic": "Ambrisentan",
+      "brands": [
+        "Endobloc",
+        "Pulmonext"
+      ],
+      "variants": [
+        "ambrisentan",
+        "endobloc",
+        "pulmonext",
+        "endobloc 5"
+      ]
+    },
+    {
+      "generic": "Macitentan",
+      "brands": [
+        "Opsumit",
+        "Macitex"
+      ],
+      "variants": [
+        "macitentan",
+        "opsumit",
+        "macitex"
+      ]
+    },
+    {
+      "generic": "Riociguat",
+      "brands": [
+        "Adempas",
+        "Riocig"
+      ],
+      "variants": [
+        "riociguat",
+        "adempas",
+        "riocig"
+      ]
+    },
+    {
+      "generic": "Selexipag",
+      "brands": [
+        "Uptravi",
+        "Selexi"
+      ],
+      "variants": [
+        "selexipag",
+        "uptravi",
+        "selexi"
+      ]
+    },
+    {
+      "generic": "Treprostinil",
+      "brands": [
+        "Remodulin",
+        "Orenitram"
+      ],
+      "variants": [
+        "treprostinil",
+        "remodulin",
+        "orenitram"
+      ]
+    },
+    {
+      "generic": "Epoprostenol",
+      "brands": [
+        "Flolan",
+        "Veletri"
+      ],
+      "variants": [
+        "epoprostenol",
+        "flolan",
+        "veletri"
+      ]
+    },
+    {
+      "generic": "Iloprost",
+      "brands": [
+        "Ventavis",
+        "Ilomedin"
+      ],
+      "variants": [
+        "iloprost",
+        "ventavis",
+        "ilomedin"
+      ]
+    },
+    {
+      "generic": "Digoxin",
+      "brands": [
+        "Lanoxin",
+        "Dixin"
+      ],
+      "variants": [
+        "digoxin",
+        "lanoxin",
+        "dixin",
+        "lanoxin 0.25"
+      ]
+    },
+    {
+      "generic": "Dobutamine",
+      "brands": [
+        "Dobutrex",
+        "Dobustat"
+      ],
+      "variants": [
+        "dobutamine",
+        "dobutrex",
+        "dobustat",
+        "dobutamine injection"
+      ]
+    },
+    {
+      "generic": "Dopamine",
+      "brands": [
+        "Dopamine Inj",
+        "Dopafit"
+      ],
+      "variants": [
+        "dopamine",
+        "dopamine injection",
+        "dopafit",
+        "dopamine inj"
+      ]
+    },
+    {
+      "generic": "Norepinephrine",
+      "brands": [
+        "Norad",
+        "Adron",
+        "Noradrenaline"
+      ],
+      "variants": [
+        "norepinephrine",
+        "norad",
+        "adron",
+        "noradrenaline injection",
+        "noradrenaline"
+      ]
+    },
+    {
+      "generic": "Epinephrine",
+      "brands": [
+        "Vasocon",
+        "Adrenaline Inj"
+      ],
+      "variants": [
+        "epinephrine",
+        "adrenaline",
+        "vasocon",
+        "adrenaline injection",
+        "adrenaline inj"
+      ]
+    },
+    {
+      "generic": "Phenylephrine",
+      "brands": [
+        "Fenylef"
+      ],
+      "variants": [
+        "phenylephrine",
+        "fenylef"
+      ]
+    },
+    {
+      "generic": "Ephedrine",
+      "brands": [
+        "Ephedrine Inj",
+        "Ephedrex"
+      ],
+      "variants": [
+        "ephedrine",
+        "ephedrine injection",
+        "ephedrex",
+        "ephedrine inj"
+      ]
+    },
+    {
+      "generic": "Milrinone",
+      "brands": [
+        "Primacor",
+        "Milry"
+      ],
+      "variants": [
+        "milrinone",
+        "primacor",
+        "milry"
+      ]
+    },
+    {
+      "generic": "Levosimendan",
+      "brands": [
+        "Simdax",
+        "Levosim"
+      ],
+      "variants": [
+        "levosimendan",
+        "simdax",
+        "levosim"
+      ]
+    },
+    {
+      "generic": "Nesiritide",
+      "brands": [
+        "Natrecor",
+        "Nesiri"
+      ],
+      "variants": [
+        "nesiritide",
+        "natrecor",
+        "nesiri"
+      ]
+    },
+    {
+      "generic": "Sacubitril + Valsartan",
+      "brands": [
+        "Vymada",
+        "Cidmus",
+        "Azmarda"
+      ],
+      "variants": [
+        "sacubitril + valsartan",
+        "sacubitril and valsartan",
+        "vymada",
+        "cidmus",
+        "azmarda",
+        "vymada 50",
+        "vymada 100"
+      ]
+    },
+    {
+      "generic": "Valsartan",
+      "brands": [
+        "Diovan",
+        "Valent",
+        "Valzaar"
+      ],
+      "variants": [
+        "valsartan",
+        "diovan",
+        "valent",
+        "valzaar",
+        "valzaar 80",
+        "valzaar 160"
+      ]
+    },
+    {
+      "generic": "Candesartan",
+      "brands": [
+        "Candelong",
+        "Candesar"
+      ],
+      "variants": [
+        "candesartan",
+        "candelong",
+        "candesar",
+        "candelong 8",
+        "candelong 16"
+      ]
+    },
+    {
+      "generic": "Irbesartan",
+      "brands": [
+        "Irovel",
+        "Irbesar"
+      ],
+      "variants": [
+        "irbesartan",
+        "irovel",
+        "irbesar",
+        "irovel 150",
+        "irovel 300"
+      ]
+    },
+    {
+      "generic": "Eprosartan",
+      "brands": [
+        "Teveten",
+        "Epro"
+      ],
+      "variants": [
+        "eprosartan",
+        "teveten",
+        "epro"
+      ]
+    },
+    {
+      "generic": "Azilsartan",
+      "brands": [
+        "Abel",
+        "Azildac",
+        "Aziltrend"
+      ],
+      "variants": [
+        "azilsartan",
+        "abel",
+        "azildac",
+        "aziltrend",
+        "abel 40",
+        "abel 80"
+      ]
+    },
+    {
+      "generic": "Fosinopril",
+      "brands": [
+        "Fositen",
+        "Fosinil"
+      ],
+      "variants": [
+        "fosinopril",
+        "fositen",
+        "fosinil",
+        "fositen 10"
+      ]
+    },
+    {
+      "generic": "Lisinopril",
+      "brands": [
+        "Listril",
+        "Lipril",
+        "Lisoril"
+      ],
+      "variants": [
+        "lisinopril",
+        "listril",
+        "lipril",
+        "lisoril",
+        "listril 5",
+        "listril 10"
+      ]
+    },
+    {
+      "generic": "Quinapril",
+      "brands": [
+        "Accupril",
+        "Quin"
+      ],
+      "variants": [
+        "quinapril",
+        "accupril",
+        "quin"
+      ]
+    },
+    {
+      "generic": "Benazepril",
+      "brands": [
+        "Lotensin",
+        "Benaze"
+      ],
+      "variants": [
+        "benazepril",
+        "lotensin",
+        "benaze"
+      ]
+    },
+    {
+      "generic": "Perindopril",
+      "brands": [
+        "Coversyl",
+        "Perigard"
+      ],
+      "variants": [
+        "perindopril",
+        "coversyl",
+        "perigard",
+        "coversyl 4",
+        "coversyl 8"
+      ]
+    },
+    {
+      "generic": "Trandolapril",
+      "brands": [
+        "Gopten",
+        "Trandol"
+      ],
+      "variants": [
+        "trandolapril",
+        "gopten",
+        "trandol"
+      ]
+    },
+    {
+      "generic": "Moexipril",
+      "brands": [
+        "Univasc",
+        "Moex"
+      ],
+      "variants": [
+        "moexipril",
+        "univasc",
+        "moex"
+      ]
+    },
+    {
+      "generic": "Verapamil",
+      "brands": [
+        "Calaptin",
+        "Isoptin"
+      ],
+      "variants": [
+        "verapamil",
+        "calaptin",
+        "isoptin",
+        "calaptin sr 240",
+        "calaptin 40",
+        "calaptin 80"
+      ]
+    },
+    {
+      "generic": "Diltiazem",
+      "brands": [
+        "Dilzem",
+        "Angizem",
+        "Dilgard"
+      ],
+      "variants": [
+        "diltiazem",
+        "dilzem",
+        "angizem",
+        "dilgard",
+        "dilzem 30",
+        "dilzem 60",
+        "dilzem cd"
+      ]
+    },
+    {
+      "generic": "Nifedipine",
+      "brands": [
+        "Calcigard",
+        "Depin",
+        "Nifecard"
+      ],
+      "variants": [
+        "nifedipine",
+        "calcigard",
+        "depin",
+        "calcigard retard",
+        "depin 5",
+        "nifecard"
+      ]
+    },
+    {
+      "generic": "Felodipine",
+      "brands": [
+        "Plendil",
+        "Felogard"
+      ],
+      "variants": [
+        "felodipine",
+        "plendil",
+        "felogard",
+        "plendil 5",
+        "plendil 10"
+      ]
+    },
+    {
+      "generic": "Isradipine",
+      "brands": [
+        "DynaCirc",
+        "Israd"
+      ],
+      "variants": [
+        "isradipine",
+        "dynacirc",
+        "israd"
+      ]
+    },
+    {
+      "generic": "Nimodipine",
+      "brands": [
+        "Nimodip",
+        "Vasotop"
+      ],
+      "variants": [
+        "nimodipine",
+        "nimodip",
+        "vasotop",
+        "nimodip 30"
+      ]
+    },
+    {
+      "generic": "Nisoldipine",
+      "brands": [
+        "Sular",
+        "Nisold"
+      ],
+      "variants": [
+        "nisoldipine",
+        "sular",
+        "nisold"
+      ]
+    },
+    {
+      "generic": "Clevidipine",
+      "brands": [
+        "Cleviprex",
+        "Clevid"
+      ],
+      "variants": [
+        "clevidipine",
+        "cleviprex",
+        "clevid"
+      ]
+    },
+    {
+      "generic": "Lercanidipine",
+      "brands": [
+        "Lersol",
+        "Lerca"
+      ],
+      "variants": [
+        "lercanidipine",
+        "lersol",
+        "lerca",
+        "lersol 10",
+        "lersol 20"
+      ]
+    },
+    {
+      "generic": "Manidipine",
+      "brands": [
+        "Manyper",
+        "Manid"
+      ],
+      "variants": [
+        "manidipine",
+        "manyper",
+        "manid"
+      ]
+    },
+    {
+      "generic": "Alprenolol",
+      "brands": [
+        "Aptine",
+        "Alpreno"
+      ],
+      "variants": [
+        "alprenolol",
+        "aptine",
+        "alpreno"
+      ]
+    },
+    {
+      "generic": "Oxprenolol",
+      "brands": [
+        "Trasicor",
+        "Oxpreno"
+      ],
+      "variants": [
+        "oxprenolol",
+        "trasicor",
+        "oxpreno"
+      ]
+    },
+    {
+      "generic": "Penbutolol",
+      "brands": [
+        "Levitol",
+        "Penbut"
+      ],
+      "variants": [
+        "penbutolol",
+        "levitol",
+        "penbut"
+      ]
+    },
+    {
+      "generic": "Pindolol",
+      "brands": [
+        "Visken",
+        "Pindol"
+      ],
+      "variants": [
+        "pindolol",
+        "visken",
+        "pindol"
+      ]
+    },
+    {
+      "generic": "Acebutolol",
+      "brands": [
+        "Sectral",
+        "Acebut"
+      ],
+      "variants": [
+        "acebutolol",
+        "sectral",
+        "acebut"
+      ]
+    },
+    {
+      "generic": "Celiprolol",
+      "brands": [
+        "Selectol",
+        "Celipro"
+      ],
+      "variants": [
+        "celiprolol",
+        "selectol",
+        "celipro"
+      ]
+    },
+    {
+      "generic": "Betaxolol",
+      "brands": [
+        "Betoptic",
+        "Kerlone"
+      ],
+      "variants": [
+        "betaxolol",
+        "betoptic",
+        "kerlone",
+        "betoptic eye drops"
+      ]
+    },
+    {
+      "generic": "Carteolol",
+      "brands": [
+        "Ocupress",
+        "Carteo"
+      ],
+      "variants": [
+        "carteolol",
+        "ocupress",
+        "carteo"
+      ]
+    },
+    {
+      "generic": "Timolol",
+      "brands": [
+        "Ioptol",
+        "Timoptic",
+        "Timolong"
+      ],
+      "variants": [
+        "timolol",
+        "ioptol",
+        "timoptic",
+        "timolol eye drops",
+        "timolong"
+      ]
+    },
+    {
+      "generic": "Lidocaine",
+      "brands": [
+        "Lox",
+        "Xylocaine",
+        "Lignocaine"
+      ],
+      "variants": [
+        "lidocaine",
+        "lignocaine",
+        "lox",
+        "xylocaine",
+        "lox gel",
+        "xylocaine spray"
+      ]
+    },
+    {
+      "generic": "Procainamide",
+      "brands": [
+        "Pronestyl",
+        "Procan"
+      ],
+      "variants": [
+        "procainamide",
+        "pronestyl",
+        "procan"
+      ]
+    },
+    {
+      "generic": "Disopyramide",
+      "brands": [
+        "Norpace",
+        "Disopy"
+      ],
+      "variants": [
+        "disopyramide",
+        "norpace",
+        "disopy"
+      ]
+    },
+    {
+      "generic": "Moricizine",
+      "brands": [
+        "Ethmozine",
+        "Moriciz"
+      ],
+      "variants": [
+        "moricizine",
+        "ethmozine",
+        "moriciz"
+      ]
+    },
+    {
+      "generic": "Tocainide",
+      "brands": [
+        "Tonocard",
+        "Tocain"
+      ],
+      "variants": [
+        "tocainide",
+        "tonocard",
+        "tocain"
+      ]
+    },
+    {
+      "generic": "Ibutilide",
+      "brands": [
+        "Corvert",
+        "Ibutil"
+      ],
+      "variants": [
+        "ibutilide",
+        "corvert",
+        "ibutil"
+      ]
+    },
+    {
+      "generic": "Dofetilide",
+      "brands": [
+        "Tikosyn",
+        "Dofet"
+      ],
+      "variants": [
+        "dofetilide",
+        "tikosyn",
+        "dofet"
+      ]
+    },
+    {
+      "generic": "Adenosine",
+      "brands": [
+        "Adenocor",
+        "Adeno"
+      ],
+      "variants": [
+        "adenosine",
+        "adenocor",
+        "adeno",
+        "adenosine injection"
+      ]
+    },
+    {
+      "generic": "Ranolazine",
+      "brands": [
+        "Ranexa",
+        "Ranozex"
+      ],
+      "variants": [
+        "ranolazine",
+        "ranexa",
+        "ranozex",
+        "ranexa 500"
+      ]
+    },
+    {
+      "generic": "Trimetazidine",
+      "brands": [
+        "Carvidon",
+        "Flavedon",
+        "Trimet"
+      ],
+      "variants": [
+        "trimetazidine",
+        "carvidon",
+        "flavedon",
+        "flavedon mr",
+        "carvidon od",
+        "trimet"
+      ]
+    },
+    {
+      "generic": "Insulin Regular",
+      "brands": [
+        "Actrapid",
+        "Humulin R",
+        "Insuman Rapid"
+      ],
+      "variants": [
+        "insulin regular",
+        "actrapid",
+        "humulin r",
+        "actrapid vial",
+        "insuman rapid"
+      ]
+    },
+    {
+      "generic": "Insulin NPH",
+      "brands": [
+        "Insulatard",
+        "Humulin N",
+        "Insuman Basal"
+      ],
+      "variants": [
+        "insulin nph",
+        "insulatard",
+        "humulin n",
+        "insulatard penfill",
+        "insuman basal"
+      ]
+    },
+    {
+      "generic": "Insulin Glargine",
+      "brands": [
+        "Lantus",
+        "Basalog",
+        "Toujeo"
+      ],
+      "variants": [
+        "insulin glargine",
+        "lantus",
+        "basalog",
+        "toujeo",
+        "lantus solo-star"
+      ]
+    },
+    {
+      "generic": "Insulin Detemir",
+      "brands": [
+        "Levemir",
+        "Detemir"
+      ],
+      "variants": [
+        "insulin detemir",
+        "levemir",
+        "detemir"
+      ]
+    },
+    {
+      "generic": "Insulin Degludec",
+      "brands": [
+        "Tresiba",
+        "Degludec"
+      ],
+      "variants": [
+        "insulin degludec",
+        "tresiba",
+        "degludec"
+      ]
+    },
+    {
+      "generic": "Insulin Lispro",
+      "brands": [
+        "Humalog",
+        "Lispro"
+      ],
+      "variants": [
+        "insulin lispro",
+        "humalog",
+        "lispro"
+      ]
+    },
+    {
+      "generic": "Insulin Aspart",
+      "brands": [
+        "Novorapid",
+        "Novomix"
+      ],
+      "variants": [
+        "insulin aspart",
+        "novorapid",
+        "novomix"
+      ]
+    },
+    {
+      "generic": "Insulin Glulisine",
+      "brands": [
+        "Apidra",
+        "Glulisine"
+      ],
+      "variants": [
+        "insulin glulisine",
+        "apidra",
+        "glulisine"
+      ]
+    },
+    {
+      "generic": "Pramlintide",
+      "brands": [
+        "Symlin",
+        "Pramlin"
+      ],
+      "variants": [
+        "pramlintide",
+        "symlin",
+        "pramlin"
+      ]
+    },
+    {
+      "generic": "Exenatide",
+      "brands": [
+        "Byetta",
+        "Bydureon"
+      ],
+      "variants": [
+        "exenatide",
+        "byetta",
+        "bydureon"
+      ]
+    },
+    {
+      "generic": "Liraglutide",
+      "brands": [
+        "Victoza",
+        "Saxenda"
+      ],
+      "variants": [
+        "liraglutide",
+        "victoza",
+        "saxenda"
+      ]
+    },
+    {
+      "generic": "Albiglutide",
+      "brands": [
+        "Eperzan",
+        "Albig"
+      ],
+      "variants": [
+        "albiglutide",
+        "eperzan",
+        "albig"
+      ]
+    },
+    {
+      "generic": "Dulaglutide",
+      "brands": [
+        "Trulicity"
+      ],
+      "variants": [
+        "dulaglutide",
+        "trulicity"
+      ]
+    },
+    {
+      "generic": "Semaglutide",
+      "brands": [
+        "Rybelsus",
+        "Ozempic",
+        "Wegovy"
+      ],
+      "variants": [
+        "semaglutide",
+        "rybelsus",
+        "ozempic",
+        "wegovy",
+        "rybelsus 3",
+        "rybelsus 7",
+        "rybelsus 14"
+      ]
+    },
+    {
+      "generic": "Tirzepatide",
+      "brands": [
+        "Mounjaro",
+        "Tirzep"
+      ],
+      "variants": [
+        "tirzepatide",
+        "mounjaro",
+        "tirzep"
+      ]
+    },
+    {
+      "generic": "Alogliptin",
+      "brands": [
+        "Nesina",
+        "Aloglip"
+      ],
+      "variants": [
+        "alogliptin",
+        "nesina",
+        "aloglip"
+      ]
+    },
+    {
+      "generic": "Saxagliptin",
+      "brands": [
+        "Onglyza",
+        "Saxagard"
+      ],
+      "variants": [
+        "saxagliptin",
+        "onglyza",
+        "saxagard",
+        "onglyza 5"
+      ]
+    },
+    {
+      "generic": "Miglitol",
+      "brands": [
+        "Misobit",
+        "Mignar"
+      ],
+      "variants": [
+        "miglitol",
+        "misobit",
+        "mignar",
+        "mignar 50",
+        "misobit 25"
+      ]
+    },
+    {
+      "generic": "Acarbose",
+      "brands": [
+        "Glucobay",
+        "Asucrose",
+        "Glucar"
+      ],
+      "variants": [
+        "acarbose",
+        "glucobay",
+        "asucrose",
+        "glucobay 50",
+        "asucrose 50",
+        "glucar"
+      ]
+    },
+    {
+      "generic": "Nateglinide",
+      "brands": [
+        "Glinate",
+        "Natelide"
+      ],
+      "variants": [
+        "nateglinide",
+        "glinate",
+        "natelide",
+        "glinate 60"
+      ]
+    },
+    {
+      "generic": "Repaglinide",
+      "brands": [
+        "Eurepa",
+        "Rapilin"
+      ],
+      "variants": [
+        "repaglinide",
+        "eurepa",
+        "rapilin",
+        "eurepa 1",
+        "eurepa 0.5",
+        "eurepa 2"
+      ]
+    },
+    {
+      "generic": "Bromocriptine",
+      "brands": [
+        "Parlodel",
+        "Bromogen"
+      ],
+      "variants": [
+        "bromocriptine",
+        "parlodel",
+        "bromogen",
+        "parlodel 2.5"
+      ]
+    },
+    {
+      "generic": "Colesevelam",
+      "brands": [
+        "Welchol",
+        "Colese"
+      ],
+      "variants": [
+        "colesevelam",
+        "welchol",
+        "colese"
+      ]
+    },
+    {
+      "generic": "Rosiglitazone",
+      "brands": [
+        "Windia",
+        "Rosicon"
+      ],
+      "variants": [
+        "rosiglitazone",
+        "windia",
+        "rosicon"
+      ]
+    },
+    {
+      "generic": "Mitotane",
+      "brands": [
+        "Lysodren",
+        "Mitotan"
+      ],
+      "variants": [
+        "mitotane",
+        "lysodren",
+        "mitotan"
+      ]
+    },
+    {
+      "generic": "Metyrapone",
+      "brands": [
+        "Metopirone",
+        "Metyra"
+      ],
+      "variants": [
+        "metyrapone",
+        "metopirone",
+        "metyra"
+      ]
+    },
+    {
+      "generic": "Pasireotide",
+      "brands": [
+        "Signifor",
+        "Pasire"
+      ],
+      "variants": [
+        "pasireotide",
+        "signifor",
+        "pasire"
+      ]
+    },
+    {
+      "generic": "Pegvisomant",
+      "brands": [
+        "Somavert",
+        "Pegviso"
+      ],
+      "variants": [
+        "pegvisomant",
+        "somavert",
+        "pegviso"
+      ]
+    },
+    {
+      "generic": "Mecasermin",
+      "brands": [
+        "Increlex",
+        "Mecaser"
+      ],
+      "variants": [
+        "mecasermin",
+        "increlex",
+        "mecaser"
+      ]
+    },
+    {
+      "generic": "Vasopressin",
+      "brands": [
+        "Vasopin",
+        "Pitressin"
+      ],
+      "variants": [
+        "vasopressin",
+        "vasopin",
+        "pitressin",
+        "vasopressin injection"
+      ]
+    },
+    {
+      "generic": "Fludrocortisone",
+      "brands": [
+        "Floricot",
+        "Astonin"
+      ],
+      "variants": [
+        "fludrocortisone",
+        "floricot",
+        "astonin",
+        "floricot 100mcg"
+      ]
+    },
+    {
+      "generic": "Hydrocortisone",
+      "brands": [
+        "Primacort",
+        "Hydrocort"
+      ],
+      "variants": [
+        "hydrocortisone",
+        "primacort",
+        "hydrocort",
+        "primacort 100",
+        "hydrocort cream"
+      ]
+    },
+    {
+      "generic": "Prednisone",
+      "brands": [
+        "Sone",
+        "Deltasone",
+        "Predone"
+      ],
+      "variants": [
+        "prednisone",
+        "sone",
+        "deltasone",
+        "predone"
+      ]
+    },
+    {
+      "generic": "Prednisolone",
+      "brands": [
+        "Wysolone",
+        "Kidpred",
+        "Omnacortil"
+      ],
+      "variants": [
+        "prednisolone",
+        "wysolone",
+        "kidpred",
+        "omnacortil",
+        "wysolone 5",
+        "wysolone 10",
+        "omnacortil 20",
+        "wysolone 20"
+      ]
+    },
+    {
+      "generic": "Methylprednisolone",
+      "brands": [
+        "Solu-Medrol",
+        "Depo-Medrol",
+        "Medrol"
+      ],
+      "variants": [
+        "methylprednisolone",
+        "solu-medrol",
+        "depo-medrol",
+        "medrol",
+        "medrol 4",
+        "medrol 8",
+        "solu-medrol 1g"
+      ]
+    },
+    {
+      "generic": "Triamcinolone",
+      "brands": [
+        "Kenacort",
+        "Ledercort",
+        "Tricort"
+      ],
+      "variants": [
+        "triamcinolone",
+        "kenacort",
+        "ledercort",
+        "tricort",
+        "kenacort 4",
+        "tricort 40 injection"
+      ]
+    },
+    {
+      "generic": "Dexamethasone",
+      "brands": [
+        "Decadron",
+        "Dexona",
+        "Dexasone"
+      ],
+      "variants": [
+        "dexamethasone",
+        "decadron",
+        "dexona",
+        "dexona tablet",
+        "dexona injection",
+        "dexasone"
+      ]
+    },
+    {
+      "generic": "Betamethasone",
+      "brands": [
+        "Betnesol",
+        "Celestone",
+        "Betnovate"
+      ],
+      "variants": [
+        "betamethasone",
+        "betnesol",
+        "celestone",
+        "betnovate",
+        "betnesol oral drops",
+        "betnovate cream"
+      ]
+    },
+    {
+      "generic": "Haloperidol",
+      "brands": [
+        "Serenace",
+        "Senorm",
+        "Halopil"
+      ],
+      "variants": [
+        "haloperidol",
+        "serenace",
+        "senorm",
+        "serenace 1.5",
+        "senorm 5",
+        "haloperidol injection",
+        "halopil"
+      ]
+    },
+    {
+      "generic": "Chlorpromazine",
+      "brands": [
+        "Largactil",
+        "Chlorprom"
+      ],
+      "variants": [
+        "chlorpromazine",
+        "largactil",
+        "chlorprom",
+        "largactil 50",
+        "largactil 100"
+      ]
+    },
+    {
+      "generic": "Fluphenazine",
+      "brands": [
+        "Anatensol",
+        "Prolixin"
+      ],
+      "variants": [
+        "fluphenazine",
+        "anatensol",
+        "prolixin",
+        "anatensol decanoate"
+      ]
+    },
+    {
+      "generic": "Thioridazine",
+      "brands": [
+        "Melleril",
+        "Thioril"
+      ],
+      "variants": [
+        "thioridazine",
+        "melleril",
+        "thioril",
+        "thioril 25"
+      ]
+    },
+    {
+      "generic": "Trifluoperazine",
+      "brands": [
+        "Trinicalm",
+        "Stelazine"
+      ],
+      "variants": [
+        "trifluoperazine",
+        "trinicalm",
+        "stelazine",
+        "trinicalm 5"
+      ]
+    },
+    {
+      "generic": "Pimozide",
+      "brands": [
+        "Orap",
+        "Pimoz"
+      ],
+      "variants": [
+        "pimozide",
+        "orap",
+        "pimoz",
+        "orap 2",
+        "orap 4"
+      ]
+    },
+    {
+      "generic": "Clozapine",
+      "brands": [
+        "Sizopin",
+        "Lozapin"
+      ],
+      "variants": [
+        "clozapine",
+        "sizopin",
+        "lozapin",
+        "sizopin 50",
+        "sizopin 100"
+      ]
+    },
+    {
+      "generic": "Olanzapine",
+      "brands": [
+        "Oleanz",
+        "Olimelt",
+        "Oliza"
+      ],
+      "variants": [
+        "olanzapine",
+        "oleanz",
+        "olimelt",
+        "oliza",
+        "olimelt 5",
+        "olimelt 10",
+        "oleanz 5"
+      ]
+    },
+    {
+      "generic": "Quetiapine",
+      "brands": [
+        "Seroquin",
+        "Quel",
+        "Qutipin"
+      ],
+      "variants": [
+        "quetiapine",
+        "seroquin",
+        "quel",
+        "qutipin",
+        "qutipin 100",
+        "qutipin 50",
+        "seroquin 25"
+      ]
+    },
+    {
+      "generic": "Risperidone",
+      "brands": [
+        "Rispond",
+        "Sizodon",
+        "Risdone"
+      ],
+      "variants": [
+        "risperidone",
+        "rispond",
+        "sizodon",
+        "risdone",
+        "sizodon 2",
+        "rispond 2",
+        "risdone 1"
+      ]
+    },
+    {
+      "generic": "Ziprasidone",
+      "brands": [
+        "Zispin",
+        "Geodon"
+      ],
+      "variants": [
+        "ziprasidone",
+        "zispin",
+        "geodon"
+      ]
+    },
+    {
+      "generic": "Aripiprazole",
+      "brands": [
+        "Arpizol",
+        "Aripimt"
+      ],
+      "variants": [
+        "aripiprazole",
+        "arpizol",
+        "aripimt",
+        "arpizol 10",
+        "arpizol 15",
+        "arpizol 5"
+      ]
+    },
+    {
+      "generic": "Paliperidone",
+      "brands": [
+        "Invega",
+        "Palido"
+      ],
+      "variants": [
+        "paliperidone",
+        "invega",
+        "palido",
+        "invega 3",
+        "invega 6"
+      ]
+    },
+    {
+      "generic": "Iloperidone",
+      "brands": [
+        "Fanapt",
+        "Ilosure"
+      ],
+      "variants": [
+        "iloperidone",
+        "fanapt",
+        "ilosure",
+        "ilosure 4",
+        "ilosure 6"
+      ]
+    },
+    {
+      "generic": "Asenapine",
+      "brands": [
+        "Saphris",
+        "Asenapt"
+      ],
+      "variants": [
+        "asenapine",
+        "saphris",
+        "asenapt"
+      ]
+    },
+    {
+      "generic": "Lurasidone",
+      "brands": [
+        "Luramax",
+        "Lurastar",
+        "Lurasid"
+      ],
+      "variants": [
+        "lurasidone",
+        "luramax",
+        "lurastar",
+        "lurasid",
+        "luramax 40",
+        "luramax 80"
+      ]
+    },
+    {
+      "generic": "Cariprazine",
+      "brands": [
+        "Vraylar",
+        "Caripra"
+      ],
+      "variants": [
+        "cariprazine",
+        "vraylar",
+        "caripra"
+      ]
+    },
+    {
+      "generic": "Brexpiprazole",
+      "brands": [
+        "Rexulti",
+        "Brexpip"
+      ],
+      "variants": [
+        "brexpiprazole",
+        "rexulti",
+        "brexpip"
+      ]
+    },
+    {
+      "generic": "Lumateperone",
+      "brands": [
+        "Caplyta"
+      ],
+      "variants": [
+        "lumateperone",
+        "caplyta"
+      ]
+    },
+    {
+      "generic": "Imipramine",
+      "brands": [
+        "Depranil",
+        "Tofranil"
+      ],
+      "variants": [
+        "imipramine",
+        "depranil",
+        "tofranil",
+        "tofranil 25",
+        "tofranil 75"
+      ]
+    },
+    {
+      "generic": "Clomipramine",
+      "brands": [
+        "Clonil",
+        "Anafranil"
+      ],
+      "variants": [
+        "clomipramine",
+        "clonil",
+        "anafranil",
+        "clonil 25",
+        "clonil 50",
+        "clonil 75"
+      ]
+    },
+    {
+      "generic": "Desipramine",
+      "brands": [
+        "Norpramin",
+        "Desip"
+      ],
+      "variants": [
+        "desipramine",
+        "norpramin",
+        "desip"
+      ]
+    },
+    {
+      "generic": "Trimipramine",
+      "brands": [
+        "Surmontil"
+      ],
+      "variants": [
+        "trimipramine",
+        "surmontil"
+      ]
+    },
+    {
+      "generic": "Protriptyline",
+      "brands": [
+        "Vivactil",
+        "Protrip"
+      ],
+      "variants": [
+        "protriptyline",
+        "vivactil",
+        "protrip"
+      ]
+    },
+    {
+      "generic": "Doxepin",
+      "brands": [
+        "Spectra",
+        "Silenor",
+        "Doxin"
+      ],
+      "variants": [
+        "doxepin",
+        "spectra",
+        "silenor",
+        "doxin",
+        "spectra 25",
+        "spectra 75"
+      ]
+    },
+    {
+      "generic": "Amoxapine",
+      "brands": [
+        "Asendin",
+        "Amoxa"
+      ],
+      "variants": [
+        "amoxapine",
+        "asendin",
+        "amoxa"
+      ]
+    },
+    {
+      "generic": "Maprotiline",
+      "brands": [
+        "Ludiomil",
+        "Mapro"
+      ],
+      "variants": [
+        "maprotiline",
+        "ludiomil",
+        "mapro"
+      ]
+    },
+    {
+      "generic": "Mianserin",
+      "brands": [
+        "Tetramide",
+        "Mianser"
+      ],
+      "variants": [
+        "mianserin",
+        "tetramide",
+        "mianser"
+      ]
+    },
+    {
+      "generic": "Mirtazapine",
+      "brands": [
+        "Mirnite",
+        "Mirtaz",
+        "Mirzest"
+      ],
+      "variants": [
+        "mirtazapine",
+        "mirnite",
+        "mirtaz",
+        "mirzest",
+        "mirnite 15",
+        "mirnite 30"
+      ]
+    },
+    {
+      "generic": "Fluoxetine",
+      "brands": [
+        "Prodep",
+        "Fludac"
+      ],
+      "variants": [
+        "fluoxetine",
+        "prodep",
+        "fludac",
+        "prodep 20",
+        "fludac 20",
+        "prodep 40"
+      ]
+    },
+    {
+      "generic": "Fluvoxamine",
+      "brands": [
+        "Voxamin",
+        "Uvox",
+        "Fluvoxin"
+      ],
+      "variants": [
+        "fluvoxamine",
+        "voxamin",
+        "uvox",
+        "fluvoxin",
+        "fluvoxin 50",
+        "fluvoxin 100"
+      ]
+    },
+    {
+      "generic": "Citalopram",
+      "brands": [
+        "Celica",
+        "Celexa"
+      ],
+      "variants": [
+        "citalopram",
+        "celica",
+        "celexa",
+        "celica 20"
+      ]
+    },
+    {
+      "generic": "Milnacipran",
+      "brands": [
+        "Savella",
+        "Milna"
+      ],
+      "variants": [
+        "milnacipran",
+        "savella",
+        "milna"
+      ]
+    },
+    {
+      "generic": "Levomilnacipran",
+      "brands": [
+        "Fetzima",
+        "Levomil"
+      ],
+      "variants": [
+        "levomilnacipran",
+        "fetzima",
+        "levomil"
+      ]
+    },
+    {
+      "generic": "Desvenlafaxine",
+      "brands": [
+        "D-Veniz",
+        "Deveniz",
+        "Pristiq"
+      ],
+      "variants": [
+        "desvenlafaxine",
+        "d-veniz",
+        "deveniz",
+        "pristiq",
+        "d-veniz 50",
+        "d-veniz 100"
+      ]
+    },
+    {
+      "generic": "Vilazodone",
+      "brands": [
+        "Vilano",
+        "Viibryd"
+      ],
+      "variants": [
+        "vilazodone",
+        "vilano",
+        "viibryd",
+        "vilano 20",
+        "vilano 40"
+      ]
+    },
+    {
+      "generic": "Vortioxetine",
+      "brands": [
+        "Worti",
+        "Trintellix"
+      ],
+      "variants": [
+        "vortioxetine",
+        "worti",
+        "trintellix",
+        "worti 10",
+        "worti 20"
+      ]
+    },
+    {
+      "generic": "Phenelzine",
+      "brands": [
+        "Nardil",
+        "Phenel"
+      ],
+      "variants": [
+        "phenelzine",
+        "nardil",
+        "phenel"
+      ]
+    },
+    {
+      "generic": "Tranylcypromine",
+      "brands": [
+        "Parnate",
+        "Tranyl"
+      ],
+      "variants": [
+        "tranylcypromine",
+        "parnate",
+        "tranyl"
+      ]
+    },
+    {
+      "generic": "Isocarboxazid",
+      "brands": [
+        "Marplan",
+        "Isocarb"
+      ],
+      "variants": [
+        "isocarboxazid",
+        "marplan",
+        "isocarb"
+      ]
+    },
+    {
+      "generic": "Moclobemide",
+      "brands": [
+        "Rimarex",
+        "Moclob"
+      ],
+      "variants": [
+        "moclobemide",
+        "rimarex",
+        "moclob"
+      ]
+    },
+    {
+      "generic": "Bupropion",
+      "brands": [
+        "Bupron",
+        "Wellbutrin",
+        "Bupron XL"
+      ],
+      "variants": [
+        "bupropion",
+        "bupron",
+        "wellbutrin",
+        "bupron 150",
+        "bupron xl 150",
+        "bupron xl 300",
+        "bupron xl"
+      ]
+    },
+    {
+      "generic": "Trazodone",
+      "brands": [
+        "Trazonil",
+        "Trazodep"
+      ],
+      "variants": [
+        "trazodone",
+        "trazonil",
+        "trazodep",
+        "trazonil 50",
+        "trazonil 100"
+      ]
+    },
+    {
+      "generic": "Nefazodone",
+      "brands": [
+        "Serzone",
+        "Nefaz"
+      ],
+      "variants": [
+        "nefazodone",
+        "serzone",
+        "nefaz"
+      ]
+    }
+  ]
+}

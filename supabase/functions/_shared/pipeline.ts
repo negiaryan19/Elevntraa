@@ -1124,21 +1124,19 @@ export function validateExtraction(
 
   const transcriptNorm = _norm(spoken);
 
-  // ── Medications: keep every extracted medicine (flagging ungrounded names
-  // for review), correct the name to canonical form via the shared matcher,
-  // and clear only suspicious ungrounded stock values ──
+  // ── Medications: drop any medicine not grounded in the transcript (even
+  // after romanized/vernacular matching), correct grounded names to canonical
+  // form via the shared matcher, and clear only suspicious ungrounded stock
+  // values ──
   const medications: Medication[] = [];
   for (const med of insight.medications) {
     // The romanization-aware matcher does two jobs at once: it tells us whether
     // the drug is plausibly present in the (romanized/vernacular) transcript,
-    // and it maps a mangled/romanized name to its canonical English form.
-    //
-    // Previously an ungrounded medicine name was DROPPED here (`continue`),
-    // which silently deleted real prescriptions whenever the romanized /
-    // vernacular transcript spelled the drug differently from Gemini's canonical
-    // name (e.g. "crocin" / "paracitamol" vs "Paracetamol"). We now KEEP the
-    // medicine and flag it for review so the doctor always sees it and can
-    // verify, rather than it vanishing from the prescription.
+    // and it maps a mangled/romanized name to its canonical English form. The
+    // matcher already absorbs romanized / vernacular spellings (e.g. "crocin" /
+    // "paracitamol" vs "Paracetamol"), so a medicine that still fails to match
+    // was genuinely never spoken — a Gemini hallucination — and is dropped
+    // below, rather than surfacing an invented prescription for review.
     const drugResult = drugMatcher.findInTranscript(med.name, transcriptNorm);
     if (!drugResult.found) {
       // Genuinely ungrounded — Gemini invented a medicine not in the transcript.
@@ -1215,13 +1213,16 @@ export function validateExtraction(
     });
   }
 
-  // ── Diagnosis: grounding is now advisory only. Previously an ungrounded
-  // diagnosis (no significant word shared with the transcript) was CLEARED —
-  // which, for romanized/vernacular transcripts where the doctor states the
-  // diagnosis in English, wiped legitimate diagnoses. We now KEEP the diagnosis
-  // and only log when it looks ungrounded, leaving verification to the doctor.
-  // (The ICD code is re-derived on-device from this diagnosis by the client
-  // mapper regardless, so the backend ICD fields are advisory here too.)
+  // ── Diagnosis: intentionally KEPT even when it looks ungrounded, unlike
+  // medicines. A diagnosis is a paraphrase, not a quotation: Gemini renders the
+  // spoken complaint as English clinical phrasing (e.g. Hinglish "sardi-zukaam"
+  // -> "Viral upper respiratory infection"), so almost none of its words appear
+  // verbatim in a romanized/vernacular transcript. A word-overlap grounding
+  // check would therefore false-positive and wipe legitimate diagnoses, so we
+  // only log the mismatch and leave verification to the doctor, who edits the
+  // diagnosis on the review screen. (The ICD code is re-derived on-device from
+  // this diagnosis by the client mapper regardless, so the backend ICD fields
+  // are advisory here too.)
   const diagnosis = insight.diagnosis;
   const icdCode = insight.icdCode;
   const icdDescription = insight.icdDescription;

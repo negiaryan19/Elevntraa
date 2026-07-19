@@ -6,6 +6,9 @@ on:
     paths:
       - "supabase/**"
       - "scripts/ci/**"
+      # The Flutter-side copy of the drug dictionary — kept in sync with the
+      # Supabase copy by check_drug_dict_sync.sh below.
+      - "assets/data/drug_dictionary.json"
 
 # Cancel in-progress runs for the same ref to save CI minutes.
 concurrency:
@@ -65,6 +68,10 @@ jobs:
       - name: Check prompt drift
         if: ${{ hashFiles('supabase/functions/_shared/pipeline.ts') != '' }}
         run: bash scripts/ci/check_prompt_drift.sh
+
+      - name: Check drug dictionary sync
+        if: ${{ hashFiles('supabase/functions/_shared/drug_dictionary.json') != '' }}
+        run: bash scripts/ci/check_drug_dict_sync.sh
 
       - name: Check for hardcoded keys
         if: ${{ hashFiles('supabase/functions/**') != '' }}
