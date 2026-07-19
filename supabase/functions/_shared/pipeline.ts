@@ -2,6 +2,8 @@
 // No Supabase client here — endpoints own that. All Sarvam/Gemini functions
 // take explicit API keys so they remain testable in isolation.
 
+import { drugMatcher } from "./drug_matcher.ts";
+
 // ── Constants ─────────────────────────────────────────────────────────────
 
 export const SARVAM_BASE = "https://api.sarvam.ai";
@@ -459,13 +461,7 @@ export const PLAIN_INSTRUCTION =
   'extract "Before bed". If "khana khane se pehle" extract "Before food". ' +
   "Every medication should have a timing value if the doctor mentioned when " +
   "to take it. Do not put timing information only in instructions — it must " +
-  "be in the medication's timing field. " +
-  "For the diagnosis, if it maps clearly and unambiguously to a single " +
-  'ICD-10 code, provide the code with icdConfidence "high". If it could ' +
-  "reasonably map to a code but there is some ambiguity (e.g. multiple " +
-  "possible codes, or the diagnosis is somewhat general), provide your best " +
-  'code with icdConfidence "medium". If you are not reasonably confident, ' +
-  "return null for icdCode, icdDescription, and icdConfidence — do not guess.";
+  "be in the medication's timing field.";
 
 export const DIARIZED_INSTRUCTION =
   "You are a medical scribe. Given a doctor-patient consultation transcript " +
@@ -533,13 +529,7 @@ export const DIARIZED_INSTRUCTION =
   'extract "Before bed". If "khana khane se pehle" extract "Before food". ' +
   "Every medication should have a timing value if the doctor mentioned when " +
   "to take it. Do not put timing information only in instructions — it must " +
-  "be in the medication's timing field. " +
-  "For the diagnosis, if it maps clearly and unambiguously to a single " +
-  'ICD-10 code, provide the code with icdConfidence "high". If it could ' +
-  "reasonably map to a code but there is some ambiguity (e.g. multiple " +
-  "possible codes, or the diagnosis is somewhat general), provide your best " +
-  'code with icdConfidence "medium". If you are not reasonably confident, ' +
-  "return null for icdCode, icdDescription, and icdConfidence — do not guess.";
+  "be in the medication's timing field.";
 
 // ── Gemini schemas (VERBATIM from insight_service.dart) ───────────────────
 
@@ -572,9 +562,6 @@ export const DIARIZED_SCHEMA: Record<string, unknown> = {
     instructions: { type: "ARRAY", items: { type: "STRING" } },
     followUpDays: { type: "INTEGER", nullable: true },
     doctorNotes: { type: "STRING" },
-    icdCode: { type: "STRING", nullable: true },
-    icdDescription: { type: "STRING", nullable: true },
-    icdConfidence: { type: "STRING", nullable: true },
   },
   required: [
     "doctor_speaker_id",
@@ -618,9 +605,6 @@ export const PLAIN_SCHEMA: Record<string, unknown> = {
     instructions: { type: "ARRAY", items: { type: "STRING" } },
     followUpDays: { type: "INTEGER", nullable: true },
     doctorNotes: { type: "STRING" },
-    icdCode: { type: "STRING", nullable: true },
-    icdDescription: { type: "STRING", nullable: true },
-    icdConfidence: { type: "STRING", nullable: true },
   },
   required: [
     "consultationSummary",
@@ -638,6 +622,8 @@ export const PLAIN_SCHEMA: Record<string, unknown> = {
 // ── Coerce / normalization (mirrors InsightService._coerce exactly) ────────
 
 // ICD-10: letter + 2 digits, optional dot + 1-4 alphanumeric chars (e.g. B34.9)
+// Retained for the Flutter client, which re-derives ICD on-device via
+// Icd10LocalMapper. Gemini no longer produces ICD codes here.
 export const ICD_PATTERN = /^[A-Z]\d{2}(\.[0-9A-Z]{1,4})?$/;
 
 export function normalizeTiming(raw: string): string {
@@ -701,23 +687,11 @@ export function coerce(
     })
     : [];
 
-  const rawIcd = input["icdCode"];
-  const icdCode = typeof rawIcd === "string" && ICD_PATTERN.test(rawIcd)
-    ? rawIcd
-    : null;
-
-  const rawDesc = input["icdDescription"];
-  const icdDescription =
-    icdCode !== null && typeof rawDesc === "string" && rawDesc !== ""
-      ? rawDesc
-      : null;
-
-  const rawConf = input["icdConfidence"];
-  const icdConfidence = icdCode !== null &&
-      typeof rawConf === "string" &&
-      (rawConf === "high" || rawConf === "medium")
-    ? rawConf
-    : null;
+  // ICD codes are now assigned on-device by Icd10LocalMapper from the
+  // diagnosis text. Gemini no longer guesses them, so these are always null.
+  const icdCode = null;
+  const icdDescription = null;
+  const icdConfidence = null;
 
   return {
     consultationSummary: input["consultationSummary"] ??
@@ -844,62 +818,6 @@ function _spokenText(transcript: string): string {
     .replace(/SPEAKER_\d+:/g, " ")
     .replace(/\b(?:Doctor|Patient|Speaker):/g, " ")
     .trim();
-}
-
-// Common Indian OTC/Rx drugs -> frequent STT / romanization / brand variants.
-// The transcript is romanized Hindi/vernacular while Gemini outputs canonical
-// English names, so we must match phonetically, not just literally.
-const _MEDICINE_VARIANTS: Record<string, string[]> = {
-  paracetamol: [
-    "paracetamol",
-    "paracetemol",
-    "parcetamol",
-    "paracitamol",
-    "pcm",
-    "dolo",
-    "calpol",
-  ],
-  cetirizine: ["cetirizine", "cetrizine", "citrizine", "cetzine", "cetiriz"],
-  amoxicillin: ["amoxicillin", "amoxicilin", "amoxycillin", "amox", "moxikind"],
-  azithromycin: ["azithromycin", "azithromicin", "azithro", "azee"],
-  pantoprazole: ["pantoprazole", "pantoprazol", "pantop", "pan"],
-  omeprazole: ["omeprazole", "omeprazol", "omez"],
-  ibuprofen: ["ibuprofen", "ibuprofin", "brufen", "ibugesic"],
-  metformin: ["metformin", "metformine", "glycomet"],
-  amlodipine: ["amlodipine", "amlodipin", "amlong"],
-  ranitidine: ["ranitidine", "rantidine", "rantac", "aciloc"],
-  domperidone: ["domperidone", "domperidon", "domstal"],
-  ondansetron: ["ondansetron", "ondensetron", "emeset"],
-  diclofenac: ["diclofenac", "diclofenak", "voveran"],
-};
-
-// True when the medicine name is plausibly present in the transcript.
-function _medicineFoundInTranscript(
-  name: string,
-  transcriptNorm: string,
-): boolean {
-  const nameNorm = _norm(name);
-  // Too short to cross-reference reliably — keep it rather than risk dropping
-  // a legitimate short name.
-  if (nameNorm.length < 4) return true;
-
-  // Direct (normalized) substring.
-  if (transcriptNorm.includes(nameNorm)) return true;
-
-  // Phonetic / brand variants for common medicines.
-  for (const [canonical, variants] of Object.entries(_MEDICINE_VARIANTS)) {
-    if (nameNorm.includes(canonical) || canonical.includes(nameNorm)) {
-      for (const v of variants) {
-        if (transcriptNorm.includes(v)) return true;
-      }
-    }
-  }
-
-  // Transliteration tolerance: any leading substring of >= 4 chars present.
-  for (let k = nameNorm.length; k >= 4; k--) {
-    if (transcriptNorm.includes(nameNorm.slice(0, k))) return true;
-  }
-  return false;
 }
 
 // Stock values Gemini tends to invent (normalized, spaces removed).
@@ -1206,32 +1124,37 @@ export function validateExtraction(
 
   const transcriptNorm = _norm(spoken);
 
-  // ── Medications: keep every extracted medicine (flagging ungrounded names
-  // for review) and clear only suspicious ungrounded stock values ──
+  // ── Medications: drop any medicine not grounded in the transcript (even
+  // after romanized/vernacular matching), correct grounded names to canonical
+  // form via the shared matcher, and clear only suspicious ungrounded stock
+  // values ──
   const medications: Medication[] = [];
   for (const med of insight.medications) {
-    // Previously an ungrounded medicine name was DROPPED here (`continue`),
-    // which silently deleted real prescriptions whenever the romanized /
-    // vernacular transcript spelled the drug differently from Gemini's canonical
-    // name (e.g. "crocin" / "paracitamol" vs "Paracetamol"). We now KEEP the
-    // medicine and flag it for review so the doctor always sees it and can
-    // verify, rather than it vanishing from the prescription.
-    const nameUngrounded = !_medicineFoundInTranscript(
-      med.name,
-      transcriptNorm,
-    );
-    if (nameUngrounded) {
+    // The romanization-aware matcher does two jobs at once: it tells us whether
+    // the drug is plausibly present in the (romanized/vernacular) transcript,
+    // and it maps a mangled/romanized name to its canonical English form. The
+    // matcher already absorbs romanized / vernacular spellings (e.g. "crocin" /
+    // "paracitamol" vs "Paracetamol"), so a medicine that still fails to match
+    // was genuinely never spoken — a Gemini hallucination — and is dropped
+    // below, rather than surfacing an invented prescription for review.
+    const drugResult = drugMatcher.findInTranscript(med.name, transcriptNorm);
+    if (!drugResult.found) {
+      // Genuinely ungrounded — Gemini invented a medicine not in the transcript.
+      // The matcher already handles romanized/vernacular forms; false here means
+      // the drug was truly never spoken. Drop it.
       console.warn(
-        "[validateExtraction] Ungrounded medicine kept for review — " +
-          "name not found in transcript",
+        "[validateExtraction] Dropping invented medicine — " +
+          "not found in transcript even after romanized matching",
       );
+      continue;
     }
+    const correctedName = drugResult.canonical ?? med.name;
 
     let dosage = med.dosage;
     let frequency = med.frequency;
     let duration = med.duration;
     let timing = med.timing;
-    let cleared = nameUngrounded;
+    let cleared = false;
 
     if (
       _SUSPICIOUS_DOSAGES.has(_norm(dosage)) &&
@@ -1280,6 +1203,7 @@ export function validateExtraction(
 
     medications.push({
       ...med,
+      name: correctedName,
       dosage,
       frequency,
       duration,
@@ -1289,13 +1213,16 @@ export function validateExtraction(
     });
   }
 
-  // ── Diagnosis: grounding is now advisory only. Previously an ungrounded
-  // diagnosis (no significant word shared with the transcript) was CLEARED —
-  // which, for romanized/vernacular transcripts where the doctor states the
-  // diagnosis in English, wiped legitimate diagnoses. We now KEEP the diagnosis
-  // and only log when it looks ungrounded, leaving verification to the doctor.
-  // (The ICD code is re-derived on-device from this diagnosis by the client
-  // mapper regardless, so the backend ICD fields are advisory here too.)
+  // ── Diagnosis: intentionally KEPT even when it looks ungrounded, unlike
+  // medicines. A diagnosis is a paraphrase, not a quotation: Gemini renders the
+  // spoken complaint as English clinical phrasing (e.g. Hinglish "sardi-zukaam"
+  // -> "Viral upper respiratory infection"), so almost none of its words appear
+  // verbatim in a romanized/vernacular transcript. A word-overlap grounding
+  // check would therefore false-positive and wipe legitimate diagnoses, so we
+  // only log the mismatch and leave verification to the doctor, who edits the
+  // diagnosis on the review screen. (The ICD code is re-derived on-device from
+  // this diagnosis by the client mapper regardless, so the backend ICD fields
+  // are advisory here too.)
   const diagnosis = insight.diagnosis;
   const icdCode = insight.icdCode;
   const icdDescription = insight.icdDescription;

@@ -19,6 +19,11 @@ abstract class Medication with _$Medication {
     /// Set by the LLM extractor when this medication line was uncertain.
     /// Surfaces a [needs review] chip in the UI.
     @Default(false) bool needsReview,
+
+    /// Original name as spoken/transcribed before on-device correction.
+    /// Null when no correction was applied. For audit only — never shown
+    /// on the prescription PDF.
+    String? originalName,
   }) = _Medication;
 
   factory Medication.fromJson(Map<String, dynamic> json) =>
