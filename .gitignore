@@ -78,3 +78,8 @@ android/build/
 
 # Kilo Code tool artifact (local only)
 .kilo/
+
+# Golden-audio harness recordings: real consultation audio is PHI and often
+# large — never commit it. Case folders keep their expected.json (committed);
+# the audio.m4a is dropped in locally. See test/golden_audio/README.md.
+test/golden_audio/**/audio.m4a

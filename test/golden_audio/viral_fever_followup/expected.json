@@ -1,0 +1,7 @@
+{
+  "medicines_must_contain": ["Crocin"],
+  "medicines_must_not_contain": [],
+  "min_medicine_count": 1,
+  "diagnosis_contains": "viral",
+  "followUpDays": 3
+}

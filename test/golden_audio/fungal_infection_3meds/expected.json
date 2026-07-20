@@ -1,0 +1,7 @@
+{
+  "medicines_must_contain": ["Luliconazole", "Itraconazole", "Atarax"],
+  "medicines_must_not_contain": ["Paracetamol"],
+  "min_medicine_count": 3,
+  "diagnosis_contains": "fungal",
+  "followUpDays": 14
+}
