@@ -152,6 +152,55 @@ Deno.test("tier c — invented drug, not in transcript nor dictionary, dropped",
   assertEquals(out.medications.length, 0, "pure invention must be dropped");
 });
 
+// ── Compound-name fragment filtering ──────────────────────────────────────
+
+Deno.test("fragment — 'Amoxicillin (500 mg)' resolves to the drug, not the dose", () => {
+  const out = validateExtraction(
+    insightWith([med("Amoxicillin (500 mg)")]),
+    "Doctor: amoxicillin 500 mg din mein do baar khana khane ke baad lena.",
+  );
+  assertEquals(out.medications.length, 1, "medicine must be kept");
+  assertEquals(
+    out.medications[0].name,
+    "Amoxicillin",
+    "name must be the drug, never the dose fragment",
+  );
+});
+
+Deno.test("fragment — 'Amoxicillin (BD)' resolves to the drug, not the qualifier", () => {
+  const out = validateExtraction(
+    insightWith([med("Amoxicillin (BD)")]),
+    "Doctor: amoxicillin lena, BD, khana khane ke baad paanch din tak.",
+  );
+  assertEquals(out.medications.length, 1, "medicine must be kept");
+  assertEquals(
+    out.medications[0].name,
+    "Amoxicillin",
+    "name must be the drug, never the 'BD' qualifier",
+  );
+});
+
+Deno.test("fragment — 'Pantoprazole (Pan)' kept via tier b, named by generic", () => {
+  // Transcript is mangled so the full generic never grounds, and the short
+  // brand fragment "Pan" is filtered out (never becomes the name). The medicine
+  // survives via tier b (catalogued) with the canonical generic name.
+  const out = validateExtraction(
+    insightWith([med("Pantoprazole (Pan)")]),
+    "Doctor: acidity aur gas ki shikayat hai, subah khali pet ye goli lena teen din tak.",
+  );
+  assertEquals(out.medications.length, 1, "catalogued medicine must be kept");
+  assertEquals(
+    out.medications[0].name,
+    "Pantoprazole",
+    "name must be the generic, not the 'Pan' fragment",
+  );
+  assertEquals(
+    out.medications[0].needsReview,
+    true,
+    "tier-b medicine must be flagged for review",
+  );
+});
+
 // Sanity: the diagnosis is intentionally kept even when ungrounded (paraphrase),
 // so we don't regress item-1 behavior.
 Deno.test("diagnosis kept even when ungrounded", () => {

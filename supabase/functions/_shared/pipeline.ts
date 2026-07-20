@@ -1131,6 +1131,20 @@ function _nameCandidates(name: string): string[] {
   return candidates.length > 0 ? candidates : [name.trim()];
 }
 
+// A split candidate that is a bare dose ("500 mg", "500mg", "10 ml") or a
+// dispensing/frequency qualifier ("BD", "1 tab") is not a drug name and must
+// never become the resolved medicine name. Matches a leading number with an
+// optional unit and/or an optional dosage-form word, case-insensitive.
+const _DOSE_QUALIFIER_RE =
+  /^\d+(\.\d+)?(\s*(mg|mcg|g|ml|iu|units?))?(\s*(tabs?|tablets?|caps?|capsules?))?$/i;
+
+function _isDoseOrQualifierFragment(candidate: string): boolean {
+  const c = candidate.trim();
+  // Too short to be a drug name (also catches qualifiers like "BD", "OD").
+  if (_norm(c).length < 4) return true;
+  return _DOSE_QUALIFIER_RE.test(c);
+}
+
 export function validateExtraction(
   insight: MedicalInsight,
   transcript: string,
@@ -1168,7 +1182,19 @@ export function validateExtraction(
     // "Paracetamol"). We split compound names first ("Paracetamol (Crocin)" ->
     // ["Paracetamol", "Crocin"]) so a name that pairs a generic with the spoken
     // brand still grounds on whichever part the doctor actually said.
-    const candidates = _nameCandidates(med.name);
+    const rawCandidates = _nameCandidates(med.name);
+    // When a name split into several candidates, drop the ones that are clearly
+    // not a drug — a bare dose ("500 mg") or a qualifier ("BD") — so the
+    // medicine name never resolves to a fragment. A single-candidate name is
+    // never filtered. If filtering removes everything, keep the raw split so we
+    // never lose the medicine outright.
+    let candidates = rawCandidates;
+    if (rawCandidates.length > 1) {
+      const filtered = rawCandidates.filter(
+        (c) => !_isDoseOrQualifierFragment(c),
+      );
+      if (filtered.length > 0) candidates = filtered;
+    }
 
     // Prefer a candidate literally present in the transcript (what the doctor
     // said) over one grounded only via a dictionary sibling — so
@@ -1195,16 +1221,20 @@ export function validateExtraction(
     let correctedName: string;
     let needsReview = med.needsReview;
     const chosen = directName ?? grounded;
+    const knownCandidate = candidates.find((c) => drugMatcher.isKnownDrug(c));
     if (chosen !== null) {
       // Tier a: grounded.
       correctedName = chosen;
-    } else if (candidates.some((c) => drugMatcher.isKnownDrug(c))) {
-      // Tier b: catalogued but ungrounded — keep for doctor review.
+    } else if (knownCandidate !== undefined) {
+      // Tier b: catalogued but ungrounded — keep for doctor review, using the
+      // canonical drug name (brand-guarded), never the raw compound or a
+      // fragment.
       console.warn(
         "[validateExtraction] Ungrounded medicine kept for review — " +
           "maps to drug dictionary but not found in transcript",
       );
-      correctedName = med.name;
+      correctedName = drugMatcher.correct(knownCandidate)?.canonical ??
+        knownCandidate;
       needsReview = true;
     } else {
       // Tier c: ungrounded and not catalogued — a pure invention. Drop it,
