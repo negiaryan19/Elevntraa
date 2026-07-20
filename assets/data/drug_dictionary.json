@@ -9890,6 +9890,8 @@
         "Panderm"
       ],
       "variants": [
+        "clobetasol + ofloxacin + ornidazole + terbinafine",
+        "clobetasol and ofloxacin and ornidazole and terbinafine",
         "panderm plus",
         "panderm",
         "pandarm plus",
@@ -9903,6 +9905,8 @@
         "Quadriderm RF"
       ],
       "variants": [
+        "beclomethasone + clotrimazole + gentamicin + tolnaftate",
+        "beclomethasone and clotrimazole and gentamicin and tolnaftate",
         "quadriderm",
         "quadriderm rf",
         "quadaderm",
@@ -9915,6 +9919,8 @@
         "Betnovate-C"
       ],
       "variants": [
+        "betamethasone + clioquinol",
+        "betamethasone and clioquinol",
         "betnovate c",
         "betnovate-c",
         "betnovet c",
@@ -9927,6 +9933,8 @@
         "Betnovate-N"
       ],
       "variants": [
+        "betamethasone + neomycin",
+        "betamethasone and neomycin",
         "betnovate n",
         "betnovate-n",
         "betnovet n",
@@ -9939,6 +9947,8 @@
         "Candid-B"
       ],
       "variants": [
+        "clotrimazole + beclomethasone",
+        "clotrimazole and beclomethasone",
         "candid b",
         "candid-b",
         "candid b cream"
@@ -9950,6 +9960,8 @@
         "Surfaz-SN"
       ],
       "variants": [
+        "clotrimazole + neomycin",
+        "clotrimazole and neomycin",
         "surfaz sn",
         "surfaz-sn",
         "surfaz sn cream"
@@ -9962,6 +9974,8 @@
         "Deriva-BPO"
       ],
       "variants": [
+        "adapalene + benzoyl peroxide",
+        "adapalene and benzoyl peroxide",
         "deriva bpo",
         "deriva-bpo",
         "deriva bpo gel"
@@ -9974,6 +9988,8 @@
         "Deriva CMS"
       ],
       "variants": [
+        "adapalene + clindamycin",
+        "adapalene and clindamycin",
         "deriva c",
         "deriva-c",
         "deriva cms",
@@ -9987,6 +10003,8 @@
         "Fusiwal-B"
       ],
       "variants": [
+        "betamethasone + fusidic acid",
+        "betamethasone and fusidic acid",
         "fucibet",
         "fucibet cream",
         "fusidic betamethasone"
