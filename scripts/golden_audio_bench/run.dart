@@ -141,14 +141,15 @@ Future<void> main(List<String> args) async {
     _divider('Case: ${c.name}');
     final started = DateTime.now();
     try {
-      final insight = await _runOneCase(http, supabaseUrl, anonKey, auth, c);
+      final extraction = await _runOneCase(http, supabaseUrl, anonKey, auth, c);
       final elapsed = DateTime.now().difference(started);
 
+      final insight = extraction.insight;
       final medNames = _medicineNames(insight);
       final failures = _assertCase(c.expected, insight);
 
       if (debug) {
-        _printDebug(insight);
+        _printDebug(extraction.transcript, insight);
       }
       print('  Medicines expected : ${_fmtList(c.expected.mustContain)}');
       print('  Medicines got      : ${_fmtList(medNames)}');
@@ -387,7 +388,16 @@ List<String> _medicineNames(Map<String, dynamic> insight) {
 
 // ── One case: upload → invoke → (poll) → insight ────────────────────────────
 
-Future<Map<String, dynamic>> _runOneCase(
+/// The two backend outputs we care about, kept together so the transcript is
+/// available for --debug rendering (it rides alongside the insight in both the
+/// sync and async responses).
+class _Extraction {
+  _Extraction(this.transcript, this.insight);
+  final String transcript;
+  final Map<String, dynamic> insight;
+}
+
+Future<_Extraction> _runOneCase(
   HttpClient http,
   String url,
   String anonKey,
@@ -448,7 +458,7 @@ Future<Map<String, dynamic>> _runOneCase(
 
   if (mode == 'sync') {
     print('  Mode     : sync');
-    return _insightOf(data);
+    return _extractionOf(data);
   }
   if (mode == 'async') {
     final jobId = data['jobId'] as String;
@@ -458,7 +468,7 @@ Future<Map<String, dynamic>> _runOneCase(
   throw Exception('unknown pipeline response mode: $mode');
 }
 
-Future<Map<String, dynamic>> _pollUntilDone(
+Future<_Extraction> _pollUntilDone(
   HttpClient http,
   String url,
   String anonKey,
@@ -497,7 +507,7 @@ Future<Map<String, dynamic>> _pollUntilDone(
     if (status == 'running') continue;
     stdout.write('\n');
 
-    if (status == 'done') return _insightOf(result);
+    if (status == 'done') return _extractionOf(result);
     if (status == 'failed') {
       final err =
           result['error'] ??
@@ -515,11 +525,15 @@ Future<Map<String, dynamic>> _pollUntilDone(
   );
 }
 
-Map<String, dynamic> _insightOf(Map<String, dynamic> data) {
+_Extraction _extractionOf(Map<String, dynamic> data) {
   final insight = data['insight'];
-  if (insight is Map<String, dynamic>) return insight;
-  if (insight is Map) return insight.cast<String, dynamic>();
-  return <String, dynamic>{};
+  final Map<String, dynamic> insightMap = insight is Map<String, dynamic>
+      ? insight
+      : insight is Map
+      ? insight.cast<String, dynamic>()
+      : <String, dynamic>{};
+  final transcript = data['transcript']?.toString() ?? '';
+  return _Extraction(transcript, insightMap);
 }
 
 // ── Supabase auth ──────────────────────────────────────────────────────────
@@ -625,14 +639,31 @@ void _printTable(List<_CaseResult> results) {
   }
 }
 
-void _printDebug(Map<String, dynamic> insight) {
-  print('\n  ── Transcript hidden by default; insight below ──');
-  print(
-    const JsonEncoder.withIndent(
-      '  ',
-    ).convert(insight).split('\n').map((l) => '    $l').join('\n'),
-  );
+/// Max transcript characters shown under --debug. A real diarized consult can
+/// run several KB; 1500 chars is enough to eyeball what Sarvam heard without
+/// flooding the terminal.
+const _debugTranscriptLimit = 1500;
+
+void _printDebug(String transcript, Map<String, dynamic> insight) {
+  print('\n  ── Transcript (--debug) ──');
+  final t = transcript.trim();
+  if (t.isEmpty) {
+    print('    (empty)');
+  } else if (t.length <= _debugTranscriptLimit) {
+    print(_indent(t));
+  } else {
+    print(_indent(t.substring(0, _debugTranscriptLimit)));
+    print(
+      '    … [truncated ${t.length - _debugTranscriptLimit} of ${t.length} '
+      'chars]',
+    );
+  }
+
+  print('\n  ── Insight (--debug) ──');
+  print(_indent(const JsonEncoder.withIndent('  ').convert(insight)));
 }
+
+String _indent(String s) => s.split('\n').map((l) => '    $l').join('\n');
 
 String _fmtList(List<String> xs) => xs.isEmpty ? '{}' : '{${xs.join(', ')}}';
 
