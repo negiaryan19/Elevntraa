@@ -207,6 +207,17 @@ class DrugMatcher {
   }
 
   /**
+   * Is this name a drug our dictionary knows at all (exact / substring / fuzzy),
+   * regardless of the brand-guard? Used by validateExtraction's middle tier: a
+   * catalogued drug that Gemini reported but grounding couldn't locate is far
+   * more likely an STT-grounding failure than an invention, so it is kept for
+   * doctor review rather than silently dropped.
+   */
+  isKnownDrug(input: string): boolean {
+    return this._recognize(input) !== null;
+  }
+
+  /**
    * Correct a (possibly mangled) drug name to its canonical generic form.
    * Returns null when there is no confident match OR when the brand-guard says
    * the input is a brand (or brand look-alike) that must be kept verbatim.
@@ -227,10 +238,16 @@ class DrugMatcher {
    * `canonical` is the brand-guarded rewrite target (the generic) when the name
    * may be corrected, or null when it should be kept verbatim (brand / no
    * confident rewrite). `found` reports whether the drug is grounded at all.
+   *
+   * `spoken` is the raw (space-preserving) transcript. It is optional and used
+   * only for the word-join fuzzy pass: the normalized transcript has no word
+   * boundaries, so split manglings ("etra cozol") are recovered by joining two
+   * consecutive spoken words ("etracozol") and fuzzy-comparing to the name.
    */
   findInTranscript(
     drugName: string,
     transcriptNorm: string,
+    spoken?: string,
   ): { found: boolean; canonical: string | null } {
     const nameNorm = norm(drugName);
 
@@ -279,6 +296,32 @@ class DrugMatcher {
         const window = transcriptNorm.slice(i, i + windowLen);
         if (levRatio(nameRoman, romanNorm(window)) >= MIN_FUZZY) {
           return { found: true, canonical };
+        }
+      }
+    }
+
+    // Word-join fuzzy: the normalized transcript is one unspaced blob, so a
+    // char-window that straddles a split mangling drags in trailing tokens
+    // ("etracozol100mg") and dilutes the ratio. Using the spoken text we can
+    // fuzzy-match each spoken word AND each pair of consecutive words joined,
+    // recovering split manglings ("etra cozol" -> "etracozol") cleanly.
+    if (spoken && nameRoman.length >= 4) {
+      const words = spoken
+        .split(/\s+/)
+        .map((w) => norm(w))
+        .filter((w) => w.length > 0);
+      for (let i = 0; i < words.length; i++) {
+        if (
+          words[i].length >= 4 &&
+          levRatio(nameRoman, romanNorm(words[i])) >= MIN_FUZZY
+        ) {
+          return { found: true, canonical };
+        }
+        if (i + 1 < words.length) {
+          const joined = words[i] + words[i + 1];
+          if (levRatio(nameRoman, romanNorm(joined)) >= MIN_FUZZY) {
+            return { found: true, canonical };
+          }
         }
       }
     }
