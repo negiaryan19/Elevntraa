@@ -707,9 +707,7 @@
         "candid",
         "surfaz",
         "clocip",
-        "candid powder",
-        "candid b",
-        "surfaz sn"
+        "candid powder"
       ]
     },
     {
@@ -9174,6 +9172,824 @@
         "nefazodone",
         "serzone",
         "nefaz"
+      ]
+    },
+    {
+      "generic": "Sertaconazole",
+      "brands": [
+        "Onabet",
+        "Sertima",
+        "Zimderm"
+      ],
+      "variants": [
+        "sertaconazole",
+        "sertaconazol",
+        "sertaconozole",
+        "sertaconazole cream"
+      ]
+    },
+    {
+      "generic": "Miconazole",
+      "brands": [
+        "Daktarin",
+        "Micogel",
+        "Micoderm"
+      ],
+      "variants": [
+        "miconazole",
+        "miconazol",
+        "myconazole",
+        "miconazole cream"
+      ]
+    },
+    {
+      "generic": "Econazole",
+      "brands": [
+        "Ecostatin",
+        "Zoderm-E"
+      ],
+      "variants": [
+        "econazole",
+        "econazol",
+        "econozole",
+        "econazole cream"
+      ]
+    },
+    {
+      "generic": "Butenafine",
+      "brands": [
+        "Fintop",
+        "Butop",
+        "Butafin"
+      ],
+      "variants": [
+        "butenafine",
+        "butenafin",
+        "butanafine",
+        "butenafine cream"
+      ]
+    },
+    {
+      "generic": "Tolnaftate",
+      "brands": [
+        "Tinaderm",
+        "Absorb"
+      ],
+      "variants": [
+        "tolnaftate",
+        "tolnaftat",
+        "tolnafate",
+        "tolnaftate powder"
+      ]
+    },
+    {
+      "generic": "Nystatin",
+      "brands": [
+        "Mycostatin",
+        "Nystan"
+      ],
+      "variants": [
+        "nystatin",
+        "nistatin",
+        "nystatine",
+        "nystatin oral drops"
+      ]
+    },
+    {
+      "generic": "Clobetasol",
+      "brands": [
+        "Tenovate",
+        "Clobetol",
+        "Topinate",
+        "Lobate"
+      ],
+      "variants": [
+        "clobetasol",
+        "clobetasole",
+        "clobetazol",
+        "clobetasol propionate",
+        "clobetasol cream"
+      ]
+    },
+    {
+      "generic": "Mometasone",
+      "brands": [
+        "Momate",
+        "Elocon",
+        "Metaz"
+      ],
+      "variants": [
+        "mometasone",
+        "mometasone furoate",
+        "mommetasone",
+        "mometazone",
+        "mometasone cream"
+      ]
+    },
+    {
+      "generic": "Fluocinolone",
+      "brands": [
+        "Flucort",
+        "Cinolon"
+      ],
+      "variants": [
+        "fluocinolone",
+        "flucinolone",
+        "fluocinolone acetonide",
+        "fluocinolone cream"
+      ]
+    },
+    {
+      "generic": "Halobetasol",
+      "brands": [
+        "Halovate",
+        "Halox"
+      ],
+      "variants": [
+        "halobetasol",
+        "halobetasole",
+        "halobetazol",
+        "halobetasol propionate"
+      ]
+    },
+    {
+      "generic": "Desonide",
+      "brands": [
+        "Desowen",
+        "Desonate"
+      ],
+      "variants": [
+        "desonide",
+        "desonid",
+        "desonyde",
+        "desonide lotion"
+      ]
+    },
+    {
+      "generic": "Tretinoin",
+      "brands": [
+        "Retino-A",
+        "A-Ret",
+        "Eudyna"
+      ],
+      "variants": [
+        "tretinoin",
+        "tretinoine",
+        "tretenoin",
+        "retinoic acid",
+        "tretinoin cream"
+      ]
+    },
+    {
+      "generic": "Azelaic Acid",
+      "brands": [
+        "Aziderm",
+        "Azelia"
+      ],
+      "variants": [
+        "azelaic acid",
+        "azelaic",
+        "azaleic acid",
+        "azelic acid",
+        "azelaic acid cream"
+      ]
+    },
+    {
+      "generic": "Tazarotene",
+      "brands": [
+        "Tazret",
+        "Zorotene"
+      ],
+      "variants": [
+        "tazarotene",
+        "tazarotine",
+        "tazarotene gel"
+      ]
+    },
+    {
+      "generic": "Dapsone",
+      "brands": [
+        "Aczone",
+        "Dapsotil"
+      ],
+      "variants": [
+        "dapsone",
+        "dapson",
+        "dapsone gel"
+      ]
+    },
+    {
+      "generic": "Nadifloxacin",
+      "brands": [
+        "Nadibact",
+        "Nadoxin",
+        "Naflora"
+      ],
+      "variants": [
+        "nadifloxacin",
+        "nadifloxacine",
+        "nadiflox",
+        "nadifloxacin gel"
+      ]
+    },
+    {
+      "generic": "Bilastine",
+      "brands": [
+        "Bilagra",
+        "Bilafix",
+        "Bilova"
+      ],
+      "variants": [
+        "bilastine",
+        "bilastin",
+        "billastine",
+        "bilastine 20"
+      ]
+    },
+    {
+      "generic": "Desloratadine",
+      "brands": [
+        "Deslor",
+        "Dazit",
+        "Desloz"
+      ],
+      "variants": [
+        "desloratadine",
+        "desloratidine",
+        "deslortadine"
+      ]
+    },
+    {
+      "generic": "Ebastine",
+      "brands": [
+        "Ebast",
+        "Ebernew"
+      ],
+      "variants": [
+        "ebastine",
+        "ebastin",
+        "ebbastine",
+        "ebastine 10"
+      ]
+    },
+    {
+      "generic": "Rupatadine",
+      "brands": [
+        "Rupanex",
+        "Rupahist",
+        "Rupatas"
+      ],
+      "variants": [
+        "rupatadine",
+        "rupatadin",
+        "rupitadine"
+      ]
+    },
+    {
+      "generic": "Cyproheptadine",
+      "brands": [
+        "Practin",
+        "Ciplactin",
+        "Cypon"
+      ],
+      "variants": [
+        "cyproheptadine",
+        "cyproheptadin",
+        "cyprohepatadine",
+        "cyproheptadine syrup"
+      ]
+    },
+    {
+      "generic": "Ketotifen",
+      "brands": [
+        "Ketasma",
+        "Zaditen"
+      ],
+      "variants": [
+        "ketotifen",
+        "ketotifin",
+        "ketotiphen"
+      ]
+    },
+    {
+      "generic": "Benzyl Benzoate",
+      "brands": [
+        "Ascabiol",
+        "Benzol"
+      ],
+      "variants": [
+        "benzyl benzoate",
+        "benzyl benzoat",
+        "benzylbenzoate",
+        "benzyl benzoate lotion"
+      ]
+    },
+    {
+      "generic": "Crotamiton",
+      "brands": [
+        "Crotorax",
+        "Eurax"
+      ],
+      "variants": [
+        "crotamiton",
+        "crotamitone",
+        "crotameton",
+        "crotamiton cream"
+      ]
+    },
+    {
+      "generic": "Gamma Benzene Hexachloride",
+      "brands": [
+        "Scaboma",
+        "Gamascab"
+      ],
+      "variants": [
+        "gamma benzene hexachloride",
+        "lindane",
+        "gbhc",
+        "benzene hexachloride lotion"
+      ]
+    },
+    {
+      "generic": "Mupirocin",
+      "brands": [
+        "T-Bact",
+        "Bactroban",
+        "Supirocin",
+        "Mupinase"
+      ],
+      "variants": [
+        "mupirocin",
+        "mupirocine",
+        "muporocin",
+        "mupirocin ointment",
+        "mupirocin cream"
+      ]
+    },
+    {
+      "generic": "Fusidic Acid",
+      "brands": [
+        "Fucidin",
+        "Fusiderm",
+        "Futop",
+        "Fudic"
+      ],
+      "variants": [
+        "fusidic acid",
+        "fucidic acid",
+        "fusidic",
+        "sodium fusidate",
+        "fusidic acid cream"
+      ]
+    },
+    {
+      "generic": "Framycetin",
+      "brands": [
+        "Soframycin",
+        "Framygen"
+      ],
+      "variants": [
+        "framycetin",
+        "framicetin",
+        "framycitin",
+        "framycetin skin cream"
+      ]
+    },
+    {
+      "generic": "Silver Sulfadiazine",
+      "brands": [
+        "Silverex",
+        "Argenta"
+      ],
+      "variants": [
+        "silver sulfadiazine",
+        "silver sulphadiazine",
+        "silver sulfadiazine cream"
+      ]
+    },
+    {
+      "generic": "Dutasteride",
+      "brands": [
+        "Dutas",
+        "Veltride",
+        "Dutamax"
+      ],
+      "variants": [
+        "dutasteride",
+        "dutasterid",
+        "dutasteryde",
+        "dutasteride 0.5"
+      ]
+    },
+    {
+      "generic": "Bimatoprost",
+      "brands": [
+        "Careprost",
+        "Bimat",
+        "Lumigan"
+      ],
+      "variants": [
+        "bimatoprost",
+        "bimatoprast",
+        "bimetoprost",
+        "bimatoprost eye drops"
+      ]
+    },
+    {
+      "generic": "Hydroquinone",
+      "brands": [
+        "Melalite",
+        "Eukroma",
+        "Hyquin",
+        "Skinlite"
+      ],
+      "variants": [
+        "hydroquinone",
+        "hydroquinon",
+        "hydroquinine",
+        "hydroquinone cream"
+      ]
+    },
+    {
+      "generic": "Kojic Acid",
+      "brands": [
+        "Kojivit",
+        "Kojiglo",
+        "Kozicare"
+      ],
+      "variants": [
+        "kojic acid",
+        "kojic",
+        "kojik acid",
+        "kojic acid cream"
+      ]
+    },
+    {
+      "generic": "Pimecrolimus",
+      "brands": [
+        "Elidel",
+        "Pimelement"
+      ],
+      "variants": [
+        "pimecrolimus",
+        "pimecrolimas",
+        "pimecrolimus cream"
+      ]
+    },
+    {
+      "generic": "Calcipotriol",
+      "brands": [
+        "Daivonex",
+        "Calcipot"
+      ],
+      "variants": [
+        "calcipotriol",
+        "calcipotriene",
+        "calcipotriol ointment"
+      ]
+    },
+    {
+      "generic": "Acitretin",
+      "brands": [
+        "Acitret",
+        "Novatret"
+      ],
+      "variants": [
+        "acitretin",
+        "acitretine",
+        "acetretin",
+        "acitretin 10",
+        "acitretin 25"
+      ]
+    },
+    {
+      "generic": "Coal Tar",
+      "brands": [
+        "Polytar",
+        "Ionax T"
+      ],
+      "variants": [
+        "coal tar",
+        "coaltar",
+        "coal tar solution",
+        "coal tar shampoo"
+      ]
+    },
+    {
+      "generic": "Calamine",
+      "brands": [
+        "Lacto Calamine",
+        "Caladryl"
+      ],
+      "variants": [
+        "calamine",
+        "calomine",
+        "calamine lotion"
+      ]
+    },
+    {
+      "generic": "Podophyllotoxin",
+      "brands": [
+        "Podowart",
+        "Wartec"
+      ],
+      "variants": [
+        "podophyllotoxin",
+        "podophyllin",
+        "podophylotoxin",
+        "podophyllotoxin paint"
+      ]
+    },
+    {
+      "generic": "Imiquimod",
+      "brands": [
+        "Imiquad",
+        "Aldara"
+      ],
+      "variants": [
+        "imiquimod",
+        "imiquimode",
+        "imikimod",
+        "imiquimod cream"
+      ]
+    },
+    {
+      "generic": "Eflornithine",
+      "brands": [
+        "Eflora",
+        "Vaniqa"
+      ],
+      "variants": [
+        "eflornithine",
+        "eflornithin",
+        "eflornithine cream"
+      ]
+    },
+    {
+      "generic": "Urea",
+      "brands": [
+        "Ureka",
+        "Keralo"
+      ],
+      "variants": [
+        "urea cream",
+        "urea lotion",
+        "urea ointment",
+        "carbamide"
+      ]
+    },
+    {
+      "generic": "Zinc Pyrithione",
+      "brands": [
+        "Scalpe",
+        "Danclear"
+      ],
+      "variants": [
+        "zinc pyrithione",
+        "pyrithione zinc",
+        "zinc pyrithion",
+        "zinc pyrithione shampoo"
+      ]
+    },
+    {
+      "generic": "Selenium Sulfide",
+      "brands": [
+        "Selsun",
+        "Seleno"
+      ],
+      "variants": [
+        "selenium sulfide",
+        "selenium sulphide",
+        "selenium sulfide shampoo"
+      ]
+    },
+    {
+      "generic": "Chlorpheniramine",
+      "brands": [
+        "Piriton",
+        "Cadistin"
+      ],
+      "variants": [
+        "chlorpheniramine",
+        "chlorpheniramine maleate",
+        "chlorphenamine",
+        "chlorpheniramin"
+      ]
+    },
+    {
+      "generic": "Diphenhydramine",
+      "brands": [
+        "Benadryl"
+      ],
+      "variants": [
+        "diphenhydramine",
+        "diphenhydramine hydrochloride",
+        "diphenhydramin",
+        "diphenydramine"
+      ]
+    },
+    {
+      "generic": "Promethazine",
+      "brands": [
+        "Phenergan",
+        "Avomine"
+      ],
+      "variants": [
+        "promethazine",
+        "promethazin",
+        "promethazine hydrochloride",
+        "promethezine"
+      ]
+    },
+    {
+      "generic": "Povidone Iodine",
+      "brands": [
+        "Betadine",
+        "Wokadine",
+        "Cipladine"
+      ],
+      "variants": [
+        "povidone iodine",
+        "povidone iodin",
+        "povidine iodine",
+        "povidone iodine ointment"
+      ]
+    },
+    {
+      "generic": "Chlorhexidine",
+      "brands": [
+        "Savlon",
+        "Clohex",
+        "Hexidine"
+      ],
+      "variants": [
+        "chlorhexidine",
+        "chlorhexidine gluconate",
+        "chlorhexidin",
+        "chlorohexidine"
+      ]
+    },
+    {
+      "generic": "Fluorouracil",
+      "brands": [
+        "Flonida",
+        "Fluracil"
+      ],
+      "variants": [
+        "fluorouracil",
+        "5 fluorouracil",
+        "fluorouracil cream",
+        "flurouracil"
+      ]
+    },
+    {
+      "generic": "Anthralin",
+      "brands": [
+        "Dithrocream",
+        "Micanol"
+      ],
+      "variants": [
+        "anthralin",
+        "dithranol",
+        "anthraline",
+        "anthralin ointment"
+      ]
+    },
+    {
+      "generic": "Apremilast",
+      "brands": [
+        "Aprezo",
+        "Otezla",
+        "Apremid"
+      ],
+      "variants": [
+        "apremilast",
+        "apremilas",
+        "apremilast 30",
+        "apremilast 10"
+      ]
+    },
+    {
+      "generic": "Tranexamic Acid",
+      "brands": [
+        "Trapic",
+        "Pause",
+        "Traxamic"
+      ],
+      "variants": [
+        "tranexamic acid",
+        "tranexemic acid",
+        "tranexamic",
+        "tranexamic acid 500"
+      ]
+    },
+    {
+      "generic": "Clobetasol + Ofloxacin + Ornidazole + Terbinafine",
+      "brands": [
+        "Panderm Plus",
+        "Panderm"
+      ],
+      "variants": [
+        "panderm plus",
+        "panderm",
+        "pandarm plus",
+        "panderm plus cream"
+      ]
+    },
+    {
+      "generic": "Beclomethasone + Clotrimazole + Gentamicin + Tolnaftate",
+      "brands": [
+        "Quadriderm",
+        "Quadriderm RF"
+      ],
+      "variants": [
+        "quadriderm",
+        "quadriderm rf",
+        "quadaderm",
+        "quadriderm cream"
+      ]
+    },
+    {
+      "generic": "Betamethasone + Clioquinol",
+      "brands": [
+        "Betnovate-C"
+      ],
+      "variants": [
+        "betnovate c",
+        "betnovate-c",
+        "betnovet c",
+        "betnovate c cream"
+      ]
+    },
+    {
+      "generic": "Betamethasone + Neomycin",
+      "brands": [
+        "Betnovate-N"
+      ],
+      "variants": [
+        "betnovate n",
+        "betnovate-n",
+        "betnovet n",
+        "betnovate n cream"
+      ]
+    },
+    {
+      "generic": "Clotrimazole + Beclomethasone",
+      "brands": [
+        "Candid-B"
+      ],
+      "variants": [
+        "candid b",
+        "candid-b",
+        "candid b cream"
+      ]
+    },
+    {
+      "generic": "Clotrimazole + Neomycin",
+      "brands": [
+        "Surfaz-SN"
+      ],
+      "variants": [
+        "surfaz sn",
+        "surfaz-sn",
+        "surfaz sn cream"
+      ]
+    },
+    {
+      "generic": "Adapalene + Benzoyl Peroxide",
+      "brands": [
+        "Deriva BPO",
+        "Deriva-BPO"
+      ],
+      "variants": [
+        "deriva bpo",
+        "deriva-bpo",
+        "deriva bpo gel"
+      ]
+    },
+    {
+      "generic": "Adapalene + Clindamycin",
+      "brands": [
+        "Deriva-C",
+        "Deriva CMS"
+      ],
+      "variants": [
+        "deriva c",
+        "deriva-c",
+        "deriva cms",
+        "deriva c gel"
+      ]
+    },
+    {
+      "generic": "Betamethasone + Fusidic Acid",
+      "brands": [
+        "Fucibet",
+        "Fusiwal-B"
+      ],
+      "variants": [
+        "fucibet",
+        "fucibet cream",
+        "fusidic betamethasone"
       ]
     }
   ]
