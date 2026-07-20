@@ -37,7 +37,8 @@ const _pollInterval = Duration(seconds: 3);
 const _maxPollDuration = Duration(minutes: 20);
 const _httpTimeout = Duration(minutes: 5);
 
-const _usage = '''
+const _usage =
+    '''
 Usage: dart run scripts/golden_audio_bench/run.dart [--env <path>] [--dir <path>] [--debug]
 
   --env <path>   Path to the .env file with Supabase config. Defaults to
@@ -78,10 +79,14 @@ Future<void> main(List<String> args) async {
   }
 
   if (discovery.runnable.isEmpty) {
-    print('\nNo runnable cases present '
-        '(${discovery.placeholders.length} placeholder(s) skipped).');
-    print('Add a case: drop $_audioFilename + write $_expectedFilename into a '
-        'folder under $rootDir/ (see README).');
+    print(
+      '\nNo runnable cases present '
+      '(${discovery.placeholders.length} placeholder(s) skipped).',
+    );
+    print(
+      'Add a case: drop $_audioFilename + write $_expectedFilename into a '
+      'folder under $rootDir/ (see README).',
+    );
     print('Nothing to run — clean exit.');
     _footer();
     // No runnable cases is not a failure — this is the empty/seed state.
@@ -154,8 +159,10 @@ Future<void> main(List<String> args) async {
         print('  Diagnosis          : "${insight['diagnosis'] ?? ''}"');
       }
       if (c.expected.followUpDays != null) {
-        print('  Follow-up days     : '
-            '${insight['followUpDays']} (want ${c.expected.followUpDays})');
+        print(
+          '  Follow-up days     : '
+          '${insight['followUpDays']} (want ${c.expected.followUpDays})',
+        );
       }
 
       if (failures.isEmpty) {
@@ -167,24 +174,28 @@ Future<void> main(List<String> args) async {
         }
       }
 
-      results.add(_CaseResult(
-        name: c.name,
-        elapsed: elapsed,
-        expected: c.expected.mustContain,
-        got: medNames,
-        failures: failures,
-      ));
+      results.add(
+        _CaseResult(
+          name: c.name,
+          elapsed: elapsed,
+          expected: c.expected.mustContain,
+          got: medNames,
+          failures: failures,
+        ),
+      );
     } catch (e) {
       final elapsed = DateTime.now().difference(started);
       print('  Result             : ERROR (${_s(elapsed)})');
       print('    ✗ $e');
-      results.add(_CaseResult(
-        name: c.name,
-        elapsed: elapsed,
-        expected: c.expected.mustContain,
-        got: const <String>[],
-        failures: <String>['pipeline error: $e'],
-      ));
+      results.add(
+        _CaseResult(
+          name: c.name,
+          elapsed: elapsed,
+          expected: c.expected.mustContain,
+          got: const <String>[],
+          failures: <String>['pipeline error: $e'],
+        ),
+      );
     }
   }
 
@@ -195,8 +206,10 @@ Future<void> main(List<String> args) async {
 
   final failed = results.where((r) => !r.passed).length;
   print('');
-  print('${results.length} case(s): ${results.length - failed} passed, '
-      '$failed failed.');
+  print(
+    '${results.length} case(s): ${results.length - failed} passed, '
+    '$failed failed.',
+  );
   _footer();
 
   exit(failed == 0 ? 0 : 1);
@@ -290,7 +303,8 @@ class _Expected {
   final String languageCode;
 
   static _Expected parse(Map<String, dynamic> j) {
-    List<String> strList(dynamic v) => (v as List?)
+    List<String> strList(dynamic v) =>
+        (v as List?)
             ?.map((e) => e.toString())
             .where((s) => s.trim().isNotEmpty)
             .toList() ??
@@ -381,8 +395,10 @@ Future<Map<String, dynamic>> _runOneCase(
   _Case c,
 ) async {
   final bytes = await File(c.audioPath).readAsBytes();
-  print('  Audio    : ${c.audioPath} '
-      '(${(bytes.length / 1024).toStringAsFixed(1)} KB)');
+  print(
+    '  Audio    : ${c.audioPath} '
+    '(${(bytes.length / 1024).toStringAsFixed(1)} KB)',
+  );
 
   // Same storage path convention as PipelineService: <userId>/<uuid>.m4a
   final storagePath = '${auth.userId}/${_uuidV4()}.m4a';
@@ -412,18 +428,19 @@ Future<Map<String, dynamic>> _runOneCase(
     http,
     'POST',
     Uri.parse('$url/functions/v1/process-consultation'),
-    headers: {
-      'Authorization': 'Bearer ${auth.accessToken}',
-      'apikey': anonKey,
-    },
+    headers: {'Authorization': 'Bearer ${auth.accessToken}', 'apikey': anonKey},
     contentType: 'application/json',
-    body: utf8.encode(jsonEncode({
-      'audioPath': storagePath,
-      'languageCode': c.expected.languageCode,
-    })),
+    body: utf8.encode(
+      jsonEncode({
+        'audioPath': storagePath,
+        'languageCode': c.expected.languageCode,
+      }),
+    ),
   );
   if (invoke.status != 200) {
-    throw Exception('process-consultation HTTP ${invoke.status}: ${invoke.body}');
+    throw Exception(
+      'process-consultation HTTP ${invoke.status}: ${invoke.body}',
+    );
   }
 
   final data = jsonDecode(invoke.body) as Map<String, dynamic>;
@@ -472,15 +489,18 @@ Future<Map<String, dynamic>> _pollUntilDone(
 
     final result = jsonDecode(poll.body) as Map<String, dynamic>;
     final status = result['status'] as String?;
-    stdout.write('\r    state: ${(status ?? '...').padRight(10)} '
-        '(${elapsed}s elapsed)');
+    stdout.write(
+      '\r    state: ${(status ?? '...').padRight(10)} '
+      '(${elapsed}s elapsed)',
+    );
 
     if (status == 'running') continue;
     stdout.write('\n');
 
     if (status == 'done') return _insightOf(result);
     if (status == 'failed') {
-      final err = result['error'] ??
+      final err =
+          result['error'] ??
           result['error_code'] ??
           result['errorMessage'] ??
           'unknown pipeline error';
@@ -489,8 +509,10 @@ Future<Map<String, dynamic>> _pollUntilDone(
     throw Exception('unexpected job status: $status');
   }
 
-  throw Exception('transcription timed out after '
-      '${_maxPollDuration.inMinutes} minutes');
+  throw Exception(
+    'transcription timed out after '
+    '${_maxPollDuration.inMinutes} minutes',
+  );
 }
 
 Map<String, dynamic> _insightOf(Map<String, dynamic> data) {
@@ -586,7 +608,8 @@ void _printTable(List<_CaseResult> results) {
   const wResult = 7;
   const wMeds = 48;
 
-  final head = '${'Case'.padRight(wName)}| ${'Result'.padRight(wResult)}| '
+  final head =
+      '${'Case'.padRight(wName)}| ${'Result'.padRight(wResult)}| '
       '${'Medicines (expected vs got)'.padRight(wMeds)}| Time';
   print(head);
   print('-' * head.length);
@@ -604,11 +627,11 @@ void _printTable(List<_CaseResult> results) {
 
 void _printDebug(Map<String, dynamic> insight) {
   print('\n  ── Transcript hidden by default; insight below ──');
-  print(const JsonEncoder.withIndent('  ')
-      .convert(insight)
-      .split('\n')
-      .map((l) => '    $l')
-      .join('\n'));
+  print(
+    const JsonEncoder.withIndent(
+      '  ',
+    ).convert(insight).split('\n').map((l) => '    $l').join('\n'),
+  );
 }
 
 String _fmtList(List<String> xs) => xs.isEmpty ? '{}' : '{${xs.join(', ')}}';
