@@ -1105,6 +1105,46 @@ function _valueGrounded(normValue: string, transcriptNorm: string): boolean {
   return false;
 }
 
+// Gemini sometimes returns a compound medicine name that pairs a generic with
+// the brand the doctor actually spoke — "Paracetamol (Crocin)" — or lists two
+// interchangeable names joined by a slash/comma. Grounding the whole compound
+// string against the transcript fails even though one part ("Crocin") was
+// clearly said. Split such names into individual candidates so each can be
+// grounded on its own. The parenthetical is kept as a candidate, not dropped.
+function _nameCandidates(name: string): string[] {
+  const outside = name.replace(/\([^)]*\)/g, " ");
+  const parens = (name.match(/\(([^)]*)\)/g) ?? []).map((p) =>
+    p.replace(/[()]/g, " ")
+  );
+  const seen = new Set<string>();
+  const candidates: string[] = [];
+  for (const chunk of [outside, ...parens]) {
+    for (const piece of chunk.split(/[\/,]/)) {
+      const t = piece.trim();
+      const key = t.toLowerCase();
+      if (t.length > 0 && !seen.has(key)) {
+        seen.add(key);
+        candidates.push(t);
+      }
+    }
+  }
+  return candidates.length > 0 ? candidates : [name.trim()];
+}
+
+// A split candidate that is a bare dose ("500 mg", "500mg", "10 ml") or a
+// dispensing/frequency qualifier ("BD", "1 tab") is not a drug name and must
+// never become the resolved medicine name. Matches a leading number with an
+// optional unit and/or an optional dosage-form word, case-insensitive.
+const _DOSE_QUALIFIER_RE =
+  /^\d+(\.\d+)?(\s*(mg|mcg|g|ml|iu|units?))?(\s*(tabs?|tablets?|caps?|capsules?))?$/i;
+
+function _isDoseOrQualifierFragment(candidate: string): boolean {
+  const c = candidate.trim();
+  // Too short to be a drug name (also catches qualifiers like "BD", "OD").
+  if (_norm(c).length < 4) return true;
+  return _DOSE_QUALIFIER_RE.test(c);
+}
+
 export function validateExtraction(
   insight: MedicalInsight,
   transcript: string,
@@ -1124,31 +1164,86 @@ export function validateExtraction(
 
   const transcriptNorm = _norm(spoken);
 
-  // ── Medications: drop any medicine not grounded in the transcript (even
-  // after romanized/vernacular matching), correct grounded names to canonical
-  // form via the shared matcher, and clear only suspicious ungrounded stock
-  // values ──
+  // ── Medications: three-tier handling ──
+  //   a. Grounded in the transcript (even after romanized/vernacular/compound
+  //      matching) -> keep, correcting the name to what the doctor said.
+  //   b. NOT grounded BUT catalogued in our drug dictionary -> keep and flag
+  //      needsReview. A real catalogued drug Gemini reported is far more likely
+  //      an STT-grounding failure than an invention; the doctor review gate is
+  //      the final control.
+  //   c. NOT grounded AND not catalogued -> drop. The anti-hallucination wall
+  //      stays for pure inventions.
   const medications: Medication[] = [];
   for (const med of insight.medications) {
     // The romanization-aware matcher does two jobs at once: it tells us whether
     // the drug is plausibly present in the (romanized/vernacular) transcript,
-    // and it maps a mangled/romanized name to its canonical English form. The
-    // matcher already absorbs romanized / vernacular spellings (e.g. "crocin" /
-    // "paracitamol" vs "Paracetamol"), so a medicine that still fails to match
-    // was genuinely never spoken — a Gemini hallucination — and is dropped
-    // below, rather than surfacing an invented prescription for review.
-    const drugResult = drugMatcher.findInTranscript(med.name, transcriptNorm);
-    if (!drugResult.found) {
-      // Genuinely ungrounded — Gemini invented a medicine not in the transcript.
-      // The matcher already handles romanized/vernacular forms; false here means
-      // the drug was truly never spoken. Drop it.
+    // and it maps a mangled/romanized name to its canonical English form. It
+    // already absorbs romanized/vernacular spellings ("crocin"/"paracitamol" vs
+    // "Paracetamol"). We split compound names first ("Paracetamol (Crocin)" ->
+    // ["Paracetamol", "Crocin"]) so a name that pairs a generic with the spoken
+    // brand still grounds on whichever part the doctor actually said.
+    const rawCandidates = _nameCandidates(med.name);
+    // When a name split into several candidates, drop the ones that are clearly
+    // not a drug — a bare dose ("500 mg") or a qualifier ("BD") — so the
+    // medicine name never resolves to a fragment. A single-candidate name is
+    // never filtered. If filtering removes everything, keep the raw split so we
+    // never lose the medicine outright.
+    let candidates = rawCandidates;
+    if (rawCandidates.length > 1) {
+      const filtered = rawCandidates.filter(
+        (c) => !_isDoseOrQualifierFragment(c),
+      );
+      if (filtered.length > 0) candidates = filtered;
+    }
+
+    // Prefer a candidate literally present in the transcript (what the doctor
+    // said) over one grounded only via a dictionary sibling — so
+    // "Paracetamol (Crocin)" resolves to the spoken "Crocin", not "Paracetamol".
+    let grounded: string | null = null;
+    let directName: string | null = null;
+    for (const cand of candidates) {
+      const r = drugMatcher.findInTranscript(cand, transcriptNorm, spoken);
+      if (!r.found) continue;
+      // Brand-guard: r.canonical is the generic when a rewrite is allowed, or
+      // null when the name is a brand that must stay verbatim.
+      const resolved = r.canonical ?? cand;
+      if (grounded === null) grounded = resolved;
+      const candNorm = _norm(cand);
+      if (
+        directName === null &&
+        candNorm.length >= 4 &&
+        transcriptNorm.includes(candNorm)
+      ) {
+        directName = resolved;
+      }
+    }
+
+    let correctedName: string;
+    let needsReview = med.needsReview;
+    const chosen = directName ?? grounded;
+    const knownCandidate = candidates.find((c) => drugMatcher.isKnownDrug(c));
+    if (chosen !== null) {
+      // Tier a: grounded.
+      correctedName = chosen;
+    } else if (knownCandidate !== undefined) {
+      // Tier b: catalogued but ungrounded — keep for doctor review, using the
+      // canonical drug name (brand-guarded), never the raw compound or a
+      // fragment.
       console.warn(
-        "[validateExtraction] Dropping invented medicine — " +
-          "not found in transcript even after romanized matching",
+        "[validateExtraction] Ungrounded medicine kept for review — " +
+          "maps to drug dictionary but not found in transcript",
+      );
+      correctedName = drugMatcher.correct(knownCandidate)?.canonical ??
+        knownCandidate;
+      needsReview = true;
+    } else {
+      // Tier c: ungrounded and not catalogued — a pure invention. Drop it,
+      // logging the name only (no patient data) so drops can be audited.
+      console.warn(
+        `[validateExtraction] Dropping ungrounded medicine not in dictionary: ${med.name}`,
       );
       continue;
     }
-    const correctedName = drugResult.canonical ?? med.name;
 
     let dosage = med.dosage;
     let frequency = med.frequency;
@@ -1208,8 +1303,9 @@ export function validateExtraction(
       frequency,
       duration,
       timing,
-      // Flag any medicine we edited so the review screen can highlight it.
-      needsReview: med.needsReview || cleared,
+      // Flag any medicine we edited or kept-for-review so the review screen can
+      // highlight it.
+      needsReview: needsReview || cleared,
     });
   }
 
