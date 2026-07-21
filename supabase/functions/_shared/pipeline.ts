@@ -2,7 +2,7 @@
 // No Supabase client here — endpoints own that. All Sarvam/Gemini functions
 // take explicit API keys so they remain testable in isolation.
 
-import { drugMatcher } from "./drug_matcher.ts";
+import { drugMatcher, transliterateDevanagari } from "./drug_matcher.ts";
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
@@ -461,7 +461,34 @@ export const PLAIN_INSTRUCTION =
   'extract "Before bed". If "khana khane se pehle" extract "Before food". ' +
   "Every medication should have a timing value if the doctor mentioned when " +
   "to take it. Do not put timing information only in instructions — it must " +
-  "be in the medication's timing field.";
+  "be in the medication's timing field. " +
+  // Structured field mapping (few-shot).
+  "STRUCTURED FIELDS: when a medicine's frequency, duration, or timing is " +
+  "spoken, it MUST be placed in that medicine's structured fields (frequency, " +
+  "duration, timing) — not only in instructions. Instructions may repeat it, " +
+  "but the structured fields are mandatory whenever the detail is spoken. Map " +
+  "spoken Hindi/Hinglish to fields like this: " +
+  '"din mein do baar" -> frequency "twice daily"; ' +
+  '"raat ko" -> frequency "once daily", timing "Before bed"; ' +
+  '"subah khali pet" -> frequency "once daily" (morning), timing ' +
+  '"Empty stomach"; ' +
+  '"khane ke baad" -> timing "After food"; ' +
+  '"teen din" / "paanch din" / "do hafte" -> duration "3 days" / "5 days" / ' +
+  '"2 weeks"; ' +
+  '"dard hone par" -> frequency "as needed (SOS)". ' +
+  // Exact drug-name rule.
+  "DRUG NAMES: output each medicine under the EXACT name the doctor spoke. If " +
+  "a brand was spoken (Candid, Crocin, Azithral), output that brand verbatim. " +
+  "Never substitute a generic for a spoken brand, never substitute a category " +
+  "for a product (for example, B-Complex must never become Multivitamins), and " +
+  "never translate or normalize a drug name. The drug name is the one field " +
+  "that is never translated. " +
+  // Distractor robustness.
+  "DISTRACTORS: the transcript may contain unrelated conversation (other " +
+  "people, a TV or radio, a phone call). Extract only the medical consultation " +
+  "portion, wherever in the transcript it appears. If one or more medicines " +
+  "with doses are clearly stated anywhere in the transcript, never return an " +
+  "empty extraction.";
 
 export const DIARIZED_INSTRUCTION =
   "You are a medical scribe. Given a doctor-patient consultation transcript " +
@@ -529,7 +556,34 @@ export const DIARIZED_INSTRUCTION =
   'extract "Before bed". If "khana khane se pehle" extract "Before food". ' +
   "Every medication should have a timing value if the doctor mentioned when " +
   "to take it. Do not put timing information only in instructions — it must " +
-  "be in the medication's timing field.";
+  "be in the medication's timing field. " +
+  // Structured field mapping (few-shot).
+  "STRUCTURED FIELDS: when a medicine's frequency, duration, or timing is " +
+  "spoken, it MUST be placed in that medicine's structured fields (frequency, " +
+  "duration, timing) — not only in instructions. Instructions may repeat it, " +
+  "but the structured fields are mandatory whenever the detail is spoken. Map " +
+  "spoken Hindi/Hinglish to fields like this: " +
+  '"din mein do baar" -> frequency "twice daily"; ' +
+  '"raat ko" -> frequency "once daily", timing "Before bed"; ' +
+  '"subah khali pet" -> frequency "once daily" (morning), timing ' +
+  '"Empty stomach"; ' +
+  '"khane ke baad" -> timing "After food"; ' +
+  '"teen din" / "paanch din" / "do hafte" -> duration "3 days" / "5 days" / ' +
+  '"2 weeks"; ' +
+  '"dard hone par" -> frequency "as needed (SOS)". ' +
+  // Exact drug-name rule.
+  "DRUG NAMES: output each medicine under the EXACT name the doctor spoke. If " +
+  "a brand was spoken (Candid, Crocin, Azithral), output that brand verbatim. " +
+  "Never substitute a generic for a spoken brand, never substitute a category " +
+  "for a product (for example, B-Complex must never become Multivitamins), and " +
+  "never translate or normalize a drug name. The drug name is the one field " +
+  "that is never translated. " +
+  // Distractor robustness.
+  "DISTRACTORS: the transcript may contain unrelated conversation (other " +
+  "people, a TV or radio, a phone call). Extract only the medical consultation " +
+  "portion, wherever in the transcript it appears. If one or more medicines " +
+  "with doses are clearly stated anywhere in the transcript, never return an " +
+  "empty extraction.";
 
 // ── Gemini schemas (VERBATIM from insight_service.dart) ───────────────────
 
@@ -806,10 +860,11 @@ export function isLowQualityTranscript(transcript: string): boolean {
 // strips anything it cannot ground. Philosophy: an empty field is always
 // correct; a hallucinated field is never acceptable.
 
-// Lowercase + drop everything but [a-z0-9] so spacing/punctuation/case drift
-// between transcript and extraction never blocks a match ("500 mg" -> "500mg").
+// Transliterate Devanagari, then lowercase + drop everything but [a-z0-9] so
+// spacing/punctuation/case/script drift between transcript and extraction never
+// blocks a match ("500 mg" -> "500mg", "तीन दिन" -> "teendin").
 function _norm(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return transliterateDevanagari(s).toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 // Strip speaker labels so they aren't counted as spoken content.
@@ -969,6 +1024,11 @@ const _FREQUENCY_ALIASES: Record<string, string[]> = {
     "bid",
     // Hindi
     "dinmeindobaar",
+    // "do baar" ("two times") — the frequency-bearing fragment that survives
+    // Devanagari transliteration of "दिन में दो बार" ("din men do baar").
+    "dobaar",
+    "dobar",
+    "dinmendobaar",
     // Telugu
     "rojukirendusarlu",
     // Tamil
@@ -1225,6 +1285,20 @@ export function validateExtraction(
     if (chosen !== null) {
       // Tier a: grounded.
       correctedName = chosen;
+      // FIX 2a — Spoken-brand reverse lookup. When grounding succeeded only via
+      // the generic (no candidate was the literal spoken text, i.e.
+      // directName === null) the doctor may have actually spoken a brand that
+      // Gemini normalized to the generic. If a brand of this drug's entry is
+      // present in the transcript, print that correctly-spelled brand instead
+      // (doctor said "Candid" -> "Candid", not "Clotrimazole").
+      if (directName === null) {
+        const spokenBrand = drugMatcher.brandInTranscript(
+          correctedName,
+          transcriptNorm,
+          spoken,
+        );
+        if (spokenBrand !== null) correctedName = spokenBrand;
+      }
     } else if (knownCandidate !== undefined) {
       // Tier b: catalogued but ungrounded — keep for doctor review, using the
       // canonical drug name (brand-guarded), never the raw compound or a
@@ -1236,6 +1310,14 @@ export function validateExtraction(
       correctedName = drugMatcher.correct(knownCandidate)?.canonical ??
         knownCandidate;
       needsReview = true;
+      // FIX 2a — same reverse lookup for the review tier: prefer the brand the
+      // doctor spoke over the canonical generic when it is in the transcript.
+      const spokenBrand = drugMatcher.brandInTranscript(
+        knownCandidate,
+        transcriptNorm,
+        spoken,
+      );
+      if (spokenBrand !== null) correctedName = spokenBrand;
     } else {
       // Tier c: ungrounded and not catalogued — a pure invention. Drop it,
       // logging the name only (no patient data) so drops can be audited.
@@ -1243,6 +1325,16 @@ export function validateExtraction(
         `[validateExtraction] Dropping ungrounded medicine not in dictionary: ${med.name}`,
       );
       continue;
+    }
+
+    // FIX 2b — Brand-spelling correction. If the name we are about to print is
+    // not an exact catalogued spelling, it may be a mangled brand the doctor
+    // spoke ("azithrol"). Fuzzy-correct it to the canonical brand ("Azithral").
+    // Exact generics/variants/brands (already correct) are left untouched, so
+    // this never rewrites a good name.
+    if (!drugMatcher.isExactTerm(correctedName)) {
+      const fixedBrand = drugMatcher.correctToBrand(correctedName);
+      if (fixedBrand !== null) correctedName = fixedBrand;
     }
 
     let dosage = med.dosage;

@@ -29,11 +29,186 @@ import dictJson from "./drug_dictionary.json" with { type: "json" };
 const DRUG_DICTIONARY: DrugEntry[] =
   (dictJson as unknown as { entries: DrugEntry[] }).entries;
 
+// ── Devanagari transliteration ────────────────────────────────────────────
+// Sarvam now returns consultation transcripts in Devanagari script. Both norm()
+// and romanNorm() strip every non-[a-z0-9] byte, which would erase Devanagari
+// text entirely — every drug name, brand, and vernacular phrase would fail to
+// ground. We therefore transliterate Devanagari to a Latin phonetic form FIRST,
+// so grounding and variant matching compare like-for-like (क्रोसिन → "krosin",
+// तीन दिन → "teendin"). Already-romanized (pure-Latin) transcripts contain no
+// Devanagari code points, so this is a fast no-op for them.
+
+const _DEVA_VOWELS: Record<string, string> = {
+  "अ": "a",
+  "आ": "aa",
+  "इ": "i",
+  "ई": "ee",
+  "उ": "u",
+  "ऊ": "oo",
+  "ऋ": "ri",
+  "ए": "e",
+  "ऐ": "ai",
+  "ओ": "o",
+  "औ": "au",
+  "ऍ": "e",
+  "ऑ": "o",
+  "ॲ": "a",
+};
+
+const _DEVA_MATRAS: Record<string, string> = {
+  "ा": "aa",
+  "ि": "i",
+  "ी": "ee",
+  "ु": "u",
+  "ू": "oo",
+  "ृ": "ri",
+  "े": "e",
+  "ै": "ai",
+  "ो": "o",
+  "ौ": "au",
+  "ॉ": "o",
+  "ॅ": "e",
+};
+
+const _DEVA_CONSONANTS: Record<string, string> = {
+  "क": "k",
+  "ख": "kh",
+  "ग": "g",
+  "घ": "gh",
+  "ङ": "ng",
+  "च": "ch",
+  "छ": "chh",
+  "ज": "j",
+  "झ": "jh",
+  "ञ": "ny",
+  "ट": "t",
+  "ठ": "th",
+  "ड": "d",
+  "ढ": "dh",
+  "ण": "n",
+  "त": "t",
+  "थ": "th",
+  "द": "d",
+  "ध": "dh",
+  "न": "n",
+  "प": "p",
+  "फ": "ph",
+  "ब": "b",
+  "भ": "bh",
+  "म": "m",
+  "य": "y",
+  "र": "r",
+  "ल": "l",
+  "व": "v",
+  "ळ": "l",
+  "श": "sh",
+  "ष": "sh",
+  "स": "s",
+  "ह": "h",
+};
+
+const _DEVA_DIGITS: Record<string, string> = {
+  "०": "0",
+  "१": "1",
+  "२": "2",
+  "३": "3",
+  "४": "4",
+  "५": "5",
+  "६": "6",
+  "७": "7",
+  "८": "8",
+  "९": "9",
+};
+
+const _DEVA_VIRAMA = "्";
+const _DEVA_NASAL = new Set(["ं", "ँ"]); // anusvara / chandrabindu → n
+const _DEVA_VISARGA = "ः";
+
+function _isDevanagari(ch: string | undefined): boolean {
+  if (ch === undefined) return false;
+  const c = ch.codePointAt(0) ?? 0;
+  return c >= 0x0900 && c <= 0x097f;
+}
+
+// Word-final inherent schwa is dropped ("दिन" → "din", not "dina"). A schwa is
+// word-final when the next char is absent, whitespace/punctuation, or a
+// non-Devanagari letter (a code-mixed boundary).
+function _isDevaWordEnd(ch: string | undefined): boolean {
+  if (ch === undefined) return true;
+  if (/\s/.test(ch)) return true;
+  return !_isDevanagari(ch);
+}
+
+/**
+ * Transliterate Devanagari to a Latin phonetic approximation. Handles the
+ * abugida's inherent-'a' rule (consonant carries an implicit vowel), vowel
+ * signs (matras), the virama (conjunct/half-consonant), nasalization, and
+ * word-final schwa deletion. Non-Devanagari characters pass through unchanged,
+ * so mixed and pure-Latin strings survive intact.
+ */
+export function transliterateDevanagari(input: string): string {
+  // Fast path: nothing to do for already-romanized (pure-Latin) text.
+  let hasDeva = false;
+  for (const ch of input) {
+    if (_isDevanagari(ch)) {
+      hasDeva = true;
+      break;
+    }
+  }
+  if (!hasDeva) return input;
+
+  const chars = Array.from(input);
+  const out: string[] = [];
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    const cons = _DEVA_CONSONANTS[ch];
+    if (cons !== undefined) {
+      const next = chars[i + 1];
+      if (next === _DEVA_VIRAMA) {
+        out.push(cons); // conjunct: inherent vowel suppressed
+      } else if (next !== undefined && _DEVA_MATRAS[next] !== undefined) {
+        out.push(cons); // vowel supplied by the following matra
+      } else if (_isDevaWordEnd(next)) {
+        out.push(cons); // word-final schwa deletion
+      } else {
+        out.push(cons + "a"); // inherent 'a'
+      }
+      continue;
+    }
+    const matra = _DEVA_MATRAS[ch];
+    if (matra !== undefined) {
+      out.push(matra);
+      continue;
+    }
+    const vowel = _DEVA_VOWELS[ch];
+    if (vowel !== undefined) {
+      out.push(vowel);
+      continue;
+    }
+    const digit = _DEVA_DIGITS[ch];
+    if (digit !== undefined) {
+      out.push(digit);
+      continue;
+    }
+    if (_DEVA_NASAL.has(ch)) {
+      out.push("n");
+      continue;
+    }
+    if (ch === _DEVA_VISARGA) {
+      out.push("h");
+      continue;
+    }
+    if (ch === _DEVA_VIRAMA) continue; // consumed via look-ahead above
+    out.push(ch); // non-Devanagari passthrough (incl. nukta, dropped by norm)
+  }
+  return out.join("");
+}
+
 // ── Normalization ─────────────────────────────────────────────────────────
 
-/** Strip to lowercase alphanumeric only. */
+/** Transliterate Devanagari, then strip to lowercase alphanumeric only. */
 function norm(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return transliterateDevanagari(s).toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 /**
@@ -113,10 +288,22 @@ class DrugMatcher {
   private _exactIndex = new Map<string, DrugEntry>();
   /** romanNorm'd generic/variant/brand → entry */
   private _romanIndex = new Map<string, DrugEntry>();
+  /** Every distinct brand string across the dictionary (correctly spelled). */
+  private _brands: string[] = [];
   private _entries: DrugEntry[];
 
   constructor(entries: DrugEntry[]) {
     this._entries = entries;
+    const seenBrand = new Set<string>();
+    for (const entry of entries) {
+      for (const b of entry.brands) {
+        const bn = norm(b);
+        if (bn.length > 0 && !seenBrand.has(bn)) {
+          seenBrand.add(bn);
+          this._brands.push(b);
+        }
+      }
+    }
     for (const entry of entries) {
       // Index generic + variants + brands for RECOGNITION/grounding. The
       // brand-guard in `correct` decides separately whether a match may be
@@ -215,6 +402,89 @@ class DrugMatcher {
    */
   isKnownDrug(input: string): boolean {
     return this._recognize(input) !== null;
+  }
+
+  /**
+   * Is this name an EXACT known spelling — a generic, variant, or brand exactly
+   * as catalogued (normalized or romanization-normalized)? Used to decide
+   * whether a name still needs brand-spelling correction: a correctly-spelled
+   * brand ("Crocin", "Candid") is left alone; a mangled one ("azithrol") is not
+   * exact and is routed to `correctToBrand`.
+   */
+  isExactTerm(input: string): boolean {
+    const n = norm(input);
+    if (n.length > 0 && this._exactIndex.has(n)) return true;
+    const r = romanNorm(input);
+    return r.length > 0 && this._romanIndex.has(r);
+  }
+
+  /**
+   * FIX 2b — Brand-spelling correction. A mangled brand the doctor spoke
+   * ("azithrol", "azithrol") that never matched a generic variant is
+   * fuzzy-compared (romanization-aware) against every catalogued brand. On a
+   * ≥0.82 hit it returns the correctly-spelled brand ("Azithral"); otherwise
+   * null so the caller keeps the name verbatim.
+   */
+  correctToBrand(input: string): string | null {
+    const qr = romanNorm(input);
+    if (qr.length < 4) return null;
+    let best: string | null = null;
+    let bestScore = 0;
+    for (const brand of this._brands) {
+      const score = similarity(qr, romanNorm(brand));
+      if (score > bestScore) {
+        bestScore = score;
+        best = brand;
+      }
+    }
+    return bestScore >= MIN_FUZZY ? best : null;
+  }
+
+  /**
+   * FIX 2a — Spoken-brand reverse lookup. Given a medicine name that resolved to
+   * a generic (or was kept for review), check whether any brand of that name's
+   * dictionary entry is actually present in the transcript (romanization-aware).
+   * Returns the correctly-spelled brand or null. Restores the brand the doctor
+   * actually spoke when Gemini normalized it to the generic — doctor said
+   * "Candid" → we print "Candid", not "Clotrimazole".
+   *
+   * `spoken` is the raw (space-preserving) transcript, used for the word-join
+   * fuzzy pass, exactly as in findInTranscript.
+   */
+  brandInTranscript(
+    drugName: string,
+    transcriptNorm: string,
+    spoken?: string,
+  ): string | null {
+    const m = this._recognize(drugName);
+    if (!m) return null;
+
+    const words = spoken
+      ? spoken.split(/\s+/).map((w) => norm(w)).filter((w) => w.length > 0)
+      : [];
+
+    for (const brand of m.entry.brands) {
+      const bn = norm(brand);
+      if (bn.length < 3) continue;
+      // Direct: the brand spelling is present in the normalized transcript.
+      if (transcriptNorm.includes(bn)) return brand;
+      // Romanization-aware fuzzy: match each spoken word, and each pair of
+      // consecutive words joined, so a split/romanized brand still grounds.
+      const br = romanNorm(brand);
+      for (let i = 0; i < words.length; i++) {
+        if (
+          words[i].length >= 3 &&
+          levRatio(br, romanNorm(words[i])) >= MIN_FUZZY
+        ) {
+          return brand;
+        }
+        if (i + 1 < words.length) {
+          const joined = words[i] + words[i + 1];
+          if (levRatio(br, romanNorm(joined)) >= MIN_FUZZY) return brand;
+        }
+      }
+    }
+    return null;
   }
 
   /**
