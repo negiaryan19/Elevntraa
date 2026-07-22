@@ -69,6 +69,28 @@ Deno.test("transliteration — Devanagari maps to a Latin phonetic form", () => 
   assertEquals(transliterateDevanagari("Crocin 650"), "Crocin 650");
 });
 
+// The Latin fast-path must be a byte-for-byte passthrough: any string with no
+// Devanagari code point (U+0900–U+097F) is returned exactly as given — same
+// case, punctuation, and digits. This guards the perf skip against ever
+// mutating Latin input, which is the vast majority of comparisons.
+Deno.test("transliteration — Latin-only input is byte-identical passthrough", () => {
+  for (
+    const s of [
+      "",
+      "Paracetamol",
+      "AZITHRAL 500 MG",
+      "Dolo-650, twice daily!",
+      "b-complex (multivitamin)",
+      "café", // non-ASCII but non-Devanagari — still untouched
+    ]
+  ) {
+    assertEquals(transliterateDevanagari(s), s);
+  }
+  // A mixed string transliterates only the Devanagari run; the Latin bytes
+  // survive unchanged around it.
+  assertEquals(transliterateDevanagari("Take डोलो now"), "Take dolo now");
+});
+
 Deno.test("transliteration — Devanagari drug grounds via romanized variant", () => {
   // The generic "Paracetamol" never appears in the transcript; the medicine can
   // only ground because the VARIANT "dolo" matches the transliterated डोलो. If

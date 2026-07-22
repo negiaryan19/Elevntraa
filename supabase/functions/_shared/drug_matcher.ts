@@ -283,13 +283,49 @@ export interface DrugMatch {
 
 const MIN_FUZZY = 0.82;
 
+// A single brand string paired with its precomputed normalizations. Dictionary
+// strings never change after load, so norm()/romanNorm() are computed ONCE here
+// instead of on every fuzzy comparison in the hot matching path.
+interface PreparedBrand {
+  raw: string;
+  norm: string;
+  roman: string;
+}
+
+// Per-entry precomputed normalizations. Built once at construction so grounding
+// (findInTranscript) and the brand-guard (_isBrandLike / brandInTranscript)
+// never re-normalize the same dictionary strings on every comparison.
+interface PreparedEntry {
+  // norm() of [generic, ...variants, ...brands] in that exact order — consumed
+  // by the grounding scan in findInTranscript.
+  termNorms: string[];
+  brands: PreparedBrand[];
+}
+
+function _prepareEntry(entry: DrugEntry): PreparedEntry {
+  const termNorms = [entry.generic, ...entry.variants, ...entry.brands].map(
+    norm,
+  );
+  const brands = entry.brands.map((raw) => ({
+    raw,
+    norm: norm(raw),
+    roman: romanNorm(raw),
+  }));
+  return { termNorms, brands };
+}
+
 class DrugMatcher {
   /** normalized generic/variant/brand → entry */
   private _exactIndex = new Map<string, DrugEntry>();
   /** romanNorm'd generic/variant/brand → entry */
   private _romanIndex = new Map<string, DrugEntry>();
-  /** Every distinct brand string across the dictionary (correctly spelled). */
-  private _brands: string[] = [];
+  /**
+   * Every distinct brand string across the dictionary (correctly spelled),
+   * each with its precomputed romanNorm for the correctToBrand fuzzy scan.
+   */
+  private _brands: { raw: string; roman: string }[] = [];
+  /** entry → its precomputed normalizations (see PreparedEntry). */
+  private _prepared = new Map<DrugEntry, PreparedEntry>();
   private _entries: DrugEntry[];
 
   constructor(entries: DrugEntry[]) {
@@ -300,7 +336,7 @@ class DrugMatcher {
         const bn = norm(b);
         if (bn.length > 0 && !seenBrand.has(bn)) {
           seenBrand.add(bn);
-          this._brands.push(b);
+          this._brands.push({ raw: b, roman: romanNorm(b) });
         }
       }
     }
@@ -319,7 +355,21 @@ class DrugMatcher {
           this._romanIndex.set(r, entry);
         }
       }
+      // Precompute per-entry normalizations for the grounding/brand-guard paths.
+      this._prepared.set(entry, _prepareEntry(entry));
     }
+  }
+
+  // Precomputed normalizations for an entry. Every dictionary entry is prepared
+  // at construction; the fallback keeps the return type non-nullable and covers
+  // an entry that somehow bypassed the constructor loop.
+  private _prep(entry: DrugEntry): PreparedEntry {
+    let prep = this._prepared.get(entry);
+    if (prep === undefined) {
+      prep = _prepareEntry(entry);
+      this._prepared.set(entry, prep);
+    }
+    return prep;
   }
 
   /**
@@ -382,13 +432,14 @@ class DrugMatcher {
    * a brand) both return true; "parcetamol" returns false so it corrects.
    */
   private _isBrandLike(input: string, entry: DrugEntry): boolean {
+    const brands = this._prep(entry).brands;
     const qn = norm(input);
-    for (const b of entry.brands) {
-      if (norm(b) === qn) return true;
+    for (const b of brands) {
+      if (b.norm === qn) return true;
     }
     const qr = romanNorm(input);
-    for (const b of entry.brands) {
-      if (similarity(qr, romanNorm(b)) >= MIN_FUZZY) return true;
+    for (const b of brands) {
+      if (similarity(qr, b.roman) >= MIN_FUZZY) return true;
     }
     return false;
   }
@@ -431,10 +482,10 @@ class DrugMatcher {
     let best: string | null = null;
     let bestScore = 0;
     for (const brand of this._brands) {
-      const score = similarity(qr, romanNorm(brand));
+      const score = similarity(qr, brand.roman);
       if (score > bestScore) {
         bestScore = score;
-        best = brand;
+        best = brand.raw;
       }
     }
     return bestScore >= MIN_FUZZY ? best : null;
@@ -463,24 +514,24 @@ class DrugMatcher {
       ? spoken.split(/\s+/).map((w) => norm(w)).filter((w) => w.length > 0)
       : [];
 
-    for (const brand of m.entry.brands) {
-      const bn = norm(brand);
+    for (const brand of this._prep(m.entry).brands) {
+      const bn = brand.norm;
       if (bn.length < 3) continue;
       // Direct: the brand spelling is present in the normalized transcript.
-      if (transcriptNorm.includes(bn)) return brand;
+      if (transcriptNorm.includes(bn)) return brand.raw;
       // Romanization-aware fuzzy: match each spoken word, and each pair of
       // consecutive words joined, so a split/romanized brand still grounds.
-      const br = romanNorm(brand);
+      const br = brand.roman;
       for (let i = 0; i < words.length; i++) {
         if (
           words[i].length >= 3 &&
           levRatio(br, romanNorm(words[i])) >= MIN_FUZZY
         ) {
-          return brand;
+          return brand.raw;
         }
         if (i + 1 < words.length) {
           const joined = words[i] + words[i + 1];
-          if (levRatio(br, romanNorm(joined)) >= MIN_FUZZY) return brand;
+          if (levRatio(br, romanNorm(joined)) >= MIN_FUZZY) return brand.raw;
         }
       }
     }
@@ -536,12 +587,11 @@ class DrugMatcher {
     }
 
     // We know which drug this is — check if ANY of its generic/variant/brand
-    // spellings appear in the transcript.
+    // spellings appear in the transcript. Spellings are normalized once at
+    // dictionary load, so this scan never re-normalizes per call.
     if (m) {
-      for (
-        const term of [m.entry.generic, ...m.entry.variants, ...m.entry.brands]
-      ) {
-        if (transcriptNorm.includes(norm(term))) {
+      for (const termNorm of this._prep(m.entry).termNorms) {
+        if (transcriptNorm.includes(termNorm)) {
           return { found: true, canonical };
         }
       }
