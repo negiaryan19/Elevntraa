@@ -1,13 +1,12 @@
-// Eval cases distilled from the 12-run real-audio field test. These exercise
-// the post-extraction path (validateExtraction) plus the Devanagari
-// transliteration that grounding and variant matching now depend on, since
-// Sarvam returns transcripts in Devanagari script.
+// Eval cases distilled from the real-audio field test. They exercise the
+// post-extraction path (validateExtraction) plus the Devanagari transliteration
+// that grounding depends on, since Sarvam returns transcripts in Devanagari.
 //
-// The prompt-side behaviour (Gemini placing frequency/duration/timing in the
-// structured fields, keeping the exact spoken drug name, and extracting from a
-// distractor-heavy transcript) is enforced by the hardened system instructions
-// in pipeline.ts; these tests guard the deterministic post-processing that runs
-// on Gemini's output.
+// Under the simplified pipeline the server keeps every medicine Gemini returned,
+// exactly as returned, and never rewrites or drops one — it only raises the
+// needsReview flag when a name is neither grounded nor recognized. These tests
+// guard that grounding/recognition (and its Devanagari support) still work, so a
+// legitimately spoken medicine is kept and not spuriously flagged.
 //
 // Run: deno test --allow-read supabase/functions/_shared/extraction_eval_test.ts
 
@@ -53,11 +52,11 @@ function insightWith(meds: Medication[], diagnosis = ""): MedicalInsight {
   };
 }
 
-// ── Transliteration: grounding + variant matching transliterate before compare ─
+// ── Transliteration: grounding transliterates before comparing ───────────────
 // Without transliteration, _norm() strips every Devanagari byte and the
 // transcript normalizes to the empty string — every medicine would be
-// ungrounded. These assertions prove the transliteration step exists and feeds
-// grounding.
+// ungrounded (and therefore spuriously flagged). These assertions prove the
+// transliteration step exists and feeds grounding.
 
 Deno.test("transliteration — Devanagari maps to a Latin phonetic form", () => {
   assertEquals(transliterateDevanagari("डोलो"), "dolo");
@@ -91,20 +90,29 @@ Deno.test("transliteration — Latin-only input is byte-identical passthrough", 
   assertEquals(transliterateDevanagari("Take डोलो now"), "Take dolo now");
 });
 
-Deno.test("transliteration — Devanagari drug grounds via romanized variant", () => {
-  // The generic "Paracetamol" never appears in the transcript; the medicine can
-  // only ground because the VARIANT "dolo" matches the transliterated डोलो. If
-  // variant matching did not transliterate first, this would be dropped.
+Deno.test("Devanagari drug grounds via romanized variant — kept, not flagged", () => {
+  // The generic "Paracetamol" never appears in the transcript; it grounds only
+  // because the VARIANT "dolo" matches the transliterated डोलो. Grounding must
+  // transliterate first, otherwise this would be flagged for review. The name is
+  // kept exactly as Gemini returned it (no rewrite to the spoken brand).
   const transcript = "Doctor: बुखार के लिए डोलो ६५० दिन में दो बार लें।";
   const out = validateExtraction(insightWith([med("Paracetamol")]), transcript);
   assertEquals(out.medications.length, 1, "Devanagari medicine must be kept");
-  // FIX 2a then restores the spoken brand present in the transcript.
-  assertEquals(out.medications[0].name, "Dolo", "spoken brand Dolo restored");
+  assertEquals(
+    out.medications[0].name,
+    "Paracetamol",
+    "kept exactly as returned",
+  );
+  assertEquals(
+    out.medications[0].needsReview,
+    false,
+    "grounded via variant -> not flagged",
+  );
 });
 
-// ── Case 1 — Devanagari Crocin, frequency + duration land in fields ──────────
+// ── Fields Gemini placed are preserved verbatim (no clearing) ────────────────
 
-Deno.test("case 1 — Devanagari 'Crocin twice daily, 3 days' keeps fields", () => {
+Deno.test("Devanagari 'Crocin twice daily, 3 days' — fields preserved untouched", () => {
   const transcript = "Doctor: क्रोसिन एक टैबलेट दिन में दो बार, तीन दिन।";
   const out = validateExtraction(
     insightWith([
@@ -114,75 +122,19 @@ Deno.test("case 1 — Devanagari 'Crocin twice daily, 3 days' keeps fields", () 
   );
   assertEquals(out.medications.length, 1, "Crocin must be kept");
   assertEquals(out.medications[0].name, "Crocin", "spoken name preserved");
-  // The suspicious-default guard must NOT clear these — they are grounded in the
-  // Devanagari transcript via transliteration ("दो बार" -> twice, "तीन दिन" -> 3
-  // days).
   assertEquals(
-    out.medications[0].frequency,
-    "twice daily",
-    "grounded frequency kept in field",
+    out.medications[0].needsReview,
+    false,
+    "recognized -> not flagged",
   );
-  assertEquals(
-    out.medications[0].duration,
-    "3 days",
-    "grounded duration kept in field",
-  );
+  // The server never rewrites fields — whatever Gemini placed stays.
+  assertEquals(out.medications[0].frequency, "twice daily", "frequency kept");
+  assertEquals(out.medications[0].duration, "3 days", "duration kept");
 });
 
-// ── Case 2 — Gemini normalized brand -> spoken brand restored ────────────────
+// ── Category must never replace the spoken product ───────────────────────────
 
-Deno.test("case 2 — Candid normalized to Clotrimazole resolves back to Candid", () => {
-  const transcript =
-    "Doctor: aapko fungal infection hai, Candid cream din mein do baar lagao.";
-  const out = validateExtraction(
-    insightWith([med("Clotrimazole")]),
-    transcript,
-  );
-  assertEquals(out.medications.length, 1, "medicine must be kept");
-  assertEquals(
-    out.medications[0].name,
-    "Candid",
-    "must print the spoken brand, not the generic",
-  );
-});
-
-// ── Case 3 — mangled brand spelling corrected ───────────────────────────────
-
-Deno.test("case 3 — 'azithrol 500' corrects to Azithral, dosage kept", () => {
-  const transcript =
-    "Doctor: infection ke liye azithrol 500 lena din mein ek baar paanch din.";
-  const out = validateExtraction(
-    insightWith([med("azithrol", { dosage: "500mg" })]),
-    transcript,
-  );
-  assertEquals(out.medications.length, 1, "medicine must be kept");
-  assertEquals(
-    out.medications[0].name,
-    "Azithral",
-    "mangled brand corrected to canonical brand",
-  );
-  assertStringIncludes(out.medications[0].dosage, "500", "dosage 500 kept");
-});
-
-// ── Case 4 — Devanagari generic-mangle grounds to Itraconazole ──────────────
-
-Deno.test("case 4 — 'petra consoli 100' (Devanagari) yields Itraconazole", () => {
-  // "petra consoli" is an observed STT mangle of Itraconazole (added as a
-  // dictionary variant). The medicine must survive as Itraconazole whether it
-  // grounds via the variant or is kept for review as a catalogued drug.
-  const transcript =
-    "Doctor: फंगल इन्फेक्शन के लिए petra consoli 100 mg दिन में एक बार लें।";
-  const out = validateExtraction(
-    insightWith([med("Itraconazole", { dosage: "100mg" })]),
-    transcript,
-  );
-  assertEquals(out.medications.length, 1, "medicine must be kept");
-  assertEquals(out.medications[0].name, "Itraconazole", "resolves to generic");
-});
-
-// ── Case 5 — category must never replace the spoken product ──────────────────
-
-Deno.test("case 5 — B-Complex stays B-Complex, never Multivitamins", () => {
+Deno.test("B-Complex stays B-Complex, never Multivitamins", () => {
   const transcript =
     "Doctor: kamzori ke liye B-Complex lena roz subah khana khane ke baad.";
   const out = validateExtraction(insightWith([med("B-Complex")]), transcript);
@@ -199,9 +151,9 @@ Deno.test("case 5 — B-Complex stays B-Complex, never Multivitamins", () => {
   );
 });
 
-// ── Case 6 — distractor-heavy transcript still extracts the medicine ─────────
+// ── Distractor-heavy transcript still keeps the real medicine ────────────────
 
-Deno.test("case 6 — one clear medicine amid unrelated talk is not dropped", () => {
+Deno.test("one clear medicine amid unrelated talk is not dropped", () => {
   const transcript =
     "Speaker: kal match dekha? TV pe news chal rahi thi, phone bhi baj raha tha. " +
     "Doctor: haan haan, dekho bukhar ke liye Crocin 650 din mein do baar teen " +
@@ -212,4 +164,9 @@ Deno.test("case 6 — one clear medicine amid unrelated talk is not dropped", ()
   );
   assertNotEquals(out.medications.length, 0, "extraction must not be empty");
   assertEquals(out.medications[0].name, "Crocin", "the real medicine survives");
+  assertEquals(
+    out.medications[0].needsReview,
+    false,
+    "grounded -> not flagged",
+  );
 });

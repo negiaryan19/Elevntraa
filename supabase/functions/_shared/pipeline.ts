@@ -476,13 +476,11 @@ export const PLAIN_INSTRUCTION =
   '"teen din" / "paanch din" / "do hafte" -> duration "3 days" / "5 days" / ' +
   '"2 weeks"; ' +
   '"dard hone par" -> frequency "as needed (SOS)". ' +
-  // Exact drug-name rule.
-  "DRUG NAMES: output each medicine under the EXACT name the doctor spoke. If " +
-  "a brand was spoken (Candid, Crocin, Azithral), output that brand verbatim. " +
-  "Never substitute a generic for a spoken brand, never substitute a category " +
-  "for a product (for example, B-Complex must never become Multivitamins), and " +
-  "never translate or normalize a drug name. The drug name is the one field " +
-  "that is never translated. " +
+  // Drug-name guidance: best clinical interpretation, no invention.
+  "DRUG NAMES: output each medicine under your best clinical interpretation of " +
+  "what the doctor said. If a brand was clearly spoken, prefer that brand. Never " +
+  "substitute a category for a product (for example, B-Complex must never become " +
+  "Multivitamins). Never invent a medicine that was not mentioned. " +
   // Distractor robustness.
   "DISTRACTORS: the transcript may contain unrelated conversation (other " +
   "people, a TV or radio, a phone call). Extract only the medical consultation " +
@@ -571,13 +569,11 @@ export const DIARIZED_INSTRUCTION =
   '"teen din" / "paanch din" / "do hafte" -> duration "3 days" / "5 days" / ' +
   '"2 weeks"; ' +
   '"dard hone par" -> frequency "as needed (SOS)". ' +
-  // Exact drug-name rule.
-  "DRUG NAMES: output each medicine under the EXACT name the doctor spoke. If " +
-  "a brand was spoken (Candid, Crocin, Azithral), output that brand verbatim. " +
-  "Never substitute a generic for a spoken brand, never substitute a category " +
-  "for a product (for example, B-Complex must never become Multivitamins), and " +
-  "never translate or normalize a drug name. The drug name is the one field " +
-  "that is never translated. " +
+  // Drug-name guidance: best clinical interpretation, no invention.
+  "DRUG NAMES: output each medicine under your best clinical interpretation of " +
+  "what the doctor said. If a brand was clearly spoken, prefer that brand. Never " +
+  "substitute a category for a product (for example, B-Complex must never become " +
+  "Multivitamins). Never invent a medicine that was not mentioned. " +
   // Distractor robustness.
   "DISTRACTORS: the transcript may contain unrelated conversation (other " +
   "people, a TV or radio, a phone call). Extract only the medical consultation " +
@@ -853,12 +849,12 @@ export function isLowQualityTranscript(transcript: string): boolean {
   return false;
 }
 
-// ── Post-extraction validation (defense-in-depth anti-hallucination) ───────
-// Runs AFTER Gemini returns. Even with a careful prompt the model can invent a
-// medicine, a stock dosage, or a diagnosis that was never spoken. This layer
-// cross-references every extracted field against the original transcript and
-// strips anything it cannot ground. Philosophy: an empty field is always
-// correct; a hallucinated field is never acceptable.
+// ── Post-extraction confidence flag ───────────────────────────────────────
+// Runs AFTER Gemini returns. The doctor's review screen is the safety gate, so
+// the server never rewrites a medicine and never silently drops one: it keeps
+// exactly what Gemini extracted. Its only job here is to raise a needsReview
+// FLAG when a medicine name is neither grounded in the transcript nor recognized
+// in the drug dictionary, so the review UI can highlight it. No mutation.
 
 // Transliterate Devanagari, then lowercase + drop everything but [a-z0-9] so
 // spacing/punctuation/case/script drift between transcript and extraction never
@@ -875,546 +871,46 @@ function _spokenText(transcript: string): string {
     .trim();
 }
 
-// Stock values Gemini tends to invent (normalized, spaces removed).
-const _SUSPICIOUS_DOSAGES = new Set(["500mg", "650mg", "325mg"]);
-const _SUSPICIOUS_FREQUENCIES = new Set([
-  "twicedaily",
-  "threetimesaday",
-  "oncedaily",
-]);
-const _SUSPICIOUS_DURATIONS = new Set(["3days", "5days", "7days"]);
-const _SUSPICIOUS_TIMINGS = new Set([
-  "afterfood",
-  "beforefood",
-  "emptystomach",
-  "beforebed",
-]);
-
-// Romanized/vernacular source phrases for timing so a correctly-translated
-// value isn't wrongly cleared on a vernacular consult. Every alias is stored
-// already normalized (lowercase, non-alphanumeric stripped) to match _norm on
-// the transcript. Covers all 8 supported languages: Hindi, Telugu, Tamil,
-// Kannada, Bengali, Odia, Gujarati, Marathi.
-const _TIMING_ALIASES: Record<string, string[]> = {
-  afterfood: [
-    "afterfood",
-    "aftermeal",
-    // Hindi
-    "khanakhanekebaad",
-    "khanekebaad",
-    "khanebaad",
-    "bhojankebaad",
-    "bhojankhanekebaad",
-    // Telugu
-    "bhojanamtaruvata",
-    "bhojanamtarvata",
-    "thinakatarvata",
-    // Tamil
-    "sappaatukkuappuram",
-    "sappaadukkuapuram",
-    "unavuvakkupiraghu",
-    // Kannada
-    "ootaaadamele",
-    "utaadamelay",
-    // Bengali
-    "khabarpare",
-    "khawarpore",
-    // Odia
-    "khanaparey",
-    "khaibapare",
-    // Gujarati
-    "jamanpachhi",
-    "jamyapachhi",
-    // Marathi
-    "jevanaantar",
-    "jevannantar",
-  ],
-  beforefood: [
-    "beforefood",
-    "beforemeal",
-    // Hindi
-    "khanakhanesepehle",
-    "khanesepehle",
-    "bhojansepehle",
-    // Telugu
-    "bhojanammundu",
-    "thinakamundu",
-    // Tamil
-    "sappaatukkumunbu",
-    "unavuvakkumunnaal",
-    // Kannada
-    "ootaaagodumunche",
-    "utaagodmunche",
-    // Bengali
-    "khabaraage",
-    "khawaraagey",
-    // Odia
-    "khanaaagaru",
-    "khaibaagaru",
-    // Gujarati
-    "jamanpehla",
-    "jamtapehla",
-    // Marathi
-    "jevanaapurvi",
-    "jevanaadhi",
-  ],
-  emptystomach: [
-    "emptystomach",
-    // Hindi
-    "khalipet",
-    "khalipetmein",
-    // Telugu
-    "khalikaddupputho",
-    "pustekadduppu",
-    // Tamil
-    "verumvayitril",
-    "verumvayiru",
-    // Kannada
-    "khalihotte",
-    "bareehotteyalli",
-    // Bengali
-    "khalipete",
-    "khaalipete",
-    // Odia
-    "bhokapetare",
-    "khalipetare",
-    // Gujarati
-    "khalipate",
-    "khalipet",
-    // Marathi
-    "upashipoti",
-    "rikaamyapoti",
-  ],
-  beforebed: [
-    "beforebed",
-    "atbedtime",
-    "atnight",
-    // Hindi
-    "sonesepehle",
-    "raatkosonesepehle",
-    // Telugu
-    "padukonemundu",
-    "nidramundu",
-    // Tamil
-    "thoongumunnaal",
-    "thookathukkumunbu",
-    // Kannada
-    "malagumunche",
-    "niddemadodumunche",
-    // Bengali
-    "ghumabaraage",
-    "shobaraagey",
-    // Odia
-    "suibaaagaru",
-    "suibapurba",
-    // Gujarati
-    "sutaapehla",
-    "suvapehla",
-    // Marathi
-    "zhopanyapurvi",
-    "zopaychiaadhi",
-  ],
-};
-
-// Romanized/vernacular source phrases for frequency across all 8 languages.
-const _FREQUENCY_ALIASES: Record<string, string[]> = {
-  twicedaily: [
-    "twicedaily",
-    "twiceaday",
-    "bid",
-    // Hindi
-    "dinmeindobaar",
-    // "do baar" ("two times") — the frequency-bearing fragment that survives
-    // Devanagari transliteration of "दिन में दो बार" ("din men do baar").
-    "dobaar",
-    "dobar",
-    "dinmendobaar",
-    // Telugu
-    "rojukirendusarlu",
-    // Tamil
-    "naalukkuirandumurai",
-    "dinathukkurendumurai",
-    // Kannada
-    "dinakkeeradusarti",
-    // Bengali
-    "dinaydubar",
-    // Odia
-    "dinakuduibaar",
-    // Gujarati
-    "divasmaabevaar",
-    // Marathi
-    "diwasatundonvela",
-  ],
-  threetimesaday: [
-    "threetimesaday",
-    "thricedaily",
-    "tid",
-    // Hindi
-    "dinmeinteenbaar",
-    // Telugu
-    "rojukimoodusarlu",
-    // Tamil
-    "naalukkumoondrumurai",
-    // Kannada
-    "dinakkemoorusarti",
-    // Bengali
-    "dinaytinbar",
-    // Odia
-    "dinakutinibaar",
-    // Gujarati
-    "divasmaatranvaar",
-    // Marathi
-    "diwasatuntinvela",
-  ],
-  oncedaily: [
-    "oncedaily",
-    "onceaday",
-    "od",
-    // Hindi
-    "dinmeinekbaar",
-    // Telugu
-    "rojukiokasari",
-    // Tamil
-    "naalukkuorumurai",
-    // Kannada
-    "dinakkeondusarti",
-    // Bengali
-    "dinayekbar",
-    // Odia
-    "dinakuekbaar",
-    // Gujarati
-    "divasmaaekvaar",
-    // Marathi
-    "diwasatunekvela",
-  ],
-};
-
-// Romanized number-word + day-word combos so a spoken vernacular duration
-// (e.g. "paanch din") grounds the corresponding English value ("5 days").
-const _DURATION_ALIASES: Record<string, string[]> = {
-  "3days": [
-    "3days",
-    "threedays",
-    // Hindi / Bengali / Odia / Gujarati / Marathi (Devanagari-family)
-    "teendin",
-    "teendivas",
-    "tindin",
-    "tinidina",
-    "trandivas",
-    // Telugu
-    "moodurojulu",
-    // Tamil
-    "moonrunaal",
-    "moonrunaalkal",
-    // Kannada
-    "moorudina",
-    "moorudinagalu",
-  ],
-  "5days": [
-    "5days",
-    "fivedays",
-    // Hindi / Bengali / Gujarati / Marathi / Odia
-    "paanchdin",
-    "paanchdivas",
-    "paachdivas",
-    "paachdivsanche",
-    "panchadina",
-    // Telugu
-    "aidurojulu",
-    // Tamil
-    "ainthunaal",
-    "ainthunaalkal",
-    // Kannada
-    "aidudina",
-    "aidudinagalu",
-  ],
-  "7days": [
-    "7days",
-    "sevendays",
-    "oneweek",
-    // Hindi / Bengali / Odia / Gujarati / Marathi
-    "saatdin",
-    "saatdivas",
-    "shaatdin",
-    "saatadina",
-    // Telugu
-    "edurojulu",
-    // Tamil
-    "ezhunaal",
-    "ezhunaalkal",
-    // Kannada
-    "eludina",
-    "eludinagalu",
-  ],
-};
-
-// A suspicious default is "grounded" if the value itself, a known romanized
-// alias, or its multi-digit number appears in the transcript.
-function _valueGrounded(normValue: string, transcriptNorm: string): boolean {
-  if (transcriptNorm.includes(normValue)) return true;
-  const aliases = _TIMING_ALIASES[normValue] ??
-    _FREQUENCY_ALIASES[normValue] ??
-    _DURATION_ALIASES[normValue];
-  if (aliases) {
-    for (const a of aliases) if (transcriptNorm.includes(a)) return true;
-  }
-  // A specific multi-digit number (e.g. "500") is a strong signal; a single
-  // digit (e.g. "3") is far too common to trust.
-  const digits = normValue.replace(/[^0-9]/g, "");
-  if (digits.length >= 3 && transcriptNorm.includes(digits)) return true;
-  return false;
-}
-
-// Gemini sometimes returns a compound medicine name that pairs a generic with
-// the brand the doctor actually spoke — "Paracetamol (Crocin)" — or lists two
-// interchangeable names joined by a slash/comma. Grounding the whole compound
-// string against the transcript fails even though one part ("Crocin") was
-// clearly said. Split such names into individual candidates so each can be
-// grounded on its own. The parenthetical is kept as a candidate, not dropped.
-function _nameCandidates(name: string): string[] {
-  const outside = name.replace(/\([^)]*\)/g, " ");
-  const parens = (name.match(/\(([^)]*)\)/g) ?? []).map((p) =>
-    p.replace(/[()]/g, " ")
-  );
-  const seen = new Set<string>();
-  const candidates: string[] = [];
-  for (const chunk of [outside, ...parens]) {
-    for (const piece of chunk.split(/[\/,]/)) {
-      const t = piece.trim();
-      const key = t.toLowerCase();
-      if (t.length > 0 && !seen.has(key)) {
-        seen.add(key);
-        candidates.push(t);
-      }
-    }
-  }
-  return candidates.length > 0 ? candidates : [name.trim()];
-}
-
-// A split candidate that is a bare dose ("500 mg", "500mg", "10 ml") or a
-// dispensing/frequency qualifier ("BD", "1 tab") is not a drug name and must
-// never become the resolved medicine name. Matches a leading number with an
-// optional unit and/or an optional dosage-form word, case-insensitive.
-const _DOSE_QUALIFIER_RE =
-  /^\d+(\.\d+)?(\s*(mg|mcg|g|ml|iu|units?))?(\s*(tabs?|tablets?|caps?|capsules?))?$/i;
-
-function _isDoseOrQualifierFragment(candidate: string): boolean {
-  const c = candidate.trim();
-  // Too short to be a drug name (also catches qualifiers like "BD", "OD").
-  if (_norm(c).length < 4) return true;
-  return _DOSE_QUALIFIER_RE.test(c);
-}
-
 export function validateExtraction(
   insight: MedicalInsight,
   transcript: string,
 ): MedicalInsight {
   const spoken = _spokenText(transcript);
-
-  // Belt-and-suspenders behind isLowQualityTranscript: a transcript with almost
-  // no meaningful content can never justify any extraction, whatever Gemini
-  // returned.
-  if (spoken.replace(/\s+/g, "").length < 15) {
-    console.warn(
-      "[validateExtraction] transcript below 15 meaningful chars — " +
-        "discarding entire extraction",
-    );
-    return _emptyInsight();
-  }
-
   const transcriptNorm = _norm(spoken);
 
-  // ── Medications: three-tier handling ──
-  //   a. Grounded in the transcript (even after romanized/vernacular/compound
-  //      matching) -> keep, correcting the name to what the doctor said.
-  //   b. NOT grounded BUT catalogued in our drug dictionary -> keep and flag
-  //      needsReview. A real catalogued drug Gemini reported is far more likely
-  //      an STT-grounding failure than an invention; the doctor review gate is
-  //      the final control.
-  //   c. NOT grounded AND not catalogued -> drop. The anti-hallucination wall
-  //      stays for pure inventions.
-  const medications: Medication[] = [];
-  for (const med of insight.medications) {
-    // The romanization-aware matcher does two jobs at once: it tells us whether
-    // the drug is plausibly present in the (romanized/vernacular) transcript,
-    // and it maps a mangled/romanized name to its canonical English form. It
-    // already absorbs romanized/vernacular spellings ("crocin"/"paracitamol" vs
-    // "Paracetamol"). We split compound names first ("Paracetamol (Crocin)" ->
-    // ["Paracetamol", "Crocin"]) so a name that pairs a generic with the spoken
-    // brand still grounds on whichever part the doctor actually said.
-    const rawCandidates = _nameCandidates(med.name);
-    // When a name split into several candidates, drop the ones that are clearly
-    // not a drug — a bare dose ("500 mg") or a qualifier ("BD") — so the
-    // medicine name never resolves to a fragment. A single-candidate name is
-    // never filtered. If filtering removes everything, keep the raw split so we
-    // never lose the medicine outright.
-    let candidates = rawCandidates;
-    if (rawCandidates.length > 1) {
-      const filtered = rawCandidates.filter(
-        (c) => !_isDoseOrQualifierFragment(c),
-      );
-      if (filtered.length > 0) candidates = filtered;
-    }
-
-    // Prefer a candidate literally present in the transcript (what the doctor
-    // said) over one grounded only via a dictionary sibling — so
-    // "Paracetamol (Crocin)" resolves to the spoken "Crocin", not "Paracetamol".
-    let grounded: string | null = null;
-    let directName: string | null = null;
-    for (const cand of candidates) {
-      const r = drugMatcher.findInTranscript(cand, transcriptNorm, spoken);
-      if (!r.found) continue;
-      // Brand-guard: r.canonical is the generic when a rewrite is allowed, or
-      // null when the name is a brand that must stay verbatim.
-      const resolved = r.canonical ?? cand;
-      if (grounded === null) grounded = resolved;
-      const candNorm = _norm(cand);
-      if (
-        directName === null &&
-        candNorm.length >= 4 &&
-        transcriptNorm.includes(candNorm)
-      ) {
-        directName = resolved;
-      }
-    }
-
-    let correctedName: string;
-    let needsReview = med.needsReview;
-    const chosen = directName ?? grounded;
-    const knownCandidate = candidates.find((c) => drugMatcher.isKnownDrug(c));
-    if (chosen !== null) {
-      // Tier a: grounded.
-      correctedName = chosen;
-      // FIX 2a — Spoken-brand reverse lookup. When grounding succeeded only via
-      // the generic (no candidate was the literal spoken text, i.e.
-      // directName === null) the doctor may have actually spoken a brand that
-      // Gemini normalized to the generic. If a brand of this drug's entry is
-      // present in the transcript, print that correctly-spelled brand instead
-      // (doctor said "Candid" -> "Candid", not "Clotrimazole").
-      if (directName === null) {
-        const spokenBrand = drugMatcher.brandInTranscript(
-          correctedName,
-          transcriptNorm,
-          spoken,
-        );
-        if (spokenBrand !== null) correctedName = spokenBrand;
-      }
-    } else if (knownCandidate !== undefined) {
-      // Tier b: catalogued but ungrounded — keep for doctor review, using the
-      // canonical drug name (brand-guarded), never the raw compound or a
-      // fragment.
+  // Confidence FLAG only — never a rewrite, never a drop. Every medicine Gemini
+  // returned is kept exactly as returned. We raise needsReview when a medicine
+  // name is neither grounded in the transcript (romanization + Devanagari aware)
+  // nor recognized in the drug dictionary (generic / brand / variant). This is a
+  // hint for the review UI; it has no other effect and mutates no field.
+  const medications: Medication[] = insight.medications.map((med) => {
+    const grounded = drugMatcher.findInTranscript(
+      med.name,
+      transcriptNorm,
+      spoken,
+    );
+    const recognized = drugMatcher.isKnownDrug(med.name);
+    const unverified = !grounded && !recognized;
+    if (unverified) {
+      // Log the flag only (no patient data) so review rates can be audited.
       console.warn(
-        "[validateExtraction] Ungrounded medicine kept for review — " +
-          "maps to drug dictionary but not found in transcript",
+        "[validateExtraction] Flagging medicine for review — not found in " +
+          "transcript and not recognized in dictionary",
       );
-      correctedName = drugMatcher.correct(knownCandidate)?.canonical ??
-        knownCandidate;
-      needsReview = true;
-      // FIX 2a — same reverse lookup for the review tier: prefer the brand the
-      // doctor spoke over the canonical generic when it is in the transcript.
-      const spokenBrand = drugMatcher.brandInTranscript(
-        knownCandidate,
-        transcriptNorm,
-        spoken,
-      );
-      if (spokenBrand !== null) correctedName = spokenBrand;
-    } else {
-      // Tier c: ungrounded and not catalogued — a pure invention. Drop it,
-      // logging the name only (no patient data) so drops can be audited.
-      console.warn(
-        `[validateExtraction] Dropping ungrounded medicine not in dictionary: ${med.name}`,
-      );
-      continue;
     }
+    return { ...med, needsReview: med.needsReview || unverified };
+  });
 
-    // FIX 2b — Brand-spelling correction. If the name we are about to print is
-    // not an exact catalogued spelling, it may be a mangled brand the doctor
-    // spoke ("azithrol"). Fuzzy-correct it to the canonical brand ("Azithral").
-    // Exact generics/variants/brands (already correct) are left untouched, so
-    // this never rewrites a good name.
-    if (!drugMatcher.isExactTerm(correctedName)) {
-      const fixedBrand = drugMatcher.correctToBrand(correctedName);
-      if (fixedBrand !== null) correctedName = fixedBrand;
-    }
-
-    let dosage = med.dosage;
-    let frequency = med.frequency;
-    let duration = med.duration;
-    let timing = med.timing;
-    let cleared = false;
-
-    if (
-      _SUSPICIOUS_DOSAGES.has(_norm(dosage)) &&
-      !_valueGrounded(_norm(dosage), transcriptNorm)
-    ) {
-      console.warn(
-        "[validateExtraction] Cleared suspicious dosage — " +
-          "not found in transcript",
-      );
-      dosage = "";
-      cleared = true;
-    }
-    if (
-      _SUSPICIOUS_FREQUENCIES.has(_norm(frequency)) &&
-      !_valueGrounded(_norm(frequency), transcriptNorm)
-    ) {
-      console.warn(
-        "[validateExtraction] Cleared suspicious frequency — " +
-          "not found in transcript",
-      );
-      frequency = "";
-      cleared = true;
-    }
-    if (
-      _SUSPICIOUS_DURATIONS.has(_norm(duration)) &&
-      !_valueGrounded(_norm(duration), transcriptNorm)
-    ) {
-      console.warn(
-        "[validateExtraction] Cleared suspicious duration — " +
-          "not found in transcript",
-      );
-      duration = "";
-      cleared = true;
-    }
-    if (
-      _SUSPICIOUS_TIMINGS.has(_norm(timing)) &&
-      !_valueGrounded(_norm(timing), transcriptNorm)
-    ) {
-      console.warn(
-        "[validateExtraction] Cleared suspicious timing — " +
-          "not found in transcript",
-      );
-      timing = "";
-      cleared = true;
-    }
-
-    medications.push({
-      ...med,
-      name: correctedName,
-      dosage,
-      frequency,
-      duration,
-      timing,
-      // Flag any medicine we edited or kept-for-review so the review screen can
-      // highlight it.
-      needsReview: needsReview || cleared,
-    });
-  }
-
-  // ── Diagnosis: intentionally KEPT even when it looks ungrounded, unlike
-  // medicines. A diagnosis is a paraphrase, not a quotation: Gemini renders the
+  // Diagnosis: intentionally KEPT even when it looks ungrounded, unlike a drug
+  // name. A diagnosis is a paraphrase, not a quotation: Gemini renders the
   // spoken complaint as English clinical phrasing (e.g. Hinglish "sardi-zukaam"
   // -> "Viral upper respiratory infection"), so almost none of its words appear
   // verbatim in a romanized/vernacular transcript. A word-overlap grounding
-  // check would therefore false-positive and wipe legitimate diagnoses, so we
-  // only log the mismatch and leave verification to the doctor, who edits the
-  // diagnosis on the review screen. (The ICD code is re-derived on-device from
-  // this diagnosis by the client mapper regardless, so the backend ICD fields
-  // are advisory here too.)
+  // check would false-positive and wipe legitimate diagnoses, so we only log the
+  // mismatch and leave verification to the doctor, who edits the diagnosis on the
+  // review screen. (The ICD code is re-derived on-device from this diagnosis by
+  // the client mapper regardless.)
   const diagnosis = insight.diagnosis;
-  const icdCode = insight.icdCode;
-  const icdDescription = insight.icdDescription;
-  const icdConfidence = insight.icdConfidence;
   if (diagnosis.trim() !== "") {
     const stop = new Set(["the", "and", "with", "from"]);
     const significant = diagnosis
@@ -1431,14 +927,7 @@ export function validateExtraction(
     }
   }
 
-  return {
-    ...insight,
-    medications,
-    diagnosis,
-    icdCode,
-    icdDescription,
-    icdConfidence,
-  };
+  return { ...insight, medications };
 }
 
 export async function extractInsight(
