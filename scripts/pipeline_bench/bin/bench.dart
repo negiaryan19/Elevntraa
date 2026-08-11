@@ -300,7 +300,9 @@ Future<_InsightResult> _pollUntilDone(
     final result = poll.data ?? <String, dynamic>{};
     final status = result['status'] as String?;
 
-    stdout.write('\r      state: ${(status ?? '...').padRight(10)} (${elapsed}s)');
+    stdout.write(
+      '\r      state: ${(status ?? '...').padRight(10)} (${elapsed}s)',
+    );
 
     if (status == 'running') continue;
 
