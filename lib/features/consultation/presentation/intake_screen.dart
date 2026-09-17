@@ -14,6 +14,7 @@ import '../../../core/utils/app_paths.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/errors/failure.dart';
+import '../../../core/errors/failure_text.dart';
 import '../../../data/db/database_provider.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
@@ -121,7 +122,8 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${AppLocalizations.of(context)!.couldNotAddReport}: $e',
+              '${AppLocalizations.of(context)!.couldNotAddReport}: '
+              '${failureText(AppLocalizations.of(context)!, e)}',
             ),
           ),
         );
@@ -254,7 +256,8 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
     } catch (e) {
       setState(() {
         _submitting = false;
-        _error = '${AppLocalizations.of(context)!.couldNotSavePatient}: $e';
+        final t = AppLocalizations.of(context)!;
+        _error = '${t.couldNotSavePatient}: ${failureText(t, e)}';
       });
     }
   }

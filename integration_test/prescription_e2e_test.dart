@@ -210,9 +210,6 @@ class _ClipRecorder implements RecordingService {
   Future<void> cancel() async => _path = null;
 
   @override
-  Future<bool> isRecording() async => _path != null;
-
-  @override
   Future<void> dispose() => _amplitude.close();
 
   @override

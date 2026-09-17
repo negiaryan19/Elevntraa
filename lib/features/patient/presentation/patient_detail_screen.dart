@@ -12,6 +12,7 @@ import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../core/errors/failure_text.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../prescription/data/prescription_pdf_service.dart';
 import '../../settings/data/doctor_profile_repository.dart';
@@ -99,7 +100,8 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${AppLocalizations.of(context)!.couldNotSharePrescription}: $e',
+              '${AppLocalizations.of(context)!.couldNotSharePrescription}: '
+              '${failureText(AppLocalizations.of(context)!, e)}',
             ),
           ),
         );

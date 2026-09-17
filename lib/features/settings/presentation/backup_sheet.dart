@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/errors/failure.dart';
+import '../../../core/errors/failure_text.dart';
 import '../../../core/network/connectivity_provider.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -95,7 +95,7 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
       await _refresh();
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = t.backupFailed(e is Failure ? e.message : '$e'));
+      setState(() => _error = t.backupFailed(failureText(t, e)));
     } finally {
       if (mounted) {
         setState(() {
@@ -151,9 +151,7 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
       setState(() => _success = '${t.backupRestored}\n${t.backupRestartHint}');
     } catch (e) {
       if (!mounted) return;
-      setState(
-        () => _error = t.backupRestoreFailed(e is Failure ? e.message : '$e'),
-      );
+      setState(() => _error = t.backupRestoreFailed(failureText(t, e)));
     } finally {
       if (mounted) {
         setState(() {

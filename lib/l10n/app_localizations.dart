@@ -2018,6 +2018,78 @@ abstract class AppLocalizations {
   /// **'No consultation was heard in this recording. Check that the microphone is working, then record again.'**
   String get nothingHeardInRecording;
 
+  /// No description provided for @retryProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry with this recording'**
+  String get retryProcessing;
+
+  /// No description provided for @recordAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Record again'**
+  String get recordAgain;
+
+  /// No description provided for @consultationErrorOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Your recording is saved on this phone; tap Retry when you are back online.'**
+  String get consultationErrorOffline;
+
+  /// No description provided for @consultationErrorProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'The recording could not be processed. It is saved on this phone; tap Retry.'**
+  String get consultationErrorProcessing;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get errorSessionExpired;
+
+  /// No description provided for @consultationErrorStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'The recording could not be saved on this phone. Check free storage and record again.'**
+  String get consultationErrorStorage;
+
+  /// No description provided for @errorUnexpected.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errorUnexpected;
+
+  /// No description provided for @errorOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection.'**
+  String get errorOffline;
+
+  /// No description provided for @errorStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Files on this phone could not be read or saved. Check that there is free storage.'**
+  String get errorStorage;
+
+  /// No description provided for @errorPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission was denied. Allow it for Rxvarta in the phone settings.'**
+  String get errorPermission;
+
+  /// No description provided for @errorInvalidBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a usable Rxvarta backup for your account.'**
+  String get errorInvalidBackup;
+
+  /// No description provided for @errorBackupTooNew.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup was made by a newer version of Rxvarta. Update the app, then restore.'**
+  String get errorBackupTooNew;
+
   /// No description provided for @patientAlreadyExists.
   ///
   /// In en, this message translates to:
@@ -2174,17 +2246,23 @@ abstract class AppLocalizations {
   /// **'Checking your connection — please try again in a moment.'**
   String get checkingConnectionRetry;
 
-  /// No description provided for @internetLostPaused.
+  /// No description provided for @internetLostStillRecording.
   ///
   /// In en, this message translates to:
-  /// **'Internet lost — recording paused. Reconnect to resume and finish the consultation.'**
-  String get internetLostPaused;
+  /// **'No internet. Recording continues; the consultation is processed once you are back online.'**
+  String get internetLostStillRecording;
 
-  /// No description provided for @internetLostPauseManually.
+  /// No description provided for @recordingNotificationTitle.
   ///
   /// In en, this message translates to:
-  /// **'Internet lost and the recording could not be paused automatically — please tap Pause.'**
-  String get internetLostPauseManually;
+  /// **'Recording consultation'**
+  String get recordingNotificationTitle;
+
+  /// No description provided for @recordingNotificationText.
+  ///
+  /// In en, this message translates to:
+  /// **'Rxvarta keeps recording while the screen is off.'**
+  String get recordingNotificationText;
 
   /// No description provided for @micPermissionNeeded.
   ///

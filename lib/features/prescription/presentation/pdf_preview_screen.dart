@@ -12,6 +12,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/visit.dart';
+import '../../../core/errors/failure_text.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import '../data/prescription_pdf_service.dart';
@@ -129,7 +130,8 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${AppLocalizations.of(context)!.couldNotSharePdf}: $e',
+              '${AppLocalizations.of(context)!.couldNotSharePdf}: '
+              '${failureText(AppLocalizations.of(context)!, e)}',
             ),
           ),
         );

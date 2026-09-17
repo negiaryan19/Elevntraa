@@ -8,17 +8,30 @@ import 'package:record/record.dart';
 
 import '../../../core/auth/auth_providers.dart';
 import '../../../core/errors/failure.dart';
+import '../../../core/locale/locale_provider.dart';
 import '../../../core/utils/app_paths.dart';
+import '../../../l10n/app_localizations.dart';
+import 'recording_keep_alive.dart';
 
 /// Wraps the `record` package with a simple start/stop API + an amplitude
 /// stream the waveform widget consumes. The recording is stored as M4A
 /// (AAC inside an MP4 container) — small files, supported by Sarvam's STT.
 class RecordingService {
-  RecordingService({required this._recordingsDir})
-    : _recorder = AudioRecorder();
+  RecordingService({
+    required this._recordingsDir,
+    required this._keepAlive,
+    required this._notification,
+  }) : _recorder = AudioRecorder();
 
   /// Where the signed-in doctor's recordings are written.
   final String Function() _recordingsDir;
+
+  /// Keeps recording while the screen is locked (roadmap item 9).
+  final RecordingKeepAlive _keepAlive;
+
+  /// Title and text of the ongoing "recording" notification, in the app's
+  /// language at the moment recording starts.
+  final ({String title, String text}) Function() _notification;
 
   final AudioRecorder _recorder;
   StreamSubscription<Amplitude>? _ampSub;
@@ -43,24 +56,14 @@ class RecordingService {
       'visit_${DateTime.now().millisecondsSinceEpoch}.m4a',
     );
 
-    await _recorder.start(
-      const RecordConfig(
-        encoder: AudioEncoder.aacLc,
-        bitRate: 64000,
-        sampleRate: 16000,
-        numChannels: 1,
-        // iOS only (Android ignores this). The package default also enables
-        // allowBluetooth/allowBluetoothA2DP, which lets iOS route capture to
-        // a paired Mac/AirPods/watch whose HFP channel can deliver zero
-        // frames — the recorder then writes a silent ~28-byte m4a. Keeping
-        // only defaultToSpeaker pins capture to the built-in microphone.
-        iosConfig: IosRecordConfig(
-          categoryOptions: [IosAudioCategoryOption.defaultToSpeaker],
-        ),
-      ),
-      path: path,
-    );
-
+    final notification = _notification();
+    await _keepAlive.start(title: notification.title, text: notification.text);
+    try {
+      await _startRecorder(path);
+    } catch (_) {
+      await _keepAlive.stop();
+      rethrow;
+    }
     _currentPath = path;
 
     // Sample amplitude ~10x/sec — smooth enough for the bar visualiser,
@@ -79,6 +82,24 @@ class RecordingService {
 
     return path;
   }
+
+  Future<void> _startRecorder(String path) => _recorder.start(
+    const RecordConfig(
+      encoder: AudioEncoder.aacLc,
+      bitRate: 64000,
+      sampleRate: 16000,
+      numChannels: 1,
+      // iOS only (Android ignores this). The package default also enables
+      // allowBluetooth/allowBluetoothA2DP, which lets iOS route capture to
+      // a paired Mac/AirPods/watch whose HFP channel can deliver zero
+      // frames — the recorder then writes a silent ~28-byte m4a. Keeping
+      // only defaultToSpeaker pins capture to the built-in microphone.
+      iosConfig: IosRecordConfig(
+        categoryOptions: [IosAudioCategoryOption.defaultToSpeaker],
+      ),
+    ),
+    path: path,
+  );
 
   /// Pause the underlying recorder. Audio capture halts until [resume].
   Future<void> pause() async {
@@ -111,6 +132,7 @@ class RecordingService {
       return path ?? _currentPath;
     } finally {
       _currentPath = null;
+      await _keepAlive.stop();
     }
   }
 
@@ -143,11 +165,11 @@ class RecordingService {
     await _ampSub?.cancel();
     _ampSub = null;
     _currentPath = null;
+    await _keepAlive.stop();
   }
 
-  Future<bool> isRecording() => _recorder.isRecording();
-
   Future<void> dispose() async {
+    await _keepAlive.stop();
     await _ampSub?.cancel();
     await _amplitudeController.close();
     await _recorder.dispose();
@@ -162,6 +184,14 @@ final recordingServiceProvider = Provider<RecordingService>((ref) {
         throw const AuthFailure('Sign in again to record a consultation.');
       }
       return AppPaths.recordingsDir(uid);
+    },
+    keepAlive: const RecordingKeepAlive(),
+    notification: () {
+      final t = lookupAppLocalizations(ref.read(appLocaleProvider));
+      return (
+        title: t.recordingNotificationTitle,
+        text: t.recordingNotificationText,
+      );
     },
   );
   ref.onDispose(svc.dispose);

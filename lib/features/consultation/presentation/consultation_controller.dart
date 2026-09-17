@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -62,18 +63,33 @@ class ConsultationState {
     this.languageCode = 'unknown',
     this.elapsed = Duration.zero,
     this.error,
-    this.nothingHeard = false,
+    this.errorCode,
+    this.audioPath,
     this.differentialSuggestions = const [],
   });
 
   final ConsultationStage stage;
   final String languageCode;
   final Duration elapsed;
+
+  /// Developer-readable detail of the last failure, for logs.
   final String? error;
 
-  /// The error is that the recording held no consultation, so the screen can
-  /// explain it in the doctor's language and offer a new recording.
-  final bool nothingHeard;
+  /// What kind of failure [error] is, so the screen can explain it in the
+  /// doctor's language and offer the right recovery.
+  final FailureCode? errorCode;
+
+  /// The last finished recording. Kept when processing fails so the doctor can
+  /// retry with the same audio instead of recording the consultation again.
+  final String? audioPath;
+
+  /// The recording held no consultation (muted mic, only noise).
+  bool get nothingHeard => errorCode == FailureCode.invalidAudio;
+
+  /// Processing failed for a reason a second attempt can fix (connection,
+  /// server, session). Retrying a recording with nothing in it cannot help.
+  bool get canRetryProcessing =>
+      stage == ConsultationStage.error && audioPath != null && !nothingHeard;
 
   /// Doctor-only differential-diagnosis suggestions from [DifferentialEngine],
   /// computed from the extracted symptoms after processing. These are decision
@@ -86,8 +102,10 @@ class ConsultationState {
     String? languageCode,
     Duration? elapsed,
     String? error,
+    FailureCode? errorCode,
     bool clearError = false,
-    bool? nothingHeard,
+    String? audioPath,
+    bool clearAudio = false,
     List<DifferentialMatch>? differentialSuggestions,
   }) {
     return ConsultationState(
@@ -95,9 +113,8 @@ class ConsultationState {
       languageCode: languageCode ?? this.languageCode,
       elapsed: elapsed ?? this.elapsed,
       error: clearError ? null : (error ?? this.error),
-      nothingHeard:
-          nothingHeard ??
-          (clearError || error != null ? false : this.nothingHeard),
+      errorCode: clearError ? null : (errorCode ?? this.errorCode),
+      audioPath: clearAudio ? null : (audioPath ?? this.audioPath),
       // Differential suggestions are decision support tied to a completed
       // consultation. Preserve them only while the state remains (or becomes)
       // `done`; any other stage transition clears them so stale suggestions
@@ -130,29 +147,51 @@ class ConsultationController extends Notifier<ConsultationState> {
         stage: ConsultationStage.recording,
         elapsed: Duration.zero,
         clearError: true,
+        clearAudio: true,
       );
       await _recorder.start();
     } catch (e) {
-      state = state.copyWith(
-        stage: ConsultationStage.error,
-        error: e is Failure ? e.message : 'Could not start recording: $e',
-      );
+      _fail(e, 'Could not start recording');
     }
   }
 
   Future<void> stopAndProcess() async {
+    final String path;
     try {
-      final path = await _recorder.stop();
-      if (path == null) throw const StorageFailure('No audio was captured.');
-
+      final stopped = await _recorder.stop();
+      if (stopped == null) {
+        throw const StorageFailure('No audio was captured.');
+      }
+      path = stopped;
       state = state.copyWith(stage: ConsultationStage.transcribing);
-
       final visit = await _visits.byId(visitId);
       if (visit == null) {
         throw const StorageFailure('Visit record missing from local DB.');
       }
       await _visits.upsert(
         visit.copyWith(audioPath: path, languageCode: state.languageCode),
+      );
+      state = state.copyWith(audioPath: path);
+    } catch (e) {
+      _fail(e, 'Could not save the recording');
+      return;
+    }
+    await _process(path);
+  }
+
+  /// Processes the recording that failed last time again, without recording
+  /// the consultation a second time (roadmap item 10).
+  Future<void> retryProcessing() async {
+    final path = state.audioPath;
+    if (path == null || state.stage != ConsultationStage.error) return;
+    await _process(path);
+  }
+
+  Future<void> _process(String path) async {
+    try {
+      state = state.copyWith(
+        stage: ConsultationStage.transcribing,
+        clearError: true,
       );
 
       final probed = await _recorder.probeDuration(path);
@@ -182,7 +221,7 @@ class ConsultationController extends Notifier<ConsultationState> {
         state = state.copyWith(
           stage: ConsultationStage.error,
           error: 'No consultation was heard in this recording.',
-          nothingHeard: true,
+          errorCode: FailureCode.invalidAudio,
         );
         return;
       }
@@ -248,12 +287,17 @@ class ConsultationController extends Notifier<ConsultationState> {
         differentialSuggestions: suggestions,
       );
     } catch (e) {
-      state = state.copyWith(
-        stage: ConsultationStage.error,
-        error: e is Failure ? e.message : 'Processing failed: $e',
-        nothingHeard: e is Failure && e.code == FailureCode.invalidAudio,
-      );
+      _fail(e, 'Processing failed');
     }
+  }
+
+  void _fail(Object e, String what) {
+    debugPrint('[consultation] $what: $e');
+    state = state.copyWith(
+      stage: ConsultationStage.error,
+      error: e is Failure ? e.message : '$what: $e',
+      errorCode: e is Failure ? e.code : FailureCode.unknown,
+    );
   }
 
   Future<void> pauseRecording() => _recorder.pause();

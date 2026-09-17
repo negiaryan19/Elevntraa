@@ -17,6 +17,12 @@ enum FailureCode {
   /// The recording was empty, silent or unreadable.
   invalidAudio,
 
+  /// A backup file is damaged, not a Rxvarta backup, or another account's.
+  invalidBackup,
+
+  /// A backup was made by a newer app version than this one.
+  backupFromNewerApp,
+
   /// Backend returned an error we do not classify further.
   server,
 
@@ -25,9 +31,9 @@ enum FailureCode {
 }
 
 /// A flat failure type the UI can render directly. Repositories and services
-/// translate Dio/IO/DB/Supabase exceptions into one of these so widgets never
-/// see a raw exception. [message] is a developer-readable detail (logged and
-/// shown in the "details" expander); [code] drives the localized headline.
+/// translate IO/DB/Supabase exceptions into one of these so widgets never see
+/// a raw exception. [message] is a developer-readable detail that is logged,
+/// never shown; [code] picks the translated text (see `failureText`).
 sealed class Failure implements Exception {
   const Failure(this.message, {this.cause, this.code = FailureCode.unknown});
 
@@ -58,8 +64,11 @@ class ApiFailure extends Failure {
 }
 
 class StorageFailure extends Failure {
-  const StorageFailure(super.message, {super.cause})
-    : super(code: FailureCode.storage);
+  const StorageFailure(
+    super.message, {
+    super.cause,
+    super.code = FailureCode.storage,
+  });
 }
 
 class PermissionFailure extends Failure {

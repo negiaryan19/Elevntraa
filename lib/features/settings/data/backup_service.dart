@@ -194,7 +194,10 @@ class BackupService {
     final uid = _requireUid();
     _requireBackend();
     if (!entry.storagePath.startsWith('$uid/')) {
-      throw const AuthFailure('This backup belongs to a different account.');
+      throw const StorageFailure(
+        'This backup belongs to a different account.',
+        code: FailureCode.invalidBackup,
+      );
     }
     final stamp = backupTimestamp(DateTime.now());
     File? zip;
@@ -305,31 +308,52 @@ class BackupService {
       raw = await readZipEntry(zip, manifestName);
       names = await listZipEntries(zip);
     } on ArchiveException catch (e) {
-      throw StorageFailure('The backup file is damaged.', cause: e);
+      throw StorageFailure(
+        'The backup file is damaged.',
+        cause: e,
+        code: FailureCode.invalidBackup,
+      );
     }
     if (raw == null) {
-      throw const StorageFailure('Not a Rxvarta backup (manifest missing).');
+      throw const StorageFailure(
+        'Not a Rxvarta backup (manifest missing).',
+        code: FailureCode.invalidBackup,
+      );
     }
     final Object? decoded;
     try {
       decoded = jsonDecode(utf8.decode(raw));
     } catch (e) {
-      throw StorageFailure('The backup manifest is unreadable.', cause: e);
+      throw StorageFailure(
+        'The backup manifest is unreadable.',
+        cause: e,
+        code: FailureCode.invalidBackup,
+      );
     }
     if (decoded is! Map) {
-      throw const StorageFailure('The backup manifest is unreadable.');
+      throw const StorageFailure(
+        'The backup manifest is unreadable.',
+        code: FailureCode.invalidBackup,
+      );
     }
     final version = decoded['version'];
     if (version is! int || version < 1) {
-      throw const StorageFailure('The backup manifest is unreadable.');
+      throw const StorageFailure(
+        'The backup manifest is unreadable.',
+        code: FailureCode.invalidBackup,
+      );
     }
     if (version > manifestVersion) {
       throw const StorageFailure(
         'This backup was made by a newer app version. Update the app first.',
+        code: FailureCode.backupFromNewerApp,
       );
     }
     if (!names.contains(databaseFileName)) {
-      throw const StorageFailure('The backup contains no database.');
+      throw const StorageFailure(
+        'The backup contains no database.',
+        code: FailureCode.invalidBackup,
+      );
     }
   }
 
@@ -517,7 +541,11 @@ Failure mapBackupError(Object e, String what) {
   if (e is UnsafeZipEntryException ||
       e is ArchiveException ||
       e is FormatException) {
-    return StorageFailure('$what: the backup file is damaged.', cause: e);
+    return StorageFailure(
+      '$what: the backup file is damaged.',
+      cause: e,
+      code: FailureCode.invalidBackup,
+    );
   }
   final text = e.toString().toLowerCase();
   if (text.contains('socketexception') ||

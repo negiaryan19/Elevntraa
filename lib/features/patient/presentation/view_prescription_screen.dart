@@ -11,6 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/visit.dart';
+import '../../../core/errors/failure_text.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../prescription/data/prescription_pdf_service.dart';
 import '../../settings/data/doctor_profile_repository.dart';
@@ -109,7 +110,8 @@ class _ViewPrescriptionScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${AppLocalizations.of(context)!.couldNotSharePdf}: $e',
+              '${AppLocalizations.of(context)!.couldNotSharePdf}: '
+              '${failureText(AppLocalizations.of(context)!, e)}',
             ),
           ),
         );

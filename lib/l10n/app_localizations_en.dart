@@ -1085,6 +1085,50 @@ class AppLocalizationsEn extends AppLocalizations {
       'No consultation was heard in this recording. Check that the microphone is working, then record again.';
 
   @override
+  String get retryProcessing => 'Retry with this recording';
+
+  @override
+  String get recordAgain => 'Record again';
+
+  @override
+  String get consultationErrorOffline =>
+      'No internet connection. Your recording is saved on this phone; tap Retry when you are back online.';
+
+  @override
+  String get consultationErrorProcessing =>
+      'The recording could not be processed. It is saved on this phone; tap Retry.';
+
+  @override
+  String get errorSessionExpired =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get consultationErrorStorage =>
+      'The recording could not be saved on this phone. Check free storage and record again.';
+
+  @override
+  String get errorUnexpected => 'Something went wrong. Please try again.';
+
+  @override
+  String get errorOffline => 'No internet connection.';
+
+  @override
+  String get errorStorage =>
+      'Files on this phone could not be read or saved. Check that there is free storage.';
+
+  @override
+  String get errorPermission =>
+      'Permission was denied. Allow it for Rxvarta in the phone settings.';
+
+  @override
+  String get errorInvalidBackup =>
+      'This file is not a usable Rxvarta backup for your account.';
+
+  @override
+  String get errorBackupTooNew =>
+      'This backup was made by a newer version of Rxvarta. Update the app, then restore.';
+
+  @override
   String get patientAlreadyExists => 'Patient already exists';
 
   @override
@@ -1169,12 +1213,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Checking your connection — please try again in a moment.';
 
   @override
-  String get internetLostPaused =>
-      'Internet lost — recording paused. Reconnect to resume and finish the consultation.';
+  String get internetLostStillRecording =>
+      'No internet. Recording continues; the consultation is processed once you are back online.';
 
   @override
-  String get internetLostPauseManually =>
-      'Internet lost and the recording could not be paused automatically — please tap Pause.';
+  String get recordingNotificationTitle => 'Recording consultation';
+
+  @override
+  String get recordingNotificationText =>
+      'Rxvarta keeps recording while the screen is off.';
 
   @override
   String get micPermissionNeeded =>

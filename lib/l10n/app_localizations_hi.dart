@@ -1086,6 +1086,50 @@ class AppLocalizationsHi extends AppLocalizations {
       'इस रिकॉर्डिंग में कोई परामर्श सुनाई नहीं दिया। जाँच लें कि माइक्रोफ़ोन काम कर रहा है, फिर दोबारा रिकॉर्ड करें।';
 
   @override
+  String get retryProcessing => 'इसी रिकॉर्डिंग से फिर कोशिश करें';
+
+  @override
+  String get recordAgain => 'फिर से रिकॉर्ड करें';
+
+  @override
+  String get consultationErrorOffline =>
+      'इंटरनेट कनेक्शन नहीं है। आपकी रिकॉर्डिंग इस फ़ोन पर सेव है; इंटरनेट आने पर फिर कोशिश करें दबाएँ।';
+
+  @override
+  String get consultationErrorProcessing =>
+      'रिकॉर्डिंग प्रोसेस नहीं हो सकी। यह इस फ़ोन पर सेव है; फिर कोशिश करें दबाएँ।';
+
+  @override
+  String get errorSessionExpired =>
+      'आपका सेशन समाप्त हो गया है। कृपया फिर से साइन इन करें।';
+
+  @override
+  String get consultationErrorStorage =>
+      'रिकॉर्डिंग इस फ़ोन पर सेव नहीं हो सकी। खाली स्टोरेज जाँचें और फिर से रिकॉर्ड करें।';
+
+  @override
+  String get errorUnexpected => 'कुछ गलत हो गया। कृपया फिर से कोशिश करें।';
+
+  @override
+  String get errorOffline => 'इंटरनेट कनेक्शन नहीं है।';
+
+  @override
+  String get errorStorage =>
+      'इस फ़ोन पर फ़ाइलें पढ़ी या सेव नहीं की जा सकीं। जाँचें कि स्टोरेज खाली है।';
+
+  @override
+  String get errorPermission =>
+      'अनुमति नहीं मिली। फ़ोन की सेटिंग्स में Rxvarta को अनुमति दें।';
+
+  @override
+  String get errorInvalidBackup =>
+      'यह फ़ाइल आपके अकाउंट के लिए उपयोगी Rxvarta बैकअप नहीं है।';
+
+  @override
+  String get errorBackupTooNew =>
+      'यह बैकअप Rxvarta के नए संस्करण से बना है। ऐप अपडेट करें, फिर रीस्टोर करें।';
+
+  @override
   String get patientAlreadyExists => 'मरीज़ पहले से मौजूद है';
 
   @override
@@ -1170,12 +1214,15 @@ class AppLocalizationsHi extends AppLocalizations {
       'आपका कनेक्शन जाँचा जा रहा है — कृपया थोड़ी देर बाद फिर कोशिश करें।';
 
   @override
-  String get internetLostPaused =>
-      'इंटरनेट चला गया — रिकॉर्डिंग रुक गई। परामर्श पूरा करने के लिए फिर से जुड़ें।';
+  String get internetLostStillRecording =>
+      'इंटरनेट नहीं है। रिकॉर्डिंग जारी है; इंटरनेट आने पर परामर्श प्रोसेस होगा।';
 
   @override
-  String get internetLostPauseManually =>
-      'इंटरनेट चला गया और रिकॉर्डिंग अपने आप नहीं रुकी — कृपया रोकें दबाएँ।';
+  String get recordingNotificationTitle => 'परामर्श रिकॉर्ड हो रहा है';
+
+  @override
+  String get recordingNotificationText =>
+      'स्क्रीन बंद होने पर भी Rxvarta रिकॉर्डिंग जारी रखता है।';
 
   @override
   String get micPermissionNeeded =>

@@ -35,6 +35,10 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Rxvarta needs camera access so the doctor can scan a patient's previous reports.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Rxvarta needs microphone access so the doctor can dictate consultations.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

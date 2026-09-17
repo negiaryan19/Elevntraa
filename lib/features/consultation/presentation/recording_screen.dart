@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
+import '../../../core/errors/failure.dart';
 import '../../../core/network/connectivity_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -258,7 +259,24 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
       consultationControllerProvider(widget.visitId).notifier,
     );
     await controller.stopAndProcess();
+    _openReviewIfDone();
+  }
 
+  /// Processing failed: run the recording already on the phone through it
+  /// again instead of asking the doctor to repeat the consultation.
+  Future<void> _onRetryProcessing() async {
+    if (ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
+      _showBlockedMessage();
+      return;
+    }
+    HapticFeedback.mediumImpact();
+    await ref
+        .read(consultationControllerProvider(widget.visitId).notifier)
+        .retryProcessing();
+    _openReviewIfDone();
+  }
+
+  void _openReviewIfDone() {
     if (mounted &&
         ref.read(consultationControllerProvider(widget.visitId)).stage ==
             ConsultationStage.done) {
@@ -271,53 +289,30 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     }
   }
 
-  /// Reacts to the device losing internet while a recording is in progress.
-  /// Rather than letting audio pile up that can never be transcribed, we pause
-  /// the recording (preserving what's captured so far) and tell the doctor —
-  /// they can resume and finish once the connection is back.
+  /// Tells the doctor the connection dropped during a recording. The
+  /// recording carries on: it is saved on the phone, and processing waits for
+  /// the connection (Done explains that if tapped offline). Pausing here cut
+  /// consultations short whenever the clinic's network blinked, and every
+  /// time Android closed the app's connections with the screen locked.
   void _onConnectivityChanged(
     ConnectivityStatus? previous,
     ConnectivityStatus next,
   ) {
-    if (next != ConnectivityStatus.offline) return;
-
+    if (next != ConnectivityStatus.offline || !mounted) return;
     final stage = ref
         .read(consultationControllerProvider(widget.visitId))
         .stage;
     if (stage != ConsultationStage.recording) return;
-
-    if (!_isPaused) {
-      // Banks elapsed and pauses the underlying recorder. Fire-and-forget, but
-      // guarded so a failed pause surfaces as a user message instead of an
-      // unhandled async error.
-      unawaited(
-        _onPauseResume().catchError((Object _) {
-          if (mounted) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    AppLocalizations.of(context)!.internetLostPauseManually,
-                  ),
-                  duration: const Duration(seconds: 6),
-                ),
-              );
-          }
-        }),
-      );
-    }
-
-    if (mounted) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.internetLostPaused),
-            duration: const Duration(seconds: 6),
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.internetLostStillRecording,
           ),
-        );
-    }
+          duration: const Duration(seconds: 6),
+        ),
+      );
   }
 
   /// Handles every "leave this screen" intent (Android back gesture, hardware
@@ -905,20 +900,23 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                     ),
                                   ),
                                   const SizedBox(width: AppSpacing.xs),
-                                  Text(
-                                    isRecording
-                                        ? _isPaused
-                                              ? t.paused
-                                              : _heardVoice
-                                              ? t.recordingConversation
-                                              : t.saySomething
-                                        : isBusy
-                                        ? _busyLabel(context, state.stage)
-                                        : t.readyBothVoices,
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
+                                  Flexible(
+                                    child: Text(
+                                      isRecording
+                                          ? _isPaused
+                                                ? t.paused
+                                                : _heardVoice
+                                                ? t.recordingConversation
+                                                : t.saySomething
+                                          : isBusy
+                                          ? _busyLabel(context, state.stage)
+                                          : t.readyBothVoices,
+                                      textAlign: TextAlign.center,
+                                      style: AppTypography.bodySmall.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -966,23 +964,6 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                   ),
                                 ),
                               ],
-                              if (state.error != null) ...[
-                                const SizedBox(height: AppSpacing.md),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.lg,
-                                  ),
-                                  child: Text(
-                                    state.nothingHeard
-                                        ? t.nothingHeardInRecording
-                                        : state.error!,
-                                    textAlign: TextAlign.center,
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.error,
-                                    ),
-                                  ),
-                                ),
-                              ],
                               const SizedBox(height: AppSpacing.lg),
                             ],
                           ),
@@ -1004,6 +985,19 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (!isRecording && !isBusy) ...[
+                          if (state.error != null)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.md,
+                              ),
+                              child: Text(
+                                _errorText(t, state),
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ),
                           // Only surface the red "no internet" banner once we've
                           // *confirmed* offline — not during the initial probe.
                           if (connectivity == ConnectivityStatus.offline)
@@ -1013,22 +1007,36 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                               ),
                               child: _OfflineNotice(),
                             ),
-                          _GradientCta(
-                            label: canReachServer
-                                ? t.startConsultation
-                                : isChecking
-                                ? t.checkingConnection
-                                : t.offlineReconnect,
-                            leadingIcon: canReachServer
-                                ? Icons.record_voice_over_rounded
-                                : isChecking
-                                ? Icons.wifi_find_rounded
-                                : Icons.wifi_off_rounded,
-                            enabled: canReachServer,
-                            // Still fires when blocked so the tap explains why
-                            // nothing happened via a snackbar.
-                            onTap: _onStartPressed,
-                          ),
+                          if (state.canRetryProcessing) ...[
+                            _GradientCta(
+                              label: t.retryProcessing,
+                              leadingIcon: Icons.refresh_rounded,
+                              enabled: canReachServer,
+                              onTap: _onRetryProcessing,
+                            ),
+                            const SizedBox(height: AppSpacing.s),
+                            TextButton.icon(
+                              onPressed: _onStartPressed,
+                              icon: const Icon(Icons.mic_rounded),
+                              label: Text(t.recordAgain),
+                            ),
+                          ] else
+                            _GradientCta(
+                              label: canReachServer
+                                  ? t.startConsultation
+                                  : isChecking
+                                  ? t.checkingConnection
+                                  : t.offlineReconnect,
+                              leadingIcon: canReachServer
+                                  ? Icons.record_voice_over_rounded
+                                  : isChecking
+                                  ? Icons.wifi_find_rounded
+                                  : Icons.wifi_off_rounded,
+                              enabled: canReachServer,
+                              // Still fires when blocked so the tap explains why
+                              // nothing happened via a snackbar.
+                              onTap: _onStartPressed,
+                            ),
                         ] else if (isRecording)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1073,6 +1081,22 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
         ),
       ),
     );
+  }
+
+  /// What went wrong, in the doctor's language, with the way out. The raw
+  /// failure detail is logged by the controller, never shown.
+  String _errorText(AppLocalizations t, ConsultationState state) {
+    final hasRecording = state.audioPath != null;
+    return switch (state.errorCode) {
+      FailureCode.invalidAudio => t.nothingHeardInRecording,
+      FailureCode.permission => t.micPermissionNeeded,
+      FailureCode.auth => t.errorSessionExpired,
+      FailureCode.storage => t.consultationErrorStorage,
+      FailureCode.network when hasRecording => t.consultationErrorOffline,
+      FailureCode.network => t.offlineNotice,
+      _ when hasRecording => t.consultationErrorProcessing,
+      _ => t.errorUnexpected,
+    };
   }
 
   String _busyLabel(BuildContext context, ConsultationStage s) {
@@ -1298,7 +1322,14 @@ class _GradientCta extends StatelessWidget {
           children: [
             Icon(leadingIcon, color: fg, size: 22),
             const SizedBox(width: AppSpacing.m),
-            Text(label, style: AppTypography.titleSmall.copyWith(color: fg)),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.titleSmall.copyWith(color: fg),
+              ),
+            ),
           ],
         ),
       ),

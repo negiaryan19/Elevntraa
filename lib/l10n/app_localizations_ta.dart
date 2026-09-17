@@ -1100,6 +1100,50 @@ class AppLocalizationsTa extends AppLocalizations {
       'இந்தப் பதிவில் எந்த ஆலோசனையும் கேட்கவில்லை. மைக்ரோஃபோன் இயங்குகிறதா எனச் சரிபார்த்து, மீண்டும் பதிவு செய்யவும்.';
 
   @override
+  String get retryProcessing => 'இதே பதிவுடன் மீண்டும் முயலவும்';
+
+  @override
+  String get recordAgain => 'மீண்டும் பதிவு செய்யவும்';
+
+  @override
+  String get consultationErrorOffline =>
+      'இணைய இணைப்பு இல்லை. உங்கள் பதிவு இந்த ஃபோனில் சேமிக்கப்பட்டுள்ளது; இணையம் வந்ததும் மீண்டும் முயலவும் என்பதைத் தட்டவும்.';
+
+  @override
+  String get consultationErrorProcessing =>
+      'பதிவைச் செயலாக்க முடியவில்லை. இது இந்த ஃபோனில் சேமிக்கப்பட்டுள்ளது; மீண்டும் முயலவும் என்பதைத் தட்டவும்.';
+
+  @override
+  String get errorSessionExpired =>
+      'உங்கள் அமர்வு காலாவதியானது. மீண்டும் உள்நுழையவும்.';
+
+  @override
+  String get consultationErrorStorage =>
+      'பதிவை இந்த ஃபோனில் சேமிக்க முடியவில்லை. இலவச சேமிப்பிடத்தைச் சரிபார்த்து மீண்டும் பதிவு செய்யவும்.';
+
+  @override
+  String get errorUnexpected => 'ஏதோ தவறு நடந்தது. மீண்டும் முயலவும்.';
+
+  @override
+  String get errorOffline => 'இணைய இணைப்பு இல்லை.';
+
+  @override
+  String get errorStorage =>
+      'இந்த ஃபோனில் உள்ள கோப்புகளைப் படிக்கவோ சேமிக்கவோ முடியவில்லை. இலவச சேமிப்பிடம் உள்ளதா எனப் பார்க்கவும்.';
+
+  @override
+  String get errorPermission =>
+      'அனுமதி மறுக்கப்பட்டது. ஃபோன் அமைப்புகளில் Rxvarta-க்கு அனுமதி வழங்கவும்.';
+
+  @override
+  String get errorInvalidBackup =>
+      'இந்தக் கோப்பு உங்கள் கணக்கிற்குப் பயன்படுத்தக்கூடிய Rxvarta பேக்அப் அல்ல.';
+
+  @override
+  String get errorBackupTooNew =>
+      'இந்த பேக்அப் Rxvarta-இன் புதிய பதிப்பில் உருவாக்கப்பட்டது. ஆப்பைப் புதுப்பித்து, பிறகு மீட்டமைக்கவும்.';
+
+  @override
   String get patientAlreadyExists => 'நோயாளி ஏற்கனவே உள்ளார்';
 
   @override
@@ -1185,12 +1229,15 @@ class AppLocalizationsTa extends AppLocalizations {
       'உங்கள் இணைப்பு சரிபார்க்கப்படுகிறது — சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.';
 
   @override
-  String get internetLostPaused =>
-      'இணையம் துண்டிக்கப்பட்டது — பதிவு நிறுத்தப்பட்டது. ஆலோசனையை முடிக்க மீண்டும் இணைக்கவும்.';
+  String get internetLostStillRecording =>
+      'இணையம் இல்லை. பதிவு தொடர்கிறது; இணையம் வந்ததும் ஆலோசனை செயலாக்கப்படும்.';
 
   @override
-  String get internetLostPauseManually =>
-      'இணையம் துண்டிக்கப்பட்டது, பதிவு தானாக நிறுத்தப்படவில்லை — இடைநிறுத்து அழுத்தவும்.';
+  String get recordingNotificationTitle => 'ஆலோசனை பதிவாகிறது';
+
+  @override
+  String get recordingNotificationText =>
+      'திரை அணைந்திருந்தாலும் Rxvarta பதிவைத் தொடர்கிறது.';
 
   @override
   String get micPermissionNeeded =>

@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/errors/failure.dart';
+import '../../../core/errors/failure_text.dart';
 import '../../../data/db/database_provider.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
@@ -169,9 +170,7 @@ class ExportService {
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            isEmpty
-                ? t.exportEmpty
-                : t.exportFailed(e is Failure ? e.message : '$e'),
+            isEmpty ? t.exportEmpty : t.exportFailed(failureText(t, e)),
           ),
         ),
       );

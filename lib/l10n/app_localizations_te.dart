@@ -1094,6 +1094,51 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఈ రికార్డింగ్‌లో ఎలాంటి సంప్రదింపు వినిపించలేదు. మైక్రోఫోన్ పని చేస్తోందో లేదో చూసి, మళ్లీ రికార్డ్ చేయండి.';
 
   @override
+  String get retryProcessing => 'ఇదే రికార్డింగ్‌తో మళ్లీ ప్రయత్నించండి';
+
+  @override
+  String get recordAgain => 'మళ్లీ రికార్డ్ చేయండి';
+
+  @override
+  String get consultationErrorOffline =>
+      'ఇంటర్నెట్ కనెక్షన్ లేదు. మీ రికార్డింగ్ ఈ ఫోన్‌లో సేవ్ అయింది; ఇంటర్నెట్ వచ్చాక మళ్లీ ప్రయత్నించండి నొక్కండి.';
+
+  @override
+  String get consultationErrorProcessing =>
+      'రికార్డింగ్‌ను ప్రాసెస్ చేయలేకపోయాము. ఇది ఈ ఫోన్‌లో సేవ్ అయింది; మళ్లీ ప్రయత్నించండి నొక్కండి.';
+
+  @override
+  String get errorSessionExpired =>
+      'మీ సెషన్ ముగిసింది. దయచేసి మళ్లీ సైన్ ఇన్ చేయండి.';
+
+  @override
+  String get consultationErrorStorage =>
+      'రికార్డింగ్‌ను ఈ ఫోన్‌లో సేవ్ చేయలేకపోయాము. ఖాళీ స్టోరేజ్ చూసి మళ్లీ రికార్డ్ చేయండి.';
+
+  @override
+  String get errorUnexpected =>
+      'ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి.';
+
+  @override
+  String get errorOffline => 'ఇంటర్నెట్ కనెక్షన్ లేదు.';
+
+  @override
+  String get errorStorage =>
+      'ఈ ఫోన్‌లోని ఫైళ్లను చదవలేకపోయాము లేదా సేవ్ చేయలేకపోయాము. ఖాళీ స్టోరేజ్ ఉందో లేదో చూడండి.';
+
+  @override
+  String get errorPermission =>
+      'అనుమతి నిరాకరించబడింది. ఫోన్ సెట్టింగ్‌లలో Rxvartaకి అనుమతి ఇవ్వండి.';
+
+  @override
+  String get errorInvalidBackup =>
+      'ఈ ఫైల్ మీ ఖాతాకు ఉపయోగపడే Rxvarta బ్యాకప్ కాదు.';
+
+  @override
+  String get errorBackupTooNew =>
+      'ఈ బ్యాకప్ Rxvarta కొత్త వెర్షన్‌తో చేయబడింది. యాప్‌ను అప్‌డేట్ చేసి, తర్వాత రిస్టోర్ చేయండి.';
+
+  @override
   String get patientAlreadyExists => 'రోగి ఇప్పటికే ఉన్నారు';
 
   @override
@@ -1179,12 +1224,15 @@ class AppLocalizationsTe extends AppLocalizations {
       'మీ కనెక్షన్ తనిఖీ చేస్తోంది — దయచేసి కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.';
 
   @override
-  String get internetLostPaused =>
-      'ఇంటర్నెట్ పోయింది — రికార్డింగ్ ఆగింది. సంప్రదింపు పూర్తి చేయడానికి తిరిగి కనెక్ట్ అవ్వండి.';
+  String get internetLostStillRecording =>
+      'ఇంటర్నెట్ లేదు. రికార్డింగ్ కొనసాగుతోంది; ఇంటర్నెట్ వచ్చాక సంప్రదింపు ప్రాసెస్ అవుతుంది.';
 
   @override
-  String get internetLostPauseManually =>
-      'ఇంటర్నెట్ పోయింది మరియు రికార్డింగ్ ఆటోమేటిక్‌గా ఆగలేదు — దయచేసి పాజ్ నొక్కండి.';
+  String get recordingNotificationTitle => 'సంప్రదింపు రికార్డ్ అవుతోంది';
+
+  @override
+  String get recordingNotificationText =>
+      'స్క్రీన్ ఆఫ్‌లో ఉన్నా Rxvarta రికార్డింగ్ కొనసాగిస్తుంది.';
 
   @override
   String get micPermissionNeeded =>
