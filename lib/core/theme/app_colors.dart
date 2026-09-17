@@ -49,15 +49,11 @@ class AppColors {
 
   // ── Semantic ───────────────────────────────────────────────────────────
   static const Color success = Color(0xFF10B981);
-  static const Color successSoft = Color(0xFFD1FAE5);
-  static const Color successDark = Color(0xFF059669);
   static const Color warning = Color(0xFFF59E0B);
-  static const Color warningSoft = Color(0xFFFEF3C7);
   static const Color error = Color(0xFFEF4444);
   static const Color errorSoft = Color(0xFFFEE2E2);
   static const Color errorDark = Color(0xFFF87171);
   static const Color info = Color(0xFF3B82F6);
-  static const Color infoSoft = Color(0xFFEFF6FF);
 
   // ── Shadows ────────────────────────────────────────────────────────────
   static const List<BoxShadow> cardShadow = [
@@ -76,9 +72,5 @@ class AppColors {
 
   static const List<BoxShadow> glowBlueDark = [
     BoxShadow(color: Color(0x606B8FFF), blurRadius: 28, offset: Offset(0, 8)),
-  ];
-
-  static const List<BoxShadow> glowTeal = [
-    BoxShadow(color: Color(0x4014B8A6), blurRadius: 20, offset: Offset(0, 8)),
   ];
 }

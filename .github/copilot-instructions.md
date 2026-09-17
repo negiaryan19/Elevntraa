@@ -10,14 +10,15 @@ doctors. Keep suggestions idiomatic to this codebase.
   shared/business state).
 - **Routing:** `go_router` — route paths are centralized in `lib/app/router.dart`
   via the `AppRoute` enum. Use `AppRoute.foo.path`, never raw strings.
-- **Networking:** `dio` (see `lib/core/network/dio_client.dart`).
+- **Networking:** `supabase_flutter` (Auth, Storage, PostgREST, Edge Functions); no direct HTTP client.
 - **Local DB:** `drift` over `sqlite3`. Generated code lives in `*.g.dart`.
 - **Models:** `freezed` + `json_serializable`. Generated `*.freezed.dart` /
   `*.g.dart` files are committed-out (gitignored); regenerate with
   `dart run build_runner build --delete-conflicting-outputs`.
-- **Config / secrets:** Read API keys and secrets from the `.env` asset via
-  `flutter_dotenv` (see `lib/core/config/env.dart`); never hardcode them in
-  source. Document any new key in `.env.example`.
+- **Config / secrets:** Build-time values come from `--dart-define-from-file=config/app_config.json`
+  via `lib/core/config/app_config.dart` (Supabase URL + publishable key only). Provider
+  secrets live in Supabase Edge Function secrets, never in the app. Document any new
+  key in `config/app_config.example.json`.
 
 ## Project structure
 
@@ -32,8 +33,9 @@ doctors. Keep suggestions idiomatic to this codebase.
 - Follow the lints in `analysis_options.yaml` (`flutter_lints`). Code must pass
   `flutter analyze` and `dart format .` with no diffs — CI enforces both.
 - Prefer `const` constructors and widgets where possible.
-- Keep API keys and secrets out of source. Read them from `.env` /
-  `flutter_dotenv`; document any new key in `.env.example`.
+- Keep API keys and secrets out of source and out of the app bundle. Build-time
+  config goes through `AppConfig` (`--dart-define-from-file`); document any new
+  key in `config/app_config.example.json`.
 - Don't edit generated files (`*.g.dart`, `*.freezed.dart`) by hand.
 - Write/extend widget tests under `test/` and end-to-end flows under
   `integration_test/`.

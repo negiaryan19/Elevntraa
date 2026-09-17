@@ -4,16 +4,21 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import '../../../core/auth/auth_providers.dart';
 import '../../../core/errors/failure.dart';
+import '../../../core/utils/app_paths.dart';
 
 /// Wraps the `record` package with a simple start/stop API + an amplitude
 /// stream the waveform widget consumes. The recording is stored as M4A
 /// (AAC inside an MP4 container) — small files, supported by Sarvam's STT.
 class RecordingService {
-  RecordingService() : _recorder = AudioRecorder();
+  RecordingService({required this._recordingsDir})
+    : _recorder = AudioRecorder();
+
+  /// Where the signed-in doctor's recordings are written.
+  final String Function() _recordingsDir;
 
   final AudioRecorder _recorder;
   StreamSubscription<Amplitude>? _ampSub;
@@ -30,8 +35,7 @@ class RecordingService {
       throw const PermissionFailure('Microphone permission was denied.');
     }
 
-    final dir = await getApplicationDocumentsDirectory();
-    final recordingsDir = Directory(p.join(dir.path, 'recordings'));
+    final recordingsDir = Directory(_recordingsDir());
     if (!recordingsDir.existsSync()) recordingsDir.createSync(recursive: true);
 
     final path = p.join(
@@ -151,7 +155,15 @@ class RecordingService {
 }
 
 final recordingServiceProvider = Provider<RecordingService>((ref) {
-  final svc = RecordingService();
+  final svc = RecordingService(
+    recordingsDir: () {
+      final uid = ref.read(currentUserIdProvider);
+      if (uid == null) {
+        throw const AuthFailure('Sign in again to record a consultation.');
+      }
+      return AppPaths.recordingsDir(uid);
+    },
+  );
   ref.onDispose(svc.dispose);
   return svc;
 });

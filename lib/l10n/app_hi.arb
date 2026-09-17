@@ -38,17 +38,331 @@
   "appLanguage": "ऐप की भाषा",
   "appLanguageSubtitle": "ऐप इंटरफ़ेस की भाषा चुनें",
   "chooseLanguage": "भाषा चुनें",
-  "dataBackup": "डेटा बैकअप",
-  "dataBackupSubtitle": "अपने परामर्श इतिहास का बैकअप लें",
   "exportData": "डेटा निर्यात करें",
-  "exportDataSubtitle": "अपना सारा डेटा डाउनलोड करें",
+  "backupTitle": "बैकअप और सिंक",
+  "backupIntro": "आपके रिकॉर्ड की एक कॉपी आपके अपने निजी क्लाउड फ़ोल्डर में रखता है, ताकि फ़ोन खो जाने पर भी कुछ न जाए।",
+  "backupIncludes": "शामिल: मरीज़, कंसल्टेशन, प्रिस्क्रिप्शन, रिपोर्ट फ़ोटो, आपकी प्रोफ़ाइल और हस्ताक्षर।",
+  "backupExcludes": "शामिल नहीं: कंसल्टेशन की रिकॉर्डिंग (प्रोसेसिंग के बाद वे हटा दी जाती हैं)।",
+  "backupLastAt": "पिछला बैकअप {time}",
+  "@backupLastAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNever": "अभी तक कोई बैकअप नहीं",
+  "backupNow": "अभी बैकअप लें",
+  "backupLatestRemote": "क्लाउड में नवीनतम: {time} ({size})",
+  "@backupLatestRemote": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNoRemote": "क्लाउड में अभी कोई बैकअप नहीं है",
+  "backupRestoreLatest": "नवीनतम बैकअप रिस्टोर करें",
+  "backupRestoreConfirmTitle": "इस फ़ोन का डेटा बदलें?",
+  "backupRestoreConfirmBody": "इस फ़ोन पर आपके रिकॉर्ड {time} के बैकअप से बदल दिए जाएँगे। इस फ़ोन का उपयोग करने वाले दूसरे डॉक्टरों पर इसका असर नहीं होगा। इसे वापस नहीं किया जा सकता।",
+  "@backupRestoreConfirmBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreConfirm": "रिस्टोर करें",
+  "backupStageCollecting": "आपके रिकॉर्ड इकट्ठे किए जा रहे हैं…",
+  "backupStageZipping": "पैक किया जा रहा है…",
+  "backupStageUploading": "अपलोड हो रहा है…",
+  "backupStageDownloading": "बैकअप डाउनलोड हो रहा है…",
+  "backupStageRestoring": "रिस्टोर हो रहा है…",
+  "backupDone": "बैकअप पूरा हुआ",
+  "backupRestored": "बैकअप रिस्टोर हो गया",
+  "backupRestartHint": "रिस्टोर किए गए रिकॉर्ड देखने के लिए ऐप बंद करके दोबारा खोलें।",
+  "backupFailed": "बैकअप विफल: {reason}",
+  "@backupFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreFailed": "रिस्टोर विफल: {reason}",
+  "@backupRestoreFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNeedsInternet": "बैकअप लेने के लिए इंटरनेट से जुड़ें।",
+  "exportPreparing": "आपका एक्सपोर्ट तैयार हो रहा है…",
+  "exportShareSubject": "Rxvarta डेटा एक्सपोर्ट",
+  "exportShareText": "मेरे Rxvarta रिकॉर्ड का एक्सपोर्ट।",
+  "exportFailed": "डेटा एक्सपोर्ट नहीं हो सका: {reason}",
+  "@exportFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "exportEmpty": "अभी एक्सपोर्ट करने के लिए कुछ नहीं है।",
+  "exportSavedTo": "{path} पर सेव किया गया",
+  "@exportSavedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "privacySecurity": "गोपनीयता और सुरक्षा",
-  "privacySecuritySubtitle": "अपनी गोपनीयता सेटिंग्स प्रबंधित करें",
   "termsConditions": "नियम और शर्तें",
   "termsConditionsSubtitle": "हमारी सेवा शर्तें पढ़ें",
   "helpSupport": "सहायता और समर्थन",
   "helpSupportSubtitle": "मदद लें या हमसे संपर्क करें",
+  "settingsProfileSetUp": "अपनी प्रोफ़ाइल सेट करें",
+  "settingsProfileIncompleteChip": "प्रोफ़ाइल अधूरी है — प्रिस्क्रिप्शन साइन नहीं हो सकते",
+  "settingsSignature": "हस्ताक्षर",
+  "settingsSignatureSubtitleAdded": "जोड़ा गया — आपके साइन किए हर प्रिस्क्रिप्शन पर छपेगा",
+  "settingsSignatureSubtitleMissing": "अभी तक नहीं जोड़ा गया",
+  "settingsBackupSync": "बैकअप और सिंक",
+  "settingsBackupSubtitleNever": "अभी तक कोई बैकअप नहीं",
+  "settingsBackupSubtitleLast": "पिछला बैकअप {time}",
+  "@settingsBackupSubtitleLast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsExportSubtitle": "अपने सभी रिकॉर्ड की कॉपी सेव या शेयर करें",
+  "settingsPrivacySubtitle": "आपका डेटा कहाँ रहता है और उसे कैसे हटाएँ",
+  "settingsSectionLegal": "कानूनी",
+  "settingsPrivacyPolicy": "प्राइवेसी पॉलिसी",
+  "settingsPrivacyPolicySubtitle": "आपके और आपके मरीज़ों के डेटा का क्या होता है",
+  "settingsVersion": "Rxvarta v{version} ({build})",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTimeJustNow": "अभी-अभी",
+  "settingsTimeMinutesAgo": "{n, plural, =1{1 मिनट पहले} other{{n} मिनट पहले}}",
+  "@settingsTimeMinutesAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTimeHoursAgo": "{n, plural, =1{1 घंटा पहले} other{{n} घंटे पहले}}",
+  "@settingsTimeHoursAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTimeDaysAgo": "{n, plural, =1{कल} other{{n} दिन पहले}}",
+  "@settingsTimeDaysAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsSigningOut": "साइन आउट हो रहा है…",
+  "logoutConfirmTitle": "साइन आउट करें?",
+  "logoutConfirmBody": "Rxvarta इस्तेमाल करने के लिए आपको दोबारा साइन इन करना होगा। इस डिवाइस पर सेव रिकॉर्ड यहीं रहेंगे।",
+  "logoutConfirm": "साइन आउट",
+  "privacyIntro": "Rxvarta इस तरह बनाया गया है कि मरीज़ों के रिकॉर्ड डॉक्टर के नियंत्रण में रहें। यह पेज सरल शब्दों में बताता है कि डेटा कहाँ रखा जाता है, उसे कौन प्रोसेस करता है और उसे कैसे हटाया जाए।",
+  "privacyWhereStoredTitle": "आपका डेटा कहाँ रहता है",
+  "privacyWhereStoredDevice": "यह डिवाइस — मरीज़, विज़िट, ट्रांसक्रिप्ट, प्रिस्क्रिप्शन, रिपोर्ट फ़ोटो और रिकॉर्डिंग इस फ़ोन पर ऐप के निजी स्टोरेज में रहते हैं।",
+  "privacyWhereStoredCloud": "मुंबई, भारत (ap-south-1) में होस्ट किया गया Supabase प्रोजेक्ट — आपका अकाउंट, डॉक्टर प्रोफ़ाइल, हस्ताक्षर और बैकअप।",
+  "privacyWhereStoredAudio": "रिकॉर्डिंग सिर्फ़ प्रोसेसिंग के लिए एक निजी स्टोरेज बकेट में अपलोड होती हैं, लंबे समय तक रखने के लिए नहीं।",
+  "privacyProcessorsTitle": "इसे कौन प्रोसेस करता है",
+  "privacyProcessorSarvam": "Sarvam AI — रिकॉर्डिंग को टेक्स्ट में बदलता है (स्पीच-टू-टेक्स्ट)।",
+  "privacyProcessorGoogle": "Google Gemini — ट्रांसक्रिप्ट से आपकी समीक्षा के लिए प्रिस्क्रिप्शन का ड्राफ़्ट बनाता है।",
+  "privacyProcessorSupabase": "Supabase — साइन-इन, फ़ाइल स्टोरेज और आपके अकाउंट का डेटाबेस।",
+  "privacyRetentionTitle": "कितने समय तक रखा जाता है",
+  "privacyRetentionAudio": "रिकॉर्डिंग: प्रोसेसिंग सफल होते ही सर्वर से हटा दी जाती हैं; तब तक इसी डिवाइस पर रहती हैं।",
+  "privacyRetentionTranscript": "ट्रांसक्रिप्ट और प्रिस्क्रिप्शन: जब तक आप उन्हें न हटाएँ, इस डिवाइस पर और आपके बैकअप में रहते हैं।",
+  "privacyRetentionJobs": "प्रोसेसिंग कैश: नतीजा ऐप तक पहुँचने के बाद साफ़ कर दिया जाता है।",
+  "privacyRoleTitle": "आपकी और हमारी भूमिका",
+  "privacyRoleBody": "डिजिटल पर्सनल डेटा प्रोटेक्शन एक्ट, 2023 के तहत आपके मरीज़ों के रिकॉर्ड के लिए डेटा फ़िड्यूशरी आप, यानी डॉक्टर, ही रहते हैं। Rxvarta उन्हें केवल आपके निर्देश पर, डेटा प्रोसेसर के रूप में प्रोसेस करता है।",
+  "privacySecurityTitle": "सुरक्षा उपाय",
+  "privacySecurityBody": "डेटा एन्क्रिप्टेड कनेक्शन (TLS) से जाता है। सर्वर पर रिकॉर्ड हर अकाउंट के अलग ऐक्सेस नियमों से सुरक्षित हैं, इसलिए उन्हें सिर्फ़ आपका साइन-इन ही पढ़ सकता है। अपना फ़ोन लॉक रखें: जो उसे अनलॉक कर सकता है, वह ऐप खोल सकता है।",
+  "privacyDeleteTitle": "डेटा हटाना",
+  "privacyDeleteBody": "इस फ़ोन से अपना डेटा हटाने के लिए नीचे दिए बटन का उपयोग करें। इस फ़ोन पर साइन इन करने वाले दूसरे डॉक्टरों का डेटा बना रहेगा। मरीज़ों के रिकॉर्ड अभी एक-एक करके नहीं हटाए जा सकते। अपना अकाउंट और हमारे सर्वर पर रखा डेटा हटाने के लिए, जिस ईमेल से साइन अप किया था उसी से हमें लिखें।",
+  "privacyDeleteLocal": "इस डिवाइस से मेरा डेटा हटाएँ",
+  "privacyDeleteLocalSubtitle": "इस फ़ोन से आपके मरीज़, विज़िट, रिकॉर्डिंग, रिपोर्ट, प्रोफ़ाइल कैश और हस्ताक्षर हटाकर आपको साइन आउट कर देता है। सर्वर पर आपका अकाउंट और बैकअप प्रभावित नहीं होते।",
+  "privacyDeleteLocalBody": "इस फ़ोन पर सेव आपका हर मरीज़, विज़िट, रिकॉर्डिंग और रिपोर्ट हटा दी जाएगी और आप साइन आउट हो जाएँगे। इस फ़ोन पर दूसरे डॉक्टरों का डेटा और सर्वर पर आपके बैकअप प्रभावित नहीं होंगे। इसे वापस नहीं किया जा सकता।\n\nपुष्टि के लिए {word} टाइप करें।",
+  "@privacyDeleteLocalBody": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDeleteLocalWord": "DELETE",
+  "privacyDeleteLocalHint": "{word} टाइप करें",
+  "@privacyDeleteLocalHint": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDeleteLocalConfirm": "सब कुछ हटाएँ",
+  "privacyDeleting": "लोकल डेटा हटाया जा रहा है…",
+  "privacyDeleted": "लोकल डेटा हटा दिया गया",
+  "privacyDeletePartial": "कुछ चीज़ें नहीं हटाई जा सकीं: {details}",
+  "@privacyDeletePartial": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyReadPolicy": "पूरी प्राइवेसी पॉलिसी पढ़ें",
+  "legalTerms": "नियम और शर्तें",
+  "legalPrivacyPolicy": "प्राइवेसी पॉलिसी",
+  "legalLastUpdated": "अंतिम अपडेट: {date}",
+  "@legalLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "legalReviewNotice": "ऐप में शामिल कॉपी — ऑफ़लाइन उपलब्ध। अगर ऑनलाइन नया संस्करण प्रकाशित हो, तो ऑनलाइन संस्करण लागू होगा।",
+  "legalViewOnline": "ऑनलाइन संस्करण देखें",
+  "legalLoadFailed": "यह दस्तावेज़ लोड नहीं हो सका।",
+  "helpTitle": "हेल्प और सपोर्ट",
+  "helpSubtitle": "ऐप को लेकर कोई सवाल, सुझाव या दिक्कत? हमें मदद करके खुशी होगी।",
+  "helpVersion": "ऐप वर्ज़न {version} ({build})",
+  "@helpVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "helpEmail": "ईमेल सपोर्ट",
+  "helpWhatsapp": "WhatsApp सपोर्ट",
+  "helpReportProblem": "समस्या बताएँ",
+  "helpReportProblemSubtitle": "बताएँ क्या हुआ और उसे दोबारा कैसे देखा जा सकता है",
+  "helpNotConfigured": "सपोर्ट संपर्क अभी सेट नहीं है",
+  "helpCouldNotOpen": "इसे आपके डिवाइस पर नहीं खोला जा सका।",
+  "helpEmailSubject": "Rxvarta सपोर्ट",
+  "helpEmailBody": "ऐप वर्ज़न: {version}\nप्लेटफ़ॉर्म: {platform}\n\n",
+  "@helpEmailBody": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "helpReportSubject": "Rxvarta — समस्या रिपोर्ट",
+  "helpReportBody": "क्या हुआ:\n\n\nदोबारा देखने के चरण:\n1. \n2. \n3. \n\nऐप वर्ज़न: {version}\nप्लेटफ़ॉर्म: {platform}\n",
+  "@helpReportBody": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
   "logout": "लॉग आउट",
+  "authSignIn": "साइन इन",
+  "authSignInTitle": "वापसी पर स्वागत है",
+  "authSignInSubtitle": "अपने कंसल्टेशन जारी रखने के लिए साइन इन करें।",
+  "authEmail": "ईमेल",
+  "authEmailHint": "doctor@clinic.com",
+  "authEmailInvalid": "सही ईमेल पता डालें",
+  "authPassword": "पासवर्ड",
+  "authPasswordHint": "अपना पासवर्ड डालें",
+  "authPasswordRequired": "अपना पासवर्ड डालें",
+  "authPasswordRules": "कम से कम 8 अक्षर",
+  "authPasswordsDoNotMatch": "पासवर्ड मेल नहीं खाते",
+  "authShowPassword": "पासवर्ड दिखाएँ",
+  "authHidePassword": "पासवर्ड छिपाएँ",
+  "authForgotPassword": "पासवर्ड भूल गए?",
+  "authNoAccount": "Rxvarta पर नए हैं?",
+  "authCreateAccount": "अकाउंट बनाएँ",
+  "authHaveAccount": "पहले से अकाउंट है?",
+  "authSignUpTitle": "अपना अकाउंट बनाएँ",
+  "authSignUpSubtitle": "हर डॉक्टर के लिए एक अकाउंट। आपके मरीज़ और प्रिस्क्रिप्शन सिर्फ़ आपके रहते हैं।",
+  "authConfirmPassword": "पासवर्ड की पुष्टि करें",
+  "authSignInInstead": "इसके बजाय साइन इन करें",
+  "authVerifyTitle": "अपना ईमेल देखें",
+  "authVerifyBody": "हमने {email} पर 8 अंकों का कोड भेजा है। आगे बढ़ने के लिए उसे नीचे डालें।",
+  "@authVerifyBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "authCode": "वेरिफ़िकेशन कोड",
+  "authCodeIncomplete": "कोड के आठों अंक डालें",
+  "authVerify": "वेरिफ़ाई करें",
+  "authResendCode": "कोड दोबारा भेजें",
+  "authResendIn": "{seconds} सेकंड में कोड दोबारा भेजें",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeSent": "आपके ईमेल पर नया कोड भेज दिया गया है।",
+  "authForgotTitle": "अपना पासवर्ड रीसेट करें",
+  "authForgotSubtitle": "जिस ईमेल से साइन अप किया था वह डालें, हम आपको कोड भेजेंगे।",
+  "authSendCode": "कोड भेजें",
+  "authResetTitle": "नया पासवर्ड चुनें",
+  "authResetSubtitle": "ऐसा पासवर्ड चुनें जो आपने Rxvarta पर पहले इस्तेमाल न किया हो।",
+  "authNewPassword": "नया पासवर्ड",
+  "authUpdatePassword": "पासवर्ड अपडेट करें",
+  "authPasswordUpdated": "पासवर्ड अपडेट हो गया",
+  "authBackToSignIn": "साइन इन पर वापस जाएँ",
+  "authBack": "वापस",
+  "authNotConfiguredTitle": "ऐप कॉन्फ़िगर नहीं है",
+  "authNotConfiguredBody": "इस बिल्ड में बैकएंड कनेक्शन नहीं है, इसलिए साइन-इन उपलब्ध नहीं है। ऐप को --dart-define-from-file=config/app_config.json के साथ बिल्ड करें (README देखें)।",
+  "authSplashLoading": "आपका वर्कस्पेस तैयार हो रहा है…",
+  "authSecureNote": "एन्क्रिप्टेड और सिर्फ़ आपके अकाउंट तक सीमित।",
+  "authErrorInvalidCredentials": "ईमेल या पासवर्ड गलत है।",
+  "authErrorEmailNotConfirmed": "कृपया पहले अपना ईमेल पता वेरिफ़ाई करें।",
+  "authErrorUserExists": "इस ईमेल से पहले से एक अकाउंट मौजूद है।",
+  "authErrorWeakPassword": "मज़बूत पासवर्ड चुनें: कम से कम 8 अक्षर और मौजूदा पासवर्ड से अलग।",
+  "authErrorOtpExpired": "यह कोड समाप्त हो चुका है। नया कोड मँगाएँ।",
+  "authErrorOtpInvalid": "यह कोड सही नहीं है। जाँचकर दोबारा कोशिश करें।",
+  "authErrorRateLimited": "बहुत ज़्यादा कोशिशें। एक मिनट रुककर दोबारा कोशिश करें।",
+  "authErrorNetwork": "इंटरनेट कनेक्शन नहीं है। नेटवर्क जाँचकर दोबारा कोशिश करें।",
+  "authErrorSignupDisabled": "नए साइन-अप फ़िलहाल बंद हैं।",
+  "authErrorValidation": "कृपया डाली गई जानकारी जाँच लें।",
+  "authErrorNotConfigured": "ऐप किसी बैकएंड से जुड़ा नहीं है।",
+  "authErrorUnknown": "कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।",
+  "authErrorDetails": "विवरण",
   "regPrefix": "पंज.",
   "allRightsReserved": "सर्वाधिकार सुरक्षित",
   "editProfile": "प्रोफ़ाइल संपादित करें",
@@ -59,6 +373,82 @@
   "clinicName": "क्लिनिक / अस्पताल का नाम",
   "clinicAddress": "क्लिनिक का पता",
   "clinicPhone": "क्लिनिक फ़ोन",
+  "profilePhone": "आपका मोबाइल नंबर",
+  "profileOptional": "वैकल्पिक",
+  "profileRequiredHint": "* वाले फ़ील्ड हर प्रिस्क्रिप्शन पर छपते हैं और कानूनन ज़रूरी हैं।",
+  "profileSectionDoctor": "डॉक्टर की जानकारी",
+  "profileSectionClinic": "क्लिनिक की जानकारी",
+  "profileNameHint": "जैसे Dr. Asha Verma",
+  "profileQualificationsHint": "जैसे MBBS, MD (Medicine)",
+  "profileRegNoHint": "राज्य मेडिकल काउंसिल नंबर",
+  "profilePhoneHint": "10 अंकों का मोबाइल नंबर",
+  "profilePhoneInvalid": "सही मोबाइल नंबर डालें",
+  "profileClinicNameHint": "क्लिनिक या अस्पताल का नाम",
+  "profileClinicAddressHint": "इलाका, शहर, राज्य, पिन",
+  "profileClinicPhoneHint": "लैंडलाइन या रिसेप्शन नंबर",
+  "profileSavedOffline": "इस डिवाइस पर सेव — ऑनलाइन होने पर सिंक होगा",
+  "profileSaveFailed": "प्रोफ़ाइल सेव नहीं हो सकी",
+  "profileRetry": "दोबारा कोशिश करें",
+  "profileIncompleteNudgeTitle": "प्रिस्क्रिप्शन साइन करने के लिए प्रोफ़ाइल पूरी करें",
+  "profileIncompleteNudgeBody": "अपना नाम, रजिस्ट्रेशन नंबर, क्लिनिक और हस्ताक्षर जोड़ें।",
+  "signatureTitle": "हस्ताक्षर",
+  "signatureSubtitle": "आपके साइन किए हर प्रिस्क्रिप्शन पर छपता है।",
+  "signatureAdd": "हस्ताक्षर जोड़ें",
+  "signatureUpdate": "हस्ताक्षर बदलें",
+  "signatureDraw": "बनाएँ",
+  "signatureUpload": "अपलोड करें",
+  "signatureClear": "मिटाएँ",
+  "signatureUse": "यह हस्ताक्षर उपयोग करें",
+  "signatureEmptyError": "कृपया पहले अपने हस्ताक्षर बनाएँ।",
+  "signatureHint": "लाइन के ऊपर उँगली या माउस से हस्ताक्षर करें",
+  "signatureUploadHint": "सफ़ेद कागज़ पर किए अपने हस्ताक्षर की साफ़ फ़ोटो या स्कैन चुनें (PNG या JPEG)।",
+  "signatureChooseImage": "इमेज चुनें",
+  "signatureChangeImage": "दूसरी चुनें",
+  "signatureUnsupportedFormat": "कृपया PNG या JPEG इमेज चुनें।",
+  "signatureLoadFailed": "वह इमेज लोड नहीं हो सकी",
+  "signatureNone": "अभी कोई हस्ताक्षर नहीं",
+  "signatureSaved": "हस्ताक्षर सेव हो गए",
+  "signatureSaveFailed": "हस्ताक्षर सेव नहीं हो सके",
+  "onboardingTitle": "अपना प्रिस्क्रिप्शन सेट करें",
+  "onboardingSubtitle": "ये जानकारी आपके साइन किए हर प्रिस्क्रिप्शन पर दिखती है।",
+  "onboardingStepDoctor": "डॉक्टर",
+  "onboardingStepClinic": "क्लिनिक",
+  "onboardingStepSignature": "हस्ताक्षर",
+  "onboardingDoctorTitle": "आपकी जानकारी",
+  "onboardingDoctorBody": "ठीक वैसे ही जैसे वे लेटरहेड पर दिखनी चाहिए।",
+  "onboardingClinicTitle": "आपका क्लिनिक",
+  "onboardingClinicBody": "प्रिस्क्रिप्शन पर छपने वाला प्रैक्टिस का नाम और पता।",
+  "onboardingSignatureTitle": "आपके हस्ताक्षर",
+  "onboardingSignatureBody": "इन्हें एक बार बनाएँ या फ़ोटो अपलोड करें। ये निजी रूप से सेव होते हैं और सिर्फ़ आपके साइन किए प्रिस्क्रिप्शन पर छपते हैं।",
+  "onboardingContinue": "आगे बढ़ें",
+  "onboardingBack": "वापस",
+  "onboardingFinish": "पूरा करें",
+  "onboardingSignatureRequired": "पूरा करने के लिए अपने हस्ताक्षर जोड़ें।",
+  "onboardingSignOut": "साइन आउट",
+  "onboardingSignedInAs": "{email} के रूप में साइन इन",
+  "@onboardingSignedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "signGateTitle": "साइन करने के लिए प्रोफ़ाइल पूरी करें",
+  "signGateBody": "प्रिस्क्रिप्शन पर लिखने वाले डॉक्टर की जानकारी होनी चाहिए। साइन करने से पहले ये जोड़ें:",
+  "signGateCompleteProfile": "प्रोफ़ाइल पूरी करें",
+  "signGateOk": "ठीक है",
+  "signGatePatientNameTitle": "मरीज़ का नाम नहीं है",
+  "signGatePatientNameBody": "प्रिस्क्रिप्शन साइन करने से पहले मरीज़ का नाम डालें।",
+  "signGateMedicineNameTitle": "दवा का नाम नहीं है",
+  "signGateMedicineNameBody": "दवा {n} का कोई नाम नहीं है। साइन करने से पहले नाम डालें या उसे हटाएँ।",
+  "@signGateMedicineNameBody": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfAwaitingSignature": "हस्ताक्षर बाकी",
   "unsavedChanges": "असहेजे परिवर्तन",
   "unsavedChangesBody": "आपके पास असहेजे परिवर्तन हैं। क्या आप उन्हें सहेजना चाहते हैं या छोड़ना चाहते हैं?",
   "discard": "छोड़ें",
@@ -102,6 +492,8 @@
   "continueToRecording": "रिकॉर्डिंग पर जाएँ",
   "couldNotAddReport": "रिपोर्ट नहीं जोड़ी जा सकी",
   "couldNotSavePatient": "मरीज़ सहेजा नहीं जा सका",
+  "couldNotSaveChanges": "आपके बदलाव सहेजे नहीं जा सके",
+  "nothingHeardInRecording": "इस रिकॉर्डिंग में कोई परामर्श सुनाई नहीं दिया। जाँच लें कि माइक्रोफ़ोन काम कर रहा है, फिर दोबारा रिकॉर्ड करें।",
   "patientAlreadyExists": "मरीज़ पहले से मौजूद है",
   "patientExistsBody": "इस नंबर वाला मरीज़ पहले से आपके रिकॉर्ड में है:",
   "patientExistsQuestion": "क्या यह परामर्श उनके मौजूदा इतिहास में जोड़ें?",
@@ -176,6 +568,13 @@
   "followUpLabel": "फॉलो-अप",
   "afterDaysOne": "1 दिन बाद",
   "afterDaysMany": "{n} दिन बाद",
+  "@afterDaysMany": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "opening": "खोला जा रहा है…",
   "viewPrescription": "प्रिस्क्रिप्शन देखें",
   "share": "साझा करें",
@@ -189,13 +588,6 @@
   "shareOnWhatsapp": "व्हाट्सएप पर साझा करें",
   "shareViaOtherApps": "अन्य ऐप से साझा करें",
   "startNewConsultationCta": "नया परामर्श शुरू करें",
-  "@afterDaysMany": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      }
-    }
-  },
   "reviewPrescription": "प्रिस्क्रिप्शन की समीक्षा",
   "verifyDetails": "ट्रांसक्राइब किए विवरण जाँचें और संपादित करें",
   "reviewTitle": "समीक्षा",
@@ -255,7 +647,5 @@
   "prescriptionReady": "प्रिस्क्रिप्शन तैयार",
   "reviewAndShare": "जाँचें और मरीज़ को भेजें",
   "generatingPdfLong": "प्रिस्क्रिप्शन PDF बन रहा है…",
-  "couldNotGeneratePdf": "PDF नहीं बन सका",
-  "welcomeToRxvarta": "Rxvarta में आपका स्वागत है",
-  "onboardingMessage": "डॉक्टर प्रोफ़ाइल और API कुंजी सेटअप यहाँ होगा।"
+  "couldNotGeneratePdf": "PDF नहीं बन सका"
 }

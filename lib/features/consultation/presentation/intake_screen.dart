@@ -13,6 +13,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_paths.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/errors/failure.dart';
+import '../../../data/db/database_provider.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
 import '../../../domain/models/report_attachment.dart';
@@ -102,7 +104,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
       // picker's temp cache is cleared. We store only the relative file name
       // (resolved against the documents dir at read time) so a reinstall or
       // container-path change can't orphan it.
-      final attachDir = Directory(AppPaths.attachmentsDir);
+      final attachDir = Directory(_attachmentsDir);
       if (!attachDir.existsSync()) attachDir.createSync(recursive: true);
       final ext = p.extension(picked.path).isEmpty
           ? '.jpg'
@@ -154,6 +156,18 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
     if (source != null) await _addReport(source);
   }
 
+  /// The signed-in doctor's report folder.
+  String get _attachmentsDir {
+    final dir = ref.read(attachmentsDirProvider);
+    if (dir == null) {
+      throw const AuthFailure('Sign in again to attach reports.');
+    }
+    return dir;
+  }
+
+  String _resolve(String stored) =>
+      AppPaths.resolveAttachment(stored, attachmentsDir: _attachmentsDir);
+
   void _moveReport(int i, int delta) {
     final j = i + delta;
     if (j < 0 || j >= _attachments.length) return;
@@ -169,7 +183,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
     setState(() => _attachments = [..._attachments]..removeAt(i));
     // Best-effort cleanup of the orphaned file.
     try {
-      final f = File(AppPaths.resolveAttachment(removed.path));
+      final f = File(_resolve(removed.path));
       if (f.existsSync()) f.deleteSync();
     } catch (_) {}
   }
@@ -558,6 +572,7 @@ class _IntakeScreenState extends ConsumerState<IntakeScreen> {
                               _ReportTile(
                                 key: ValueKey(_attachments[i].path),
                                 attachment: _attachments[i],
+                                imagePath: _resolve(_attachments[i].path),
                                 isFirst: i == 0,
                                 isLast: i == _attachments.length - 1,
                                 onCaption: (c) => _setCaption(i, c),
@@ -797,6 +812,7 @@ class _ReportTile extends StatelessWidget {
   const _ReportTile({
     super.key,
     required this.attachment,
+    required this.imagePath,
     required this.isFirst,
     required this.isLast,
     required this.onCaption,
@@ -806,6 +822,7 @@ class _ReportTile extends StatelessWidget {
   });
 
   final ReportAttachment attachment;
+  final String imagePath;
   final bool isFirst;
   final bool isLast;
   final ValueChanged<String> onCaption;
@@ -830,7 +847,7 @@ class _ReportTile extends StatelessWidget {
           ClipRRect(
             borderRadius: AppSpacing.radiusSm,
             child: Image.file(
-              File(AppPaths.resolveAttachment(attachment.path)),
+              File(imagePath),
               width: 52,
               height: 52,
               fit: BoxFit.cover,

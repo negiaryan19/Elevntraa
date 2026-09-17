@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'json_coerce.dart';
+
 part 'medication.freezed.dart';
 part 'medication.g.dart';
 
@@ -26,6 +28,21 @@ abstract class Medication with _$Medication {
     String? originalName,
   }) = _Medication;
 
+  /// Tolerant of what a language model actually returns: a missing or
+  /// numeric field is coerced rather than thrown on, because a throw here
+  /// used to discard the whole consultation. See [coerceString].
   factory Medication.fromJson(Map<String, dynamic> json) =>
-      _$MedicationFromJson(json);
+      _$MedicationFromJson(normalizeMedicationJson(json));
 }
+
+/// Reshapes one medication map into the types the generated decoder casts to.
+Map<String, dynamic> normalizeMedicationJson(Map<String, dynamic> json) => {
+  ...json,
+  'name': coerceString(json['name']),
+  'dosage': coerceString(json['dosage']),
+  'frequency': coerceString(json['frequency']),
+  'duration': coerceString(json['duration']),
+  'timing': coerceString(json['timing']),
+  'needsReview': coerceBool(json['needsReview']),
+  'originalName': coerceOptionalString(json['originalName']),
+};

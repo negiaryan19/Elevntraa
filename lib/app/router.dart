@@ -1,9 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/auth/auth_providers.dart';
+import '../core/config/app_config.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
+import '../features/auth/auth_redirect.dart';
+import '../features/auth/presentation/forgot_password_screen.dart';
+import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/reset_password_screen.dart';
+import '../features/auth/presentation/signup_screen.dart';
+import '../features/auth/presentation/splash_screen.dart';
+import '../features/auth/presentation/verify_otp_screen.dart';
 import '../features/consultation/presentation/intake_choice_screen.dart';
 import '../features/consultation/presentation/intake_screen.dart';
 import '../features/consultation/presentation/recording_screen.dart';
@@ -14,6 +25,7 @@ import '../features/patient/presentation/patient_detail_screen.dart';
 import '../features/patient/presentation/patients_screen.dart';
 import '../features/prescription/presentation/pdf_preview_screen.dart';
 import '../features/prescription/presentation/review_sign_screen.dart';
+import '../features/settings/data/doctor_profile_repository.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../l10n/app_localizations.dart';
 
@@ -21,8 +33,14 @@ import '../l10n/app_localizations.dart';
 /// [AppRoute.foo.path] / `context.go(AppRoute.foo.path)` and we don't have
 /// raw strings sprinkled around.
 enum AppRoute {
-  onboarding('/onboarding'),
-  home('/'),
+  splash(kSplashPath),
+  login(kLoginPath),
+  signup(kSignupPath),
+  verify(kVerifyPath),
+  forgot(kForgotPath),
+  resetPassword(kResetPasswordPath),
+  onboarding(kOnboardingPath),
+  home(kHomePath),
   patients('/patients'),
   settings('/settings'),
   intake('/intake'),
@@ -43,11 +61,98 @@ enum AppRoute {
   }
 }
 
+/// Bridges Riverpod state into GoRouter's `refreshListenable`: whenever the
+/// session or the doctor's profile changes, the router re-runs `redirect`
+/// for the current location (login ⇄ splash ⇄ onboarding ⇄ home).
+class _RouterRefresh extends ChangeNotifier {
+  bool _scheduled = false;
+  bool _disposed = false;
+
+  /// Coalesces a burst of provider updates into one redirect pass, run in a
+  /// microtask. Riverpod invokes `listen` callbacks while it is still
+  /// propagating the change to dependent providers, so a synchronous
+  /// redirect could read a stale `isSignedIn` / profile; by the time the
+  /// microtask runs every dependent is marked dirty and `ref.read` rebuilds
+  /// it on demand.
+  void ping() {
+    if (_scheduled || _disposed) return;
+    _scheduled = true;
+    scheduleMicrotask(() {
+      _scheduled = false;
+      if (!_disposed) notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
+  final refresh = _RouterRefresh();
+  ref.onDispose(refresh.dispose);
+  // `listen`, not `watch`: the GoRouter instance must stay stable (it owns
+  // the navigation stack); only the redirect decision reads fresh state.
+  ref.listen(authStateProvider, (_, _) => refresh.ping());
+  ref.listen(doctorProfileProvider, (_, _) => refresh.ping());
+  // Listening also instantiates the flag so it catches the recovery event.
+  ref.listen(passwordRecoveryPendingProvider, (_, _) => refresh.ping());
+
   return GoRouter(
     initialLocation: AppRoute.home.path,
     debugLogDiagnostics: false,
+    refreshListenable: refresh,
+    redirect: (context, state) => computeRedirect(
+      hasBackend: AppConfig.hasBackend,
+      signedIn: ref.read(isSignedInProvider),
+      profile: ref.read(doctorProfileProvider),
+      location: state.uri.toString(),
+      recoveryPending: ref.read(passwordRecoveryPendingProvider),
+    ),
     routes: [
+      GoRoute(
+        path: AppRoute.splash.path,
+        name: AppRoute.splash.name,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: SplashScreen()),
+      ),
+      GoRoute(
+        path: AppRoute.login.path,
+        name: AppRoute.login.name,
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.signup.path,
+        name: AppRoute.signup.name,
+        builder: (context, state) => const SignUpScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.verify.path,
+        name: AppRoute.verify.name,
+        builder: (context, state) {
+          // Query parameters are canonical: they survive the redirect
+          // pass and process death, and every caller builds them with
+          // verifyLocation().
+          final email = state.uri.queryParameters['email'] ?? '';
+          final purpose = state.uri.queryParameters['purpose'];
+          return VerifyOtpScreen(
+            email: email,
+            purpose: VerifyPurpose.parse(purpose),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoute.forgot.path,
+        name: AppRoute.forgot.name,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.resetPassword.path,
+        name: AppRoute.resetPassword.name,
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
       GoRoute(
         path: AppRoute.onboarding.path,
         name: AppRoute.onboarding.name,
@@ -101,7 +206,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.recording.name,
         builder: (context, state) => RecordingScreen(
           visitId: state.pathParameters['visitId']!,
-          append: state.uri.queryParameters['append'] == 'true',
           fromReview: state.uri.queryParameters['fromReview'] == 'true',
         ),
       ),

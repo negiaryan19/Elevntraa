@@ -128,7 +128,7 @@ Skip if building for Android only.
 ### Get your project credentials
 
 1. In your Supabase project, go to Project Settings > API.
-2. Copy your "Project URL" and "anon/public" key. You will need these in the `.env` file.
+2. Copy your "Project URL" and "anon/public" (publishable) key. You will need these in `config/app_config.json` (Step 7).
 
 ### Install the Supabase CLI
 
@@ -199,38 +199,46 @@ flutter pub get
 
 ---
 
-## Step 7: Add your API keys
+## Step 7: Configure the app build
 
-Create a `.env` file from the example:
+The app is configured at build time with `--dart-define-from-file`. Only values that are safe to ship inside the binary go in here: the Supabase project URL and its publishable (anon) key. Provider secrets (Sarvam, Gemini) live in Supabase Edge Function secrets and never reach the app.
+
+Create the config file from the example:
 
 **macOS/Linux**:
 ```bash
-cp .env.example .env
+cp config/app_config.example.json config/app_config.json
 ```
 
 **Windows**:
 ```bash
-copy .env.example .env
+copy config\app_config.example.json config\app_config.json
 ```
 
-Open `.env` and fill in your values:
+Open `config/app_config.json` and fill in your values:
 
+```json
+{
+  "SUPABASE_URL": "https://YOUR-PROJECT.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_...",
+  "SENTRY_DSN": "",
+  "SUPPORT_EMAIL": "",
+  "SUPPORT_WHATSAPP": "",
+  "PRIVACY_URL": "",
+  "TERMS_URL": ""
+}
 ```
-SARVAM_API_KEY=your_sarvam_key
-GEMINI_API_KEY=your_gemini_key
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-AUTO_LOGIN_EMAIL=your_test_user_email
-AUTO_LOGIN_PASSWORD=your_test_user_password
-```
 
-Where to get the keys:
+Where to get the values:
 
-- Sarvam API key: sign up at https://www.sarvam.ai, then create a key from your dashboard.
-- Gemini API key: create one at https://aistudio.google.com/app/apikey
-- Supabase URL and anon key: found in your Supabase project under Settings > API.
+- Supabase URL and publishable key: your Supabase project under Settings > API.
+- Sarvam / Gemini keys are set as Edge Function secrets (Step 5), not here.
 
-Do not commit the `.env` file. Only `.env.example` goes into version control.
+Do not commit `config/app_config.json` (it is gitignored). Only `config/app_config.example.json` goes into version control.
+
+Each doctor signs in with their own e-mail and password (an 8-digit code sent by e-mail confirms the address). There is no shared or automatic login.
+
+If you run the app without this file it still starts, but the login screen shows "App not configured" and sign-in is disabled.
 
 ---
 
@@ -255,16 +263,22 @@ Start the iOS Simulator (Mac only):
 open -a Simulator
 ```
 
-Run the app:
+Run the app (always pass the config file, otherwise sign-in is disabled):
 
 ```bash
-flutter run
+flutter run --dart-define-from-file=config/app_config.json
+```
+
+On a specific device, e.g. the macOS desktop build:
+
+```bash
+flutter run -d macos --dart-define-from-file=config/app_config.json
 ```
 
 If multiple devices are connected:
 
 ```bash
-flutter run -d <device-id>
+flutter run -d <device-id> --dart-define-from-file=config/app_config.json
 ```
 
 ---
@@ -281,19 +295,21 @@ dart run build_runner build --delete-conflicting-outputs
 
 ## Build a release version
 
+Release builds take the same `--dart-define-from-file=config/app_config.json` flag as `flutter run`.
+
 **Android APK**:
 ```bash
-flutter build apk --release
+flutter build apk --release --dart-define-from-file=config/app_config.json
 ```
 
 **Android App Bundle (Play Store)**:
 ```bash
-flutter build appbundle --release
+flutter build appbundle --release --dart-define-from-file=config/app_config.json
 ```
 
 **iOS (Mac + Xcode required)**:
 ```bash
-flutter build ios --release
+flutter build ios --release --dart-define-from-file=config/app_config.json
 ```
 
 ---
@@ -318,14 +334,14 @@ flutter test integration_test/e2e_test.dart -d <device-id>
 
 - `lib/main.dart` - app entry point
 - `lib/app` - app shell, theme, routing
-- `lib/core` - shared utilities, networking, env reader
+- `lib/core` - shared utilities, auth, build-time config
 - `lib/data` - local Drift/SQLite database and repositories
 - `lib/domain` - data models
 - `lib/features` - screens grouped by feature (home, consultation, prescription, patient, settings, onboarding)
 - `supabase/functions` - backend Edge Functions (process-consultation, check-job-status)
 - `supabase/migrations` - database schema migrations
 - `android`, `ios` - native platform projects
-- `.env.example` - template for your API keys
+- `config/app_config.example.json` - template for the build-time app config
 
 ---
 
@@ -334,8 +350,8 @@ flutter test integration_test/e2e_test.dart -d <device-id>
 - "Android licenses not accepted": run `flutter doctor --android-licenses`. If permission error, see Step 3.
 - "Gradle version" errors: confirm you are on Java 17 and check the pinned versions at the top.
 - Missing generated files: run the build_runner command in Step 9.
-- Transcription not working: check `.env` exists in the project root and both keys are filled in. Restart the app after editing.
-- Supabase connection issues: confirm your URL and anon key match what is in Supabase project settings.
+- Login screen says "App not configured": you ran without `--dart-define-from-file=config/app_config.json`, or the file has empty values. Fix the file and rebuild (a hot restart is not enough — dart-defines are compiled in).
+- Supabase connection issues: confirm the URL and publishable key in `config/app_config.json` match your Supabase project settings.
 - Edge Functions not responding: check that you deployed them and set the secrets (Step 5).
 - CocoaPods errors (iOS): from the `ios` folder run `pod install`. If it still fails, run `pod repo update` first.
 - General health check: `flutter doctor -v`

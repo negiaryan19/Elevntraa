@@ -35,65 +35,59 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
     _load();
   }
 
-  static String _patientKey(PatientProfile p) =>
-      '${p.name.trim().toLowerCase()}|${(p.whatsappNumber ?? p.phone ?? '').trim()}';
-
   Future<void> _load() async {
-    final visits = await ref.read(visitRepositoryProvider).recent(limit: 50);
-    final patientRepo = ref.read(patientRepositoryProvider);
-
-    final rawEntries = <({VisitRecord visit, PatientProfile? patient})>[];
-    for (final v in visits) {
-      final p = await patientRepo.byId(v.patientId);
-      rawEntries.add((visit: v, patient: p));
+    List<_PatientGroup> groups;
+    try {
+      // Every patient in the clinic, not just those inside the most recent
+      // N visits: a truncated window made older patients vanish from the
+      // list and from search once the doctor had seen enough people.
+      final entries = await ref
+          .read(visitRepositoryProvider)
+          .latestPerPatient();
+      final patients = await ref
+          .read(patientRepositoryProvider)
+          .byIds(entries.map((e) => e.latestVisit.patientId));
+      groups = [
+        for (final e in entries)
+          _PatientGroup(
+            patient: patients[e.latestVisit.patientId],
+            latestVisit: e.latestVisit,
+            visitCount: e.visitCount,
+          ),
+      ];
+    } catch (e) {
+      // A database error must not leave the tab spinning forever.
+      debugPrint('[patients] load failed: $e');
+      groups = const [];
     }
-
-    // Group by unique patient (name + phone)
-    final grouped =
-        <String, List<({VisitRecord visit, PatientProfile? patient})>>{};
-    for (final e in rawEntries) {
-      final key = e.patient == null
-          ? 'unknown|${e.visit.patientId}'
-          : _patientKey(e.patient!);
-      grouped.putIfAbsent(key, () => []).add(e);
-    }
-
-    // Build groups; representative = most recent visit
-    final groups =
-        grouped.entries.map((e) {
-          final sorted = e.value.toList()
-            ..sort((a, b) => b.visit.createdAt.compareTo(a.visit.createdAt));
-          return _PatientGroup(
-            patient: sorted.first.patient,
-            latestVisit: sorted.first.visit,
-            visitCount: sorted.length,
-          );
-        }).toList()..sort(
-          (a, b) => b.latestVisit.createdAt.compareTo(a.latestVisit.createdAt),
-        );
 
     if (mounted) {
       setState(() {
         _groups = groups;
-        _filtered = groups;
+        _filtered = _applyQuery(groups, _query);
         _loading = false;
       });
     }
   }
 
+  static List<_PatientGroup> _applyQuery(
+    List<_PatientGroup> groups,
+    String query,
+  ) {
+    if (query.isEmpty) return groups;
+    final lower = query.toLowerCase();
+    return groups.where((g) {
+      final name = (g.patient?.name ?? '').toLowerCase();
+      final phone = (g.patient?.whatsappNumber ?? g.patient?.phone ?? '')
+          .toLowerCase();
+      return name.contains(lower) || phone.contains(lower);
+    }).toList();
+  }
+
   void _onSearch(String q) {
     setState(() {
       _query = q;
-      final lower = q.toLowerCase();
-      _filtered = q.isEmpty
-          ? _groups
-          : _groups.where((g) {
-              final name = (g.patient?.name ?? '').toLowerCase();
-              final phone =
-                  (g.patient?.whatsappNumber ?? g.patient?.phone ?? '')
-                      .toLowerCase();
-              return name.contains(lower) || phone.contains(lower);
-            }).toList();
+      _filtered = _applyQuery(_groups, q);
     });
   }
 

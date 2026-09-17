@@ -1,30 +1,70 @@
+/// Stable, UI-facing classification of what went wrong. The UI maps a code to
+/// a localized message and a recovery action (Retry / Sign in / Open settings /
+/// Record again) instead of showing raw exception text (roadmap item 11).
+enum FailureCode {
+  /// No connectivity or the request never reached the server.
+  network,
+
+  /// No valid session; the doctor must sign in again.
+  auth,
+
+  /// Local disk / database read or write failed.
+  storage,
+
+  /// Microphone or notification permission missing.
+  permission,
+
+  /// The recording was empty, silent or unreadable.
+  invalidAudio,
+
+  /// Backend returned an error we do not classify further.
+  server,
+
+  /// Anything else.
+  unknown,
+}
+
 /// A flat failure type the UI can render directly. Repositories and services
-/// translate Dio/IO/DB exceptions into one of these so widgets never see a
-/// raw exception.
-sealed class Failure {
-  const Failure(this.message, {this.cause});
+/// translate Dio/IO/DB/Supabase exceptions into one of these so widgets never
+/// see a raw exception. [message] is a developer-readable detail (logged and
+/// shown in the "details" expander); [code] drives the localized headline.
+sealed class Failure implements Exception {
+  const Failure(this.message, {this.cause, this.code = FailureCode.unknown});
+
   final String message;
   final Object? cause;
+  final FailureCode code;
 
   @override
-  String toString() => '$runtimeType: $message';
+  String toString() => '$runtimeType(${code.name}): $message';
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure(super.message, {super.cause});
+  const NetworkFailure(super.message, {super.cause})
+    : super(code: FailureCode.network);
+}
+
+class AuthFailure extends Failure {
+  const AuthFailure(super.message, {super.cause})
+    : super(code: FailureCode.auth);
 }
 
 class ApiFailure extends Failure {
-  const ApiFailure(super.message, {this.statusCode, super.cause});
-  final int? statusCode;
+  const ApiFailure(
+    super.message, {
+    super.cause,
+    super.code = FailureCode.server,
+  });
 }
 
 class StorageFailure extends Failure {
-  const StorageFailure(super.message, {super.cause});
+  const StorageFailure(super.message, {super.cause})
+    : super(code: FailureCode.storage);
 }
 
 class PermissionFailure extends Failure {
-  const PermissionFailure(super.message, {super.cause});
+  const PermissionFailure(super.message, {super.cause})
+    : super(code: FailureCode.permission);
 }
 
 class UnknownFailure extends Failure {

@@ -50,14 +50,17 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Secrets — keys live in .env locally; commit .env.example only.
+# Secrets — keys live in .env locally (bench scripts only); commit .env.example only.
 .env
 .env.*
 !.env.example
+# Build-time app config (--dart-define-from-file); commit the example only.
+config/app_config.json
 
 # Signing / keystores — never commit these.
 *.keystore
 *.jks
+*.p12
 key.properties
 **/key.properties
 
@@ -83,3 +86,4 @@ android/build/
 # large — never commit it. Case folders keep their expected.json (committed);
 # the audio.m4a is dropped in locally. See test/golden_audio/README.md.
 test/golden_audio/**/audio.m4a
+config/e2e.json

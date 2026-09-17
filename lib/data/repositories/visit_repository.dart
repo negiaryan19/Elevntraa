@@ -29,6 +29,16 @@ class VisitRepository {
     return rows.map(_toRecord).toList();
   }
 
+  /// Each patient's newest visit and total visit count, newest first.
+  Future<List<({VisitRecord latestVisit, int visitCount})>>
+  latestPerPatient() async {
+    final rows = await _db.latestVisitPerPatient();
+    return [
+      for (final r in rows)
+        (latestVisit: _toRecord(r.latest), visitCount: r.count),
+    ];
+  }
+
   Future<void> upsert(VisitRecord v) {
     return _db.upsertVisit(
       VisitsCompanion(

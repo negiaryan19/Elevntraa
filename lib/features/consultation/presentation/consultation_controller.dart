@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
+import '../../../core/auth/auth_providers.dart';
 import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
+import '../../../domain/models/medical_insight.dart';
 import '../../../services/differential_engine.dart';
 import '../../../services/icd10_local_mapper.dart';
 import '../../../services/drug_name_corrector.dart';
@@ -46,8 +48,13 @@ enum ConsultationStage {
 /// the full combined transcript, which is stored back here for the next append.
 ///
 /// Reset to '' when a fresh consultation begins (in the intake screen, before
-/// navigating to recording) and when the current one is discarded.
-final cumulativeTranscriptProvider = StateProvider<String>((ref) => '');
+/// navigating to recording), when the current one is discarded, and when a
+/// different doctor signs in, so one doctor's consultation never carries into
+/// another's.
+final cumulativeTranscriptProvider = StateProvider<String>((ref) {
+  ref.watch(currentUserIdProvider);
+  return '';
+});
 
 class ConsultationState {
   const ConsultationState({
@@ -55,6 +62,7 @@ class ConsultationState {
     this.languageCode = 'unknown',
     this.elapsed = Duration.zero,
     this.error,
+    this.nothingHeard = false,
     this.differentialSuggestions = const [],
   });
 
@@ -62,6 +70,10 @@ class ConsultationState {
   final String languageCode;
   final Duration elapsed;
   final String? error;
+
+  /// The error is that the recording held no consultation, so the screen can
+  /// explain it in the doctor's language and offer a new recording.
+  final bool nothingHeard;
 
   /// Doctor-only differential-diagnosis suggestions from [DifferentialEngine],
   /// computed from the extracted symptoms after processing. These are decision
@@ -75,6 +87,7 @@ class ConsultationState {
     Duration? elapsed,
     String? error,
     bool clearError = false,
+    bool? nothingHeard,
     List<DifferentialMatch>? differentialSuggestions,
   }) {
     return ConsultationState(
@@ -82,6 +95,9 @@ class ConsultationState {
       languageCode: languageCode ?? this.languageCode,
       elapsed: elapsed ?? this.elapsed,
       error: clearError ? null : (error ?? this.error),
+      nothingHeard:
+          nothingHeard ??
+          (clearError || error != null ? false : this.nothingHeard),
       // Differential suggestions are decision support tied to a completed
       // consultation. Preserve them only while the state remains (or becomes)
       // `done`; any other stage transition clears them so stale suggestions
@@ -157,6 +173,20 @@ class ConsultationController extends Notifier<ConsultationState> {
             previousTranscript: previous.trim().isEmpty ? null : previous,
           );
 
+      // Nothing clinical came back: the microphone caught no consultation
+      // (muted, blocked, or only noise that speech-to-text turned into a
+      // stray sentence). Stay here and say so, rather than open Review with a
+      // blank prescription. The stored visit and transcript are left as they
+      // were, so an "Add More" consultation keeps what it already had.
+      if (!result.insight.hasClinicalContent) {
+        state = state.copyWith(
+          stage: ConsultationStage.error,
+          error: 'No consultation was heard in this recording.',
+          nothingHeard: true,
+        );
+        return;
+      }
+
       // NOTE: There is no validateExtraction() step in this controller, so
       // POINT B does not exist — data cannot be lost to validation here.
 
@@ -221,6 +251,7 @@ class ConsultationController extends Notifier<ConsultationState> {
       state = state.copyWith(
         stage: ConsultationStage.error,
         error: e is Failure ? e.message : 'Processing failed: $e',
+        nothingHeard: e is Failure && e.code == FailureCode.invalidAudio,
       );
     }
   }

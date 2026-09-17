@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../../../core/utils/app_paths.dart';
+import '../../../data/db/database_provider.dart';
 import '../../../domain/models/doctor_profile.dart';
 import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/medication.dart';
@@ -15,10 +18,25 @@ import '../../../domain/models/visit.dart';
 
 /// Generates an NMC-standard Indian out-patient prescription PDF.
 /// White background, teal (#00796B) accent only.
-/// All doctor/clinic data pulled from [DoctorProfile]; no hardcoded values.
+/// All doctor/clinic data comes from the [DoctorProfile] the caller passes;
+/// there is no default identity — a blank field is simply not printed.
 class PrescriptionPdfService {
+  PrescriptionPdfService({this.attachmentsDir});
+
+  /// The doctor's scanned-report folder, used to add report pages. Null
+  /// when nobody is signed in: only absolute legacy paths resolve then.
+  final String? attachmentsDir;
+
   // 1mm ≈ 2.835 PDF points
   static const _mm = 2.835;
+
+  /// Default for [build]'s `awaitingSignatureLabel`; callers pass the
+  /// localized `AppLocalizations.pdfAwaitingSignature`.
+  static const defaultAwaitingSignatureLabel = 'Awaiting signature';
+
+  /// Box the signature image is fitted into (points), above the rule.
+  static const signatureBoxWidth = 170.0;
+  static const signatureBoxHeight = 55.0;
 
   static final _teal = PdfColor.fromInt(0xFF00796B);
   static final _ink = PdfColor.fromInt(0xFF1A1A1A);
@@ -26,10 +44,14 @@ class PrescriptionPdfService {
   static final _lightGrey = PdfColor.fromInt(0xFFBDBDBD);
   static final _rowAlt = PdfColor.fromInt(0xFFF5F5F5);
 
+  /// Builds the prescription. [signaturePng] is the doctor's signature image
+  /// (PNG or JPEG bytes); it is printed only when the visit is signed.
   Future<Uint8List> build({
     required VisitRecord visit,
     required PatientProfile? patient,
-    DoctorProfile doctor = DoctorProfile.defaultProfile,
+    required DoctorProfile doctor,
+    Uint8List? signaturePng,
+    String awaitingSignatureLabel = defaultAwaitingSignatureLabel,
   }) async {
     final theme = await _loadTheme();
     final insight = visit.insight ?? MedicalInsight.empty;
@@ -99,7 +121,7 @@ class PrescriptionPdfService {
             _followUpSection(visit.createdAt, insight.followUpDays!),
           ],
           pw.SizedBox(height: 28),
-          _signatureBlock(visit, doctor),
+          _signatureBlock(visit, doctor, signaturePng, awaitingSignatureLabel),
           pw.SizedBox(height: 14),
         ],
       ),
@@ -122,7 +144,11 @@ class PrescriptionPdfService {
       final att = attachments[i];
       Uint8List? bytes;
       try {
-        final file = File(AppPaths.resolveAttachment(att.path));
+        final dir = attachmentsDir;
+        final path = dir == null
+            ? att.path
+            : AppPaths.resolveAttachment(att.path, attachmentsDir: dir);
+        final file = File(path);
         if (file.existsSync()) bytes = await file.readAsBytes();
       } catch (_) {
         bytes = null;
@@ -186,58 +212,117 @@ class PrescriptionPdfService {
     }
   }
 
+  /// A file name that is unique per visit and keeps the patient's name in
+  /// their own script.
+  ///
+  /// Stripping everything but ASCII turned every Hindi, Tamil or Bengali name
+  /// into "patient", and date-only stamps gave two same-day visits the same
+  /// name, so an export zip kept one prescription and silently lost the rest.
   String fileName(PatientProfile? patient, VisitRecord visit) {
-    final who = (patient?.name ?? 'patient')
-        .replaceAll(RegExp(r'[^A-Za-z0-9]+'), '_')
+    // Keep letters and digits in any script; replace only characters that
+    // are unsafe in a file name.
+    final who = (patient?.name ?? '')
+        .replaceAll(RegExp(r'[\\/:*?"<>|\x00-\x1F]+'), '_')
+        .replaceAll(RegExp(r'\s+'), '_')
+        .replaceAll(RegExp(r'_+'), '_')
         .replaceAll(RegExp(r'^_+|_+$'), '');
     final d = visit.createdAt;
+    String two(int v) => v.toString().padLeft(2, '0');
     final stamp =
-        '${d.year}${d.month.toString().padLeft(2, '0')}${d.day.toString().padLeft(2, '0')}';
-    return 'Prescription_${who.isEmpty ? 'patient' : who}_$stamp.pdf';
-  }
-
-  Future<void> printOrPreview({
-    required VisitRecord visit,
-    required PatientProfile? patient,
-    DoctorProfile doctor = DoctorProfile.defaultProfile,
-  }) async {
-    final bytes = await build(visit: visit, patient: patient, doctor: doctor);
-    await Printing.layoutPdf(
-      onLayout: (_) => bytes,
-      name: fileName(patient, visit),
-    );
+        '${d.year}${two(d.month)}${two(d.day)}-${two(d.hour)}${two(d.minute)}';
+    final idTail = visit.id.length <= 6
+        ? visit.id
+        : visit.id.substring(visit.id.length - 6);
+    return 'Prescription_${who.isEmpty ? 'patient' : who}_${stamp}_$idTail.pdf';
   }
 
   Future<void> shareAsFile({
     required VisitRecord visit,
     required PatientProfile? patient,
-    DoctorProfile doctor = DoctorProfile.defaultProfile,
+    required DoctorProfile doctor,
+    Uint8List? signaturePng,
+    String awaitingSignatureLabel = defaultAwaitingSignatureLabel,
   }) async {
-    final bytes = await build(visit: visit, patient: patient, doctor: doctor);
+    final bytes = await build(
+      visit: visit,
+      patient: patient,
+      doctor: doctor,
+      signaturePng: signaturePng,
+      awaitingSignatureLabel: awaitingSignatureLabel,
+    );
     await Printing.sharePdf(bytes: bytes, filename: fileName(patient, visit));
   }
 
   // ── Theme ─────────────────────────────────────────────────────────────────
 
+  /// Scripts the app supports besides Latin, each bundled as Noto Sans.
+  static const _indicScripts = [
+    'Devanagari', // Hindi, Marathi
+    'Bengali',
+    'Gujarati',
+    'Kannada',
+    'Tamil',
+    'Telugu',
+  ];
+
+  /// Built once and shared by every PDF: the fonts are ~3 MB.
+  static pw.ThemeData? _theme;
+
   Future<pw.ThemeData> _loadTheme() async {
+    final cached = _theme;
+    if (cached != null) return cached;
     try {
-      final base = await PdfGoogleFonts.notoSansRegular();
-      final bold = await PdfGoogleFonts.notoSansBold();
-      final italic = await PdfGoogleFonts.notoSansItalic();
-      final deva = await PdfGoogleFonts.notoSansDevanagariRegular();
-      final devaBold = await PdfGoogleFonts.notoSansDevanagariBold();
-      return pw.ThemeData.withFont(
-        base: base,
-        bold: bold,
-        italic: italic,
-        fontFallback: [deva, devaBold],
-      );
-    } catch (_) {
+      return _theme = await _buildTheme();
+    } catch (e) {
+      // Bundled fonts should always load; if packaging is broken, still
+      // produce a prescription rather than none, and do not cache the
+      // failure so the next PDF tries again.
+      debugPrint('[pdf] bundled fonts failed to load: $e');
       return pw.ThemeData.base();
     }
   }
 
+  /// Theme from the fonts bundled in the app, so a prescription prints the
+  /// same with or without a network. Downloading fonts at print time meant
+  /// an offline clinic got Helvetica and lost every non-Latin character, and
+  /// even online only Devanagari had a fallback.
+  Future<pw.ThemeData> _buildTheme() async {
+    Future<pw.Font> load(String file) async =>
+        pw.Font.ttf(await rootBundle.load('assets/fonts/$file'));
+
+    final base = await load('NotoSans-Regular.ttf');
+    final bold = await load('NotoSans-Bold.ttf');
+    final fallback = <pw.Font>[
+      for (final script in _indicScripts) ...[
+        await load('NotoSans$script-Regular.ttf'),
+        await load('NotoSans$script-Bold.ttf'),
+      ],
+    ];
+    return pw.ThemeData.withFont(
+      base: base,
+      bold: bold,
+      // No italic faces are bundled. Using the upright faces keeps Unicode
+      // text rendering; the pdf package would otherwise fall back to
+      // Helvetica-Oblique, which has no Unicode glyphs at all.
+      italic: base,
+      boldItalic: bold,
+      fontFallback: fallback,
+    );
+  }
+
   // ── Section 1: Doctor Header ──────────────────────────────────────────────
+
+  /// Letterhead. Every line is guarded: a field the doctor has not filled in
+  /// is left out rather than printed blank or invented.
+  /// The number printed on the letterhead: the clinic landline when the
+  /// doctor gave one, otherwise their own mobile. Null only when the profile
+  /// has neither, which the sign gate already prevents.
+  static String? _contactNumber(DoctorProfile d) {
+    final clinic = d.clinicPhone.trim();
+    if (clinic.isNotEmpty) return clinic;
+    final mobile = d.phone.trim();
+    return mobile.isEmpty ? null : mobile;
+  }
 
   pw.Widget _doctorHeader(DoctorProfile d) {
     return pw.Row(
@@ -248,14 +333,15 @@ class PrescriptionPdfService {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(
-                d.name,
-                style: pw.TextStyle(
-                  fontSize: 16,
-                  fontWeight: pw.FontWeight.bold,
-                  color: _ink,
+              if (d.name.trim().isNotEmpty)
+                pw.Text(
+                  d.name.trim(),
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                    color: _ink,
+                  ),
                 ),
-              ),
               if (d.qualifications.trim().isNotEmpty) ...[
                 pw.SizedBox(height: 3),
                 pw.Text(
@@ -298,10 +384,13 @@ class PrescriptionPdfService {
                   style: pw.TextStyle(fontSize: 10, color: _grey),
                 ),
               ],
-              if (d.clinicPhone.trim().isNotEmpty) ...[
+              // The clinic landline is optional; the doctor's own mobile is
+              // required. Fall back to it so a prescription always carries a
+              // number the patient can call.
+              if (_contactNumber(d) != null) ...[
                 pw.SizedBox(height: 2),
                 pw.Text(
-                  'Phone: ${d.clinicPhone}',
+                  'Phone: ${_contactNumber(d)}',
                   textAlign: pw.TextAlign.right,
                   style: pw.TextStyle(fontSize: 10, color: _grey),
                 ),
@@ -571,26 +660,35 @@ class PrescriptionPdfService {
 
   // ── Section 8: Signature ─────────────────────────────────────────────────
 
-  pw.Widget _signatureBlock(VisitRecord visit, DoctorProfile d) {
+  /// Signed + image: the doctor's real signature above the rule. Signed
+  /// without an image (older device, file missing): name and registration
+  /// number only — never a typed stand-in. Unsigned: the localized
+  /// "Awaiting signature" placeholder.
+  pw.Widget _signatureBlock(
+    VisitRecord visit,
+    DoctorProfile d,
+    Uint8List? signaturePng,
+    String awaitingSignatureLabel,
+  ) {
+    final image = visit.signed ? _decodeSignature(signaturePng) : null;
+    final name = d.name.trim();
+    final regNo = d.regNo.trim();
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.end,
       children: [
         pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
-            if (visit.signed) ...[
+            if (image != null)
+              pw.Container(
+                width: signatureBoxWidth,
+                height: signatureBoxHeight,
+                alignment: pw.Alignment.bottomCenter,
+                child: pw.Image(image, fit: pw.BoxFit.contain),
+              )
+            else if (!visit.signed)
               pw.Text(
-                _sigCursive(d.name),
-                style: pw.TextStyle(
-                  fontSize: 18,
-                  fontStyle: pw.FontStyle.italic,
-                  fontWeight: pw.FontWeight.bold,
-                  color: _teal,
-                ),
-              ),
-            ] else
-              pw.Text(
-                'Awaiting Signature',
+                awaitingSignatureLabel,
                 style: pw.TextStyle(
                   fontSize: 11,
                   fontStyle: pw.FontStyle.italic,
@@ -598,16 +696,22 @@ class PrescriptionPdfService {
                 ),
               ),
             pw.SizedBox(height: 4),
-            pw.Container(width: 160, height: 0.5, color: _grey),
+            pw.Container(width: signatureBoxWidth, height: 0.5, color: _grey),
             pw.SizedBox(height: 4),
-            pw.Text(
-              d.name,
-              style: pw.TextStyle(
-                fontSize: 10,
-                fontWeight: pw.FontWeight.bold,
-                color: _ink,
+            if (name.isNotEmpty)
+              pw.Text(
+                name,
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.bold,
+                  color: _ink,
+                ),
               ),
-            ),
+            if (regNo.isNotEmpty)
+              pw.Text(
+                'Reg. No: $regNo',
+                style: pw.TextStyle(fontSize: 9, color: _grey),
+              ),
             pw.Text(
               _ddmmyyyy(visit.signedAt ?? visit.createdAt),
               style: pw.TextStyle(fontSize: 9, color: _grey),
@@ -616,6 +720,24 @@ class PrescriptionPdfService {
         ),
       ],
     );
+  }
+
+  /// Accepts PNG or JPEG bytes; anything else (or nothing) yields null so a
+  /// corrupt file degrades to "name + reg. no" instead of failing the PDF.
+  pw.ImageProvider? _decodeSignature(Uint8List? bytes) {
+    if (bytes == null || bytes.length < 4) return null;
+    final isPng =
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47;
+    final isJpeg = bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF;
+    if (!isPng && !isJpeg) return null;
+    try {
+      return pw.MemoryImage(bytes);
+    } catch (_) {
+      return null;
+    }
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -658,19 +780,10 @@ class PrescriptionPdfService {
     final num = p?.whatsappNumber ?? p?.phone;
     return (num == null || num.isEmpty) ? '—' : '+91 $num';
   }
-
-  /// Produces an abbreviated cursive-style name for the signature area,
-  /// e.g. "Dr. Rajesh Sharma" → "Dr. R. Sharma".
-  String _sigCursive(String fullName) {
-    final cleaned = fullName.replaceFirst(RegExp(r'^Dr\.?\s*'), '').trim();
-    if (cleaned.isEmpty) return fullName;
-    final parts = cleaned.split(RegExp(r'\s+'));
-    if (parts.length == 1) return 'Dr. ${parts.first}';
-    final initial = parts.first.isNotEmpty ? parts.first[0] : '';
-    return 'Dr. $initial. ${parts.last}';
-  }
 }
 
 final prescriptionPdfServiceProvider = Provider<PrescriptionPdfService>((ref) {
-  return PrescriptionPdfService();
+  return PrescriptionPdfService(
+    attachmentsDir: ref.watch(attachmentsDirProvider),
+  );
 });

@@ -1,7 +1,7 @@
-import 'dart:ui';
-
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../prefs/shared_preferences_provider.dart';
 
 const String kAppLocaleKey = 'app_locale';
 
@@ -24,25 +24,29 @@ const List<AppLanguage> kSupportedLanguages = [
   AppLanguage('gu', 'Gujarati', 'ગુજરાતી'),
 ];
 
+bool isSupportedLanguage(String code) =>
+    kSupportedLanguages.any((l) => l.code == code);
+
+/// The UI locale. Resolved synchronously on first build (roadmap item 22):
+/// the saved choice wins; otherwise the device language when the app ships
+/// it, else English. No async load, so there is no flash of the wrong
+/// language on a cold start.
 class AppLocaleNotifier extends Notifier<Locale> {
   @override
   Locale build() {
-    _load();
-    return const Locale('en');
-  }
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final saved = prefs.getString(kAppLocaleKey);
+    if (saved != null && isSupportedLanguage(saved)) return Locale(saved);
 
-  Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final code = prefs.getString(kAppLocaleKey);
-    if (code == null) return;
-    final known = kSupportedLanguages.any((l) => l.code == code);
-    if (known) state = Locale(code);
+    final device =
+        WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    return Locale(isSupportedLanguage(device) ? device : 'en');
   }
 
   Future<void> setLocale(String code) async {
+    if (!isSupportedLanguage(code)) return;
     state = Locale(code);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(kAppLocaleKey, code);
+    await ref.read(sharedPreferencesProvider).setString(kAppLocaleKey, code);
   }
 }
 

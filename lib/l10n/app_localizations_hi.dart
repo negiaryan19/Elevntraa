@@ -127,22 +127,118 @@ class AppLocalizationsHi extends AppLocalizations {
   String get chooseLanguage => 'भाषा चुनें';
 
   @override
-  String get dataBackup => 'डेटा बैकअप';
-
-  @override
-  String get dataBackupSubtitle => 'अपने परामर्श इतिहास का बैकअप लें';
-
-  @override
   String get exportData => 'डेटा निर्यात करें';
 
   @override
-  String get exportDataSubtitle => 'अपना सारा डेटा डाउनलोड करें';
+  String get backupTitle => 'बैकअप और सिंक';
+
+  @override
+  String get backupIntro =>
+      'आपके रिकॉर्ड की एक कॉपी आपके अपने निजी क्लाउड फ़ोल्डर में रखता है, ताकि फ़ोन खो जाने पर भी कुछ न जाए।';
+
+  @override
+  String get backupIncludes =>
+      'शामिल: मरीज़, कंसल्टेशन, प्रिस्क्रिप्शन, रिपोर्ट फ़ोटो, आपकी प्रोफ़ाइल और हस्ताक्षर।';
+
+  @override
+  String get backupExcludes =>
+      'शामिल नहीं: कंसल्टेशन की रिकॉर्डिंग (प्रोसेसिंग के बाद वे हटा दी जाती हैं)।';
+
+  @override
+  String backupLastAt(String time) {
+    return 'पिछला बैकअप $time';
+  }
+
+  @override
+  String get backupNever => 'अभी तक कोई बैकअप नहीं';
+
+  @override
+  String get backupNow => 'अभी बैकअप लें';
+
+  @override
+  String backupLatestRemote(String time, String size) {
+    return 'क्लाउड में नवीनतम: $time ($size)';
+  }
+
+  @override
+  String get backupNoRemote => 'क्लाउड में अभी कोई बैकअप नहीं है';
+
+  @override
+  String get backupRestoreLatest => 'नवीनतम बैकअप रिस्टोर करें';
+
+  @override
+  String get backupRestoreConfirmTitle => 'इस फ़ोन का डेटा बदलें?';
+
+  @override
+  String backupRestoreConfirmBody(String time) {
+    return 'इस फ़ोन पर आपके रिकॉर्ड $time के बैकअप से बदल दिए जाएँगे। इस फ़ोन का उपयोग करने वाले दूसरे डॉक्टरों पर इसका असर नहीं होगा। इसे वापस नहीं किया जा सकता।';
+  }
+
+  @override
+  String get backupRestoreConfirm => 'रिस्टोर करें';
+
+  @override
+  String get backupStageCollecting => 'आपके रिकॉर्ड इकट्ठे किए जा रहे हैं…';
+
+  @override
+  String get backupStageZipping => 'पैक किया जा रहा है…';
+
+  @override
+  String get backupStageUploading => 'अपलोड हो रहा है…';
+
+  @override
+  String get backupStageDownloading => 'बैकअप डाउनलोड हो रहा है…';
+
+  @override
+  String get backupStageRestoring => 'रिस्टोर हो रहा है…';
+
+  @override
+  String get backupDone => 'बैकअप पूरा हुआ';
+
+  @override
+  String get backupRestored => 'बैकअप रिस्टोर हो गया';
+
+  @override
+  String get backupRestartHint =>
+      'रिस्टोर किए गए रिकॉर्ड देखने के लिए ऐप बंद करके दोबारा खोलें।';
+
+  @override
+  String backupFailed(String reason) {
+    return 'बैकअप विफल: $reason';
+  }
+
+  @override
+  String backupRestoreFailed(String reason) {
+    return 'रिस्टोर विफल: $reason';
+  }
+
+  @override
+  String get backupNeedsInternet => 'बैकअप लेने के लिए इंटरनेट से जुड़ें।';
+
+  @override
+  String get exportPreparing => 'आपका एक्सपोर्ट तैयार हो रहा है…';
+
+  @override
+  String get exportShareSubject => 'Rxvarta डेटा एक्सपोर्ट';
+
+  @override
+  String get exportShareText => 'मेरे Rxvarta रिकॉर्ड का एक्सपोर्ट।';
+
+  @override
+  String exportFailed(String reason) {
+    return 'डेटा एक्सपोर्ट नहीं हो सका: $reason';
+  }
+
+  @override
+  String get exportEmpty => 'अभी एक्सपोर्ट करने के लिए कुछ नहीं है।';
+
+  @override
+  String exportSavedTo(String path) {
+    return '$path पर सेव किया गया';
+  }
 
   @override
   String get privacySecurity => 'गोपनीयता और सुरक्षा';
-
-  @override
-  String get privacySecuritySubtitle => 'अपनी गोपनीयता सेटिंग्स प्रबंधित करें';
 
   @override
   String get termsConditions => 'नियम और शर्तें';
@@ -157,7 +253,464 @@ class AppLocalizationsHi extends AppLocalizations {
   String get helpSupportSubtitle => 'मदद लें या हमसे संपर्क करें';
 
   @override
+  String get settingsProfileSetUp => 'अपनी प्रोफ़ाइल सेट करें';
+
+  @override
+  String get settingsProfileIncompleteChip =>
+      'प्रोफ़ाइल अधूरी है — प्रिस्क्रिप्शन साइन नहीं हो सकते';
+
+  @override
+  String get settingsSignature => 'हस्ताक्षर';
+
+  @override
+  String get settingsSignatureSubtitleAdded =>
+      'जोड़ा गया — आपके साइन किए हर प्रिस्क्रिप्शन पर छपेगा';
+
+  @override
+  String get settingsSignatureSubtitleMissing => 'अभी तक नहीं जोड़ा गया';
+
+  @override
+  String get settingsBackupSync => 'बैकअप और सिंक';
+
+  @override
+  String get settingsBackupSubtitleNever => 'अभी तक कोई बैकअप नहीं';
+
+  @override
+  String settingsBackupSubtitleLast(String time) {
+    return 'पिछला बैकअप $time';
+  }
+
+  @override
+  String get settingsExportSubtitle =>
+      'अपने सभी रिकॉर्ड की कॉपी सेव या शेयर करें';
+
+  @override
+  String get settingsPrivacySubtitle =>
+      'आपका डेटा कहाँ रहता है और उसे कैसे हटाएँ';
+
+  @override
+  String get settingsSectionLegal => 'कानूनी';
+
+  @override
+  String get settingsPrivacyPolicy => 'प्राइवेसी पॉलिसी';
+
+  @override
+  String get settingsPrivacyPolicySubtitle =>
+      'आपके और आपके मरीज़ों के डेटा का क्या होता है';
+
+  @override
+  String settingsVersion(String version, String build) {
+    return 'Rxvarta v$version ($build)';
+  }
+
+  @override
+  String get settingsTimeJustNow => 'अभी-अभी';
+
+  @override
+  String settingsTimeMinutesAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n मिनट पहले',
+      one: '1 मिनट पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String settingsTimeHoursAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n घंटे पहले',
+      one: '1 घंटा पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String settingsTimeDaysAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n दिन पहले',
+      one: 'कल',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsSigningOut => 'साइन आउट हो रहा है…';
+
+  @override
+  String get logoutConfirmTitle => 'साइन आउट करें?';
+
+  @override
+  String get logoutConfirmBody =>
+      'Rxvarta इस्तेमाल करने के लिए आपको दोबारा साइन इन करना होगा। इस डिवाइस पर सेव रिकॉर्ड यहीं रहेंगे।';
+
+  @override
+  String get logoutConfirm => 'साइन आउट';
+
+  @override
+  String get privacyIntro =>
+      'Rxvarta इस तरह बनाया गया है कि मरीज़ों के रिकॉर्ड डॉक्टर के नियंत्रण में रहें। यह पेज सरल शब्दों में बताता है कि डेटा कहाँ रखा जाता है, उसे कौन प्रोसेस करता है और उसे कैसे हटाया जाए।';
+
+  @override
+  String get privacyWhereStoredTitle => 'आपका डेटा कहाँ रहता है';
+
+  @override
+  String get privacyWhereStoredDevice =>
+      'यह डिवाइस — मरीज़, विज़िट, ट्रांसक्रिप्ट, प्रिस्क्रिप्शन, रिपोर्ट फ़ोटो और रिकॉर्डिंग इस फ़ोन पर ऐप के निजी स्टोरेज में रहते हैं।';
+
+  @override
+  String get privacyWhereStoredCloud =>
+      'मुंबई, भारत (ap-south-1) में होस्ट किया गया Supabase प्रोजेक्ट — आपका अकाउंट, डॉक्टर प्रोफ़ाइल, हस्ताक्षर और बैकअप।';
+
+  @override
+  String get privacyWhereStoredAudio =>
+      'रिकॉर्डिंग सिर्फ़ प्रोसेसिंग के लिए एक निजी स्टोरेज बकेट में अपलोड होती हैं, लंबे समय तक रखने के लिए नहीं।';
+
+  @override
+  String get privacyProcessorsTitle => 'इसे कौन प्रोसेस करता है';
+
+  @override
+  String get privacyProcessorSarvam =>
+      'Sarvam AI — रिकॉर्डिंग को टेक्स्ट में बदलता है (स्पीच-टू-टेक्स्ट)।';
+
+  @override
+  String get privacyProcessorGoogle =>
+      'Google Gemini — ट्रांसक्रिप्ट से आपकी समीक्षा के लिए प्रिस्क्रिप्शन का ड्राफ़्ट बनाता है।';
+
+  @override
+  String get privacyProcessorSupabase =>
+      'Supabase — साइन-इन, फ़ाइल स्टोरेज और आपके अकाउंट का डेटाबेस।';
+
+  @override
+  String get privacyRetentionTitle => 'कितने समय तक रखा जाता है';
+
+  @override
+  String get privacyRetentionAudio =>
+      'रिकॉर्डिंग: प्रोसेसिंग सफल होते ही सर्वर से हटा दी जाती हैं; तब तक इसी डिवाइस पर रहती हैं।';
+
+  @override
+  String get privacyRetentionTranscript =>
+      'ट्रांसक्रिप्ट और प्रिस्क्रिप्शन: जब तक आप उन्हें न हटाएँ, इस डिवाइस पर और आपके बैकअप में रहते हैं।';
+
+  @override
+  String get privacyRetentionJobs =>
+      'प्रोसेसिंग कैश: नतीजा ऐप तक पहुँचने के बाद साफ़ कर दिया जाता है।';
+
+  @override
+  String get privacyRoleTitle => 'आपकी और हमारी भूमिका';
+
+  @override
+  String get privacyRoleBody =>
+      'डिजिटल पर्सनल डेटा प्रोटेक्शन एक्ट, 2023 के तहत आपके मरीज़ों के रिकॉर्ड के लिए डेटा फ़िड्यूशरी आप, यानी डॉक्टर, ही रहते हैं। Rxvarta उन्हें केवल आपके निर्देश पर, डेटा प्रोसेसर के रूप में प्रोसेस करता है।';
+
+  @override
+  String get privacySecurityTitle => 'सुरक्षा उपाय';
+
+  @override
+  String get privacySecurityBody =>
+      'डेटा एन्क्रिप्टेड कनेक्शन (TLS) से जाता है। सर्वर पर रिकॉर्ड हर अकाउंट के अलग ऐक्सेस नियमों से सुरक्षित हैं, इसलिए उन्हें सिर्फ़ आपका साइन-इन ही पढ़ सकता है। अपना फ़ोन लॉक रखें: जो उसे अनलॉक कर सकता है, वह ऐप खोल सकता है।';
+
+  @override
+  String get privacyDeleteTitle => 'डेटा हटाना';
+
+  @override
+  String get privacyDeleteBody =>
+      'इस फ़ोन से अपना डेटा हटाने के लिए नीचे दिए बटन का उपयोग करें। इस फ़ोन पर साइन इन करने वाले दूसरे डॉक्टरों का डेटा बना रहेगा। मरीज़ों के रिकॉर्ड अभी एक-एक करके नहीं हटाए जा सकते। अपना अकाउंट और हमारे सर्वर पर रखा डेटा हटाने के लिए, जिस ईमेल से साइन अप किया था उसी से हमें लिखें।';
+
+  @override
+  String get privacyDeleteLocal => 'इस डिवाइस से मेरा डेटा हटाएँ';
+
+  @override
+  String get privacyDeleteLocalSubtitle =>
+      'इस फ़ोन से आपके मरीज़, विज़िट, रिकॉर्डिंग, रिपोर्ट, प्रोफ़ाइल कैश और हस्ताक्षर हटाकर आपको साइन आउट कर देता है। सर्वर पर आपका अकाउंट और बैकअप प्रभावित नहीं होते।';
+
+  @override
+  String privacyDeleteLocalBody(String word) {
+    return 'इस फ़ोन पर सेव आपका हर मरीज़, विज़िट, रिकॉर्डिंग और रिपोर्ट हटा दी जाएगी और आप साइन आउट हो जाएँगे। इस फ़ोन पर दूसरे डॉक्टरों का डेटा और सर्वर पर आपके बैकअप प्रभावित नहीं होंगे। इसे वापस नहीं किया जा सकता।\n\nपुष्टि के लिए $word टाइप करें।';
+  }
+
+  @override
+  String get privacyDeleteLocalWord => 'DELETE';
+
+  @override
+  String privacyDeleteLocalHint(String word) {
+    return '$word टाइप करें';
+  }
+
+  @override
+  String get privacyDeleteLocalConfirm => 'सब कुछ हटाएँ';
+
+  @override
+  String get privacyDeleting => 'लोकल डेटा हटाया जा रहा है…';
+
+  @override
+  String get privacyDeleted => 'लोकल डेटा हटा दिया गया';
+
+  @override
+  String privacyDeletePartial(String details) {
+    return 'कुछ चीज़ें नहीं हटाई जा सकीं: $details';
+  }
+
+  @override
+  String get privacyReadPolicy => 'पूरी प्राइवेसी पॉलिसी पढ़ें';
+
+  @override
+  String get legalTerms => 'नियम और शर्तें';
+
+  @override
+  String get legalPrivacyPolicy => 'प्राइवेसी पॉलिसी';
+
+  @override
+  String legalLastUpdated(String date) {
+    return 'अंतिम अपडेट: $date';
+  }
+
+  @override
+  String get legalReviewNotice =>
+      'ऐप में शामिल कॉपी — ऑफ़लाइन उपलब्ध। अगर ऑनलाइन नया संस्करण प्रकाशित हो, तो ऑनलाइन संस्करण लागू होगा।';
+
+  @override
+  String get legalViewOnline => 'ऑनलाइन संस्करण देखें';
+
+  @override
+  String get legalLoadFailed => 'यह दस्तावेज़ लोड नहीं हो सका।';
+
+  @override
+  String get helpTitle => 'हेल्प और सपोर्ट';
+
+  @override
+  String get helpSubtitle =>
+      'ऐप को लेकर कोई सवाल, सुझाव या दिक्कत? हमें मदद करके खुशी होगी।';
+
+  @override
+  String helpVersion(String version, String build) {
+    return 'ऐप वर्ज़न $version ($build)';
+  }
+
+  @override
+  String get helpEmail => 'ईमेल सपोर्ट';
+
+  @override
+  String get helpWhatsapp => 'WhatsApp सपोर्ट';
+
+  @override
+  String get helpReportProblem => 'समस्या बताएँ';
+
+  @override
+  String get helpReportProblemSubtitle =>
+      'बताएँ क्या हुआ और उसे दोबारा कैसे देखा जा सकता है';
+
+  @override
+  String get helpNotConfigured => 'सपोर्ट संपर्क अभी सेट नहीं है';
+
+  @override
+  String get helpCouldNotOpen => 'इसे आपके डिवाइस पर नहीं खोला जा सका।';
+
+  @override
+  String get helpEmailSubject => 'Rxvarta सपोर्ट';
+
+  @override
+  String helpEmailBody(String version, String platform) {
+    return 'ऐप वर्ज़न: $version\nप्लेटफ़ॉर्म: $platform\n\n';
+  }
+
+  @override
+  String get helpReportSubject => 'Rxvarta — समस्या रिपोर्ट';
+
+  @override
+  String helpReportBody(String version, String platform) {
+    return 'क्या हुआ:\n\n\nदोबारा देखने के चरण:\n1. \n2. \n3. \n\nऐप वर्ज़न: $version\nप्लेटफ़ॉर्म: $platform\n';
+  }
+
+  @override
   String get logout => 'लॉग आउट';
+
+  @override
+  String get authSignIn => 'साइन इन';
+
+  @override
+  String get authSignInTitle => 'वापसी पर स्वागत है';
+
+  @override
+  String get authSignInSubtitle =>
+      'अपने कंसल्टेशन जारी रखने के लिए साइन इन करें।';
+
+  @override
+  String get authEmail => 'ईमेल';
+
+  @override
+  String get authEmailHint => 'doctor@clinic.com';
+
+  @override
+  String get authEmailInvalid => 'सही ईमेल पता डालें';
+
+  @override
+  String get authPassword => 'पासवर्ड';
+
+  @override
+  String get authPasswordHint => 'अपना पासवर्ड डालें';
+
+  @override
+  String get authPasswordRequired => 'अपना पासवर्ड डालें';
+
+  @override
+  String get authPasswordRules => 'कम से कम 8 अक्षर';
+
+  @override
+  String get authPasswordsDoNotMatch => 'पासवर्ड मेल नहीं खाते';
+
+  @override
+  String get authShowPassword => 'पासवर्ड दिखाएँ';
+
+  @override
+  String get authHidePassword => 'पासवर्ड छिपाएँ';
+
+  @override
+  String get authForgotPassword => 'पासवर्ड भूल गए?';
+
+  @override
+  String get authNoAccount => 'Rxvarta पर नए हैं?';
+
+  @override
+  String get authCreateAccount => 'अकाउंट बनाएँ';
+
+  @override
+  String get authHaveAccount => 'पहले से अकाउंट है?';
+
+  @override
+  String get authSignUpTitle => 'अपना अकाउंट बनाएँ';
+
+  @override
+  String get authSignUpSubtitle =>
+      'हर डॉक्टर के लिए एक अकाउंट। आपके मरीज़ और प्रिस्क्रिप्शन सिर्फ़ आपके रहते हैं।';
+
+  @override
+  String get authConfirmPassword => 'पासवर्ड की पुष्टि करें';
+
+  @override
+  String get authSignInInstead => 'इसके बजाय साइन इन करें';
+
+  @override
+  String get authVerifyTitle => 'अपना ईमेल देखें';
+
+  @override
+  String authVerifyBody(String email) {
+    return 'हमने $email पर 8 अंकों का कोड भेजा है। आगे बढ़ने के लिए उसे नीचे डालें।';
+  }
+
+  @override
+  String get authCode => 'वेरिफ़िकेशन कोड';
+
+  @override
+  String get authCodeIncomplete => 'कोड के आठों अंक डालें';
+
+  @override
+  String get authVerify => 'वेरिफ़ाई करें';
+
+  @override
+  String get authResendCode => 'कोड दोबारा भेजें';
+
+  @override
+  String authResendIn(int seconds) {
+    return '$seconds सेकंड में कोड दोबारा भेजें';
+  }
+
+  @override
+  String get authCodeSent => 'आपके ईमेल पर नया कोड भेज दिया गया है।';
+
+  @override
+  String get authForgotTitle => 'अपना पासवर्ड रीसेट करें';
+
+  @override
+  String get authForgotSubtitle =>
+      'जिस ईमेल से साइन अप किया था वह डालें, हम आपको कोड भेजेंगे।';
+
+  @override
+  String get authSendCode => 'कोड भेजें';
+
+  @override
+  String get authResetTitle => 'नया पासवर्ड चुनें';
+
+  @override
+  String get authResetSubtitle =>
+      'ऐसा पासवर्ड चुनें जो आपने Rxvarta पर पहले इस्तेमाल न किया हो।';
+
+  @override
+  String get authNewPassword => 'नया पासवर्ड';
+
+  @override
+  String get authUpdatePassword => 'पासवर्ड अपडेट करें';
+
+  @override
+  String get authPasswordUpdated => 'पासवर्ड अपडेट हो गया';
+
+  @override
+  String get authBackToSignIn => 'साइन इन पर वापस जाएँ';
+
+  @override
+  String get authBack => 'वापस';
+
+  @override
+  String get authNotConfiguredTitle => 'ऐप कॉन्फ़िगर नहीं है';
+
+  @override
+  String get authNotConfiguredBody =>
+      'इस बिल्ड में बैकएंड कनेक्शन नहीं है, इसलिए साइन-इन उपलब्ध नहीं है। ऐप को --dart-define-from-file=config/app_config.json के साथ बिल्ड करें (README देखें)।';
+
+  @override
+  String get authSplashLoading => 'आपका वर्कस्पेस तैयार हो रहा है…';
+
+  @override
+  String get authSecureNote => 'एन्क्रिप्टेड और सिर्फ़ आपके अकाउंट तक सीमित।';
+
+  @override
+  String get authErrorInvalidCredentials => 'ईमेल या पासवर्ड गलत है।';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'कृपया पहले अपना ईमेल पता वेरिफ़ाई करें।';
+
+  @override
+  String get authErrorUserExists => 'इस ईमेल से पहले से एक अकाउंट मौजूद है।';
+
+  @override
+  String get authErrorWeakPassword =>
+      'मज़बूत पासवर्ड चुनें: कम से कम 8 अक्षर और मौजूदा पासवर्ड से अलग।';
+
+  @override
+  String get authErrorOtpExpired => 'यह कोड समाप्त हो चुका है। नया कोड मँगाएँ।';
+
+  @override
+  String get authErrorOtpInvalid =>
+      'यह कोड सही नहीं है। जाँचकर दोबारा कोशिश करें।';
+
+  @override
+  String get authErrorRateLimited =>
+      'बहुत ज़्यादा कोशिशें। एक मिनट रुककर दोबारा कोशिश करें।';
+
+  @override
+  String get authErrorNetwork =>
+      'इंटरनेट कनेक्शन नहीं है। नेटवर्क जाँचकर दोबारा कोशिश करें।';
+
+  @override
+  String get authErrorSignupDisabled => 'नए साइन-अप फ़िलहाल बंद हैं।';
+
+  @override
+  String get authErrorValidation => 'कृपया डाली गई जानकारी जाँच लें।';
+
+  @override
+  String get authErrorNotConfigured => 'ऐप किसी बैकएंड से जुड़ा नहीं है।';
+
+  @override
+  String get authErrorUnknown => 'कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।';
+
+  @override
+  String get authErrorDetails => 'विवरण';
 
   @override
   String get regPrefix => 'पंज.';
@@ -188,6 +741,208 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get clinicPhone => 'क्लिनिक फ़ोन';
+
+  @override
+  String get profilePhone => 'आपका मोबाइल नंबर';
+
+  @override
+  String get profileOptional => 'वैकल्पिक';
+
+  @override
+  String get profileRequiredHint =>
+      '* वाले फ़ील्ड हर प्रिस्क्रिप्शन पर छपते हैं और कानूनन ज़रूरी हैं।';
+
+  @override
+  String get profileSectionDoctor => 'डॉक्टर की जानकारी';
+
+  @override
+  String get profileSectionClinic => 'क्लिनिक की जानकारी';
+
+  @override
+  String get profileNameHint => 'जैसे Dr. Asha Verma';
+
+  @override
+  String get profileQualificationsHint => 'जैसे MBBS, MD (Medicine)';
+
+  @override
+  String get profileRegNoHint => 'राज्य मेडिकल काउंसिल नंबर';
+
+  @override
+  String get profilePhoneHint => '10 अंकों का मोबाइल नंबर';
+
+  @override
+  String get profilePhoneInvalid => 'सही मोबाइल नंबर डालें';
+
+  @override
+  String get profileClinicNameHint => 'क्लिनिक या अस्पताल का नाम';
+
+  @override
+  String get profileClinicAddressHint => 'इलाका, शहर, राज्य, पिन';
+
+  @override
+  String get profileClinicPhoneHint => 'लैंडलाइन या रिसेप्शन नंबर';
+
+  @override
+  String get profileSavedOffline =>
+      'इस डिवाइस पर सेव — ऑनलाइन होने पर सिंक होगा';
+
+  @override
+  String get profileSaveFailed => 'प्रोफ़ाइल सेव नहीं हो सकी';
+
+  @override
+  String get profileRetry => 'दोबारा कोशिश करें';
+
+  @override
+  String get profileIncompleteNudgeTitle =>
+      'प्रिस्क्रिप्शन साइन करने के लिए प्रोफ़ाइल पूरी करें';
+
+  @override
+  String get profileIncompleteNudgeBody =>
+      'अपना नाम, रजिस्ट्रेशन नंबर, क्लिनिक और हस्ताक्षर जोड़ें।';
+
+  @override
+  String get signatureTitle => 'हस्ताक्षर';
+
+  @override
+  String get signatureSubtitle => 'आपके साइन किए हर प्रिस्क्रिप्शन पर छपता है।';
+
+  @override
+  String get signatureAdd => 'हस्ताक्षर जोड़ें';
+
+  @override
+  String get signatureUpdate => 'हस्ताक्षर बदलें';
+
+  @override
+  String get signatureDraw => 'बनाएँ';
+
+  @override
+  String get signatureUpload => 'अपलोड करें';
+
+  @override
+  String get signatureClear => 'मिटाएँ';
+
+  @override
+  String get signatureUse => 'यह हस्ताक्षर उपयोग करें';
+
+  @override
+  String get signatureEmptyError => 'कृपया पहले अपने हस्ताक्षर बनाएँ।';
+
+  @override
+  String get signatureHint => 'लाइन के ऊपर उँगली या माउस से हस्ताक्षर करें';
+
+  @override
+  String get signatureUploadHint =>
+      'सफ़ेद कागज़ पर किए अपने हस्ताक्षर की साफ़ फ़ोटो या स्कैन चुनें (PNG या JPEG)।';
+
+  @override
+  String get signatureChooseImage => 'इमेज चुनें';
+
+  @override
+  String get signatureChangeImage => 'दूसरी चुनें';
+
+  @override
+  String get signatureUnsupportedFormat => 'कृपया PNG या JPEG इमेज चुनें।';
+
+  @override
+  String get signatureLoadFailed => 'वह इमेज लोड नहीं हो सकी';
+
+  @override
+  String get signatureNone => 'अभी कोई हस्ताक्षर नहीं';
+
+  @override
+  String get signatureSaved => 'हस्ताक्षर सेव हो गए';
+
+  @override
+  String get signatureSaveFailed => 'हस्ताक्षर सेव नहीं हो सके';
+
+  @override
+  String get onboardingTitle => 'अपना प्रिस्क्रिप्शन सेट करें';
+
+  @override
+  String get onboardingSubtitle =>
+      'ये जानकारी आपके साइन किए हर प्रिस्क्रिप्शन पर दिखती है।';
+
+  @override
+  String get onboardingStepDoctor => 'डॉक्टर';
+
+  @override
+  String get onboardingStepClinic => 'क्लिनिक';
+
+  @override
+  String get onboardingStepSignature => 'हस्ताक्षर';
+
+  @override
+  String get onboardingDoctorTitle => 'आपकी जानकारी';
+
+  @override
+  String get onboardingDoctorBody =>
+      'ठीक वैसे ही जैसे वे लेटरहेड पर दिखनी चाहिए।';
+
+  @override
+  String get onboardingClinicTitle => 'आपका क्लिनिक';
+
+  @override
+  String get onboardingClinicBody =>
+      'प्रिस्क्रिप्शन पर छपने वाला प्रैक्टिस का नाम और पता।';
+
+  @override
+  String get onboardingSignatureTitle => 'आपके हस्ताक्षर';
+
+  @override
+  String get onboardingSignatureBody =>
+      'इन्हें एक बार बनाएँ या फ़ोटो अपलोड करें। ये निजी रूप से सेव होते हैं और सिर्फ़ आपके साइन किए प्रिस्क्रिप्शन पर छपते हैं।';
+
+  @override
+  String get onboardingContinue => 'आगे बढ़ें';
+
+  @override
+  String get onboardingBack => 'वापस';
+
+  @override
+  String get onboardingFinish => 'पूरा करें';
+
+  @override
+  String get onboardingSignatureRequired =>
+      'पूरा करने के लिए अपने हस्ताक्षर जोड़ें।';
+
+  @override
+  String get onboardingSignOut => 'साइन आउट';
+
+  @override
+  String onboardingSignedInAs(String email) {
+    return '$email के रूप में साइन इन';
+  }
+
+  @override
+  String get signGateTitle => 'साइन करने के लिए प्रोफ़ाइल पूरी करें';
+
+  @override
+  String get signGateBody =>
+      'प्रिस्क्रिप्शन पर लिखने वाले डॉक्टर की जानकारी होनी चाहिए। साइन करने से पहले ये जोड़ें:';
+
+  @override
+  String get signGateCompleteProfile => 'प्रोफ़ाइल पूरी करें';
+
+  @override
+  String get signGateOk => 'ठीक है';
+
+  @override
+  String get signGatePatientNameTitle => 'मरीज़ का नाम नहीं है';
+
+  @override
+  String get signGatePatientNameBody =>
+      'प्रिस्क्रिप्शन साइन करने से पहले मरीज़ का नाम डालें।';
+
+  @override
+  String get signGateMedicineNameTitle => 'दवा का नाम नहीं है';
+
+  @override
+  String signGateMedicineNameBody(int n) {
+    return 'दवा $n का कोई नाम नहीं है। साइन करने से पहले नाम डालें या उसे हटाएँ।';
+  }
+
+  @override
+  String get pdfAwaitingSignature => 'हस्ताक्षर बाकी';
 
   @override
   String get unsavedChanges => 'असहेजे परिवर्तन';
@@ -322,6 +1077,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get couldNotSavePatient => 'मरीज़ सहेजा नहीं जा सका';
+
+  @override
+  String get couldNotSaveChanges => 'आपके बदलाव सहेजे नहीं जा सके';
+
+  @override
+  String get nothingHeardInRecording =>
+      'इस रिकॉर्डिंग में कोई परामर्श सुनाई नहीं दिया। जाँच लें कि माइक्रोफ़ोन काम कर रहा है, फिर दोबारा रिकॉर्ड करें।';
 
   @override
   String get patientAlreadyExists => 'मरीज़ पहले से मौजूद है';
@@ -787,11 +1549,4 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get couldNotGeneratePdf => 'PDF नहीं बन सका';
-
-  @override
-  String get welcomeToRxvarta => 'Rxvarta में आपका स्वागत है';
-
-  @override
-  String get onboardingMessage =>
-      'डॉक्टर प्रोफ़ाइल और API कुंजी सेटअप यहाँ होगा।';
 }

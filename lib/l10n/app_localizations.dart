@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @securityFooter.
   ///
   /// In en, this message translates to:
-  /// **'Secure - HIPAA Compliant - End-to-End Encrypted'**
+  /// **'Encrypted in transit - Hosted in India - Your records stay under your control'**
   String get securityFooter;
 
   /// No description provided for @male.
@@ -338,41 +338,197 @@ abstract class AppLocalizations {
   /// **'Choose Language'**
   String get chooseLanguage;
 
-  /// No description provided for @dataBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Data Backup'**
-  String get dataBackup;
-
-  /// No description provided for @dataBackupSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Backup your consultation history'**
-  String get dataBackupSubtitle;
-
   /// No description provided for @exportData.
   ///
   /// In en, this message translates to:
   /// **'Export Data'**
   String get exportData;
 
-  /// No description provided for @exportDataSubtitle.
+  /// No description provided for @backupTitle.
   ///
   /// In en, this message translates to:
-  /// **'Download all your data'**
-  String get exportDataSubtitle;
+  /// **'Backup & sync'**
+  String get backupTitle;
+
+  /// No description provided for @backupIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps a copy of your records in your own private cloud folder, so nothing is lost if this phone is.'**
+  String get backupIntro;
+
+  /// No description provided for @backupIncludes.
+  ///
+  /// In en, this message translates to:
+  /// **'Included: patients, consultations, prescriptions, report photos, your profile and signature.'**
+  String get backupIncludes;
+
+  /// No description provided for @backupExcludes.
+  ///
+  /// In en, this message translates to:
+  /// **'Not included: consultation recordings (they are deleted after processing).'**
+  String get backupExcludes;
+
+  /// No description provided for @backupLastAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup {time}'**
+  String backupLastAt(String time);
+
+  /// No description provided for @backupNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never backed up'**
+  String get backupNever;
+
+  /// No description provided for @backupNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up now'**
+  String get backupNow;
+
+  /// No description provided for @backupLatestRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest in cloud: {time} ({size})'**
+  String backupLatestRemote(String time, String size);
+
+  /// No description provided for @backupNoRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup in the cloud yet'**
+  String get backupNoRemote;
+
+  /// No description provided for @backupRestoreLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore latest backup'**
+  String get backupRestoreLatest;
+
+  /// No description provided for @backupRestoreConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace data on this phone?'**
+  String get backupRestoreConfirmTitle;
+
+  /// No description provided for @backupRestoreConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your records on this phone are replaced by the backup from {time}. Other doctors who use this phone are not affected. This cannot be undone.'**
+  String backupRestoreConfirmBody(String time);
+
+  /// No description provided for @backupRestoreConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get backupRestoreConfirm;
+
+  /// No description provided for @backupStageCollecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Collecting your records…'**
+  String get backupStageCollecting;
+
+  /// No description provided for @backupStageZipping.
+  ///
+  /// In en, this message translates to:
+  /// **'Packing them up…'**
+  String get backupStageZipping;
+
+  /// No description provided for @backupStageUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading…'**
+  String get backupStageUploading;
+
+  /// No description provided for @backupStageDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading backup…'**
+  String get backupStageDownloading;
+
+  /// No description provided for @backupStageRestoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring…'**
+  String get backupStageRestoring;
+
+  /// No description provided for @backupDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup complete'**
+  String get backupDone;
+
+  /// No description provided for @backupRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup restored'**
+  String get backupRestored;
+
+  /// No description provided for @backupRestartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Close and reopen the app to see the restored records.'**
+  String get backupRestartHint;
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed: {reason}'**
+  String backupFailed(String reason);
+
+  /// No description provided for @backupRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed: {reason}'**
+  String backupRestoreFailed(String reason);
+
+  /// No description provided for @backupNeedsInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to the internet to back up.'**
+  String get backupNeedsInternet;
+
+  /// No description provided for @exportPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your export…'**
+  String get exportPreparing;
+
+  /// No description provided for @exportShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Rxvarta data export'**
+  String get exportShareSubject;
+
+  /// No description provided for @exportShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Export of my Rxvarta records.'**
+  String get exportShareText;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export data: {reason}'**
+  String exportFailed(String reason);
+
+  /// No description provided for @exportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There is nothing to export yet.'**
+  String get exportEmpty;
+
+  /// No description provided for @exportSavedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {path}'**
+  String exportSavedTo(String path);
 
   /// No description provided for @privacySecurity.
   ///
   /// In en, this message translates to:
   /// **'Privacy & Security'**
   String get privacySecurity;
-
-  /// No description provided for @privacySecuritySubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage your privacy settings'**
-  String get privacySecuritySubtitle;
 
   /// No description provided for @termsConditions.
   ///
@@ -398,11 +554,767 @@ abstract class AppLocalizations {
   /// **'Get help or contact us'**
   String get helpSupportSubtitle;
 
+  /// No description provided for @settingsProfileSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your profile'**
+  String get settingsProfileSetUp;
+
+  /// No description provided for @settingsProfileIncompleteChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile incomplete — prescriptions cannot be signed'**
+  String get settingsProfileIncompleteChip;
+
+  /// No description provided for @settingsSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get settingsSignature;
+
+  /// No description provided for @settingsSignatureSubtitleAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added — printed on every prescription you sign'**
+  String get settingsSignatureSubtitleAdded;
+
+  /// No description provided for @settingsSignatureSubtitleMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Not added yet'**
+  String get settingsSignatureSubtitleMissing;
+
+  /// No description provided for @settingsBackupSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & sync'**
+  String get settingsBackupSync;
+
+  /// No description provided for @settingsBackupSubtitleNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never backed up'**
+  String get settingsBackupSubtitleNever;
+
+  /// No description provided for @settingsBackupSubtitleLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup {time}'**
+  String settingsBackupSubtitleLast(String time);
+
+  /// No description provided for @settingsExportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save or share a copy of all your records'**
+  String get settingsExportSubtitle;
+
+  /// No description provided for @settingsPrivacySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where your data lives and how to delete it'**
+  String get settingsPrivacySubtitle;
+
+  /// No description provided for @settingsSectionLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get settingsSectionLegal;
+
+  /// No description provided for @settingsPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get settingsPrivacyPolicy;
+
+  /// No description provided for @settingsPrivacyPolicySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How your and your patients\' data is handled'**
+  String get settingsPrivacyPolicySubtitle;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Rxvarta v{version} ({build})'**
+  String settingsVersion(String version, String build);
+
+  /// No description provided for @settingsTimeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get settingsTimeJustNow;
+
+  /// No description provided for @settingsTimeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 minute ago} other{{n} minutes ago}}'**
+  String settingsTimeMinutesAgo(int n);
+
+  /// No description provided for @settingsTimeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 hour ago} other{{n} hours ago}}'**
+  String settingsTimeHoursAgo(int n);
+
+  /// No description provided for @settingsTimeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{yesterday} other{{n} days ago}}'**
+  String settingsTimeDaysAgo(int n);
+
+  /// No description provided for @settingsSigningOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing out…'**
+  String get settingsSigningOut;
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will need to sign in again to use Rxvarta. Records saved on this device stay on it.'**
+  String get logoutConfirmBody;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get logoutConfirm;
+
+  /// No description provided for @privacyIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Rxvarta is built so that patient records stay under the doctor\'s control. This page explains, in plain words, where data is kept, who processes it and how to delete it.'**
+  String get privacyIntro;
+
+  /// No description provided for @privacyWhereStoredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where your data lives'**
+  String get privacyWhereStoredTitle;
+
+  /// No description provided for @privacyWhereStoredDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device — patients, visits, transcripts, prescriptions, report photos and recordings are kept in the app\'s private storage on this phone.'**
+  String get privacyWhereStoredDevice;
+
+  /// No description provided for @privacyWhereStoredCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Supabase project hosted in Mumbai, India (ap-south-1) — your account, doctor profile, signature and backups.'**
+  String get privacyWhereStoredCloud;
+
+  /// No description provided for @privacyWhereStoredAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings are uploaded to a private storage bucket only for processing, never for long-term storage.'**
+  String get privacyWhereStoredAudio;
+
+  /// No description provided for @privacyProcessorsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who processes it'**
+  String get privacyProcessorsTitle;
+
+  /// No description provided for @privacyProcessorSarvam.
+  ///
+  /// In en, this message translates to:
+  /// **'Sarvam AI — converts the recording into text (speech-to-text).'**
+  String get privacyProcessorSarvam;
+
+  /// No description provided for @privacyProcessorGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Gemini — turns the transcript into a structured draft prescription for you to review.'**
+  String get privacyProcessorGoogle;
+
+  /// No description provided for @privacyProcessorSupabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Supabase — sign-in, file storage and the database behind your account.'**
+  String get privacyProcessorSupabase;
+
+  /// No description provided for @privacyRetentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long it is kept'**
+  String get privacyRetentionTitle;
+
+  /// No description provided for @privacyRetentionAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings: deleted from the server once processing succeeds; kept on this device until then.'**
+  String get privacyRetentionAudio;
+
+  /// No description provided for @privacyRetentionTranscript.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcripts and prescriptions: on this device and in your backups until you delete them.'**
+  String get privacyRetentionTranscript;
+
+  /// No description provided for @privacyRetentionJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing cache: cleared after the result has been delivered to the app.'**
+  String get privacyRetentionJobs;
+
+  /// No description provided for @privacyRoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your role and ours'**
+  String get privacyRoleTitle;
+
+  /// No description provided for @privacyRoleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Under the Digital Personal Data Protection Act, 2023 you, the doctor, remain the data fiduciary for your patients\' records. Rxvarta processes them only on your instructions, as a data processor.'**
+  String get privacyRoleBody;
+
+  /// No description provided for @privacySecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security measures'**
+  String get privacySecurityTitle;
+
+  /// No description provided for @privacySecurityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Data travels over encrypted connections (TLS). Records on the server are protected by per-account access rules, so only your sign-in can read them. Keep your phone locked: anyone who can unlock it can open the app.'**
+  String get privacySecurityBody;
+
+  /// No description provided for @privacyDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting data'**
+  String get privacyDeleteTitle;
+
+  /// No description provided for @privacyDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the button below to remove your data from this phone. Other doctors who sign in on this phone keep theirs. Patient records cannot be deleted one by one yet. To delete your account and the data kept on our servers, write to us from the e-mail address you signed up with.'**
+  String get privacyDeleteBody;
+
+  /// No description provided for @privacyDeleteLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my data on this device'**
+  String get privacyDeleteLocal;
+
+  /// No description provided for @privacyDeleteLocalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes your patients, visits, recordings, reports, profile cache and signature from this phone and signs you out. Your account and backups on the server are not affected.'**
+  String get privacyDeleteLocalSubtitle;
+
+  /// No description provided for @privacyDeleteLocalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every patient, visit, recording and report of yours stored on this phone will be removed and you will be signed out. Other doctors\' data on this phone and your backups on the server are not affected. This cannot be undone.\n\nType {word} to confirm.'**
+  String privacyDeleteLocalBody(String word);
+
+  /// No description provided for @privacyDeleteLocalWord.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE'**
+  String get privacyDeleteLocalWord;
+
+  /// No description provided for @privacyDeleteLocalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type {word}'**
+  String privacyDeleteLocalHint(String word);
+
+  /// No description provided for @privacyDeleteLocalConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete everything'**
+  String get privacyDeleteLocalConfirm;
+
+  /// No description provided for @privacyDeleting.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting local data…'**
+  String get privacyDeleting;
+
+  /// No description provided for @privacyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Local data deleted'**
+  String get privacyDeleted;
+
+  /// No description provided for @privacyDeletePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Some items could not be deleted: {details}'**
+  String privacyDeletePartial(String details);
+
+  /// No description provided for @privacyReadPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the full Privacy Policy'**
+  String get privacyReadPolicy;
+
+  /// No description provided for @legalTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get legalTerms;
+
+  /// No description provided for @legalPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get legalPrivacyPolicy;
+
+  /// No description provided for @legalLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: {date}'**
+  String legalLastUpdated(String date);
+
+  /// No description provided for @legalReviewNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Bundled copy — available offline. If a newer version is published online, the online version applies.'**
+  String get legalReviewNotice;
+
+  /// No description provided for @legalViewOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'View online version'**
+  String get legalViewOnline;
+
+  /// No description provided for @legalLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this document.'**
+  String get legalLoadFailed;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpTitle;
+
+  /// No description provided for @helpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions, feedback or a problem with the app? We are happy to help.'**
+  String get helpSubtitle;
+
+  /// No description provided for @helpVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App version {version} ({build})'**
+  String helpVersion(String version, String build);
+
+  /// No description provided for @helpEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email support'**
+  String get helpEmail;
+
+  /// No description provided for @helpWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp support'**
+  String get helpWhatsapp;
+
+  /// No description provided for @helpReportProblem.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a problem'**
+  String get helpReportProblem;
+
+  /// No description provided for @helpReportProblemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what happened and how to reproduce it'**
+  String get helpReportProblemSubtitle;
+
+  /// No description provided for @helpNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Support contact not configured yet'**
+  String get helpNotConfigured;
+
+  /// No description provided for @helpCouldNotOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open this on your device.'**
+  String get helpCouldNotOpen;
+
+  /// No description provided for @helpEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Rxvarta support'**
+  String get helpEmailSubject;
+
+  /// No description provided for @helpEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'App version: {version}\nPlatform: {platform}\n\n'**
+  String helpEmailBody(String version, String platform);
+
+  /// No description provided for @helpReportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Rxvarta — problem report'**
+  String get helpReportSubject;
+
+  /// No description provided for @helpReportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened:\n\n\nSteps to reproduce:\n1. \n2. \n3. \n\nApp version: {version}\nPlatform: {platform}\n'**
+  String helpReportBody(String version, String platform);
+
   /// No description provided for @logout.
   ///
   /// In en, this message translates to:
   /// **'Logout'**
   String get logout;
+
+  /// No description provided for @authSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authSignIn;
+
+  /// No description provided for @authSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get authSignInTitle;
+
+  /// No description provided for @authSignInSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue to your consultations.'**
+  String get authSignInSubtitle;
+
+  /// No description provided for @authEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authEmail;
+
+  /// No description provided for @authEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'doctor@clinic.com'**
+  String get authEmailHint;
+
+  /// No description provided for @authEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get authEmailInvalid;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPassword;
+
+  /// No description provided for @authPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get authPasswordHint;
+
+  /// No description provided for @authPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get authPasswordRequired;
+
+  /// No description provided for @authPasswordRules.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get authPasswordRules;
+
+  /// No description provided for @authPasswordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordsDoNotMatch;
+
+  /// No description provided for @authShowPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get authShowPassword;
+
+  /// No description provided for @authHidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get authHidePassword;
+
+  /// No description provided for @authForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authForgotPassword;
+
+  /// No description provided for @authNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'New to Rxvarta?'**
+  String get authNoAccount;
+
+  /// No description provided for @authCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get authCreateAccount;
+
+  /// No description provided for @authHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get authHaveAccount;
+
+  /// No description provided for @authSignUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get authSignUpTitle;
+
+  /// No description provided for @authSignUpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One account per doctor. Your patients and prescriptions stay private to you.'**
+  String get authSignUpSubtitle;
+
+  /// No description provided for @authConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authConfirmPassword;
+
+  /// No description provided for @authSignInInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in instead'**
+  String get authSignInInstead;
+
+  /// No description provided for @authVerifyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get authVerifyTitle;
+
+  /// No description provided for @authVerifyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent an 8-digit code to {email}. Enter it below to continue.'**
+  String authVerifyBody(String email);
+
+  /// No description provided for @authCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code'**
+  String get authCode;
+
+  /// No description provided for @authCodeIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter all 8 digits of the code'**
+  String get authCodeIncomplete;
+
+  /// No description provided for @authVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get authVerify;
+
+  /// No description provided for @authResendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get authResendCode;
+
+  /// No description provided for @authResendIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code in {seconds}s'**
+  String authResendIn(int seconds);
+
+  /// No description provided for @authCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'A new code has been sent to your email.'**
+  String get authCodeSent;
+
+  /// No description provided for @authForgotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your password'**
+  String get authForgotTitle;
+
+  /// No description provided for @authForgotSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email you signed up with and we will send you a code.'**
+  String get authForgotSubtitle;
+
+  /// No description provided for @authSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get authSendCode;
+
+  /// No description provided for @authResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password'**
+  String get authResetTitle;
+
+  /// No description provided for @authResetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a password you have not used with Rxvarta before.'**
+  String get authResetSubtitle;
+
+  /// No description provided for @authNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authNewPassword;
+
+  /// No description provided for @authUpdatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get authUpdatePassword;
+
+  /// No description provided for @authPasswordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated'**
+  String get authPasswordUpdated;
+
+  /// No description provided for @authBackToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get authBackToSignIn;
+
+  /// No description provided for @authBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get authBack;
+
+  /// No description provided for @authNotConfiguredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App not configured'**
+  String get authNotConfiguredTitle;
+
+  /// No description provided for @authNotConfiguredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This build has no backend connection, so sign-in is unavailable. Build the app with --dart-define-from-file=config/app_config.json (see the README).'**
+  String get authNotConfiguredBody;
+
+  /// No description provided for @authSplashLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your workspace…'**
+  String get authSplashLoading;
+
+  /// No description provided for @authSecureNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted and private to your account.'**
+  String get authSecureNote;
+
+  /// No description provided for @authErrorInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get authErrorInvalidCredentials;
+
+  /// No description provided for @authErrorEmailNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please verify your email address first.'**
+  String get authErrorEmailNotConfirmed;
+
+  /// No description provided for @authErrorUserExists.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists.'**
+  String get authErrorUserExists;
+
+  /// No description provided for @authErrorWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a stronger password: at least 8 characters and different from your current one.'**
+  String get authErrorWeakPassword;
+
+  /// No description provided for @authErrorOtpExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This code has expired. Request a new one.'**
+  String get authErrorOtpExpired;
+
+  /// No description provided for @authErrorOtpInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That code is not correct. Check it and try again.'**
+  String get authErrorOtpInvalid;
+
+  /// No description provided for @authErrorRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a minute and try again.'**
+  String get authErrorRateLimited;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Check your network and try again.'**
+  String get authErrorNetwork;
+
+  /// No description provided for @authErrorSignupDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'New sign-ups are currently disabled.'**
+  String get authErrorSignupDisabled;
+
+  /// No description provided for @authErrorValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check the details you entered.'**
+  String get authErrorValidation;
+
+  /// No description provided for @authErrorNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'The app is not connected to a backend.'**
+  String get authErrorNotConfigured;
+
+  /// No description provided for @authErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get authErrorUnknown;
+
+  /// No description provided for @authErrorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get authErrorDetails;
 
   /// No description provided for @regPrefix.
   ///
@@ -463,6 +1375,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clinic phone'**
   String get clinicPhone;
+
+  /// No description provided for @profilePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your mobile number'**
+  String get profilePhone;
+
+  /// No description provided for @profileOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get profileOptional;
+
+  /// No description provided for @profileRequiredHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fields marked * are printed on every prescription and are required by law.'**
+  String get profileRequiredHint;
+
+  /// No description provided for @profileSectionDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor details'**
+  String get profileSectionDoctor;
+
+  /// No description provided for @profileSectionClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic details'**
+  String get profileSectionClinic;
+
+  /// No description provided for @profileNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Dr. Asha Verma'**
+  String get profileNameHint;
+
+  /// No description provided for @profileQualificationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. MBBS, MD (Medicine)'**
+  String get profileQualificationsHint;
+
+  /// No description provided for @profileRegNoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'State medical council number'**
+  String get profileRegNoHint;
+
+  /// No description provided for @profilePhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'10-digit mobile number'**
+  String get profilePhoneHint;
+
+  /// No description provided for @profilePhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid mobile number'**
+  String get profilePhoneInvalid;
+
+  /// No description provided for @profileClinicNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic or hospital name'**
+  String get profileClinicNameHint;
+
+  /// No description provided for @profileClinicAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Area, City, State PIN'**
+  String get profileClinicAddressHint;
+
+  /// No description provided for @profileClinicPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Landline or reception number'**
+  String get profileClinicPhoneHint;
+
+  /// No description provided for @profileSavedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this device — will sync when online'**
+  String get profileSavedOffline;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save profile'**
+  String get profileSaveFailed;
+
+  /// No description provided for @profileRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get profileRetry;
+
+  /// No description provided for @profileIncompleteNudgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to sign prescriptions'**
+  String get profileIncompleteNudgeTitle;
+
+  /// No description provided for @profileIncompleteNudgeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your name, registration number, clinic and signature.'**
+  String get profileIncompleteNudgeBody;
+
+  /// No description provided for @signatureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get signatureTitle;
+
+  /// No description provided for @signatureSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Printed on every prescription you sign.'**
+  String get signatureSubtitle;
+
+  /// No description provided for @signatureAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add signature'**
+  String get signatureAdd;
+
+  /// No description provided for @signatureUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update signature'**
+  String get signatureUpdate;
+
+  /// No description provided for @signatureDraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get signatureDraw;
+
+  /// No description provided for @signatureUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get signatureUpload;
+
+  /// No description provided for @signatureClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get signatureClear;
+
+  /// No description provided for @signatureUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use signature'**
+  String get signatureUse;
+
+  /// No description provided for @signatureEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please draw your signature first.'**
+  String get signatureEmptyError;
+
+  /// No description provided for @signatureHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign above the line with your finger or mouse'**
+  String get signatureHint;
+
+  /// No description provided for @signatureUploadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a clear photo or scan of your signature on white paper (PNG or JPEG).'**
+  String get signatureUploadHint;
+
+  /// No description provided for @signatureChooseImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose image'**
+  String get signatureChooseImage;
+
+  /// No description provided for @signatureChangeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another'**
+  String get signatureChangeImage;
+
+  /// No description provided for @signatureUnsupportedFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a PNG or JPEG image.'**
+  String get signatureUnsupportedFormat;
+
+  /// No description provided for @signatureLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load that image'**
+  String get signatureLoadFailed;
+
+  /// No description provided for @signatureNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No signature yet'**
+  String get signatureNone;
+
+  /// No description provided for @signatureSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature saved'**
+  String get signatureSaved;
+
+  /// No description provided for @signatureSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save signature'**
+  String get signatureSaveFailed;
+
+  /// No description provided for @onboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your prescription'**
+  String get onboardingTitle;
+
+  /// No description provided for @onboardingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'These details appear on every prescription you sign.'**
+  String get onboardingSubtitle;
+
+  /// No description provided for @onboardingStepDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor'**
+  String get onboardingStepDoctor;
+
+  /// No description provided for @onboardingStepClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic'**
+  String get onboardingStepClinic;
+
+  /// No description provided for @onboardingStepSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get onboardingStepSignature;
+
+  /// No description provided for @onboardingDoctorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your details'**
+  String get onboardingDoctorTitle;
+
+  /// No description provided for @onboardingDoctorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Exactly as they should appear on the letterhead.'**
+  String get onboardingDoctorBody;
+
+  /// No description provided for @onboardingClinicTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your clinic'**
+  String get onboardingClinicTitle;
+
+  /// No description provided for @onboardingClinicBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice name and address printed on the prescription.'**
+  String get onboardingClinicBody;
+
+  /// No description provided for @onboardingSignatureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your signature'**
+  String get onboardingSignatureTitle;
+
+  /// No description provided for @onboardingSignatureBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw it once or upload a photo. It is stored privately and printed only on prescriptions you sign.'**
+  String get onboardingSignatureBody;
+
+  /// No description provided for @onboardingContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get onboardingContinue;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get onboardingBack;
+
+  /// No description provided for @onboardingFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get onboardingFinish;
+
+  /// No description provided for @onboardingSignatureRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your signature to finish.'**
+  String get onboardingSignatureRequired;
+
+  /// No description provided for @onboardingSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get onboardingSignOut;
+
+  /// No description provided for @onboardingSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {email}'**
+  String onboardingSignedInAs(String email);
+
+  /// No description provided for @signGateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to sign'**
+  String get signGateTitle;
+
+  /// No description provided for @signGateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A prescription must carry the prescribing doctor\'s details. Add the following before signing:'**
+  String get signGateBody;
+
+  /// No description provided for @signGateCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get signGateCompleteProfile;
+
+  /// No description provided for @signGateOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get signGateOk;
+
+  /// No description provided for @signGatePatientNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient name missing'**
+  String get signGatePatientNameTitle;
+
+  /// No description provided for @signGatePatientNameBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the patient\'s name before signing the prescription.'**
+  String get signGatePatientNameBody;
+
+  /// No description provided for @signGateMedicineNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine name missing'**
+  String get signGateMedicineNameTitle;
+
+  /// No description provided for @signGateMedicineNameBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine {n} has no name. Enter a name or remove it before signing.'**
+  String signGateMedicineNameBody(int n);
+
+  /// No description provided for @pdfAwaitingSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting signature'**
+  String get pdfAwaitingSignature;
 
   /// No description provided for @unsavedChanges.
   ///
@@ -721,6 +2005,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not save patient'**
   String get couldNotSavePatient;
+
+  /// No description provided for @couldNotSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your changes'**
+  String get couldNotSaveChanges;
+
+  /// No description provided for @nothingHeardInRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'No consultation was heard in this recording. Check that the microphone is working, then record again.'**
+  String get nothingHeardInRecording;
 
   /// No description provided for @patientAlreadyExists.
   ///
@@ -1603,18 +2899,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not generate PDF'**
   String get couldNotGeneratePdf;
-
-  /// No description provided for @welcomeToRxvarta.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to Rxvarta'**
-  String get welcomeToRxvarta;
-
-  /// No description provided for @onboardingMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Doctor profile and API key setup will live here.'**
-  String get onboardingMessage;
 }
 
 class _AppLocalizationsDelegate

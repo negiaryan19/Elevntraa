@@ -128,24 +128,118 @@ class AppLocalizationsTa extends AppLocalizations {
   String get chooseLanguage => 'மொழியைத் தேர்ந்தெடு';
 
   @override
-  String get dataBackup => 'தரவு காப்புப்பிரதி';
-
-  @override
-  String get dataBackupSubtitle =>
-      'உங்கள் ஆலோசனை வரலாற்றைக் காப்புப் பிரதி எடு';
-
-  @override
   String get exportData => 'தரவை ஏற்றுமதி செய்';
 
   @override
-  String get exportDataSubtitle => 'உங்கள் அனைத்து தரவையும் பதிவிறக்கு';
+  String get backupTitle => 'பேக்அப் & ஒத்திசைவு';
+
+  @override
+  String get backupIntro =>
+      'உங்கள் பதிவுகளின் நகலை உங்கள் சொந்த தனிப்பட்ட கிளவுட் கோப்புறையில் வைக்கிறது, இந்த ஃபோன் தொலைந்தாலும் எதுவும் இழக்கப்படாது.';
+
+  @override
+  String get backupIncludes =>
+      'அடங்கும்: நோயாளிகள், ஆலோசனைகள், மருந்துச்சீட்டுகள், அறிக்கை புகைப்படங்கள், உங்கள் சுயவிவரம் மற்றும் கையொப்பம்.';
+
+  @override
+  String get backupExcludes =>
+      'அடங்காது: ஆலோசனை பதிவுகள் (செயலாக்கத்திற்குப் பிறகு அவை நீக்கப்படும்).';
+
+  @override
+  String backupLastAt(String time) {
+    return 'கடைசி பேக்அப் $time';
+  }
+
+  @override
+  String get backupNever => 'இதுவரை பேக்அப் இல்லை';
+
+  @override
+  String get backupNow => 'இப்போது பேக்அப் எடுக்கவும்';
+
+  @override
+  String backupLatestRemote(String time, String size) {
+    return 'கிளவுட்டில் சமீபத்தியது: $time ($size)';
+  }
+
+  @override
+  String get backupNoRemote => 'கிளவுட்டில் இன்னும் பேக்அப் இல்லை';
+
+  @override
+  String get backupRestoreLatest => 'சமீபத்திய பேக்அப்பை மீட்டெடுக்கவும்';
+
+  @override
+  String get backupRestoreConfirmTitle => 'இந்த ஃபோனின் தரவை மாற்றவா?';
+
+  @override
+  String backupRestoreConfirmBody(String time) {
+    return 'இந்த ஃபோனில் உள்ள உங்கள் பதிவுகள் $time பேக்அப்பால் மாற்றப்படும். இந்த ஃபோனைப் பயன்படுத்தும் மற்ற மருத்துவர்கள் பாதிக்கப்பட மாட்டார்கள். இதை மீட்டெடுக்க முடியாது.';
+  }
+
+  @override
+  String get backupRestoreConfirm => 'மீட்டெடு';
+
+  @override
+  String get backupStageCollecting => 'உங்கள் பதிவுகள் சேகரிக்கப்படுகின்றன…';
+
+  @override
+  String get backupStageZipping => 'தொகுக்கப்படுகிறது…';
+
+  @override
+  String get backupStageUploading => 'பதிவேற்றப்படுகிறது…';
+
+  @override
+  String get backupStageDownloading => 'பேக்அப் பதிவிறக்கப்படுகிறது…';
+
+  @override
+  String get backupStageRestoring => 'மீட்டெடுக்கப்படுகிறது…';
+
+  @override
+  String get backupDone => 'பேக்அப் முடிந்தது';
+
+  @override
+  String get backupRestored => 'பேக்அப் மீட்டெடுக்கப்பட்டது';
+
+  @override
+  String get backupRestartHint =>
+      'மீட்டெடுக்கப்பட்ட பதிவுகளைக் காண ஆப்ஸை மூடி மீண்டும் திறக்கவும்.';
+
+  @override
+  String backupFailed(String reason) {
+    return 'பேக்அப் தோல்வி: $reason';
+  }
+
+  @override
+  String backupRestoreFailed(String reason) {
+    return 'மீட்டெடுப்பு தோல்வி: $reason';
+  }
+
+  @override
+  String get backupNeedsInternet => 'பேக்அப் எடுக்க இணையத்துடன் இணைக்கவும்.';
+
+  @override
+  String get exportPreparing => 'உங்கள் ஏற்றுமதி தயாராகிறது…';
+
+  @override
+  String get exportShareSubject => 'Rxvarta தரவு ஏற்றுமதி';
+
+  @override
+  String get exportShareText => 'எனது Rxvarta பதிவுகளின் ஏற்றுமதி.';
+
+  @override
+  String exportFailed(String reason) {
+    return 'தரவை ஏற்றுமதி செய்ய முடியவில்லை: $reason';
+  }
+
+  @override
+  String get exportEmpty => 'ஏற்றுமதி செய்ய இன்னும் எதுவும் இல்லை.';
+
+  @override
+  String exportSavedTo(String path) {
+    return '$path இல் சேமிக்கப்பட்டது';
+  }
 
   @override
   String get privacySecurity => 'தனியுரிமை & பாதுகாப்பு';
-
-  @override
-  String get privacySecuritySubtitle =>
-      'உங்கள் தனியுரிமை அமைப்புகளை நிர்வகிக்கவும்';
 
   @override
   String get termsConditions => 'விதிமுறைகள் & நிபந்தனைகள்';
@@ -161,7 +255,471 @@ class AppLocalizationsTa extends AppLocalizations {
       'உதவி பெறுங்கள் அல்லது எங்களைத் தொடர்பு கொள்ளுங்கள்';
 
   @override
+  String get settingsProfileSetUp => 'உங்கள் சுயவிவரத்தை அமைக்கவும்';
+
+  @override
+  String get settingsProfileIncompleteChip =>
+      'சுயவிவரம் முழுமையடையவில்லை — மருந்துச்சீட்டுகளில் கையொப்பமிட முடியாது';
+
+  @override
+  String get settingsSignature => 'கையொப்பம்';
+
+  @override
+  String get settingsSignatureSubtitleAdded =>
+      'சேர்க்கப்பட்டது — நீங்கள் கையொப்பமிடும் ஒவ்வொரு மருந்துச்சீட்டிலும் அச்சிடப்படும்';
+
+  @override
+  String get settingsSignatureSubtitleMissing => 'இன்னும் சேர்க்கப்படவில்லை';
+
+  @override
+  String get settingsBackupSync => 'பேக்அப் & ஒத்திசைவு';
+
+  @override
+  String get settingsBackupSubtitleNever => 'இதுவரை பேக்அப் இல்லை';
+
+  @override
+  String settingsBackupSubtitleLast(String time) {
+    return 'கடைசி பேக்அப் $time';
+  }
+
+  @override
+  String get settingsExportSubtitle =>
+      'உங்கள் அனைத்து பதிவுகளின் நகலைச் சேமிக்கவும் அல்லது பகிரவும்';
+
+  @override
+  String get settingsPrivacySubtitle =>
+      'உங்கள் தரவு எங்கு இருக்கிறது, அதை எப்படி நீக்குவது';
+
+  @override
+  String get settingsSectionLegal => 'சட்டப்பூர்வம்';
+
+  @override
+  String get settingsPrivacyPolicy => 'தனியுரிமைக் கொள்கை';
+
+  @override
+  String get settingsPrivacyPolicySubtitle =>
+      'உங்கள் மற்றும் உங்கள் நோயாளிகளின் தரவு எப்படிக் கையாளப்படுகிறது';
+
+  @override
+  String settingsVersion(String version, String build) {
+    return 'Rxvarta v$version ($build)';
+  }
+
+  @override
+  String get settingsTimeJustNow => 'இப்போதுதான்';
+
+  @override
+  String settingsTimeMinutesAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n நிமிடங்களுக்கு முன்',
+      one: '1 நிமிடத்திற்கு முன்',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String settingsTimeHoursAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n மணி நேரத்திற்கு முன்',
+      one: '1 மணி நேரத்திற்கு முன்',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String settingsTimeDaysAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n நாட்களுக்கு முன்',
+      one: 'நேற்று',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsSigningOut => 'வெளியேறுகிறது…';
+
+  @override
+  String get logoutConfirmTitle => 'வெளியேறவா?';
+
+  @override
+  String get logoutConfirmBody =>
+      'Rxvarta ஐப் பயன்படுத்த மீண்டும் உள்நுழைய வேண்டும். இந்தச் சாதனத்தில் சேமித்த பதிவுகள் இங்கேயே இருக்கும்.';
+
+  @override
+  String get logoutConfirm => 'வெளியேறு';
+
+  @override
+  String get privacyIntro =>
+      'நோயாளிகளின் பதிவுகள் மருத்துவரின் கட்டுப்பாட்டில் இருக்கும் வகையில் Rxvarta உருவாக்கப்பட்டுள்ளது. தரவு எங்கு வைக்கப்படுகிறது, அதை யார் செயலாக்குகிறார்கள், அதை எப்படி நீக்குவது என்பதை இந்தப் பக்கம் எளிய வார்த்தைகளில் விளக்குகிறது.';
+
+  @override
+  String get privacyWhereStoredTitle => 'உங்கள் தரவு எங்கு இருக்கிறது';
+
+  @override
+  String get privacyWhereStoredDevice =>
+      'இந்தச் சாதனம் — நோயாளிகள், வருகைகள், உரைப்பதிவுகள், மருந்துச்சீட்டுகள், அறிக்கை புகைப்படங்கள் மற்றும் ஒலிப்பதிவுகள் இந்த ஃபோனில் ஆப்ஸின் தனிப்பட்ட சேமிப்பில் இருக்கும்.';
+
+  @override
+  String get privacyWhereStoredCloud =>
+      'மும்பை, இந்தியா (ap-south-1) இல் ஹோஸ்ட் செய்யப்பட்ட Supabase திட்டம் — உங்கள் கணக்கு, மருத்துவர் சுயவிவரம், கையொப்பம் மற்றும் பேக்அப்கள்.';
+
+  @override
+  String get privacyWhereStoredAudio =>
+      'ஒலிப்பதிவுகள் செயலாக்கத்திற்காக மட்டுமே தனிப்பட்ட சேமிப்பகத்திற்கு பதிவேற்றப்படுகின்றன, நீண்டகால சேமிப்பிற்கு அல்ல.';
+
+  @override
+  String get privacyProcessorsTitle => 'இதை யார் செயலாக்குகிறார்கள்';
+
+  @override
+  String get privacyProcessorSarvam =>
+      'Sarvam AI — ஒலிப்பதிவை உரையாக மாற்றுகிறது (பேச்சு-உரை).';
+
+  @override
+  String get privacyProcessorGoogle =>
+      'Google Gemini — உரைப்பதிவிலிருந்து நீங்கள் பரிசீலிக்க மருந்துச்சீட்டு வரைவை உருவாக்குகிறது.';
+
+  @override
+  String get privacyProcessorSupabase =>
+      'Supabase — உள்நுழைவு, கோப்பு சேமிப்பு மற்றும் உங்கள் கணக்கின் தரவுத்தளம்.';
+
+  @override
+  String get privacyRetentionTitle => 'எவ்வளவு காலம் வைக்கப்படுகிறது';
+
+  @override
+  String get privacyRetentionAudio =>
+      'ஒலிப்பதிவுகள்: செயலாக்கம் வெற்றிபெற்றவுடன் சர்வரிலிருந்து நீக்கப்படும்; அதுவரை இந்தச் சாதனத்தில் இருக்கும்.';
+
+  @override
+  String get privacyRetentionTranscript =>
+      'உரைப்பதிவுகளும் மருந்துச்சீட்டுகளும்: நீங்கள் நீக்கும் வரை இந்தச் சாதனத்திலும் உங்கள் பேக்அப்களிலும் இருக்கும்.';
+
+  @override
+  String get privacyRetentionJobs =>
+      'செயலாக்க தேக்ககம்: முடிவு ஆப்ஸுக்கு வழங்கப்பட்ட பிறகு அழிக்கப்படும்.';
+
+  @override
+  String get privacyRoleTitle => 'உங்கள் பங்கும் எங்கள் பங்கும்';
+
+  @override
+  String get privacyRoleBody =>
+      'டிஜிட்டல் தனிநபர் தரவு பாதுகாப்புச் சட்டம், 2023 இன் கீழ் உங்கள் நோயாளிகளின் பதிவுகளுக்கான தரவு நம்பிக்கையாளராக நீங்கள், அதாவது மருத்துவரே, இருக்கிறீர்கள். Rxvarta அவற்றை உங்கள் அறிவுறுத்தலின் பேரில் மட்டுமே, தரவு செயலாக்குநராகச் செயலாக்குகிறது.';
+
+  @override
+  String get privacySecurityTitle => 'பாதுகாப்பு நடவடிக்கைகள்';
+
+  @override
+  String get privacySecurityBody =>
+      'தரவு மறையாக்கப்பட்ட இணைப்புகள் (TLS) வழியாகச் செல்கிறது. சர்வரில் உள்ள பதிவுகள் ஒவ்வொரு கணக்குக்கும் தனித்தனி அணுகல் விதிகளால் பாதுகாக்கப்படுகின்றன, எனவே உங்கள் உள்நுழைவால் மட்டுமே அவற்றைப் படிக்க முடியும். உங்கள் ஃபோனைப் பூட்டி வைக்கவும்: அதைத் திறக்கக்கூடிய எவரும் ஆப்ஸைத் திறக்க முடியும்.';
+
+  @override
+  String get privacyDeleteTitle => 'தரவை நீக்குதல்';
+
+  @override
+  String get privacyDeleteBody =>
+      'இந்த ஃபோனிலிருந்து உங்கள் தரவை அகற்ற கீழே உள்ள பொத்தானைப் பயன்படுத்தவும். இந்த ஃபோனில் உள்நுழையும் மற்ற மருத்துவர்களின் தரவு அப்படியே இருக்கும். நோயாளர் பதிவுகளை இன்னும் ஒவ்வொன்றாக நீக்க முடியாது. உங்கள் கணக்கையும் எங்கள் சர்வர்களில் உள்ள தரவையும் நீக்க, நீங்கள் பதிவு செய்த மின்னஞ்சல் முகவரியிலிருந்து எங்களுக்கு எழுதுங்கள்.';
+
+  @override
+  String get privacyDeleteLocal => 'இந்தச் சாதனத்திலிருந்து என் தரவை நீக்கவும்';
+
+  @override
+  String get privacyDeleteLocalSubtitle =>
+      'இந்த ஃபோனிலிருந்து உங்கள் நோயாளிகள், வருகைகள், ஒலிப்பதிவுகள், அறிக்கைகள், சுயவிவர தேக்ககம் மற்றும் கையொப்பத்தை அகற்றி உங்களை வெளியேற்றும். சர்வரில் உள்ள உங்கள் கணக்கும் பேக்அப்களும் பாதிக்கப்படாது.';
+
+  @override
+  String privacyDeleteLocalBody(String word) {
+    return 'இந்த ஃபோனில் சேமிக்கப்பட்ட உங்கள் ஒவ்வொரு நோயாளி, வருகை, ஒலிப்பதிவு மற்றும் அறிக்கை அகற்றப்படும், நீங்கள் வெளியேற்றப்படுவீர்கள். இந்த ஃபோனில் உள்ள மற்ற மருத்துவர்களின் தரவும் சர்வரில் உள்ள உங்கள் பேக்அப்களும் பாதிக்கப்படாது. இதை மீட்டெடுக்க முடியாது.\n\nஉறுதிப்படுத்த $word என தட்டச்சு செய்யவும்.';
+  }
+
+  @override
+  String get privacyDeleteLocalWord => 'DELETE';
+
+  @override
+  String privacyDeleteLocalHint(String word) {
+    return '$word எனத் தட்டச்சு செய்யவும்';
+  }
+
+  @override
+  String get privacyDeleteLocalConfirm => 'அனைத்தையும் நீக்கு';
+
+  @override
+  String get privacyDeleting => 'உள்ளூர் தரவு நீக்கப்படுகிறது…';
+
+  @override
+  String get privacyDeleted => 'உள்ளூர் தரவு நீக்கப்பட்டது';
+
+  @override
+  String privacyDeletePartial(String details) {
+    return 'சில உருப்படிகளை நீக்க முடியவில்லை: $details';
+  }
+
+  @override
+  String get privacyReadPolicy => 'முழு தனியுரிமைக் கொள்கையைப் படிக்கவும்';
+
+  @override
+  String get legalTerms => 'விதிமுறைகள் & நிபந்தனைகள்';
+
+  @override
+  String get legalPrivacyPolicy => 'தனியுரிமைக் கொள்கை';
+
+  @override
+  String legalLastUpdated(String date) {
+    return 'கடைசியாகப் புதுப்பிக்கப்பட்டது: $date';
+  }
+
+  @override
+  String get legalReviewNotice =>
+      'ஆப்ஸுடன் வந்த நகல் — ஆஃப்லைனில் கிடைக்கும். ஆன்லைனில் புதிய பதிப்பு வெளியிடப்பட்டால், ஆன்லைன் பதிப்பே பொருந்தும்.';
+
+  @override
+  String get legalViewOnline => 'ஆன்லைன் பதிப்பைக் காண்க';
+
+  @override
+  String get legalLoadFailed => 'இந்த ஆவணத்தை ஏற்ற முடியவில்லை.';
+
+  @override
+  String get helpTitle => 'உதவி & ஆதரவு';
+
+  @override
+  String get helpSubtitle =>
+      'ஆப்ஸ் குறித்த கேள்விகள், கருத்துகள் அல்லது சிக்கலா? உதவ நாங்கள் தயார்.';
+
+  @override
+  String helpVersion(String version, String build) {
+    return 'ஆப்ஸ் பதிப்பு $version ($build)';
+  }
+
+  @override
+  String get helpEmail => 'மின்னஞ்சல் ஆதரவு';
+
+  @override
+  String get helpWhatsapp => 'WhatsApp ஆதரவு';
+
+  @override
+  String get helpReportProblem => 'சிக்கலைத் தெரிவிக்கவும்';
+
+  @override
+  String get helpReportProblemSubtitle =>
+      'என்ன நடந்தது, அதை மீண்டும் எப்படிப் பார்ப்பது என்பதைச் சொல்லுங்கள்';
+
+  @override
+  String get helpNotConfigured => 'ஆதரவுத் தொடர்பு இன்னும் அமைக்கப்படவில்லை';
+
+  @override
+  String get helpCouldNotOpen => 'இதை உங்கள் சாதனத்தில் திறக்க முடியவில்லை.';
+
+  @override
+  String get helpEmailSubject => 'Rxvarta ஆதரவு';
+
+  @override
+  String helpEmailBody(String version, String platform) {
+    return 'ஆப்ஸ் பதிப்பு: $version\nதளம்: $platform\n\n';
+  }
+
+  @override
+  String get helpReportSubject => 'Rxvarta — சிக்கல் அறிக்கை';
+
+  @override
+  String helpReportBody(String version, String platform) {
+    return 'என்ன நடந்தது:\n\n\nமீண்டும் பார்க்கும் படிகள்:\n1. \n2. \n3. \n\nஆப்ஸ் பதிப்பு: $version\nதளம்: $platform\n';
+  }
+
+  @override
   String get logout => 'வெளியேறு';
+
+  @override
+  String get authSignIn => 'உள்நுழை';
+
+  @override
+  String get authSignInTitle => 'மீண்டும் வரவேற்கிறோம்';
+
+  @override
+  String get authSignInSubtitle => 'உங்கள் ஆலோசனைகளைத் தொடர உள்நுழையவும்.';
+
+  @override
+  String get authEmail => 'மின்னஞ்சல்';
+
+  @override
+  String get authEmailHint => 'doctor@clinic.com';
+
+  @override
+  String get authEmailInvalid => 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்';
+
+  @override
+  String get authPassword => 'கடவுச்சொல்';
+
+  @override
+  String get authPasswordHint => 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்';
+
+  @override
+  String get authPasswordRequired => 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்';
+
+  @override
+  String get authPasswordRules => 'குறைந்தது 8 எழுத்துகள்';
+
+  @override
+  String get authPasswordsDoNotMatch => 'கடவுச்சொற்கள் பொருந்தவில்லை';
+
+  @override
+  String get authShowPassword => 'கடவுச்சொல்லைக் காட்டு';
+
+  @override
+  String get authHidePassword => 'கடவுச்சொல்லை மறை';
+
+  @override
+  String get authForgotPassword => 'கடவுச்சொல்லை மறந்துவிட்டீர்களா?';
+
+  @override
+  String get authNoAccount => 'Rxvarta க்குப் புதியவரா?';
+
+  @override
+  String get authCreateAccount => 'கணக்கை உருவாக்கு';
+
+  @override
+  String get authHaveAccount => 'ஏற்கனவே கணக்கு உள்ளதா?';
+
+  @override
+  String get authSignUpTitle => 'உங்கள் கணக்கை உருவாக்கவும்';
+
+  @override
+  String get authSignUpSubtitle =>
+      'ஒவ்வொரு மருத்துவருக்கும் ஒரு கணக்கு. உங்கள் நோயாளிகளும் மருந்துச்சீட்டுகளும் உங்களுக்கு மட்டுமே தனிப்பட்டவை.';
+
+  @override
+  String get authConfirmPassword => 'கடவுச்சொல்லை உறுதிப்படுத்தவும்';
+
+  @override
+  String get authSignInInstead => 'அதற்குப் பதிலாக உள்நுழையவும்';
+
+  @override
+  String get authVerifyTitle => 'உங்கள் மின்னஞ்சலைப் பாருங்கள்';
+
+  @override
+  String authVerifyBody(String email) {
+    return '$email க்கு 8 இலக்கக் குறியீட்டை அனுப்பியுள்ளோம். தொடர அதை கீழே உள்ளிடவும்.';
+  }
+
+  @override
+  String get authCode => 'சரிபார்ப்புக் குறியீடு';
+
+  @override
+  String get authCodeIncomplete => 'குறியீட்டின் 8 இலக்கங்களையும் உள்ளிடவும்';
+
+  @override
+  String get authVerify => 'சரிபார்';
+
+  @override
+  String get authResendCode => 'குறியீட்டை மீண்டும் அனுப்பு';
+
+  @override
+  String authResendIn(int seconds) {
+    return '$seconds வினாடிகளில் குறியீட்டை மீண்டும் அனுப்பு';
+  }
+
+  @override
+  String get authCodeSent =>
+      'உங்கள் மின்னஞ்சலுக்குப் புதிய குறியீடு அனுப்பப்பட்டது.';
+
+  @override
+  String get authForgotTitle => 'உங்கள் கடவுச்சொல்லை மீட்டமைக்கவும்';
+
+  @override
+  String get authForgotSubtitle =>
+      'நீங்கள் பதிவு செய்த மின்னஞ்சலை உள்ளிடவும், உங்களுக்குக் குறியீட்டை அனுப்புவோம்.';
+
+  @override
+  String get authSendCode => 'குறியீட்டை அனுப்பு';
+
+  @override
+  String get authResetTitle => 'புதிய கடவுச்சொல்லைத் தேர்வுசெய்யவும்';
+
+  @override
+  String get authResetSubtitle =>
+      'Rxvarta இல் இதற்கு முன் பயன்படுத்தாத கடவுச்சொல்லைப் பயன்படுத்தவும்.';
+
+  @override
+  String get authNewPassword => 'புதிய கடவுச்சொல்';
+
+  @override
+  String get authUpdatePassword => 'கடவுச்சொல்லைப் புதுப்பி';
+
+  @override
+  String get authPasswordUpdated => 'கடவுச்சொல் புதுப்பிக்கப்பட்டது';
+
+  @override
+  String get authBackToSignIn => 'உள்நுழைவுக்குத் திரும்பு';
+
+  @override
+  String get authBack => 'பின்';
+
+  @override
+  String get authNotConfiguredTitle => 'ஆப்ஸ் கட்டமைக்கப்படவில்லை';
+
+  @override
+  String get authNotConfiguredBody =>
+      'இந்த பில்டில் பின்தள இணைப்பு இல்லை, எனவே உள்நுழைவு கிடைக்காது. ஆப்ஸை --dart-define-from-file=config/app_config.json உடன் பில்ட் செய்யவும் (README ஐப் பார்க்கவும்).';
+
+  @override
+  String get authSplashLoading => 'உங்கள் பணியிடம் தயாராகிறது…';
+
+  @override
+  String get authSecureNote =>
+      'மறையாக்கப்பட்டது, உங்கள் கணக்குக்கு மட்டுமே தனிப்பட்டது.';
+
+  @override
+  String get authErrorInvalidCredentials =>
+      'மின்னஞ்சல் அல்லது கடவுச்சொல் தவறு.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'முதலில் உங்கள் மின்னஞ்சல் முகவரியைச் சரிபார்க்கவும்.';
+
+  @override
+  String get authErrorUserExists =>
+      'இந்த மின்னஞ்சலுடன் ஏற்கனவே ஒரு கணக்கு உள்ளது.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'வலுவான கடவுச்சொல்லைத் தேர்வுசெய்யவும்: குறைந்தது 8 எழுத்துகள், தற்போதையதிலிருந்து வேறுபட்டது.';
+
+  @override
+  String get authErrorOtpExpired =>
+      'இந்தக் குறியீட்டின் காலம் முடிந்தது. புதியதைக் கோரவும்.';
+
+  @override
+  String get authErrorOtpInvalid =>
+      'அந்தக் குறியீடு சரியில்லை. சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get authErrorRateLimited =>
+      'அதிக முயற்சிகள். ஒரு நிமிடம் காத்திருந்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get authErrorNetwork =>
+      'இணைய இணைப்பு இல்லை. உங்கள் நெட்வொர்க்கைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'புதிய பதிவுகள் தற்போது முடக்கப்பட்டுள்ளன.';
+
+  @override
+  String get authErrorValidation =>
+      'நீங்கள் உள்ளிட்ட விவரங்களைச் சரிபார்க்கவும்.';
+
+  @override
+  String get authErrorNotConfigured =>
+      'ஆப்ஸ் எந்தப் பின்தளத்துடனும் இணைக்கப்படவில்லை.';
+
+  @override
+  String get authErrorUnknown => 'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get authErrorDetails => 'விவரங்கள்';
 
   @override
   String get regPrefix => 'பதிவு';
@@ -192,6 +750,212 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get clinicPhone => 'மருத்துவமனை தொலைபேசி';
+
+  @override
+  String get profilePhone => 'உங்கள் மொபைல் எண்';
+
+  @override
+  String get profileOptional => 'விருப்பத்தேர்வு';
+
+  @override
+  String get profileRequiredHint =>
+      '* குறியிட்ட புலங்கள் ஒவ்வொரு மருந்துச்சீட்டிலும் அச்சிடப்படும், சட்டப்படி கட்டாயம்.';
+
+  @override
+  String get profileSectionDoctor => 'மருத்துவர் விவரங்கள்';
+
+  @override
+  String get profileSectionClinic => 'கிளினிக் விவரங்கள்';
+
+  @override
+  String get profileNameHint => 'எ.கா. Dr. Asha Verma';
+
+  @override
+  String get profileQualificationsHint => 'எ.கா. MBBS, MD (Medicine)';
+
+  @override
+  String get profileRegNoHint => 'மாநில மருத்துவ கவுன்சில் எண்';
+
+  @override
+  String get profilePhoneHint => '10 இலக்க மொபைல் எண்';
+
+  @override
+  String get profilePhoneInvalid => 'சரியான மொபைல் எண்ணை உள்ளிடவும்';
+
+  @override
+  String get profileClinicNameHint => 'கிளினிக் அல்லது மருத்துவமனையின் பெயர்';
+
+  @override
+  String get profileClinicAddressHint =>
+      'பகுதி, நகரம், மாநிலம், அஞ்சல் குறியீடு';
+
+  @override
+  String get profileClinicPhoneHint => 'லேண்ட்லைன் அல்லது வரவேற்பு எண்';
+
+  @override
+  String get profileSavedOffline =>
+      'இந்தச் சாதனத்தில் சேமிக்கப்பட்டது — ஆன்லைனில் வரும்போது ஒத்திசைக்கப்படும்';
+
+  @override
+  String get profileSaveFailed => 'சுயவிவரத்தைச் சேமிக்க முடியவில்லை';
+
+  @override
+  String get profileRetry => 'மீண்டும் முயற்சி';
+
+  @override
+  String get profileIncompleteNudgeTitle =>
+      'மருந்துச்சீட்டுகளில் கையொப்பமிட உங்கள் சுயவிவரத்தை முடிக்கவும்';
+
+  @override
+  String get profileIncompleteNudgeBody =>
+      'உங்கள் பெயர், பதிவு எண், கிளினிக் மற்றும் கையொப்பத்தைச் சேர்க்கவும்.';
+
+  @override
+  String get signatureTitle => 'கையொப்பம்';
+
+  @override
+  String get signatureSubtitle =>
+      'நீங்கள் கையொப்பமிடும் ஒவ்வொரு மருந்துச்சீட்டிலும் அச்சிடப்படும்.';
+
+  @override
+  String get signatureAdd => 'கையொப்பத்தைச் சேர்';
+
+  @override
+  String get signatureUpdate => 'கையொப்பத்தை மாற்று';
+
+  @override
+  String get signatureDraw => 'வரை';
+
+  @override
+  String get signatureUpload => 'பதிவேற்று';
+
+  @override
+  String get signatureClear => 'அழி';
+
+  @override
+  String get signatureUse => 'இந்தக் கையொப்பத்தைப் பயன்படுத்து';
+
+  @override
+  String get signatureEmptyError => 'முதலில் உங்கள் கையொப்பத்தை வரையவும்.';
+
+  @override
+  String get signatureHint =>
+      'கோட்டுக்கு மேலே விரலால் அல்லது மவுஸால் கையொப்பமிடவும்';
+
+  @override
+  String get signatureUploadHint =>
+      'வெள்ளைத் தாளில் உள்ள உங்கள் கையொப்பத்தின் தெளிவான புகைப்படம் அல்லது ஸ்கேனைத் தேர்வுசெய்யவும் (PNG அல்லது JPEG).';
+
+  @override
+  String get signatureChooseImage => 'படத்தைத் தேர்வுசெய்';
+
+  @override
+  String get signatureChangeImage => 'வேறொன்றைத் தேர்வுசெய்';
+
+  @override
+  String get signatureUnsupportedFormat =>
+      'PNG அல்லது JPEG படத்தைத் தேர்வுசெய்யவும்.';
+
+  @override
+  String get signatureLoadFailed => 'அந்தப் படத்தை ஏற்ற முடியவில்லை';
+
+  @override
+  String get signatureNone => 'இன்னும் கையொப்பம் இல்லை';
+
+  @override
+  String get signatureSaved => 'கையொப்பம் சேமிக்கப்பட்டது';
+
+  @override
+  String get signatureSaveFailed => 'கையொப்பத்தைச் சேமிக்க முடியவில்லை';
+
+  @override
+  String get onboardingTitle => 'உங்கள் மருந்துச்சீட்டை அமைக்கவும்';
+
+  @override
+  String get onboardingSubtitle =>
+      'இந்த விவரங்கள் நீங்கள் கையொப்பமிடும் ஒவ்வொரு மருந்துச்சீட்டிலும் தோன்றும்.';
+
+  @override
+  String get onboardingStepDoctor => 'மருத்துவர்';
+
+  @override
+  String get onboardingStepClinic => 'கிளினிக்';
+
+  @override
+  String get onboardingStepSignature => 'கையொப்பம்';
+
+  @override
+  String get onboardingDoctorTitle => 'உங்கள் விவரங்கள்';
+
+  @override
+  String get onboardingDoctorBody =>
+      'லெட்டர்ஹெட்டில் எப்படித் தோன்ற வேண்டுமோ அப்படியே.';
+
+  @override
+  String get onboardingClinicTitle => 'உங்கள் கிளினிக்';
+
+  @override
+  String get onboardingClinicBody =>
+      'மருந்துச்சீட்டில் அச்சிடப்படும் பயிற்சியின் பெயரும் முகவரியும்.';
+
+  @override
+  String get onboardingSignatureTitle => 'உங்கள் கையொப்பம்';
+
+  @override
+  String get onboardingSignatureBody =>
+      'அதை ஒரு முறை வரையவும் அல்லது புகைப்படத்தைப் பதிவேற்றவும். அது தனிப்பட்ட முறையில் சேமிக்கப்பட்டு, நீங்கள் கையொப்பமிடும் மருந்துச்சீட்டுகளில் மட்டுமே அச்சிடப்படும்.';
+
+  @override
+  String get onboardingContinue => 'தொடர்';
+
+  @override
+  String get onboardingBack => 'பின்';
+
+  @override
+  String get onboardingFinish => 'முடி';
+
+  @override
+  String get onboardingSignatureRequired =>
+      'முடிக்க உங்கள் கையொப்பத்தைச் சேர்க்கவும்.';
+
+  @override
+  String get onboardingSignOut => 'வெளியேறு';
+
+  @override
+  String onboardingSignedInAs(String email) {
+    return '$email ஆக உள்நுழைந்துள்ளீர்கள்';
+  }
+
+  @override
+  String get signGateTitle => 'கையொப்பமிட உங்கள் சுயவிவரத்தை முடிக்கவும்';
+
+  @override
+  String get signGateBody =>
+      'மருந்துச்சீட்டில் பரிந்துரைத்த மருத்துவரின் விவரங்கள் இருக்க வேண்டும். கையொப்பமிடும் முன் இவற்றைச் சேர்க்கவும்:';
+
+  @override
+  String get signGateCompleteProfile => 'சுயவிவரத்தை முடிக்கவும்';
+
+  @override
+  String get signGateOk => 'சரி';
+
+  @override
+  String get signGatePatientNameTitle => 'நோயாளியின் பெயர் இல்லை';
+
+  @override
+  String get signGatePatientNameBody =>
+      'மருந்துச்சீட்டில் கையொப்பமிடும் முன் நோயாளியின் பெயரை உள்ளிடவும்.';
+
+  @override
+  String get signGateMedicineNameTitle => 'மருந்தின் பெயர் இல்லை';
+
+  @override
+  String signGateMedicineNameBody(int n) {
+    return 'மருந்து $n க்குப் பெயர் இல்லை. கையொப்பமிடும் முன் பெயரை உள்ளிடவும் அல்லது அதை அகற்றவும்.';
+  }
+
+  @override
+  String get pdfAwaitingSignature => 'கையொப்பத்திற்காகக் காத்திருக்கிறது';
 
   @override
   String get unsavedChanges => 'சேமிக்கப்படாத மாற்றங்கள்';
@@ -327,6 +1091,13 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get couldNotSavePatient => 'நோயாளியைச் சேமிக்க முடியவில்லை';
+
+  @override
+  String get couldNotSaveChanges => 'உங்கள் மாற்றங்களைச் சேமிக்க முடியவில்லை';
+
+  @override
+  String get nothingHeardInRecording =>
+      'இந்தப் பதிவில் எந்த ஆலோசனையும் கேட்கவில்லை. மைக்ரோஃபோன் இயங்குகிறதா எனச் சரிபார்த்து, மீண்டும் பதிவு செய்யவும்.';
 
   @override
   String get patientAlreadyExists => 'நோயாளி ஏற்கனவே உள்ளார்';
@@ -798,11 +1569,4 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get couldNotGeneratePdf => 'PDF உருவாக்க முடியவில்லை';
-
-  @override
-  String get welcomeToRxvarta => 'Rxvarta-க்கு வரவேற்கிறோம்';
-
-  @override
-  String get onboardingMessage =>
-      'மருத்துவர் சுயவிவரம் மற்றும் API விசை அமைப்பு இங்கே இருக்கும்.';
 }

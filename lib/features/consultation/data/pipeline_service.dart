@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/auth/auth_providers.dart';
 import '../../../core/errors/failure.dart';
 import '../../../domain/models/medical_insight.dart';
 import 'mock_pipeline_service.dart';
@@ -41,6 +42,10 @@ class InsightResult {
 /// process-consultation Edge Function, and handles the sync/async response
 /// modes. Async mode polls check-job-status until completion or timeout.
 class PipelineService {
+  PipelineService(this._auth);
+
+  final AuthController _auth;
+
   static const _bucket = 'consultation-audio';
   static const _pollInterval = Duration(seconds: 3);
   static const _maxPollDuration = Duration(minutes: 20);
@@ -53,10 +58,10 @@ class PipelineService {
   }) async {
     final client = Supabase.instance.client;
 
-    final session = client.auth.currentSession;
-    if (session == null) {
-      throw const ApiFailure('Not authenticated with backend.');
-    }
+    // Refreshes an expired session so a consultation recorded after a long
+    // idle period is not lost. Throws [AuthFailure] (FailureCode.auth) when
+    // the doctor must sign in again — nothing falls back to a shared login.
+    final session = await _auth.ensureSession();
     final userId = session.user.id;
 
     final jobUuid = const Uuid().v4();
@@ -100,7 +105,11 @@ class PipelineService {
         },
       );
     } on FunctionException catch (e) {
-      throw ApiFailure('Pipeline function error: ${e.details}', cause: e);
+      throw ApiFailure(
+        'Pipeline function error: ${e.details}',
+        cause: e,
+        code: pipelineErrorCode(e.details),
+      );
     } catch (e) {
       throw NetworkFailure('Could not reach backend: $e', cause: e);
     }
@@ -112,7 +121,7 @@ class PipelineService {
           : body.toString();
       throw ApiFailure(
         'Pipeline returned HTTP ${response.status}: $msg',
-        statusCode: response.status,
+        code: pipelineErrorCode(body),
       );
     }
 
@@ -160,7 +169,10 @@ class PipelineService {
 
       if (status == 'failed') {
         final err = result['error'] as String? ?? 'Unknown pipeline error';
-        throw ApiFailure('Transcription failed: $err');
+        throw ApiFailure(
+          'Transcription failed: $err',
+          code: pipelineErrorCode(err),
+        );
       }
 
       throw ApiFailure('Unexpected job status: $status');
@@ -177,9 +189,20 @@ class PipelineService {
   }
 }
 
+/// The edge functions report failures as free text (`{error: "..."}`).
+/// Speech-to-text finding no speech means the recording itself was silent or
+/// unusable (a muted or blocked microphone), which the doctor fixes by
+/// checking the mic and recording again, not by retrying the upload.
+FailureCode pipelineErrorCode(Object? details) {
+  final text = (details is Map ? details['error'] : details)?.toString() ?? '';
+  return text.contains('produced no transcript')
+      ? FailureCode.invalidAudio
+      : FailureCode.server;
+}
+
 final pipelineServiceProvider = Provider<PipelineService>((ref) {
   // Emulator/debug builds swap in a no-network mock so the flow is testable
   // without a live mic or any AI keys. See [kDebugSkipStt].
   if (kDebugSkipStt) return MockPipelineService();
-  return PipelineService();
+  return PipelineService(ref.read(authControllerProvider));
 });

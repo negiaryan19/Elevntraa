@@ -28,6 +28,12 @@ class PatientRepository {
     return row == null ? null : _toProfile(row);
   }
 
+  /// Loads several patients in one query, keyed by id.
+  Future<Map<String, PatientProfile>> byIds(Iterable<String> ids) async {
+    final rows = await _db.patientsByIds(ids);
+    return {for (final row in rows) row.id: _toProfile(row)};
+  }
+
   /// Returns an existing patient with this exact WhatsApp number, or null.
   Future<PatientProfile?> findByWhatsapp(String number) async {
     final trimmed = number.trim();

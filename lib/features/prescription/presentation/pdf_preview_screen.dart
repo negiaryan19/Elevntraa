@@ -74,8 +74,20 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
     if (v != null) {
       try {
         final svc = ref.read(prescriptionPdfServiceProvider);
-        final doctor = ref.read(doctorProfileControllerProvider);
-        bytes = await svc.build(visit: v, patient: p, doctor: doctor);
+        final doctor = ref.read(doctorProfileValueProvider);
+        final signature = await ref
+            .read(doctorProfileProvider.notifier)
+            .signatureBytes();
+        if (!mounted) return;
+        bytes = await svc.build(
+          visit: v,
+          patient: p,
+          doctor: doctor,
+          signaturePng: signature,
+          awaitingSignatureLabel: AppLocalizations.of(
+            context,
+          )!.pdfAwaitingSignature,
+        );
         fname = svc.fileName(p, v);
       } catch (_) {}
     }
@@ -89,12 +101,15 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       });
     }
 
-    if (bytes != null) await _rasterizePages();
+    // Use the local bytes, not the field: if the screen was unmounted while
+    // the PDF was building, the field was never set and `_pdfBytes!` throws.
+    if (bytes != null && mounted) await _rasterizePages(bytes);
   }
 
-  Future<void> _rasterizePages() async {
+  Future<void> _rasterizePages(Uint8List bytes) async {
     final images = <Uint8List>[];
-    await for (final page in Printing.raster(_pdfBytes!, dpi: 200)) {
+    await for (final page in Printing.raster(bytes, dpi: 200)) {
+      if (!mounted) return;
       final png = await page.toPng();
       images.add(png);
     }

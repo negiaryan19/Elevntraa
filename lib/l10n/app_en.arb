@@ -18,7 +18,7 @@
   "seeAll": "See all",
   "noPatientsYet": "No patients yet",
   "noPatientsYetSubtitle": "Start a consultation to add your first patient.",
-  "securityFooter": "Secure - HIPAA Compliant - End-to-End Encrypted",
+  "securityFooter": "Encrypted in transit - Hosted in India - Your records stay under your control",
   "male": "Male",
   "female": "Female",
   "other": "Other",
@@ -38,17 +38,331 @@
   "appLanguage": "App Language",
   "appLanguageSubtitle": "Choose the language of the app interface",
   "chooseLanguage": "Choose Language",
-  "dataBackup": "Data Backup",
-  "dataBackupSubtitle": "Backup your consultation history",
   "exportData": "Export Data",
-  "exportDataSubtitle": "Download all your data",
+  "backupTitle": "Backup & sync",
+  "backupIntro": "Keeps a copy of your records in your own private cloud folder, so nothing is lost if this phone is.",
+  "backupIncludes": "Included: patients, consultations, prescriptions, report photos, your profile and signature.",
+  "backupExcludes": "Not included: consultation recordings (they are deleted after processing).",
+  "backupLastAt": "Last backup {time}",
+  "@backupLastAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNever": "Never backed up",
+  "backupNow": "Back up now",
+  "backupLatestRemote": "Latest in cloud: {time} ({size})",
+  "@backupLatestRemote": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNoRemote": "No backup in the cloud yet",
+  "backupRestoreLatest": "Restore latest backup",
+  "backupRestoreConfirmTitle": "Replace data on this phone?",
+  "backupRestoreConfirmBody": "Your records on this phone are replaced by the backup from {time}. Other doctors who use this phone are not affected. This cannot be undone.",
+  "@backupRestoreConfirmBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreConfirm": "Restore",
+  "backupStageCollecting": "Collecting your records…",
+  "backupStageZipping": "Packing them up…",
+  "backupStageUploading": "Uploading…",
+  "backupStageDownloading": "Downloading backup…",
+  "backupStageRestoring": "Restoring…",
+  "backupDone": "Backup complete",
+  "backupRestored": "Backup restored",
+  "backupRestartHint": "Close and reopen the app to see the restored records.",
+  "backupFailed": "Backup failed: {reason}",
+  "@backupFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreFailed": "Restore failed: {reason}",
+  "@backupRestoreFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNeedsInternet": "Connect to the internet to back up.",
+  "exportPreparing": "Preparing your export…",
+  "exportShareSubject": "Rxvarta data export",
+  "exportShareText": "Export of my Rxvarta records.",
+  "exportFailed": "Could not export data: {reason}",
+  "@exportFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "exportEmpty": "There is nothing to export yet.",
+  "exportSavedTo": "Saved to {path}",
+  "@exportSavedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "privacySecurity": "Privacy & Security",
-  "privacySecuritySubtitle": "Manage your privacy settings",
   "termsConditions": "Terms & Conditions",
   "termsConditionsSubtitle": "Read our terms of service",
   "helpSupport": "Help & Support",
   "helpSupportSubtitle": "Get help or contact us",
+  "settingsProfileSetUp": "Set up your profile",
+  "settingsProfileIncompleteChip": "Profile incomplete — prescriptions cannot be signed",
+  "settingsSignature": "Signature",
+  "settingsSignatureSubtitleAdded": "Added — printed on every prescription you sign",
+  "settingsSignatureSubtitleMissing": "Not added yet",
+  "settingsBackupSync": "Backup & sync",
+  "settingsBackupSubtitleNever": "Never backed up",
+  "settingsBackupSubtitleLast": "Last backup {time}",
+  "@settingsBackupSubtitleLast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsExportSubtitle": "Save or share a copy of all your records",
+  "settingsPrivacySubtitle": "Where your data lives and how to delete it",
+  "settingsSectionLegal": "Legal",
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "settingsPrivacyPolicySubtitle": "How your and your patients' data is handled",
+  "settingsVersion": "Rxvarta v{version} ({build})",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTimeJustNow": "just now",
+  "settingsTimeMinutesAgo": "{n, plural, =1{1 minute ago} other{{n} minutes ago}}",
+  "@settingsTimeMinutesAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTimeHoursAgo": "{n, plural, =1{1 hour ago} other{{n} hours ago}}",
+  "@settingsTimeHoursAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTimeDaysAgo": "{n, plural, =1{yesterday} other{{n} days ago}}",
+  "@settingsTimeDaysAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsSigningOut": "Signing out…",
+  "logoutConfirmTitle": "Sign out?",
+  "logoutConfirmBody": "You will need to sign in again to use Rxvarta. Records saved on this device stay on it.",
+  "logoutConfirm": "Sign out",
+  "privacyIntro": "Rxvarta is built so that patient records stay under the doctor's control. This page explains, in plain words, where data is kept, who processes it and how to delete it.",
+  "privacyWhereStoredTitle": "Where your data lives",
+  "privacyWhereStoredDevice": "This device — patients, visits, transcripts, prescriptions, report photos and recordings are kept in the app's private storage on this phone.",
+  "privacyWhereStoredCloud": "Supabase project hosted in Mumbai, India (ap-south-1) — your account, doctor profile, signature and backups.",
+  "privacyWhereStoredAudio": "Recordings are uploaded to a private storage bucket only for processing, never for long-term storage.",
+  "privacyProcessorsTitle": "Who processes it",
+  "privacyProcessorSarvam": "Sarvam AI — converts the recording into text (speech-to-text).",
+  "privacyProcessorGoogle": "Google Gemini — turns the transcript into a structured draft prescription for you to review.",
+  "privacyProcessorSupabase": "Supabase — sign-in, file storage and the database behind your account.",
+  "privacyRetentionTitle": "How long it is kept",
+  "privacyRetentionAudio": "Recordings: deleted from the server once processing succeeds; kept on this device until then.",
+  "privacyRetentionTranscript": "Transcripts and prescriptions: on this device and in your backups until you delete them.",
+  "privacyRetentionJobs": "Processing cache: cleared after the result has been delivered to the app.",
+  "privacyRoleTitle": "Your role and ours",
+  "privacyRoleBody": "Under the Digital Personal Data Protection Act, 2023 you, the doctor, remain the data fiduciary for your patients' records. Rxvarta processes them only on your instructions, as a data processor.",
+  "privacySecurityTitle": "Security measures",
+  "privacySecurityBody": "Data travels over encrypted connections (TLS). Records on the server are protected by per-account access rules, so only your sign-in can read them. Keep your phone locked: anyone who can unlock it can open the app.",
+  "privacyDeleteTitle": "Deleting data",
+  "privacyDeleteBody": "Use the button below to remove your data from this phone. Other doctors who sign in on this phone keep theirs. Patient records cannot be deleted one by one yet. To delete your account and the data kept on our servers, write to us from the e-mail address you signed up with.",
+  "privacyDeleteLocal": "Delete my data on this device",
+  "privacyDeleteLocalSubtitle": "Removes your patients, visits, recordings, reports, profile cache and signature from this phone and signs you out. Your account and backups on the server are not affected.",
+  "privacyDeleteLocalBody": "Every patient, visit, recording and report of yours stored on this phone will be removed and you will be signed out. Other doctors' data on this phone and your backups on the server are not affected. This cannot be undone.\n\nType {word} to confirm.",
+  "@privacyDeleteLocalBody": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDeleteLocalWord": "DELETE",
+  "privacyDeleteLocalHint": "Type {word}",
+  "@privacyDeleteLocalHint": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDeleteLocalConfirm": "Delete everything",
+  "privacyDeleting": "Deleting local data…",
+  "privacyDeleted": "Local data deleted",
+  "privacyDeletePartial": "Some items could not be deleted: {details}",
+  "@privacyDeletePartial": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyReadPolicy": "Read the full Privacy Policy",
+  "legalTerms": "Terms & Conditions",
+  "legalPrivacyPolicy": "Privacy Policy",
+  "legalLastUpdated": "Last updated: {date}",
+  "@legalLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "legalReviewNotice": "Bundled copy — available offline. If a newer version is published online, the online version applies.",
+  "legalViewOnline": "View online version",
+  "legalLoadFailed": "Could not load this document.",
+  "helpTitle": "Help & Support",
+  "helpSubtitle": "Questions, feedback or a problem with the app? We are happy to help.",
+  "helpVersion": "App version {version} ({build})",
+  "@helpVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "helpEmail": "Email support",
+  "helpWhatsapp": "WhatsApp support",
+  "helpReportProblem": "Report a problem",
+  "helpReportProblemSubtitle": "Tell us what happened and how to reproduce it",
+  "helpNotConfigured": "Support contact not configured yet",
+  "helpCouldNotOpen": "Could not open this on your device.",
+  "helpEmailSubject": "Rxvarta support",
+  "helpEmailBody": "App version: {version}\nPlatform: {platform}\n\n",
+  "@helpEmailBody": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "helpReportSubject": "Rxvarta — problem report",
+  "helpReportBody": "What happened:\n\n\nSteps to reproduce:\n1. \n2. \n3. \n\nApp version: {version}\nPlatform: {platform}\n",
+  "@helpReportBody": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
   "logout": "Logout",
+  "authSignIn": "Sign in",
+  "authSignInTitle": "Welcome back",
+  "authSignInSubtitle": "Sign in to continue to your consultations.",
+  "authEmail": "Email",
+  "authEmailHint": "doctor@clinic.com",
+  "authEmailInvalid": "Enter a valid email address",
+  "authPassword": "Password",
+  "authPasswordHint": "Enter your password",
+  "authPasswordRequired": "Enter your password",
+  "authPasswordRules": "At least 8 characters",
+  "authPasswordsDoNotMatch": "Passwords do not match",
+  "authShowPassword": "Show password",
+  "authHidePassword": "Hide password",
+  "authForgotPassword": "Forgot password?",
+  "authNoAccount": "New to Rxvarta?",
+  "authCreateAccount": "Create account",
+  "authHaveAccount": "Already have an account?",
+  "authSignUpTitle": "Create your account",
+  "authSignUpSubtitle": "One account per doctor. Your patients and prescriptions stay private to you.",
+  "authConfirmPassword": "Confirm password",
+  "authSignInInstead": "Sign in instead",
+  "authVerifyTitle": "Check your email",
+  "authVerifyBody": "We sent an 8-digit code to {email}. Enter it below to continue.",
+  "@authVerifyBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "authCode": "Verification code",
+  "authCodeIncomplete": "Enter all 8 digits of the code",
+  "authVerify": "Verify",
+  "authResendCode": "Resend code",
+  "authResendIn": "Resend code in {seconds}s",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeSent": "A new code has been sent to your email.",
+  "authForgotTitle": "Reset your password",
+  "authForgotSubtitle": "Enter the email you signed up with and we will send you a code.",
+  "authSendCode": "Send code",
+  "authResetTitle": "Choose a new password",
+  "authResetSubtitle": "Use a password you have not used with Rxvarta before.",
+  "authNewPassword": "New password",
+  "authUpdatePassword": "Update password",
+  "authPasswordUpdated": "Password updated",
+  "authBackToSignIn": "Back to sign in",
+  "authBack": "Back",
+  "authNotConfiguredTitle": "App not configured",
+  "authNotConfiguredBody": "This build has no backend connection, so sign-in is unavailable. Build the app with --dart-define-from-file=config/app_config.json (see the README).",
+  "authSplashLoading": "Preparing your workspace…",
+  "authSecureNote": "Encrypted and private to your account.",
+  "authErrorInvalidCredentials": "Incorrect email or password.",
+  "authErrorEmailNotConfirmed": "Please verify your email address first.",
+  "authErrorUserExists": "An account with this email already exists.",
+  "authErrorWeakPassword": "Choose a stronger password: at least 8 characters and different from your current one.",
+  "authErrorOtpExpired": "This code has expired. Request a new one.",
+  "authErrorOtpInvalid": "That code is not correct. Check it and try again.",
+  "authErrorRateLimited": "Too many attempts. Please wait a minute and try again.",
+  "authErrorNetwork": "No internet connection. Check your network and try again.",
+  "authErrorSignupDisabled": "New sign-ups are currently disabled.",
+  "authErrorValidation": "Please check the details you entered.",
+  "authErrorNotConfigured": "The app is not connected to a backend.",
+  "authErrorUnknown": "Something went wrong. Please try again.",
+  "authErrorDetails": "Details",
   "regPrefix": "Reg.",
   "allRightsReserved": "All rights reserved",
   "editProfile": "Edit Profile",
@@ -59,6 +373,82 @@
   "clinicName": "Clinic / Hospital name",
   "clinicAddress": "Clinic address",
   "clinicPhone": "Clinic phone",
+  "profilePhone": "Your mobile number",
+  "profileOptional": "Optional",
+  "profileRequiredHint": "Fields marked * are printed on every prescription and are required by law.",
+  "profileSectionDoctor": "Doctor details",
+  "profileSectionClinic": "Clinic details",
+  "profileNameHint": "e.g. Dr. Asha Verma",
+  "profileQualificationsHint": "e.g. MBBS, MD (Medicine)",
+  "profileRegNoHint": "State medical council number",
+  "profilePhoneHint": "10-digit mobile number",
+  "profilePhoneInvalid": "Enter a valid mobile number",
+  "profileClinicNameHint": "Clinic or hospital name",
+  "profileClinicAddressHint": "Area, City, State PIN",
+  "profileClinicPhoneHint": "Landline or reception number",
+  "profileSavedOffline": "Saved on this device — will sync when online",
+  "profileSaveFailed": "Could not save profile",
+  "profileRetry": "Retry",
+  "profileIncompleteNudgeTitle": "Complete your profile to sign prescriptions",
+  "profileIncompleteNudgeBody": "Add your name, registration number, clinic and signature.",
+  "signatureTitle": "Signature",
+  "signatureSubtitle": "Printed on every prescription you sign.",
+  "signatureAdd": "Add signature",
+  "signatureUpdate": "Update signature",
+  "signatureDraw": "Draw",
+  "signatureUpload": "Upload",
+  "signatureClear": "Clear",
+  "signatureUse": "Use signature",
+  "signatureEmptyError": "Please draw your signature first.",
+  "signatureHint": "Sign above the line with your finger or mouse",
+  "signatureUploadHint": "Choose a clear photo or scan of your signature on white paper (PNG or JPEG).",
+  "signatureChooseImage": "Choose image",
+  "signatureChangeImage": "Choose another",
+  "signatureUnsupportedFormat": "Please choose a PNG or JPEG image.",
+  "signatureLoadFailed": "Could not load that image",
+  "signatureNone": "No signature yet",
+  "signatureSaved": "Signature saved",
+  "signatureSaveFailed": "Could not save signature",
+  "onboardingTitle": "Set up your prescription",
+  "onboardingSubtitle": "These details appear on every prescription you sign.",
+  "onboardingStepDoctor": "Doctor",
+  "onboardingStepClinic": "Clinic",
+  "onboardingStepSignature": "Signature",
+  "onboardingDoctorTitle": "Your details",
+  "onboardingDoctorBody": "Exactly as they should appear on the letterhead.",
+  "onboardingClinicTitle": "Your clinic",
+  "onboardingClinicBody": "Practice name and address printed on the prescription.",
+  "onboardingSignatureTitle": "Your signature",
+  "onboardingSignatureBody": "Draw it once or upload a photo. It is stored privately and printed only on prescriptions you sign.",
+  "onboardingContinue": "Continue",
+  "onboardingBack": "Back",
+  "onboardingFinish": "Finish",
+  "onboardingSignatureRequired": "Add your signature to finish.",
+  "onboardingSignOut": "Sign out",
+  "onboardingSignedInAs": "Signed in as {email}",
+  "@onboardingSignedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "signGateTitle": "Complete your profile to sign",
+  "signGateBody": "A prescription must carry the prescribing doctor's details. Add the following before signing:",
+  "signGateCompleteProfile": "Complete profile",
+  "signGateOk": "OK",
+  "signGatePatientNameTitle": "Patient name missing",
+  "signGatePatientNameBody": "Add the patient's name before signing the prescription.",
+  "signGateMedicineNameTitle": "Medicine name missing",
+  "signGateMedicineNameBody": "Medicine {n} has no name. Enter a name or remove it before signing.",
+  "@signGateMedicineNameBody": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfAwaitingSignature": "Awaiting signature",
   "unsavedChanges": "Unsaved Changes",
   "unsavedChangesBody": "You have unsaved changes. Do you want to save them or discard?",
   "discard": "Discard",
@@ -102,6 +492,8 @@
   "continueToRecording": "Continue to Recording",
   "couldNotAddReport": "Could not add report",
   "couldNotSavePatient": "Could not save patient",
+  "couldNotSaveChanges": "Could not save your changes",
+  "nothingHeardInRecording": "No consultation was heard in this recording. Check that the microphone is working, then record again.",
   "patientAlreadyExists": "Patient already exists",
   "patientExistsBody": "A patient with this number is already in your records:",
   "patientExistsQuestion": "Add this consultation to their existing history?",
@@ -255,7 +647,5 @@
   "prescriptionReady": "Prescription Ready",
   "reviewAndShare": "Review and share with patient",
   "generatingPdfLong": "Generating prescription PDF…",
-  "couldNotGeneratePdf": "Could not generate PDF",
-  "welcomeToRxvarta": "Welcome to Rxvarta",
-  "onboardingMessage": "Doctor profile and API key setup will live here."
+  "couldNotGeneratePdf": "Could not generate PDF"
 }

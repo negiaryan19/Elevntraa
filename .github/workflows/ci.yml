@@ -57,15 +57,10 @@ jobs:
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
 
-      # flutter_dotenv loads a .env asset (declared in pubspec.yaml) at startup;
-      # the widget/integration tests boot the app, so provide a placeholder.
-      - name: Create placeholder .env
-        run: |
-          cat > .env <<'EOF'
-          SARVAM_API_KEY=ci_placeholder
-          GEMINI_API_KEY=ci_placeholder
-          EOF
-
+      # Runtime configuration comes from --dart-define (see
+      # config/app_config.example.json). Analysis and the widget tests run
+      # without any backend: the app boots to the "not configured" login
+      # screen, so no placeholder config is needed here.
       - name: Analyze project source
         run: flutter analyze
 
@@ -102,18 +97,23 @@ jobs:
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
 
-      # The app reads keys from a .env asset declared in pubspec.yaml.
-      # Provide a placeholder so the release build can bundle the asset in CI.
-      # Real keys are injected at runtime / via signed release builds, not here.
-      - name: Create placeholder .env
+      # The app reads its Supabase URL + publishable key at build time via
+      # --dart-define-from-file (config/app_config.json is gitignored).
+      # Empty values are fine for a CI build: the APK boots to the
+      # "not configured" login screen. Real values come from the signed
+      # release pipeline, never from this workflow.
+      - name: Create placeholder app config
         run: |
-          cat > .env <<'EOF'
-          SARVAM_API_KEY=ci_placeholder
-          GEMINI_API_KEY=ci_placeholder
+          mkdir -p config
+          cat > config/app_config.json <<'EOF'
+          {
+            "SUPABASE_URL": "",
+            "SUPABASE_ANON_KEY": ""
+          }
           EOF
 
       - name: Build debug APK
-        run: flutter build apk --debug
+        run: flutter build apk --debug --dart-define-from-file=config/app_config.json
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

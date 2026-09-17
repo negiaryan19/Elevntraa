@@ -65,11 +65,19 @@ class _ViewPrescriptionScreenState
   Future<void> _generate() async {
     try {
       final svc = ref.read(prescriptionPdfServiceProvider);
-      final doctor = ref.read(doctorProfileControllerProvider);
+      final doctor = ref.read(doctorProfileValueProvider);
+      final signature = await ref
+          .read(doctorProfileProvider.notifier)
+          .signatureBytes();
+      if (!mounted) return;
       final bytes = await svc.build(
         visit: widget.visit,
         patient: widget.patient,
         doctor: doctor,
+        signaturePng: signature,
+        awaitingSignatureLabel: AppLocalizations.of(
+          context,
+        )!.pdfAwaitingSignature,
       );
       if (!mounted) return;
       setState(() => _pdfBytes = bytes);

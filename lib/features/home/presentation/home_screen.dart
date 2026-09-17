@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
+import '../../../core/auth/auth_providers.dart';
 import '../../../core/network/connectivity_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -15,10 +16,13 @@ import '../../../data/repositories/patient_repository.dart';
 import '../../../domain/models/patient.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../settings/data/doctor_profile_repository.dart';
+import '../../settings/presentation/doctor_profile_form.dart';
 
 final _recentPatientsProvider =
     FutureProvider.autoDispose<List<PatientProfile>>((ref) async {
-      final repo = ref.read(patientRepositoryProvider);
+      // Watched, so the list is reloaded whenever the database changes
+      // (another doctor signs in, a backup is restored).
+      final repo = ref.watch(patientRepositoryProvider);
       final list = await repo.recent();
       return list.take(5).toList();
     });
@@ -30,7 +34,14 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final doctor = ref.watch(doctorProfileControllerProvider);
+    final doctor = ref.watch(doctorProfileValueProvider);
+    final profileAsync = ref.watch(doctorProfileProvider);
+    // Nudge only once the profile has actually loaded (never on the loading
+    // placeholder) and only for a signed-in doctor.
+    final showProfileNudge =
+        ref.watch(isSignedInProvider) &&
+        profileAsync.hasValue &&
+        !profileAsync.requireValue.isComplete;
     final recent = ref.watch(_recentPatientsProvider);
 
     return Scaffold(
@@ -83,6 +94,19 @@ class HomeScreen extends ConsumerWidget {
                       delayMs: 90,
                       child: _Greeting(name: doctor.name, scheme: scheme),
                     ),
+                    if (showProfileNudge) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      _Reveal(
+                        delayMs: 135,
+                        child: _Pressable(
+                          onTap: () => DoctorProfileFormSheet.show(context),
+                          child: _ProfileNudgeCard(
+                            scheme: scheme,
+                            isDark: isDark,
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.xl),
                     _Reveal(
                       delayMs: 180,
@@ -971,6 +995,70 @@ class _EmptyRecent extends StatelessWidget {
             style: AppTypography.bodySmall.copyWith(
               color: scheme.onSurfaceVariant,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact "finish your profile" card shown until the doctor's identity and
+/// signature are complete — without them no prescription can be signed.
+class _ProfileNudgeCard extends StatelessWidget {
+  const _ProfileNudgeCard({required this.scheme, required this.isDark});
+  final ColorScheme scheme;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    const accent = AppColors.warning;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: accent.withValues(alpha: isDark ? 0.5 : 0.4)),
+        boxShadow: isDark ? AppColors.cardShadowDark : AppColors.cardShadow,
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: isDark ? 0.22 : 0.14),
+              borderRadius: AppSpacing.radiusMd,
+            ),
+            child: const Icon(Icons.badge_rounded, color: accent, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.m),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  t.profileIncompleteNudgeTitle,
+                  style: AppTypography.titleSmall.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  t.profileIncompleteNudgeBody,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: scheme.onSurfaceVariant,
+            size: 22,
           ),
         ],
       ),

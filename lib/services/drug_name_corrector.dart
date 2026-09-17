@@ -91,12 +91,23 @@ class DrugNameCorrector {
     final romanHit = _romanIndex[qr];
     if (romanHit != null) return (idx: romanHit, confidence: 'high');
 
-    // Stage 2: substring containment
+    // Stage 2: containment, restricted so it can only strip noise or finish a
+    // truncation. It must never turn one molecule into a different one.
+    //   * The dictionary term appears as a whole word in the input
+    //     ("tab paracetamol 500mg" -> Paracetamol).
+    //   * Or the input is a truncated start of the term
+    //     ("amoxicil" -> Amoxicillin).
+    // A term buried inside a longer word is rejected: "levocetirizine"
+    // contains "cetirizine" and "escitalopram" contains "citalopram", and
+    // both are different drugs.
+    final tokens = _tokens(input);
     for (final entry in _exactIndex.entries) {
       final term = entry.key;
       if (term.length < 4 || q.length < 4) continue;
       if (q == term) continue;
-      if (q.contains(term) || term.contains(q)) {
+      final wholeWord = _containsAsWholeWords(tokens, term);
+      final truncation = term.startsWith(q) && q.length >= 5;
+      if (wholeWord || truncation) {
         final specific = term.length >= 6;
         return (idx: entry.value, confidence: specific ? 'high' : 'medium');
       }
@@ -144,26 +155,18 @@ class DrugNameCorrector {
   /// the input is a brand (or brand look-alike) that must be kept verbatim —
   /// the doctor fills / keeps it manually.
   DrugMatch? correct(String input) {
+    // A product naming two or more ingredients is kept exactly as dictated,
+    // unless the whole string is itself a known product. Rewriting it to one
+    // molecule silently deletes the other ingredient from the prescription.
+    if (_isCombination(input) && !_exactIndex.containsKey(_normalize(input))) {
+      return null;
+    }
     final m = _recognize(input);
     if (m == null) return null;
     final entry = _entries[m.idx];
     // Recognized, but a brand / brand look-alike: keep the original name.
     if (_isBrandLike(input, entry)) return null;
     return DrugMatch(canonical: entry.generic, confidence: m.confidence);
-  }
-
-  /// Correct a batch of raw drug-name strings to their canonical forms.
-  ///
-  /// Returns a list the same length and order as [names]. Each result is the
-  /// canonical name when a confident match is found, or the original string
-  /// unchanged when not. Kept model-agnostic (plain strings) so this service
-  /// has no dependency on domain models — the caller folds the results back
-  /// into its own freezed types via copyWith.
-  List<String> correctNames(List<String> names) {
-    return names.map((n) {
-      final match = correct(n);
-      return (match != null && match.canonical != n) ? match.canonical : n;
-    }).toList();
   }
 
   /// Correct all medication names in a list. Returns a new list with
@@ -186,6 +189,49 @@ class DrugNameCorrector {
       }
       return med;
     }).toList();
+  }
+
+  // ── Combination and word-boundary guards ─────────────────────────────
+
+  /// Lower-case alphanumeric words of [input], keeping word boundaries that
+  /// [_normalize] throws away.
+  static List<String> _tokens(String input) => input
+      .toLowerCase()
+      .split(RegExp(r'[^a-z0-9]+'))
+      .where((t) => t.isNotEmpty)
+      .toList();
+
+  /// True when [term] (already normalized, so spaces removed) equals a run of
+  /// one or more consecutive whole words of the input. Multi-word generics
+  /// such as "clavulanic acid" are matched across the word boundary.
+  static bool _containsAsWholeWords(List<String> tokens, String term) {
+    for (var start = 0; start < tokens.length; start++) {
+      final buffer = StringBuffer();
+      for (var end = start; end < tokens.length; end++) {
+        buffer.write(tokens[end]);
+        final joined = buffer.toString();
+        if (joined == term) return true;
+        if (joined.length >= term.length) break;
+      }
+    }
+    return false;
+  }
+
+  /// True when [input] names more than one ingredient: an explicit
+  /// combination separator, or two different dictionary drugs appearing as
+  /// whole words.
+  bool _isCombination(String input) {
+    if (RegExp(r'[+/&]').hasMatch(input)) return true;
+    final tokens = _tokens(input);
+    final found = <int>{};
+    for (final entry in _exactIndex.entries) {
+      if (entry.key.length < 4) continue;
+      if (_containsAsWholeWords(tokens, entry.key)) {
+        found.add(entry.value);
+        if (found.length > 1) return true;
+      }
+    }
+    return false;
   }
 
   // ── Normalization ─────────────────────────────────────────────────────

@@ -1,15 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/auth/auth_providers.dart';
 import '../../../core/locale/locale_provider.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/reveal.dart';
 import '../../../domain/models/doctor_profile.dart';
 import '../../../l10n/app_localizations.dart';
+import '../data/backup_service.dart';
 import '../data/doctor_profile_repository.dart';
+import '../data/export_service.dart';
+import 'backup_sheet.dart';
+import 'doctor_profile_form.dart';
+import 'help_support_sheet.dart';
+import 'legal_screen.dart';
+import 'privacy_screen.dart';
+import 'signature_capture_sheet.dart';
+import 'signature_preview.dart';
+import 'widgets/settings_tile.dart';
+
+/// When this device last completed a cloud backup, for the tile subtitle.
+final _lastBackupProvider = FutureProvider.autoDispose<DateTime?>(
+  (ref) => ref.watch(backupServiceProvider).lastBackupAt(),
+);
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -19,29 +34,11 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _signingOut = false;
+  bool _savingSignature = false;
+
   Future<void> _openProfileEditor() async {
-    final current = ref.read(doctorProfileControllerProvider);
-    final notifier = ref.read(doctorProfileControllerProvider.notifier);
-    final updated = await showModalBottomSheet<DoctorProfile>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      // Use the root navigator so the modal barrier covers the whole screen
-      // (including the bottom nav). Otherwise the barrier only covers the tab
-      // content and the bottom nav stays tappable, letting the user switch
-      // tabs behind the sheet and bypass the unsaved-changes guard.
-      useRootNavigator: true,
-      builder: (_) => _EditProfileSheet(initial: current),
-    );
-    if (!mounted) return;
-    if (updated != null) {
-      await notifier.update(updated);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.profileUpdated)),
-        );
-      }
-    }
+    await DoctorProfileFormSheet.show(context);
   }
 
   Future<void> _openLanguagePicker() async {
@@ -50,6 +47,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      // Root navigator so the barrier covers the bottom nav too; otherwise
+      // the doctor can switch tabs behind the sheet.
       useRootNavigator: true,
       builder: (_) => _LanguageSheet(current: current),
     );
@@ -58,177 +57,143 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<void> _captureSignature() async {
+    final t = AppLocalizations.of(context)!;
+    final bytes = await SignatureCaptureSheet.show(context);
+    if (bytes == null || !mounted) return;
+
+    setState(() => _savingSignature = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final result = await ref
+          .read(doctorProfileProvider.notifier)
+          .saveSignature(bytes);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            result.synced ? t.signatureSaved : t.profileSavedOffline,
+          ),
+        ),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(t.signatureSaveFailed)));
+    } finally {
+      if (mounted) setState(() => _savingSignature = false);
+    }
+  }
+
+  Future<void> _exportData() async {
+    await ref.read(exportServiceProvider).exportAndShare(context);
+  }
+
+  Future<void> _confirmLogout() async {
+    final t = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.logoutConfirmTitle),
+        content: Text(t.logoutConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(t.logoutConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _signingOut = true);
+    // The auth stream drives the router straight to Login, so there is no
+    // manual navigation here.
+    await ref.read(authControllerProvider).signOut();
+    if (mounted) setState(() => _signingOut = false);
+  }
+
+  /// "just now" / "12 minutes ago" / "yesterday" / "3 days ago", falling back
+  /// to a plain date once a week has passed.
+  String _relative(AppLocalizations t, DateTime when) {
+    final diff = DateTime.now().difference(when);
+    if (diff.inMinutes < 1) return t.settingsTimeJustNow;
+    if (diff.inMinutes < 60) return t.settingsTimeMinutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return t.settingsTimeHoursAgo(diff.inHours);
+    if (diff.inDays < 7) return t.settingsTimeDaysAgo(diff.inDays);
+    return MaterialLocalizations.of(context).formatMediumDate(when.toLocal());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final doctor = ref.watch(doctorProfileControllerProvider);
-    final isDark = ref.watch(themeModeProvider).value == ThemeMode.dark;
-    final scheme = Theme.of(context).colorScheme;
     final t = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final profileAsync = ref.watch(doctorProfileProvider);
+    final profile = profileAsync.value ?? DoctorProfile.empty;
+    final isDark = ref.watch(themeModeProvider).value == ThemeMode.dark;
     final localeCode = ref.watch(appLocaleProvider).languageCode;
     final languageName = kSupportedLanguages
-        .firstWhere((l) => l.code == localeCode)
+        .firstWhere(
+          (l) => l.code == localeCode,
+          orElse: () => kSupportedLanguages.first,
+        )
         .nativeName;
+    final lastBackup = ref.watch(_lastBackupProvider);
+    final version = ref.watch(appVersionProvider);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // ── Gradient header ──────────────────────────────────────────
           SliverToBoxAdapter(
             child: Reveal(
               delayMs: 0,
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF2563EB), Color(0xFF14B8A6)],
-                  ),
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.xl,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(AppSpacing.xs),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: AppSpacing.radiusMd,
-                              ),
-                              child: const Icon(
-                                Icons.settings_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.m),
-                            Text(
-                              t.settings,
-                              style: AppTypography.headlineLarge.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          t.settingsSubtitle,
-                          style: AppTypography.bodySmall.copyWith(
-                            color: Colors.white70,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        // Profile card
-                        GestureDetector(
-                          onTap: _openProfileEditor,
-                          behavior: HitTestBehavior.opaque,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: AppSpacing.radiusXl,
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.25),
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(AppSpacing.md),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.25),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.person_rounded,
-                                    color: Colors.white,
-                                    size: 28,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.md),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        doctor.name,
-                                        style: AppTypography.titleMedium
-                                            .copyWith(color: Colors.white),
-                                      ),
-                                      const SizedBox(height: AppSpacing.xxs),
-                                      Text(
-                                        doctor.qualifications,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${t.regPrefix} ${doctor.regNo}',
-                                        style: AppTypography.labelSmall
-                                            .copyWith(color: Colors.white60),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(AppSpacing.s),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.edit_rounded,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              child: _Header(
+                profileLoading: profileAsync.isLoading,
+                profile: profile,
+                onTapProfile: _openProfileEditor,
               ),
             ),
           ),
 
-          // ── Body ──────────────────────────────────────────────────────
           SliverPadding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                // Account group
+                // ── Account ───────────────────────────────────────────
                 Reveal(
                   delayMs: 90,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel(t.sectionAccount),
-                      _SettingsCard(
+                      SettingsSectionLabel(t.sectionAccount),
+                      SettingsCard(
                         children: [
-                          _Tile(
+                          SettingsTile(
                             icon: Icons.person_outline_rounded,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF1A2060)
-                                : const Color(0xFFEFF6FF),
-                            iconColor: const Color(0xFF2563EB),
+                            tone: SettingsTone.blue,
                             label: t.profileSettings,
                             subtitle: t.profileSettingsSubtitle,
+                            subtitleMaxLines: 2,
                             onTap: _openProfileEditor,
+                          ),
+                          const SettingsDivider(),
+                          SettingsTile(
+                            icon: Icons.draw_outlined,
+                            tone: SettingsTone.teal,
+                            label: t.settingsSignature,
+                            subtitle: profile.hasSignature
+                                ? t.settingsSignatureSubtitleAdded
+                                : t.settingsSignatureSubtitleMissing,
+                            subtitleMaxLines: 2,
+                            busy: _savingSignature,
+                            leading: profile.hasSignature
+                                ? const SizedBox(
+                                    width: 56,
+                                    child: SignaturePreview(height: 34),
+                                  )
+                                : null,
+                            onTap: _captureSignature,
                           ),
                         ],
                       ),
@@ -238,26 +203,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.lg),
 
-                // Preferences group
+                // ── Preferences ───────────────────────────────────────
                 Reveal(
                   delayMs: 180,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel(t.sectionPreferences),
-                      _SettingsCard(
+                      SettingsSectionLabel(t.sectionPreferences),
+                      SettingsCard(
                         children: [
-                          // Dark mode — wired to real provider
-                          _ToggleTile(
+                          SettingsToggleTile(
                             icon: isDark
                                 ? Icons.dark_mode_rounded
                                 : Icons.light_mode_rounded,
-                            iconBg: isDark
-                                ? const Color(0xFF1D2235)
-                                : const Color(0xFFFFFBEB),
-                            iconColor: isDark
-                                ? const Color(0xFF60A5FA)
-                                : const Color(0xFFF59E0B),
+                            tone: isDark
+                                ? SettingsTone.blue
+                                : SettingsTone.amber,
                             label: t.darkMode,
                             subtitle: isDark
                                 ? t.darkThemeActive
@@ -266,14 +227,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             onToggle: () =>
                                 ref.read(themeModeProvider.notifier).toggle(),
                           ),
-                          _Divider(),
-                          _Tile(
+                          const SettingsDivider(),
+                          SettingsTile(
                             icon: Icons.translate_rounded,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF0D3D2E)
-                                : const Color(0xFFECFDF5),
-                            iconColor: const Color(0xFF10B981),
+                            tone: SettingsTone.green,
                             label: t.appLanguage,
                             subtitle: languageName,
                             onTap: _openLanguagePicker,
@@ -286,46 +243,46 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.lg),
 
-                // Data & Privacy group
+                // ── Data & Privacy ────────────────────────────────────
                 Reveal(
                   delayMs: 270,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel(t.sectionDataPrivacy),
-                      _SettingsCard(
+                      SettingsSectionLabel(t.sectionDataPrivacy),
+                      SettingsCard(
                         children: [
-                          _Tile(
+                          SettingsTile(
                             icon: Icons.backup_outlined,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF1A2060)
-                                : const Color(0xFFEFF6FF),
-                            iconColor: const Color(0xFF2563EB),
-                            label: t.dataBackup,
-                            subtitle: t.dataBackupSubtitle,
+                            tone: SettingsTone.blue,
+                            label: t.settingsBackupSync,
+                            subtitle: switch (lastBackup.value) {
+                              null => t.settingsBackupSubtitleNever,
+                              final at => t.settingsBackupSubtitleLast(
+                                _relative(t, at),
+                              ),
+                            },
+                            onTap: () => BackupSheet.show(context).then((_) {
+                              ref.invalidate(_lastBackupProvider);
+                            }),
                           ),
-                          _Divider(),
-                          _Tile(
+                          const SettingsDivider(),
+                          SettingsTile(
                             icon: Icons.download_outlined,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF0D3D2E)
-                                : const Color(0xFFECFDF5),
-                            iconColor: const Color(0xFF10B981),
+                            tone: SettingsTone.green,
                             label: t.exportData,
-                            subtitle: t.exportDataSubtitle,
+                            subtitle: t.settingsExportSubtitle,
+                            subtitleMaxLines: 2,
+                            onTap: _exportData,
                           ),
-                          _Divider(),
-                          _Tile(
+                          const SettingsDivider(),
+                          SettingsTile(
                             icon: Icons.shield_outlined,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF1E1A40)
-                                : const Color(0xFFF5F3FF),
-                            iconColor: const Color(0xFF8B5CF6),
+                            tone: SettingsTone.violet,
                             label: t.privacySecurity,
-                            subtitle: t.privacySecuritySubtitle,
+                            subtitle: t.settingsPrivacySubtitle,
+                            subtitleMaxLines: 2,
+                            onTap: () => PrivacyScreen.open(context),
                           ),
                         ],
                       ),
@@ -335,35 +292,58 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.lg),
 
-                // Support group
+                // ── Legal ─────────────────────────────────────────────
                 Reveal(
-                  delayMs: 360,
+                  delayMs: 330,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _SectionLabel(t.sectionSupport),
-                      _SettingsCard(
+                      SettingsSectionLabel(t.settingsSectionLegal),
+                      SettingsCard(
                         children: [
-                          _Tile(
+                          SettingsTile(
                             icon: Icons.description_outlined,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF2A1A0A)
-                                : const Color(0xFFFFF7ED),
-                            iconColor: const Color(0xFFF97316),
+                            tone: SettingsTone.orange,
                             label: t.termsConditions,
                             subtitle: t.termsConditionsSubtitle,
+                            subtitleMaxLines: 2,
+                            onTap: () =>
+                                LegalScreen.open(context, LegalDoc.terms),
                           ),
-                          _Divider(),
-                          _Tile(
+                          const SettingsDivider(),
+                          SettingsTile(
+                            icon: Icons.policy_outlined,
+                            tone: SettingsTone.violet,
+                            label: t.settingsPrivacyPolicy,
+                            subtitle: t.settingsPrivacyPolicySubtitle,
+                            subtitleMaxLines: 2,
+                            onTap: () =>
+                                LegalScreen.open(context, LegalDoc.privacy),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.lg),
+
+                // ── Support ───────────────────────────────────────────
+                Reveal(
+                  delayMs: 390,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SettingsSectionLabel(t.sectionSupport),
+                      SettingsCard(
+                        children: [
+                          SettingsTile(
                             icon: Icons.help_outline_rounded,
-                            iconBg:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF1A2060)
-                                : const Color(0xFFEFF6FF),
-                            iconColor: const Color(0xFF2563EB),
+                            tone: SettingsTone.blue,
                             label: t.helpSupport,
                             subtitle: t.helpSupportSubtitle,
+                            subtitleMaxLines: 2,
+                            onTap: () => HelpSupportSheet.show(context),
                           ),
                         ],
                       ),
@@ -373,53 +353,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Logout + footer
+                // ── Sign out + footer ─────────────────────────────────
                 Reveal(
-                  delayMs: 440,
+                  delayMs: 450,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppSpacing.md,
-                          ),
-                          decoration: BoxDecoration(
-                            color: scheme.errorContainer,
-                            borderRadius: AppSpacing.radiusXl,
-                            border: Border.all(
-                              color: scheme.error.withValues(alpha: 0.35),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.logout_rounded,
-                                color: scheme.error,
-                                size: 20,
-                              ),
-                              const SizedBox(width: AppSpacing.s),
-                              Text(
-                                t.logout,
-                                style: AppTypography.titleSmall.copyWith(
-                                  color: scheme.error,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _LogoutButton(
+                        busy: _signingOut,
+                        label: _signingOut ? t.settingsSigningOut : t.logout,
+                        onTap: _signingOut ? null : _confirmLogout,
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       Text(
-                        'Rxvarta v1.0.0',
+                        version.when(
+                          data: (info) =>
+                              t.settingsVersion(info.version, info.buildNumber),
+                          loading: () => '',
+                          error: (_, _) => '',
+                        ),
                         style: AppTypography.bodySmall,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        '© 2026 ${t.allRightsReserved}',
+                        '© ${DateTime.now().year} ${t.allRightsReserved}',
                         style: AppTypography.bodySmall.copyWith(
                           color: scheme.onSurfaceVariant,
                         ),
@@ -438,234 +396,187 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-// ── Reusable sub-widgets ──────────────────────────────────────────────────────
+// ── Header ──────────────────────────────────────────────────────────────────
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text);
-  final String text;
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.profileLoading,
+    required this.profile,
+    required this.onTapProfile,
+  });
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.s, bottom: AppSpacing.m),
-      child: Text(
-        text.toUpperCase(),
-        style: AppTypography.labelSmall.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-          letterSpacing: 1.0,
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsCard extends StatelessWidget {
-  const _SettingsCard({required this.children});
-  final List<Widget> children;
+  final bool profileLoading;
+  final DoctorProfile profile;
+  final VoidCallback onTapProfile;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    final hasName = profile.name.trim().isNotEmpty;
+
     return Container(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: AppSpacing.radiusXl,
-        border: Border.all(color: scheme.outline),
-        boxShadow: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.cardShadowDark
-            : AppColors.cardShadow,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Material(
-        type: MaterialType.transparency,
-        child: Column(children: children),
-      ),
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
-      indent: AppSpacing.lg + 40 + AppSpacing.md,
-      color: Theme.of(context).colorScheme.outline,
-    );
-  }
-}
-
-class _Tile extends StatelessWidget {
-  const _Tile({
-    required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    required this.label,
-    required this.subtitle,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final String label;
-  final String subtitle;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: AppSpacing.radiusMd,
-              ),
-              child: Icon(icon, color: iconColor, size: 20),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: AppTypography.titleSmall.copyWith(
-                      color: scheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: scheme.onSurfaceVariant,
-              size: 20,
-            ),
-          ],
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2563EB), Color(0xFF14B8A6)],
         ),
       ),
-    );
-  }
-}
-
-class _ToggleTile extends StatelessWidget {
-  const _ToggleTile({
-    required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    required this.label,
-    required this.subtitle,
-    required this.value,
-    required this.onToggle,
-  });
-
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final String label;
-  final String subtitle;
-  final bool value;
-  final VoidCallback onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onToggle,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: AppSpacing.radiusMd,
-              ),
-              child: Icon(icon, color: iconColor, size: 20),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    label,
-                    style: AppTypography.titleSmall.copyWith(
-                      color: scheme.onSurface,
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.xs),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: AppSpacing.radiusMd,
+                    ),
+                    child: const Icon(
+                      Icons.settings_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(width: AppSpacing.m),
                   Text(
-                    subtitle,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: scheme.onSurfaceVariant,
+                    t.settings,
+                    style: AppTypography.headlineLarge.copyWith(
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
-            ),
-            _Toggle(value: value),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Toggle extends StatelessWidget {
-  const _Toggle({required this.value});
-  final bool value;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-      width: 48,
-      height: 28,
-      decoration: BoxDecoration(
-        gradient: value
-            ? const LinearGradient(
-                colors: [Color(0xFF2563EB), Color(0xFF14B8A6)],
-              )
-            : null,
-        color: value ? null : Theme.of(context).colorScheme.outlineVariant,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: AnimatedAlign(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
-        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          width: 20,
-          height: 20,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 4,
-                offset: Offset(0, 2),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                t.settingsSubtitle,
+                style: AppTypography.bodySmall.copyWith(color: Colors.white70),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              GestureDetector(
+                onTap: onTapProfile,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: AppSpacing.radiusXl,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.25),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.person_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: profileLoading
+                                ? const _HeaderSkeleton()
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hasName
+                                            ? profile.name
+                                            : t.settingsProfileSetUp,
+                                        style: AppTypography.titleMedium
+                                            .copyWith(color: Colors.white),
+                                      ),
+                                      if (profile.qualifications
+                                          .trim()
+                                          .isNotEmpty) ...[
+                                        const SizedBox(height: AppSpacing.xxs),
+                                        Text(
+                                          profile.qualifications,
+                                          style: AppTypography.bodySmall
+                                              .copyWith(color: Colors.white70),
+                                        ),
+                                      ],
+                                      if (profile.regNo.trim().isNotEmpty)
+                                        Text(
+                                          '${t.regPrefix} ${profile.regNo}',
+                                          style: AppTypography.labelSmall
+                                              .copyWith(color: Colors.white60),
+                                        ),
+                                    ],
+                                  ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(AppSpacing.s),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // A doctor whose profile is incomplete cannot sign a
+                      // prescription — say so where they will see it.
+                      if (!profileLoading && !profile.isComplete) ...[
+                        const SizedBox(height: AppSpacing.m),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.m,
+                            vertical: AppSpacing.s,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF3C7),
+                            borderRadius: AppSpacing.radiusMd,
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.warning_amber_rounded,
+                                size: 16,
+                                color: Color(0xFF92400E),
+                              ),
+                              const SizedBox(width: AppSpacing.s),
+                              Expanded(
+                                child: Text(
+                                  t.settingsProfileIncompleteChip,
+                                  style: AppTypography.labelSmall.copyWith(
+                                    color: const Color(0xFF92400E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -675,294 +586,78 @@ class _Toggle extends StatelessWidget {
   }
 }
 
-// ── Edit Profile Sheet ────────────────────────────────────────────────────────
-
-class _EditProfileSheet extends StatefulWidget {
-  const _EditProfileSheet({required this.initial});
-  final DoctorProfile initial;
+class _HeaderSkeleton extends StatelessWidget {
+  const _HeaderSkeleton();
 
   @override
-  State<_EditProfileSheet> createState() => _EditProfileSheetState();
+  Widget build(BuildContext context) {
+    Widget bar(double width, double height) => Container(
+      width: width,
+      height: height,
+      margin: const EdgeInsets.only(bottom: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [bar(140, 14), bar(100, 10), bar(70, 10)],
+    );
+  }
 }
 
-class _EditProfileSheetState extends State<_EditProfileSheet> {
-  late final TextEditingController _name;
-  late final TextEditingController _quals;
-  late final TextEditingController _regNo;
-  late final TextEditingController _clinicName;
-  late final TextEditingController _clinicAddress;
-  late final TextEditingController _clinicPhone;
-  final _formKey = GlobalKey<FormState>();
-  bool _hasUnsavedChanges = false;
+class _LogoutButton extends StatelessWidget {
+  const _LogoutButton({
+    required this.busy,
+    required this.label,
+    required this.onTap,
+  });
 
-  List<TextEditingController> get _controllers => [
-    _name,
-    _quals,
-    _regNo,
-    _clinicName,
-    _clinicAddress,
-    _clinicPhone,
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    final p = widget.initial;
-    _name = TextEditingController(text: p.name);
-    _quals = TextEditingController(text: p.qualifications);
-    _regNo = TextEditingController(text: p.regNo);
-    _clinicName = TextEditingController(text: p.clinicName);
-    _clinicAddress = TextEditingController(text: p.clinicAddress);
-    _clinicPhone = TextEditingController(text: p.clinicPhone);
-    for (final c in _controllers) {
-      c.addListener(_onFieldChanged);
-    }
-  }
-
-  void _onFieldChanged() {
-    final p = widget.initial;
-    final dirty =
-        _name.text != p.name ||
-        _quals.text != p.qualifications ||
-        _regNo.text != p.regNo ||
-        _clinicName.text != p.clinicName ||
-        _clinicAddress.text != p.clinicAddress ||
-        _clinicPhone.text != p.clinicPhone;
-    if (dirty != _hasUnsavedChanges) {
-      setState(() => _hasUnsavedChanges = dirty);
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final c in _controllers) {
-      c.removeListener(_onFieldChanged);
-      c.dispose();
-    }
-    super.dispose();
-  }
-
-  /// Shown when the user tries to dismiss the sheet with unsaved edits.
-  /// Returns true if the sheet should be allowed to close.
-  Future<bool> _confirmDiscard() async {
-    final result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(AppLocalizations.of(dialogContext)!.unsavedChanges),
-        content: Text(AppLocalizations.of(dialogContext)!.unsavedChangesBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(AppLocalizations.of(dialogContext)!.discard),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(AppLocalizations.of(dialogContext)!.save),
-          ),
-        ],
-      ),
-    );
-    if (result == true) {
-      // Discard: allow the sheet to close, returning no profile update.
-      return true;
-    }
-    if (result == false) {
-      // Save: validate & pop with the updated profile (handled by _save).
-      _save();
-    }
-    // Either we saved (and _save already popped) or the dialog was cancelled —
-    // in both cases the PopScope should not pop again.
-    return false;
-  }
-
-  void _save() {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    Navigator.of(context).pop(
-      DoctorProfile(
-        name: _name.text.trim(),
-        qualifications: _quals.text.trim(),
-        regNo: _regNo.text.trim(),
-        clinicName: _clinicName.text.trim(),
-        clinicAddress: _clinicAddress.text.trim(),
-        clinicPhone: _clinicPhone.text.trim(),
-      ),
-    );
-  }
+  final bool busy;
+  final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final t = AppLocalizations.of(context)!;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return PopScope(
-      canPop: !_hasUnsavedChanges,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        final shouldDiscard = await _confirmDiscard();
-        if (shouldDiscard && context.mounted) {
-          Navigator.of(context).pop();
-        }
-      },
-      child: Padding(
-        padding: EdgeInsets.only(bottom: bottomInset),
-        child: Container(
-          decoration: BoxDecoration(
-            color: scheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.md,
-            AppSpacing.lg,
-            AppSpacing.lg,
-          ),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: scheme.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Text(
-                    t.editProfile,
-                    style: AppTypography.headlineMedium.copyWith(
-                      color: scheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxs),
-                  Text(
-                    t.editProfileSubtitle,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _Field(
-                    label: t.doctorName,
-                    controller: _name,
-                    hint: 'Dr. Rajesh Sharma',
-                    required: true,
-                  ),
-                  _Field(
-                    label: t.qualifications,
-                    controller: _quals,
-                    hint: 'MBBS, MD (Medicine)',
-                    required: true,
-                  ),
-                  _Field(
-                    label: t.registrationNumber,
-                    controller: _regNo,
-                    hint: 'MH-12345',
-                    required: true,
-                  ),
-                  _Field(
-                    label: t.clinicName,
-                    controller: _clinicName,
-                    hint: 'Rxvarta Clinic',
-                  ),
-                  _Field(
-                    label: t.clinicAddress,
-                    controller: _clinicAddress,
-                    hint: 'Area, City, State PIN',
-                    maxLines: 2,
-                  ),
-                  _Field(
-                    label: t.clinicPhone,
-                    controller: _clinicPhone,
-                    hint: '+91 98765 43210',
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text(t.cancel),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: _save,
-                          child: Text(t.save),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+        decoration: BoxDecoration(
+          color: scheme.errorContainer,
+          borderRadius: AppSpacing.radiusXl,
+          border: Border.all(color: scheme.error.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (busy)
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: scheme.error,
+                ),
+              )
+            else
+              Icon(Icons.logout_rounded, color: scheme.error, size: 20),
+            const SizedBox(width: AppSpacing.s),
+            Text(
+              label,
+              style: AppTypography.titleSmall.copyWith(color: scheme.error),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _Field extends StatelessWidget {
-  const _Field({
-    required this.label,
-    required this.controller,
-    required this.hint,
-    this.required = false,
-    this.maxLines = 1,
-    this.keyboardType,
-  });
-
-  final String label;
-  final TextEditingController controller;
-  final String hint;
-  final bool required;
-  final int maxLines;
-  final TextInputType? keyboardType;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTypography.labelSmall.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          TextFormField(
-            controller: controller,
-            maxLines: maxLines,
-            keyboardType: keyboardType,
-            style: AppTypography.bodyMedium.copyWith(color: scheme.onSurface),
-            validator: required
-                ? (v) => (v == null || v.trim().isEmpty)
-                      ? AppLocalizations.of(context)!.required
-                      : null
-                : null,
-            decoration: InputDecoration(hintText: hint),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// -- Language Sheet ----------------------------------------------------------
+// ── Language sheet ──────────────────────────────────────────────────────────
 
 class _LanguageSheet extends StatelessWidget {
   const _LanguageSheet({required this.current});
@@ -985,73 +680,77 @@ class _LanguageSheet extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: scheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Text(
-              t.chooseLanguage,
-              style: AppTypography.headlineMedium.copyWith(
-                color: scheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xxs),
-            Text(
-              t.appLanguageSubtitle,
-              style: AppTypography.bodySmall.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            for (final lang in kSupportedLanguages)
-              InkWell(
-                onTap: () => Navigator.of(context).pop(lang.code),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              lang.nativeName,
-                              style: AppTypography.titleSmall.copyWith(
-                                color: scheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              lang.englishName,
-                              style: AppTypography.bodySmall.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (lang.code == current)
-                        Icon(
-                          Icons.check_circle_rounded,
-                          color: scheme.primary,
-                          size: 22,
-                        ),
-                    ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: scheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
-          ],
+              Text(
+                t.chooseLanguage,
+                style: AppTypography.headlineMedium.copyWith(
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxs),
+              Text(
+                t.appLanguageSubtitle,
+                style: AppTypography.bodySmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              for (final lang in kSupportedLanguages)
+                InkWell(
+                  onTap: () => Navigator.of(context).pop(lang.code),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                lang.nativeName,
+                                style: AppTypography.titleSmall.copyWith(
+                                  color: scheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                lang.englishName,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (lang.code == current)
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: scheme.primary,
+                            size: 22,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

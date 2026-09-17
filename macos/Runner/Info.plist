@@ -29,6 +29,6 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>MediScribe needs microphone access to record patient consultations.</string>
+	<string>Rxvarta needs microphone access so the doctor can dictate consultations.</string>
 </dict>
 </plist>

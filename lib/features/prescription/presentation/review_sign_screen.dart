@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -10,6 +9,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
+import '../../../domain/models/doctor_profile.dart';
 import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/medication.dart';
 import '../../../domain/models/patient.dart';
@@ -17,6 +17,8 @@ import '../../../domain/models/visit.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/differential_engine.dart';
 import '../../consultation/presentation/consultation_controller.dart';
+import '../../settings/data/doctor_profile_repository.dart';
+import '../../settings/presentation/doctor_profile_form.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
 const _kBlue300 = Color(0xFF6B8FFF);
@@ -42,7 +44,9 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
   PatientProfile? _patient;
   MedicalInsight _draft = MedicalInsight.empty;
   bool _loading = true;
-  bool _saving = false;
+
+  /// Writes in flight; edits can overlap, so a flag would clear too early.
+  int _pendingSaves = 0;
   int? _autofocusMedIndex;
 
   @override
@@ -64,23 +68,67 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
     });
   }
 
-  Future<void> _save() async {
-    if (_visit == null) return;
-    setState(() => _saving = true);
-    final updated = _visit!.copyWith(insight: _draft);
-    await ref.read(visitRepositoryProvider).upsert(updated);
-    if (!mounted) return;
-    setState(() {
-      _visit = updated;
-      _saving = false;
-    });
+  /// Stores the draft; false when the write failed. A failure keeps the
+  /// edits on screen and tells the doctor, with a retry, so a prescription
+  /// is never signed or shared on the belief that it was saved.
+  Future<bool> _save() async {
+    final visit = _visit;
+    if (visit == null) return false;
+    final insight = _draft;
+    setState(() => _pendingSaves++);
+    try {
+      await ref
+          .read(visitRepositoryProvider)
+          .upsert(visit.copyWith(insight: insight));
+      if (mounted) {
+        setState(() => _visit = _visit?.copyWith(insight: insight));
+      }
+      return true;
+    } catch (e) {
+      debugPrint('[review] saving the prescription failed: $e');
+      if (mounted) {
+        _showSaveFailed(
+          AppLocalizations.of(context)!.couldNotSaveChanges,
+          onRetry: _save,
+        );
+      }
+      return false;
+    } finally {
+      if (mounted) setState(() => _pendingSaves--);
+    }
   }
 
   Future<void> _savePatient(PatientProfile updated) async {
+    final previous = _patient;
     setState(() => _patient = updated);
-    await ref
-        .read(patientRepositoryProvider)
-        .upsert(updated.copyWith(updatedAt: DateTime.now()));
+    try {
+      await ref
+          .read(patientRepositoryProvider)
+          .upsert(updated.copyWith(updatedAt: DateTime.now()));
+    } catch (e) {
+      debugPrint('[review] saving the patient failed: $e');
+      if (!mounted) return;
+      // Show what is actually stored: the PDF and the sign gate read the
+      // stored patient, not the edit that failed.
+      setState(() => _patient = previous);
+      _showSaveFailed(
+        AppLocalizations.of(context)!.couldNotSavePatient,
+        onRetry: () => _savePatient(updated),
+      );
+    }
+  }
+
+  void _showSaveFailed(String message, {required VoidCallback onRetry}) {
+    final t = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 8),
+          action: SnackBarAction(label: t.profileRetry, onPressed: onRetry),
+        ),
+      );
   }
 
   /// The doctor confirms a differential suggestion. Fills the diagnosis text
@@ -139,14 +187,160 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
   }
 
   Future<void> _sign() async {
-    if (_visit == null) return;
-    await _save();
-    final signed = _visit!.copyWith(signed: true, signedAt: DateTime.now());
-    await ref.read(visitRepositoryProvider).upsert(signed);
-    if (!mounted) return;
-    setState(() => _visit = signed);
-    // Push (not go) so the PDF screen can pop back here to edit & regenerate.
-    context.push(AppRoute.pdf.build(params: {'visitId': widget.visitId}));
+    if (_visit == null || _signing) return;
+    _signing = true;
+    try {
+      // Sign gate (roadmap item 5): a prescription is only signed when it
+      // can legally identify the doctor and what was prescribed.
+      if (!await _passesSignGate()) return;
+      if (!await _save() || !mounted) return;
+      final signed = _visit!.copyWith(signed: true, signedAt: DateTime.now());
+      try {
+        await ref.read(visitRepositoryProvider).upsert(signed);
+      } catch (e) {
+        debugPrint('[review] signing failed: $e');
+        if (mounted) {
+          _showSaveFailed(
+            AppLocalizations.of(context)!.couldNotSaveChanges,
+            onRetry: _sign,
+          );
+        }
+        return;
+      }
+      if (!mounted) return;
+      setState(() => _visit = signed);
+      // Push (not go) so the PDF screen can pop back here to edit &
+      // regenerate.
+      context.push(AppRoute.pdf.build(params: {'visitId': widget.visitId}));
+    } finally {
+      _signing = false;
+    }
+  }
+
+  bool _signing = false;
+
+  /// Blocks signing while the doctor profile is incomplete, the patient has
+  /// no name, or a medicine line has no name. Returns true when signing may
+  /// proceed.
+  Future<bool> _passesSignGate() async {
+    // Wait for the profile if its first load is still in flight.
+    DoctorProfile profile;
+    final async = ref.read(doctorProfileProvider);
+    if (async.hasValue) {
+      profile = async.requireValue;
+    } else {
+      try {
+        profile = await ref.read(doctorProfileProvider.future);
+      } catch (_) {
+        profile = DoctorProfile.empty;
+      }
+      if (!mounted) return false;
+    }
+
+    while (!profile.isComplete) {
+      final complete = await _showMissingProfileDialog(profile.missingFields);
+      if (!complete || !mounted) return false;
+      final saved = await DoctorProfileFormSheet.show(context);
+      if (!mounted) return false;
+      profile = ref.read(doctorProfileValueProvider);
+      if (!saved && !profile.isComplete) return false;
+    }
+
+    if ((_patient?.name ?? '').trim().isEmpty) {
+      final t = AppLocalizations.of(context)!;
+      await _showBlockedDialog(
+        t.signGatePatientNameTitle,
+        t.signGatePatientNameBody,
+      );
+      return false;
+    }
+    final meds = _draft.medications;
+    for (var i = 0; i < meds.length; i++) {
+      if (meds[i].name.trim().isEmpty) {
+        final t = AppLocalizations.of(context)!;
+        await _showBlockedDialog(
+          t.signGateMedicineNameTitle,
+          t.signGateMedicineNameBody(i + 1),
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Lists what the profile still lacks; true when the doctor chose
+  /// "Complete profile".
+  Future<bool> _showMissingProfileDialog(
+    List<DoctorProfileField> missing,
+  ) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final t = AppLocalizations.of(ctx)!;
+        final scheme = Theme.of(ctx).colorScheme;
+        return AlertDialog(
+          title: Text(t.signGateTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(t.signGateBody),
+              const SizedBox(height: AppSpacing.m),
+              for (final f in missing)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.circle_outlined,
+                        size: 10,
+                        color: scheme.error,
+                      ),
+                      const SizedBox(width: AppSpacing.s),
+                      Expanded(
+                        child: Text(
+                          doctorProfileFieldLabel(t, f),
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: scheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(t.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(t.signGateCompleteProfile),
+            ),
+          ],
+        );
+      },
+    );
+    return result == true;
+  }
+
+  Future<void> _showBlockedDialog(String title, String body) {
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(body),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(AppLocalizations.of(ctx)!.signGateOk),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Back arrow / Android back — confirm before returning to the recording
@@ -174,30 +368,6 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
       '${AppRoute.recording.build(params: {'visitId': widget.visitId})}'
       '?fromReview=true',
     );
-  }
-
-  Future<void> _share() async {
-    if (_visit == null || _patient == null) return;
-    final number = (_patient!.whatsappNumber ?? '').replaceAll(
-      RegExp(r'\D'),
-      '',
-    );
-    final lines = [
-      'Prescription for ${_patient!.name}',
-      if (_draft.diagnosis.isNotEmpty) 'Diagnosis: ${_draft.diagnosis}',
-      if (_draft.medications.isNotEmpty) ...[
-        'Medications:',
-        ..._draft.medications.map(
-          (m) =>
-              '• ${[m.name, m.dosage, m.frequency, m.duration, m.timing].where((s) => s.trim().isNotEmpty).join(' · ')}',
-        ),
-      ],
-    ];
-    final encoded = Uri.encodeComponent(lines.join('\n'));
-    final url = number.isEmpty
-        ? 'https://wa.me/?text=$encoded'
-        : 'https://wa.me/$number?text=$encoded';
-    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -298,7 +468,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                           ],
                         ),
                       ),
-                      if (_saving)
+                      if (_pendingSaves > 0)
                         const Padding(
                           padding: EdgeInsets.only(right: AppSpacing.s),
                           child: SizedBox(
@@ -435,12 +605,7 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                   ),
                 ),
                 // Sticky bottom bar
-                _BottomBar(
-                  signed: signed,
-                  showShare: !signed && _patient?.whatsappNumber != null,
-                  onSign: _sign,
-                  onShare: _share,
-                ),
+                _BottomBar(signed: signed, onSign: _sign),
               ],
             ),
           ),
@@ -1060,13 +1225,16 @@ class _PatientCardState extends State<_PatientCard> {
         children: [
           Row(
             children: [
-              Text(
-                t.patientInformation,
-                style: AppTypography.titleMedium.copyWith(
-                  color: scheme.onSurface,
+              Expanded(
+                child: Text(
+                  t.patientInformation,
+                  style: AppTypography.titleMedium.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
               if (_editing)
                 _EditActions(onSave: _commit, onCancel: _cancel)
               else
@@ -1258,13 +1426,16 @@ class _DiagnosisCardState extends State<_DiagnosisCard> {
         children: [
           Row(
             children: [
-              Text(
-                t.diagnosisLabel,
-                style: AppTypography.titleSmall.copyWith(
-                  color: scheme.onSurface,
+              Expanded(
+                child: Text(
+                  t.diagnosisLabel,
+                  style: AppTypography.titleSmall.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
               if (_editing)
                 _EditActions(onSave: _commit, onCancel: _cancel)
               else
@@ -1619,13 +1790,16 @@ class _FollowUpCardState extends State<_FollowUpCard> {
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.s),
-              Text(
-                AppLocalizations.of(context)!.followUpLabel,
-                style: AppTypography.titleMedium.copyWith(
-                  color: scheme.onSurface,
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.followUpLabel,
+                  style: AppTypography.titleMedium.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
               Switch.adaptive(
                 value: _enabled,
                 activeTrackColor: _kTeal500,
@@ -1980,17 +2154,10 @@ class _TimingChip extends StatelessWidget {
 
 /// Sticky bottom action bar. The disclaimer sits above the buttons.
 class _BottomBar extends StatelessWidget {
-  const _BottomBar({
-    required this.signed,
-    required this.showShare,
-    required this.onSign,
-    required this.onShare,
-  });
+  const _BottomBar({required this.signed, required this.onSign});
 
   final bool signed;
-  final bool showShare;
   final VoidCallback onSign;
-  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -2029,14 +2196,6 @@ class _BottomBar extends StatelessWidget {
             trailingIcon: Icons.arrow_forward_rounded,
             onTap: onSign,
           ),
-          if (showShare) ...[
-            const SizedBox(height: AppSpacing.s),
-            _OutlineButton(
-              label: t.shareOnWhatsapp,
-              icon: Icons.share_rounded,
-              onTap: onShare,
-            ),
-          ],
         ],
       ),
     );

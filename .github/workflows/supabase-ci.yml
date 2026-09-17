@@ -32,15 +32,6 @@ jobs:
         with:
           deno-version: v1.x
 
-      # Early informational check — subsequent steps are individually gated
-      # via hashFiles so the job still passes when only scripts/ci/** changed.
-      - name: Check for Supabase function changes
-        run: |
-          if [ ! -d "supabase/functions" ]; then
-            echo "No Supabase function changes to validate"
-            exit 0
-          fi
-
       - name: Type-check _shared/pipeline.ts
         if: ${{ hashFiles('supabase/functions/_shared/pipeline.ts') != '' }}
         run: deno check supabase/functions/_shared/pipeline.ts

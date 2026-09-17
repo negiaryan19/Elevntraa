@@ -38,8 +38,9 @@ downloaded from Supabase Storage. The Gemini config (model, `temperature: 0.3`,
 `responseMimeType`, `responseSchema`, system prompt) and the Sarvam routing
 thresholds are untouched — they come from the imported module.
 
-`scripts/pipeline_bench` (Dart) predates this and _mirrors_ the logic in a copy;
-bench_v2 deliberately does the opposite and imports the source of truth.
+`scripts/pipeline_bench` (Dart) predates this and calls the deployed
+`process-consultation` function; bench_v2 imports the pipeline source directly,
+so prompt changes are picked up without a deploy.
 
 ## Requirements
 

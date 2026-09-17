@@ -5,17 +5,13 @@ import '../theme/app_spacing.dart';
 
 enum AppButtonVariant { primary, secondary, ghost, danger }
 
-enum AppButtonSize { regular, large }
-
-/// Single button widget the whole app uses. Variants are purely cosmetic;
-/// size affects vertical rhythm only.
+/// Single button widget the whole app uses. Variants are purely cosmetic.
 class AppButton extends StatelessWidget {
   const AppButton({
     super.key,
     required this.label,
     required this.onPressed,
     this.variant = AppButtonVariant.primary,
-    this.size = AppButtonSize.regular,
     this.icon,
     this.loading = false,
     this.expand = true,
@@ -24,7 +20,6 @@ class AppButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final AppButtonVariant variant;
-  final AppButtonSize size;
   final IconData? icon;
   final bool loading;
   final bool expand;
@@ -32,7 +27,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onPressed == null || loading;
-    final height = size == AppButtonSize.large ? 56.0 : 48.0;
+    const height = 48.0;
 
     final colors = _colorsFor(variant, disabled);
 

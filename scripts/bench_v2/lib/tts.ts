@@ -1,4 +1,6 @@
-// Synthetic audio generation via Sarvam Bulbul (bulbul:v2) TTS.
+// Synthetic audio generation via Sarvam Bulbul (bulbul:v3) TTS.
+// bulbul:v2 was deprecated by Sarvam (API now returns 400 for it); v3 drops
+// the pitch/loudness/enable_preprocessing params and uses `language_code`.
 //
 // Each script in the answer key is a two-party PATIENT/DOCTOR dialogue. We give
 // the patient and the doctor DIFFERENT voices and stitch their utterances in
@@ -13,16 +15,17 @@
 import { concatWavs, durationOfBytes } from "./wav.ts";
 
 const SARVAM_BASE = "https://api.sarvam.ai";
-const TTS_MODEL = "bulbul:v2";
+const TTS_MODEL = "bulbul:v3";
 const TARGET_LANG = "hi-IN"; // Hindi / code-mixed Hinglish
 const SAMPLE_RATE = 22050;
-// Bulbul accepts up to ~500 chars per input; keep a margin.
+// bulbul:v3 accepts up to 2500 chars per call; 480 keeps each clip short.
 const MAX_CHARS_PER_CALL = 480;
 
-// bulbul:v2 speakers, alternating gender so doctor/patient are easy to tell
+// bulbul:v3 speakers (Sarvam-recommended Hindi voices), alternating gender so
+// doctor/patient are easy to tell
 // apart (helps diarization on the synthetic audio).
-const FEMALE = ["anushka", "manisha", "vidya", "arya"];
-const MALE = ["abhilash", "karun", "hitesh"];
+const FEMALE = ["priya", "suhani", "ishita", "roopa"];
+const MALE = ["shubh", "ashutosh", "mani", "ratan"];
 const PACES = [0.9, 1.0, 1.1]; // nudge speed ±10% across the set
 
 export interface Utterance {
@@ -114,13 +117,10 @@ async function synthesizeChunk(
     },
     body: JSON.stringify({
       text,
-      target_language_code: TARGET_LANG,
+      language_code: TARGET_LANG,
       speaker,
       pace,
-      pitch: 0,
-      loudness: 1.0,
       speech_sample_rate: SAMPLE_RATE,
-      enable_preprocessing: true,
       model: TTS_MODEL,
     }),
   });

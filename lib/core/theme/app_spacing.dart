@@ -12,22 +12,16 @@ class AppSpacing {
   static const double lg = 24;
   static const double xl = 32;
   static const double xxl = 48;
-  static const double xxxl = 64;
 
   // Common gaps as ready-made widgets so layouts stay terse.
-  static const SizedBox gapXs = SizedBox(height: xs, width: xs);
   static const SizedBox gapS = SizedBox(height: s, width: s);
-  static const SizedBox gapM = SizedBox(height: m, width: m);
   static const SizedBox gapMd = SizedBox(height: md, width: md);
   static const SizedBox gapLg = SizedBox(height: lg, width: lg);
-  static const SizedBox gapXl = SizedBox(height: xl, width: xl);
 
   static const EdgeInsets screenPadding = EdgeInsets.symmetric(
     horizontal: lg,
     vertical: md,
   );
-  static const EdgeInsets cardPadding = EdgeInsets.all(md);
-  static const EdgeInsets cardPaddingLg = EdgeInsets.all(lg);
 
   static const BorderRadius radiusSm = BorderRadius.all(Radius.circular(8));
   static const BorderRadius radiusMd = BorderRadius.all(Radius.circular(12));
@@ -44,17 +38,5 @@ class AppSpacing {
     if (height < 680) return baseValue * 0.6;
     if (height < 780) return baseValue * 0.78;
     return baseValue;
-  }
-
-  /// Like [adaptive] but for widget dimensions (icons, avatars, circles) that
-  /// need proportional scaling with optional clamping.
-  static double adaptiveSize(
-    BuildContext context,
-    double baseSize, {
-    double? min,
-  }) {
-    final scaled = adaptive(context, baseSize);
-    if (min != null && scaled < min) return min;
-    return scaled;
   }
 }

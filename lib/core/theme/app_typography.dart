@@ -70,8 +70,6 @@ class AppTypography {
       _ui(size: 12, weight: FontWeight.w600, height: 1.2, letterSpacing: 0.3);
   static TextStyle get labelSmall =>
       _ui(size: 11, weight: FontWeight.w600, height: 1.2, letterSpacing: 0.4);
-  static TextStyle get rxBody =>
-      _ui(size: 14, weight: FontWeight.w500, height: 1.6);
 
   static TextThemeBuilder get textTheme => TextThemeBuilder();
 }

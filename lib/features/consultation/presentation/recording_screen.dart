@@ -49,16 +49,10 @@ class RecordingScreen extends ConsumerStatefulWidget {
   const RecordingScreen({
     super.key,
     required this.visitId,
-    this.append = false,
     this.fromReview = false,
   });
 
   final String visitId;
-
-  /// When true this is an "Add More" session: the new audio is appended to the
-  /// existing consultation transcript (held in [cumulativeTranscriptProvider])
-  /// rather than starting a fresh consultation.
-  final bool append;
 
   /// When true the screen was opened from Review screen. Shows a choice UI
   /// instead of the normal recording interface.
@@ -624,7 +618,7 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                     ],
                   ),
                 ),
-                if (widget.append || _mode == _RecordingMode.addExtra)
+                if (_mode == _RecordingMode.addExtra)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
                       AppSpacing.lg,
@@ -979,7 +973,9 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                                     horizontal: AppSpacing.lg,
                                   ),
                                   child: Text(
-                                    state.error!,
+                                    state.nothingHeard
+                                        ? t.nothingHeardInRecording
+                                        : state.error!,
                                     textAlign: TextAlign.center,
                                     style: AppTypography.bodySmall.copyWith(
                                       color: AppColors.error,

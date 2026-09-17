@@ -930,6 +930,74 @@ export function validateExtraction(
   return { ...insight, medications };
 }
 
+// ── Gemini transport ──────────────────────────────────────────────────────
+
+/// Statuses worth a second attempt: rate limiting, model overload ("high
+/// demand"), and gateway hiccups. Everything else (401 bad key, 400 bad
+/// request, 404 retired model) is a real error that retrying cannot fix, so it
+/// still throws on the first response and surfaces fast.
+const GEMINI_RETRY_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
+const GEMINI_MAX_ATTEMPTS = 3;
+const GEMINI_BACKOFF_MS = 1000;
+
+/// POSTs to Gemini, retrying transient failures with exponential backoff.
+///
+/// Without this a single `503 "This model is currently experiencing high
+/// demand"` fails the whole pipeline job, and the doctor loses a consultation
+/// they already recorded — the audio is gone from their point of view even
+/// though nothing was actually wrong with it. Observed in practice, so the
+/// retry is not theoretical.
+///
+/// Logs status codes and attempt counts only — never the transcript, the
+/// prompt, or the extracted prescription.
+async function postGemini(
+  url: string,
+  body: unknown,
+): Promise<Record<string, unknown>> {
+  let lastError = "Gemini request failed";
+
+  for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt++) {
+    const isLastAttempt = attempt === GEMINI_MAX_ATTEMPTS;
+    let res: Response;
+
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      // Connection reset / DNS / TLS — transient by nature.
+      lastError = `Gemini request failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`;
+      if (isLastAttempt) throw new Error(lastError);
+      console.warn(
+        `[extractInsight] Gemini network error on attempt ${attempt}/${GEMINI_MAX_ATTEMPTS} — retrying`,
+      );
+      await delay(GEMINI_BACKOFF_MS * 2 ** (attempt - 1));
+      continue;
+    }
+
+    if (res.ok) return (await res.json()) as Record<string, unknown>;
+
+    lastError = `Gemini ${res.status}: ${await res.text()}`;
+    if (!GEMINI_RETRY_STATUSES.has(res.status) || isLastAttempt) {
+      throw new Error(lastError);
+    }
+    console.warn(
+      `[extractInsight] Gemini ${res.status} on attempt ${attempt}/${GEMINI_MAX_ATTEMPTS} — retrying`,
+    );
+    await delay(GEMINI_BACKOFF_MS * 2 ** (attempt - 1));
+  }
+
+  throw new Error(lastError);
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function extractInsight(
   transcript: string,
   geminiKey: string,
@@ -964,18 +1032,7 @@ export async function extractInsight(
       },
     };
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const errBody = await res.text();
-      throw new Error(`Gemini ${res.status}: ${errBody}`);
-    }
-
-    const data = (await res.json()) as Record<string, unknown>;
+    const data = await postGemini(url, body);
     const raw = _extractGeminiText(data);
     const decoded = JSON.parse(raw) as Record<string, unknown>;
 
@@ -1013,18 +1070,7 @@ export async function extractInsight(
     },
   };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const errBody = await res.text();
-    throw new Error(`Gemini ${res.status}: ${errBody}`);
-  }
-
-  const data = (await res.json()) as Record<string, unknown>;
+  const data = await postGemini(url, body);
   const raw = _extractGeminiText(data);
   const decoded = JSON.parse(raw) as Record<string, unknown>;
   const insight = validateExtraction(

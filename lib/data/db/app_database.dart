@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
+import '../../core/utils/app_paths.dart';
 
 part 'app_database.g.dart';
 
@@ -66,7 +66,12 @@ class Visits extends Table {
 
 @DriftDatabase(tables: [Patients, Visits])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  /// The signed-in doctor's own database, `users/<uid>/rxvarta.sqlite`.
+  AppDatabase.forDoctor(String uid) : super(_openConnection(uid));
+
+  /// Nobody is signed in: an empty database in memory, so no doctor's
+  /// records are readable and nothing is written to disk.
+  AppDatabase.signedOut() : super(NativeDatabase.memory());
 
   /// Construct against a custom executor — used in tests.
   AppDatabase.forTesting(super.executor);
@@ -142,30 +147,46 @@ class AppDatabase extends _$AppDatabase {
           ..limit(limit))
         .get();
   }
+
+  /// Every patient that has at least one visit, with their newest visit and
+  /// their total number of visits, newest first. One query for the whole
+  /// clinic, so nobody drops off the list however many consultations there
+  /// have been.
+  Future<List<({Visit latest, int count})>> latestVisitPerPatient() async {
+    final rows = await customSelect(
+      'SELECT v.*, s.visit_count AS visit_count '
+      'FROM visits v '
+      'JOIN (SELECT patient_id, MAX(created_at) AS last_at, '
+      '             COUNT(*) AS visit_count '
+      '      FROM visits GROUP BY patient_id) s '
+      '  ON s.patient_id = v.patient_id AND s.last_at = v.created_at '
+      'ORDER BY v.created_at DESC',
+      readsFrom: {visits},
+    ).get();
+
+    final seen = <String>{};
+    final result = <({Visit latest, int count})>[];
+    for (final row in rows) {
+      final visit = visits.map(row.data);
+      // Two visits can share the newest timestamp; list the patient once.
+      if (!seen.add(visit.patientId)) continue;
+      result.add((latest: visit, count: row.read<int>('visit_count')));
+    }
+    return result;
+  }
+
+  Future<List<Patient>> patientsByIds(Iterable<String> ids) {
+    final list = ids.toSet().toList();
+    if (list.isEmpty) return Future.value(const []);
+    return (select(patients)..where((p) => p.id.isIn(list))).get();
+  }
 }
 
-LazyDatabase _openConnection() {
+LazyDatabase _openConnection(String uid) {
   return LazyDatabase(() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'rxvarta.sqlite'));
-
-    // Brand rename (MedScribe → Rxvarta): existing installs have their data in
-    // medscribe.sqlite. Migrate it once so upgrading users keep their patients,
-    // visits and prescriptions instead of starting with an empty database.
-    // The WAL/SHM/journal sidecar files must move alongside the main database,
-    // otherwise uncommitted transactions in those files would be lost.
-    if (!file.existsSync()) {
-      final legacy = File(p.join(dir.path, 'medscribe.sqlite'));
-      if (legacy.existsSync()) {
-        for (final suffix in const ['', '-wal', '-shm', '-journal']) {
-          final legacySidecar = File('${legacy.path}$suffix');
-          if (legacySidecar.existsSync()) {
-            await legacySidecar.rename('${file.path}$suffix');
-          }
-        }
-      }
-    }
-
-    return NativeDatabase.createInBackground(file);
+    // A phone upgraded from a build with one shared database keeps its
+    // records: they move into the first signed-in doctor's folder.
+    await AppPaths.claimSharedData(uid);
+    return NativeDatabase.createInBackground(File(AppPaths.databasePath(uid)));
   });
 }
