@@ -17,6 +17,13 @@ class PatientRepository {
     return rows.map(_toProfile).toList();
   }
 
+  /// The most recently updated patients, re-emitted on every change.
+  Stream<List<PatientProfile>> watchRecent({int limit = 20}) {
+    return _db
+        .watchRecentPatients(limit: limit)
+        .map((rows) => rows.map(_toProfile).toList());
+  }
+
   Future<List<PatientProfile>> search(String query) async {
     if (query.trim().isEmpty) return recent();
     final rows = await _db.searchPatients(query);

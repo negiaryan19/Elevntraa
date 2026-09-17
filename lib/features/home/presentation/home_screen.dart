@@ -18,13 +18,12 @@ import '../../../l10n/app_localizations.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import '../../settings/presentation/doctor_profile_form.dart';
 
+/// The five most recent patients, straight from the database: finishing a
+/// consultation updates this list without a pull-to-refresh (roadmap item
+/// 32), and it follows the signed-in doctor's own database.
 final _recentPatientsProvider =
-    FutureProvider.autoDispose<List<PatientProfile>>((ref) async {
-      // Watched, so the list is reloaded whenever the database changes
-      // (another doctor signs in, a backup is restored).
-      final repo = ref.watch(patientRepositoryProvider);
-      final list = await repo.recent();
-      return list.take(5).toList();
+    StreamProvider.autoDispose<List<PatientProfile>>((ref) {
+      return ref.watch(patientRepositoryProvider).watchRecent(limit: 5);
     });
 
 class HomeScreen extends ConsumerWidget {

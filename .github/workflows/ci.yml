@@ -77,6 +77,19 @@ jobs:
         with:
           persist-credentials: false
 
+      # The hosted image ships tens of GB of toolchains this build never
+      # uses, and the Android build now runs out of disk without this
+      # ("No space left on device" while packaging the APK).
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk \
+            /opt/ghc /usr/local/.ghcup /usr/share/swift \
+            /usr/local/share/powershell /usr/local/share/chromium \
+            /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
       - name: Set up Java
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:

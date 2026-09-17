@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,29 +26,50 @@ class ExistingPatientScreen extends ConsumerStatefulWidget {
 }
 
 class _ExistingPatientScreenState extends ConsumerState<ExistingPatientScreen> {
+  /// How long typing has to pause before the database is queried, so a name
+  /// typed letter by letter is one search instead of one per keystroke
+  /// (roadmap item 31).
+  static const _typingPause = Duration(milliseconds: 300);
+
   List<PatientProfile> _results = [];
   bool _loading = true;
   String _query = '';
+  Timer? _debounce;
+
+  /// Counts searches so a slow earlier query cannot overwrite the results of
+  /// a later one.
+  int _searchId = 0;
 
   @override
   void initState() {
     super.initState();
-    _search('');
+    _runSearch('');
   }
 
-  Future<void> _search(String q) async {
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _search(String q) {
     setState(() {
       _query = q;
       _loading = true;
     });
+    _debounce?.cancel();
+    _debounce = Timer(_typingPause, () => _runSearch(q));
+  }
+
+  Future<void> _runSearch(String q) async {
+    final id = ++_searchId;
     final repo = ref.read(patientRepositoryProvider);
     final res = q.trim().isEmpty ? await repo.recent() : await repo.search(q);
-    if (mounted) {
-      setState(() {
-        _results = res;
-        _loading = false;
-      });
-    }
+    if (!mounted || id != _searchId) return;
+    setState(() {
+      _results = res;
+      _loading = false;
+    });
   }
 
   @override

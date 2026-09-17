@@ -98,6 +98,15 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
+  /// Live version of [recentPatients]: re-runs whenever a patient or visit
+  /// row changes, so a screen showing it never goes stale.
+  Stream<List<Patient>> watchRecentPatients({int limit = 20}) {
+    return (select(patients)
+          ..orderBy([(p) => OrderingTerm.desc(p.updatedAt)])
+          ..limit(limit))
+        .watch();
+  }
+
   Future<List<Patient>> searchPatients(String query) {
     final q = '%${query.trim()}%';
     return (select(patients)
