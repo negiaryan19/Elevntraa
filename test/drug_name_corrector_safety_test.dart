@@ -76,8 +76,11 @@ void main() {
       expect(resolved('parcetamol'), 'Paracetamol');
     });
 
-    test('dose and dosage-form noise around a drug is stripped', () {
-      expect(resolved('tab paracetamol 500mg'), 'Paracetamol');
+    test('dosage-form noise is stripped; the strength is kept', () {
+      // "tab" is noise. "500mg" is not: it is the only record of the strength
+      // once the name is rewritten (see drug_name_corrector_strength_test).
+      expect(resolved('tab paracetamol 500mg'), 'Paracetamol 500mg');
+      expect(resolved('tab paracetamol'), 'Paracetamol');
     });
 
     test('an exact generic is returned unchanged', () {

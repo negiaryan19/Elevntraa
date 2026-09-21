@@ -161,12 +161,52 @@ class DrugNameCorrector {
     if (_isCombination(input) && !_exactIndex.containsKey(_normalize(input))) {
       return null;
     }
-    final m = _recognize(input);
+    // Doctors dictate the strength with the name ("Telma 40", "Metformin
+    // 500", "Propranolol 10 mg"). Matching the whole string made the brand
+    // guard miss ("telma40" is not the brand "telma"), so Telma 40 was
+    // rewritten to plain "Telmisartan": the brand and the strength both
+    // vanished from the prescription. The name is matched without its
+    // strength, and the strength is put back on whatever comes out.
+    final (:name, :strength) = _splitStrength(input);
+    if (name.isEmpty) return null; // "500", "650 mg": not a medicine
+    final m = _recognize(name);
     if (m == null) return null;
     final entry = _entries[m.idx];
     // Recognized, but a brand / brand look-alike: keep the original name.
-    if (_isBrandLike(input, entry)) return null;
-    return DrugMatch(canonical: entry.generic, confidence: m.confidence);
+    if (_isBrandLike(name, entry)) return null;
+    return DrugMatch(
+      canonical: strength.isEmpty
+          ? entry.generic
+          : '${entry.generic} $strength',
+      confidence: m.confidence,
+    );
+  }
+
+  /// A strength at the end of a name, as dictated: "625", "10 mg", "10mg",
+  /// "0.5 mg", "250 mg/5 ml". It must follow whitespace, so a number that is
+  /// part of a word ("B12", "D3") is never taken for one.
+  static final RegExp _trailingStrength = RegExp(
+    r'\s+(\d+(?:\.\d+)?\s*(?:mg|mcg|g|gm|ml|iu|%)?'
+    r'(?:\s*/\s*\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml))?)\s*$',
+    caseSensitive: false,
+  );
+  static final RegExp _onlyStrength = RegExp(
+    r'^\s*\d+(?:\.\d+)?\s*(?:mg|mcg|g|gm|ml|iu|%)?\s*$',
+    caseSensitive: false,
+  );
+
+  /// Splits "Metformin 500" into the name and the strength exactly as it was
+  /// dictated. [name] is empty when the input is nothing but a strength.
+  static ({String name, String strength}) _splitStrength(String input) {
+    if (_onlyStrength.hasMatch(input)) {
+      return (name: '', strength: input.trim());
+    }
+    final m = _trailingStrength.firstMatch(input);
+    if (m == null) return (name: input, strength: '');
+    return (
+      name: input.substring(0, m.start).trim(),
+      strength: m.group(1)!.trim(),
+    );
   }
 
   /// Correct all medication names in a list. Returns a new list with
