@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxvarta/domain/models/doctor_profile.dart';
 import 'package:rxvarta/domain/models/medical_insight.dart';
@@ -8,12 +5,15 @@ import 'package:rxvarta/domain/models/patient.dart';
 import 'package:rxvarta/domain/models/visit.dart';
 import 'package:rxvarta/features/prescription/data/prescription_pdf_service.dart';
 
-/// Prescriptions used to download their fonts at print time. Offline, the
-/// theme fell back to Helvetica and every non-Latin character vanished; even
-/// online only Devanagari had a fallback, so Tamil, Telugu, Kannada, Bengali
-/// and Gujarati printed as empty boxes. The fonts are now bundled.
+import 'support/pdf_text.dart';
+
+/// Prescriptions used to download their fonts at print time: offline, the
+/// theme fell back to Helvetica and every non-Latin character vanished. The
+/// fonts are now bundled.
 ///
-/// Tests have no network, so these builds prove the bundled path works.
+/// Indian scripts also need shaping (reordered vowel signs, joined
+/// consonants), which the pdf package does not do: text in those scripts
+/// printed misspelled. It is now shaped by Flutter and embedded as images.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -47,43 +47,53 @@ void main() {
       ),
       doctor: doctor,
     );
-    return _pdfText(bytes);
+    return pdfText(bytes);
   }
 
-  test('the Latin text uses bundled Noto Sans, not Helvetica', () async {
+  test('Latin text is real text in bundled Noto Sans, not Helvetica', () async {
     final pdf = await buildWith(
       patientName: 'Ramesh Kumar',
       diagnosis: 'Viral fever',
     );
     expect(pdf, contains('NotoSans'));
     expect(pdf, isNot(contains('/Helvetica')));
+    // Nothing needed shaping, so nothing was drawn as an image.
+    expect(pdf, isNot(contains('/Subtype/Image')));
   });
 
-  // Which font must carry each script's glyphs. Base Noto Sans already
-  // includes all 128 Devanagari characters (verified from its cmap), so
-  // Hindi and Marathi render from it and no Devanagari fallback is needed;
-  // every other script needs its own bundled font.
-  for (final (script, font, name, diagnosis) in const [
-    ('Devanagari', 'NotoSans', 'सुनीता देवी', 'वायरल बुखार'),
-    ('Tamil', 'NotoSansTamil', 'முருகன்', 'காய்ச்சல்'),
-    ('Telugu', 'NotoSansTelugu', 'రమేష్', 'జ్వరం'),
-    ('Kannada', 'NotoSansKannada', 'ರಮೇಶ್', 'ಜ್ವರ'),
-    ('Bengali', 'NotoSansBengali', 'সুনীতা', 'জ্বর'),
-    ('Gujarati', 'NotoSansGujarati', 'રમેશ', 'તાવ'),
+  for (final (script, name, diagnosis) in const [
+    ('Devanagari', 'सुनीता देवी', 'वायरल बुखार'),
+    ('Tamil', 'முருகன்', 'காய்ச்சல்'),
+    ('Telugu', 'రమేష్', 'జ్వరం'),
+    ('Kannada', 'ರಮೇಶ್', 'ಜ್ವರ'),
+    ('Bengali', 'সুনীতা', 'জ্বর'),
+    ('Gujarati', 'રમેશ', 'તાવ'),
   ]) {
-    test('$script text is printed with a font that has its glyphs', () async {
+    test('$script text is shaped, not printed letter by letter', () async {
       final pdf = await buildWith(patientName: name, diagnosis: diagnosis);
       expect(
         pdf,
-        contains(font),
-        reason: '$script text needs $font, or it prints as blank boxes',
+        contains('/Subtype/Image'),
+        reason: '$script text must go through the shaper',
       );
-      // Helvetica has no glyphs for any Indian script: its presence is the
-      // offline failure this guards against.
+      expect(
+        pdf,
+        contains('beginbfchar'),
+        reason: 'the font maps must be readable, or the next check is empty',
+      );
+      // No Indian-script letter reached the pdf package's text path, which
+      // would draw it in typing order.
+      expect(
+        drawsIndicAsText(pdf),
+        isFalse,
+        reason: '$script letters were printed as unshaped text',
+      );
+      expect(
+        shapedImageCount(pdf),
+        2,
+        reason: 'the patient name and the diagnosis are each one shaped line',
+      );
       expect(pdf, isNot(contains('/Helvetica')));
     });
   }
 }
-
-/// The PDF as Latin-1 text, enough to find font names in its dictionaries.
-String _pdfText(Uint8List bytes) => latin1.decode(bytes, allowInvalid: true);

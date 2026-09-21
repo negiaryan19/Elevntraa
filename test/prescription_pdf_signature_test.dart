@@ -95,7 +95,6 @@ void main() {
         patient: patient,
         doctor: doctor,
         signaturePng: kTinyPng,
-        awaitingSignatureLabel: 'Awaiting signature',
       ),
     );
     if (bytes == null) return;

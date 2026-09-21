@@ -6,18 +6,24 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxvarta/core/auth/auth_providers.dart';
+import 'package:rxvarta/core/prefs/shared_preferences_provider.dart';
 import 'package:rxvarta/core/utils/app_paths.dart';
 import 'package:rxvarta/data/db/app_database.dart';
 import 'package:rxvarta/data/repositories/patient_repository.dart';
 import 'package:rxvarta/domain/models/patient.dart';
 import 'package:rxvarta/features/consultation/presentation/consultation_controller.dart';
 import 'package:rxvarta/features/prescription/data/prescription_pdf_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Every doctor on a phone used to share one database, one report folder
 /// and one recordings folder, and signing out cleared none of them: Doctor B
 /// signing in on Doctor A's phone saw all of A's patients and prescriptions
 /// (roadmap item 6).
 void main() {
+  // The PDF service reads the app language, which falls back to the
+  // phone's language through the Flutter binding.
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Directory docs;
   late ProviderContainer container;
   final signedIn = StateProvider<String?>((ref) => null);
@@ -25,9 +31,12 @@ void main() {
   setUp(() async {
     docs = await Directory.systemTemp.createTemp('rxvarta_isolation_');
     await AppPaths.init(documentsDir: docs.path);
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     container = ProviderContainer(
       overrides: [
         currentUserIdProvider.overrideWith((ref) => ref.watch(signedIn)),
+        sharedPreferencesProvider.overrideWithValue(prefs),
       ],
     );
   });

@@ -85,9 +85,6 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
           patient: p,
           doctor: doctor,
           signaturePng: signature,
-          awaitingSignatureLabel: AppLocalizations.of(
-            context,
-          )!.pdfAwaitingSignature,
         );
         fname = svc.fileName(p, v);
       } catch (_) {}

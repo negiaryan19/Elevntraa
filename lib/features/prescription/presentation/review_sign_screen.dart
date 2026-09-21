@@ -567,6 +567,18 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                       _medicinesCard(),
                       SizedBox(height: gap),
                       _EditableBullets(
+                        title: t.investigationsTitle,
+                        icon: Icons.biotech_rounded,
+                        items: _draft.tests,
+                        placeholder: t.noInvestigationsTapPencil,
+                        hint: t.investigationsHint,
+                        onSave: (v) {
+                          setState(() => _draft = _draft.copyWith(tests: v));
+                          _save();
+                        },
+                      ),
+                      SizedBox(height: gap),
+                      _EditableBullets(
                         title: t.adviceTitle,
                         icon: Icons.tips_and_updates_rounded,
                         items: _draft.advice,
@@ -587,6 +599,16 @@ class _ReviewSignScreenState extends ConsumerState<ReviewSignScreen> {
                         onSave: (v) {
                           setState(
                             () => _draft = _draft.copyWith(instructions: v),
+                          );
+                          _save();
+                        },
+                      ),
+                      SizedBox(height: gap),
+                      _NotesCard(
+                        notes: _draft.doctorNotes,
+                        onSave: (v) {
+                          setState(
+                            () => _draft = _draft.copyWith(doctorNotes: v),
                           );
                           _save();
                         },
@@ -1041,6 +1063,77 @@ class _SummaryCardState extends State<_SummaryCard> {
               color: isDark ? scheme.onSurface : const Color(0xFF1E3A5F),
               height: 1.5,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The doctor's own notes about the consultation. Kept for the record and
+/// never printed on the patient's prescription, which the card says.
+class _NotesCard extends StatefulWidget {
+  const _NotesCard({required this.notes, required this.onSave});
+  final String notes;
+  final ValueChanged<String> onSave;
+
+  @override
+  State<_NotesCard> createState() => _NotesCardState();
+}
+
+class _NotesCardState extends State<_NotesCard> {
+  final _editKey = GlobalKey<_InlineEditableState>();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    return _InfoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.edit_note_rounded, color: _accent(context), size: 20),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  t.doctorNotesTitle,
+                  style: AppTypography.titleMedium.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => _editKey.currentState?._startEdit(),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.edit_rounded,
+                    color: scheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            t.doctorNotesNotPrinted,
+            style: AppTypography.bodySmall.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s),
+          _InlineEditable(
+            key: _editKey,
+            value: widget.notes,
+            onSave: widget.onSave,
+            maxLines: 5,
+            placeholder: t.noDoctorNotesTapPencil,
+            hint: t.doctorNotesHint,
           ),
         ],
       ),

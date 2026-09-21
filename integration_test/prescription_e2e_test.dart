@@ -12,6 +12,7 @@ import 'package:rxvarta/app/app.dart';
 import 'package:rxvarta/core/config/app_config.dart';
 import 'package:rxvarta/core/prefs/shared_preferences_provider.dart';
 import 'package:rxvarta/core/utils/app_paths.dart';
+import 'package:rxvarta/data/repositories/visit_repository.dart';
 import 'package:rxvarta/features/consultation/data/recording_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -141,14 +142,30 @@ void main() {
       reason: 'processing did not reach Review: ${_visibleText(tester)}',
     );
 
-    expect(find.textContaining('Paracetamol'), findsWidgets);
-    expect(
-      find.textContaining(RegExp('viral fever', caseSensitive: false)),
-      findsWidgets,
-    );
     expect(outcome, isNotNull);
 
+    // What the pipeline saved for this consultation. Checked in the data,
+    // not on screen, where a card may be scrolled out of view.
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(RxvartaApp)),
+    );
+    final latest =
+        (await container.read(visitRepositoryProvider).recent(limit: 1)).single;
+    final insight = latest.insight!;
+    expect(insight.diagnosis.toLowerCase(), contains('viral fever'));
+    expect(
+      insight.medications.map((m) => m.name.toLowerCase()),
+      contains(contains('paracetamol')),
+    );
+    // The consultation also orders lab tests (roadmap item 19).
+    expect(
+      insight.tests.join(' ').toLowerCase(),
+      contains('blood count'),
+      reason: 'tests extracted: ${insight.tests}',
+    );
+
     // ── Sign → PDF ─────────────────────────────────────────────────────
+    final signedAt = DateTime.now();
     await tester.tap(find.text('Sign & Generate PDF'));
     expect(
       await _waitFor(
@@ -170,6 +187,10 @@ void main() {
       reason: 'the PDF was not generated: ${_visibleText(tester)}',
     );
     expect(find.text('Could not generate PDF'), findsNothing);
+    debugPrint(
+      'E2E sign to PDF preview: '
+      '${DateTime.now().difference(signedAt).inMilliseconds} ms',
+    );
     await _shot(binding, tester, 'rx_04_pdf');
   });
 }

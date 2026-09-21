@@ -560,7 +560,39 @@ class AppLocalizationsTa extends AppLocalizations {
   String get authPasswordRequired => 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்';
 
   @override
-  String get authPasswordRules => 'குறைந்தது 8 எழுத்துகள்';
+  String get authPasswordRules =>
+      'குறைந்தது 8 எழுத்துகள், அதில் ஒரு பெரிய, ஒரு சிறிய எழுத்து, ஒரு எண் மற்றும் ஒரு குறியீடு இருக்க வேண்டும்';
+
+  @override
+  String get authPasswordTooShort => 'குறைந்தது 8 எழுத்துகளைப் பயன்படுத்தவும்';
+
+  @override
+  String get authPasswordTooLong => 'மிக நீளமானது — சற்று குறைக்கவும்';
+
+  @override
+  String get authPasswordNeedsLowercase =>
+      'ஒரு சிறிய எழுத்தைச் சேர்க்கவும் (a–z)';
+
+  @override
+  String get authPasswordNeedsUppercase =>
+      'ஒரு பெரிய எழுத்தைச் சேர்க்கவும் (A–Z)';
+
+  @override
+  String get authPasswordNeedsDigit => 'ஒரு எண்ணைச் சேர்க்கவும் (0–9)';
+
+  @override
+  String get authPasswordNeedsSymbol =>
+      'ஒரு குறியீட்டைச் சேர்க்கவும், எ.கா. ! அல்லது @';
+
+  @override
+  String authEmailDidYouMean(String suggestion) {
+    return 'நீங்கள் $suggestion என்று சொல்ல நினைத்தீர்களா?';
+  }
+
+  @override
+  String authEmailKeepAsTyped(String button) {
+    return 'எழுதியபடியே வைத்திருக்க “$button” ஐ மீண்டும் அழுத்தவும்.';
+  }
 
   @override
   String get authPasswordsDoNotMatch => 'கடவுச்சொற்கள் பொருந்தவில்லை';
@@ -698,6 +730,10 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get authErrorRateLimited =>
       'அதிக முயற்சிகள். ஒரு நிமிடம் காத்திருந்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get authErrorEmailSendFailed =>
+      'இப்போது மின்னஞ்சல் அனுப்ப முடியவில்லை. ஒரு நிமிடம் கழித்து மீண்டும் முயற்சிக்கவும்.';
 
   @override
   String get authErrorNetwork =>
@@ -953,6 +989,102 @@ class AppLocalizationsTa extends AppLocalizations {
   String signGateMedicineNameBody(int n) {
     return 'மருந்து $n க்குப் பெயர் இல்லை. கையொப்பமிடும் முன் பெயரை உள்ளிடவும் அல்லது அதை அகற்றவும்.';
   }
+
+  @override
+  String pdfDocumentTitle(String name) {
+    return 'மருந்துச் சீட்டு — $name';
+  }
+
+  @override
+  String get pdfPatient => 'நோயாளி';
+
+  @override
+  String get pdfDate => 'தேதி';
+
+  @override
+  String get pdfAge => 'வயது';
+
+  @override
+  String get pdfGender => 'பாலினம்';
+
+  @override
+  String get pdfPhone => 'தொலைபேசி';
+
+  @override
+  String pdfAgeYears(int age) {
+    return '$age வயது';
+  }
+
+  @override
+  String get pdfRegNo => 'பதிவு எண்';
+
+  @override
+  String get pdfDiagnosis => 'நோய் கண்டறிதல்';
+
+  @override
+  String get pdfNoMedicines => 'மருந்துகள் எதுவும் பரிந்துரைக்கப்படவில்லை.';
+
+  @override
+  String get pdfColMedicine => 'மருந்து';
+
+  @override
+  String get pdfColDosage => 'அளவு';
+
+  @override
+  String get pdfColFrequency => 'எத்தனை முறை';
+
+  @override
+  String get pdfColDuration => 'காலம்';
+
+  @override
+  String get pdfColTiming => 'நேரம்';
+
+  @override
+  String get pdfInvestigations => 'பரிந்துரைக்கப்பட்ட பரிசோதனைகள்';
+
+  @override
+  String get pdfInstructions => 'அறிவுறுத்தல்கள்';
+
+  @override
+  String get pdfAdvice => 'அறிவுரை';
+
+  @override
+  String get pdfFollowUp => 'மறுபரிசோதனை';
+
+  @override
+  String pdfFollowUpAfter(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days நாட்களுக்குப் பிறகு',
+      one: '1 நாளுக்குப் பிறகு',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pdfNextVisit => 'அடுத்த வருகை';
+
+  @override
+  String get pdfPreviousReports => 'முந்தைய அறிக்கைகள்';
+
+  @override
+  String pdfReportsAttachedFor(String name) {
+    return '$name அவர்களுக்காக இணைக்கப்பட்டது';
+  }
+
+  @override
+  String pdfReportCaption(int number) {
+    return 'அறிக்கை $number';
+  }
+
+  @override
+  String get pdfComputerGenerated =>
+      'இது கணினியால் உருவாக்கப்பட்ட மருந்துச் சீட்டு';
+
+  @override
+  String get pdfFooterTagline =>
+      'Rxvarta AI உருவாக்கியது  |  பாதுகாப்பானது  |  தனிப்பட்டது';
 
   @override
   String get pdfAwaitingSignature => 'கையொப்பத்திற்காகக் காத்திருக்கிறது';
@@ -1493,6 +1625,32 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get noDiagnosisTapPencil =>
       'நோயறிதல் இல்லை — சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get investigationsTitle => 'பரிசோதனைகள்';
+
+  @override
+  String get noInvestigationsTapPencil =>
+      'பரிசோதனைகள் இல்லை — சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get investigationsHint =>
+      'செய்ய வேண்டிய பரிசோதனைகள் — ஒரு வரிக்கு ஒன்று';
+
+  @override
+  String get doctorNotesTitle => 'மருத்துவரின் குறிப்புகள்';
+
+  @override
+  String get doctorNotesNotPrinted =>
+      'உங்கள் பதிவுக்காக; மருந்துச் சீட்டில் அச்சிடப்படாது';
+
+  @override
+  String get noDoctorNotesTapPencil =>
+      'குறிப்புகள் இல்லை — சேர்க்க பென்சிலைத் தட்டவும்';
+
+  @override
+  String get doctorNotesHint =>
+      'இந்த ஆலோசனை குறித்த உங்கள் சொந்தக் குறிப்புகள்';
 
   @override
   String get adviceTitle => 'அறிவுரை';

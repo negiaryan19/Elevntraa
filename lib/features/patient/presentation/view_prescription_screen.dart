@@ -76,9 +76,6 @@ class _ViewPrescriptionScreenState
         patient: widget.patient,
         doctor: doctor,
         signaturePng: signature,
-        awaitingSignatureLabel: AppLocalizations.of(
-          context,
-        )!.pdfAwaitingSignature,
       );
       if (!mounted) return;
       setState(() => _pdfBytes = bytes);

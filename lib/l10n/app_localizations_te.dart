@@ -560,7 +560,36 @@ class AppLocalizationsTe extends AppLocalizations {
   String get authPasswordRequired => 'మీ పాస్‌వర్డ్‌ను నమోదు చేయండి';
 
   @override
-  String get authPasswordRules => 'కనీసం 8 అక్షరాలు';
+  String get authPasswordRules =>
+      'కనీసం 8 అక్షరాలు, అందులో ఒక పెద్ద, ఒక చిన్న అక్షరం, ఒక అంకె మరియు ఒక గుర్తు ఉండాలి';
+
+  @override
+  String get authPasswordTooShort => 'కనీసం 8 అక్షరాలు వాడండి';
+
+  @override
+  String get authPasswordTooLong => 'చాలా పొడవుగా ఉంది — కొంచెం తగ్గించండి';
+
+  @override
+  String get authPasswordNeedsLowercase => 'ఒక చిన్న అక్షరం జోడించండి (a–z)';
+
+  @override
+  String get authPasswordNeedsUppercase => 'ఒక పెద్ద అక్షరం జోడించండి (A–Z)';
+
+  @override
+  String get authPasswordNeedsDigit => 'ఒక అంకె జోడించండి (0–9)';
+
+  @override
+  String get authPasswordNeedsSymbol => 'ఒక గుర్తు జోడించండి, ఉదా. ! లేదా @';
+
+  @override
+  String authEmailDidYouMean(String suggestion) {
+    return 'మీరు $suggestion అని అనుకున్నారా?';
+  }
+
+  @override
+  String authEmailKeepAsTyped(String button) {
+    return 'రాసినట్లే ఉంచడానికి “$button” ను మళ్లీ నొక్కండి.';
+  }
 
   @override
   String get authPasswordsDoNotMatch => 'పాస్‌వర్డ్‌లు సరిపోలడం లేదు';
@@ -695,6 +724,10 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get authErrorRateLimited =>
       'చాలా ప్రయత్నాలు. దయచేసి ఒక నిమిషం ఆగి మళ్లీ ప్రయత్నించండి.';
+
+  @override
+  String get authErrorEmailSendFailed =>
+      'ఇప్పుడు ఇమెయిల్ పంపలేకపోయాం. ఒక నిమిషం తర్వాత మళ్లీ ప్రయత్నించండి.';
 
   @override
   String get authErrorNetwork =>
@@ -949,6 +982,101 @@ class AppLocalizationsTe extends AppLocalizations {
   String signGateMedicineNameBody(int n) {
     return 'మందు $n కు పేరు లేదు. సంతకం చేయడానికి ముందు పేరును నమోదు చేయండి లేదా దాన్ని తీసివేయండి.';
   }
+
+  @override
+  String pdfDocumentTitle(String name) {
+    return 'ప్రిస్క్రిప్షన్ — $name';
+  }
+
+  @override
+  String get pdfPatient => 'రోగి';
+
+  @override
+  String get pdfDate => 'తేదీ';
+
+  @override
+  String get pdfAge => 'వయస్సు';
+
+  @override
+  String get pdfGender => 'లింగం';
+
+  @override
+  String get pdfPhone => 'ఫోన్';
+
+  @override
+  String pdfAgeYears(int age) {
+    return '$age సం.';
+  }
+
+  @override
+  String get pdfRegNo => 'రిజి. నం.';
+
+  @override
+  String get pdfDiagnosis => 'నిర్ధారణ';
+
+  @override
+  String get pdfNoMedicines => 'మందులు ఏవీ రాయలేదు.';
+
+  @override
+  String get pdfColMedicine => 'మందు';
+
+  @override
+  String get pdfColDosage => 'మోతాదు';
+
+  @override
+  String get pdfColFrequency => 'ఎన్నిసార్లు';
+
+  @override
+  String get pdfColDuration => 'వ్యవధి';
+
+  @override
+  String get pdfColTiming => 'సమయం';
+
+  @override
+  String get pdfInvestigations => 'సూచించిన పరీక్షలు';
+
+  @override
+  String get pdfInstructions => 'సూచనలు';
+
+  @override
+  String get pdfAdvice => 'సలహా';
+
+  @override
+  String get pdfFollowUp => 'ఫాలో-అప్';
+
+  @override
+  String pdfFollowUpAfter(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days రోజుల తర్వాత',
+      one: '1 రోజు తర్వాత',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pdfNextVisit => 'తదుపరి సందర్శన';
+
+  @override
+  String get pdfPreviousReports => 'మునుపటి రిపోర్టులు';
+
+  @override
+  String pdfReportsAttachedFor(String name) {
+    return '$name కోసం జతచేయబడింది';
+  }
+
+  @override
+  String pdfReportCaption(int number) {
+    return 'రిపోర్ట్ $number';
+  }
+
+  @override
+  String get pdfComputerGenerated => 'ఇది కంప్యూటర్‌లో తయారైన ప్రిస్క్రిప్షన్';
+
+  @override
+  String get pdfFooterTagline =>
+      'Rxvarta AI ద్వారా తయారైంది  |  సురక్షితం  |  గోప్యం';
 
   @override
   String get pdfAwaitingSignature => 'సంతకం కోసం వేచి ఉంది';
@@ -1489,6 +1617,30 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get noDiagnosisTapPencil =>
       'నిర్ధారణ లేదు — జోడించడానికి పెన్సిల్ నొక్కండి';
+
+  @override
+  String get investigationsTitle => 'పరీక్షలు';
+
+  @override
+  String get noInvestigationsTapPencil =>
+      'ఏ పరీక్షలూ లేవు — జోడించడానికి పెన్సిల్ నొక్కండి';
+
+  @override
+  String get investigationsHint => 'చేయించవలసిన పరీక్షలు — ఒక్కో లైన్‌కు ఒకటి';
+
+  @override
+  String get doctorNotesTitle => 'డాక్టర్ నోట్స్';
+
+  @override
+  String get doctorNotesNotPrinted =>
+      'మీ రికార్డు కోసం; ప్రిస్క్రిప్షన్‌పై ముద్రించబడవు';
+
+  @override
+  String get noDoctorNotesTapPencil =>
+      'నోట్స్ లేవు — జోడించడానికి పెన్సిల్ నొక్కండి';
+
+  @override
+  String get doctorNotesHint => 'ఈ సంప్రదింపుపై మీ సొంత నోట్స్';
 
   @override
   String get adviceTitle => 'సలహా';

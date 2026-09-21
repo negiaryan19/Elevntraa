@@ -42,7 +42,8 @@ dependencies:
 
   # Backend
   supabase_flutter: ^2.17.1
-
+  # Keeps the Supabase session encrypted at rest (Keystore / Keychain).
+  flutter_secure_storage: ^11.2.0
 
   # Models / immutability
   freezed_annotation: ^3.1.0
@@ -85,6 +86,46 @@ flutter:
     - assets/data/drug_dictionary.json
     - assets/legal/
     - assets/fonts/
+    - assets/brand/rxvarta_logo.png
+  # The same bundled Noto fonts, registered with Flutter's text engine so
+  # Indian-script text on the prescription PDF is shaped correctly (see
+  # PdfShaper), whatever fonts the phone has.
+  fonts:
+    - family: RxNotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-Regular.ttf
+        - asset: assets/fonts/NotoSans-Bold.ttf
+          weight: 700
+    - family: RxNotoSansDevanagari
+      fonts:
+        - asset: assets/fonts/NotoSansDevanagari-Regular.ttf
+        - asset: assets/fonts/NotoSansDevanagari-Bold.ttf
+          weight: 700
+    - family: RxNotoSansBengali
+      fonts:
+        - asset: assets/fonts/NotoSansBengali-Regular.ttf
+        - asset: assets/fonts/NotoSansBengali-Bold.ttf
+          weight: 700
+    - family: RxNotoSansGujarati
+      fonts:
+        - asset: assets/fonts/NotoSansGujarati-Regular.ttf
+        - asset: assets/fonts/NotoSansGujarati-Bold.ttf
+          weight: 700
+    - family: RxNotoSansKannada
+      fonts:
+        - asset: assets/fonts/NotoSansKannada-Regular.ttf
+        - asset: assets/fonts/NotoSansKannada-Bold.ttf
+          weight: 700
+    - family: RxNotoSansTamil
+      fonts:
+        - asset: assets/fonts/NotoSansTamil-Regular.ttf
+        - asset: assets/fonts/NotoSansTamil-Bold.ttf
+          weight: 700
+    - family: RxNotoSansTelugu
+      fonts:
+        - asset: assets/fonts/NotoSansTelugu-Regular.ttf
+        - asset: assets/fonts/NotoSansTelugu-Bold.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: true

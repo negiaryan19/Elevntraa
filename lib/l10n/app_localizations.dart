@@ -1037,8 +1037,56 @@ abstract class AppLocalizations {
   /// No description provided for @authPasswordRules.
   ///
   /// In en, this message translates to:
-  /// **'At least 8 characters'**
+  /// **'At least 8 characters, with a capital and a small letter, a number and a symbol'**
   String get authPasswordRules;
+
+  /// No description provided for @authPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters'**
+  String get authPasswordTooShort;
+
+  /// No description provided for @authPasswordTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Too long — shorten it a little'**
+  String get authPasswordTooLong;
+
+  /// No description provided for @authPasswordNeedsLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a small letter (a–z)'**
+  String get authPasswordNeedsLowercase;
+
+  /// No description provided for @authPasswordNeedsUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a capital letter (A–Z)'**
+  String get authPasswordNeedsUppercase;
+
+  /// No description provided for @authPasswordNeedsDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a number (0–9)'**
+  String get authPasswordNeedsDigit;
+
+  /// No description provided for @authPasswordNeedsSymbol.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a symbol, such as ! or @'**
+  String get authPasswordNeedsSymbol;
+
+  /// No description provided for @authEmailDidYouMean.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you mean {suggestion}?'**
+  String authEmailDidYouMean(String suggestion);
+
+  /// No description provided for @authEmailKeepAsTyped.
+  ///
+  /// In en, this message translates to:
+  /// **'To keep it as typed, tap “{button}” again.'**
+  String authEmailKeepAsTyped(String button);
 
   /// No description provided for @authPasswordsDoNotMatch.
   ///
@@ -1279,6 +1327,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too many attempts. Please wait a minute and try again.'**
   String get authErrorRateLimited;
+
+  /// No description provided for @authErrorEmailSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not send the email just now. Please try again in a minute.'**
+  String get authErrorEmailSendFailed;
 
   /// No description provided for @authErrorNetwork.
   ///
@@ -1741,6 +1795,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Medicine {n} has no name. Enter a name or remove it before signing.'**
   String signGateMedicineNameBody(int n);
+
+  /// No description provided for @pdfDocumentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescription — {name}'**
+  String pdfDocumentTitle(String name);
+
+  /// No description provided for @pdfPatient.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient'**
+  String get pdfPatient;
+
+  /// No description provided for @pdfDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get pdfDate;
+
+  /// No description provided for @pdfAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get pdfAge;
+
+  /// No description provided for @pdfGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get pdfGender;
+
+  /// No description provided for @pdfPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get pdfPhone;
+
+  /// No description provided for @pdfAgeYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{age} yrs'**
+  String pdfAgeYears(int age);
+
+  /// No description provided for @pdfRegNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Reg. No'**
+  String get pdfRegNo;
+
+  /// No description provided for @pdfDiagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis'**
+  String get pdfDiagnosis;
+
+  /// No description provided for @pdfNoMedicines.
+  ///
+  /// In en, this message translates to:
+  /// **'No medicines prescribed.'**
+  String get pdfNoMedicines;
+
+  /// No description provided for @pdfColMedicine.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine'**
+  String get pdfColMedicine;
+
+  /// No description provided for @pdfColDosage.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosage'**
+  String get pdfColDosage;
+
+  /// No description provided for @pdfColFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get pdfColFrequency;
+
+  /// No description provided for @pdfColDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get pdfColDuration;
+
+  /// No description provided for @pdfColTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'Timing'**
+  String get pdfColTiming;
+
+  /// No description provided for @pdfInvestigations.
+  ///
+  /// In en, this message translates to:
+  /// **'Investigations advised'**
+  String get pdfInvestigations;
+
+  /// No description provided for @pdfInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get pdfInstructions;
+
+  /// No description provided for @pdfAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Advice'**
+  String get pdfAdvice;
+
+  /// No description provided for @pdfFollowUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up'**
+  String get pdfFollowUp;
+
+  /// No description provided for @pdfFollowUpAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{After 1 day} other{After {days} days}}'**
+  String pdfFollowUpAfter(int days);
+
+  /// No description provided for @pdfNextVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next visit'**
+  String get pdfNextVisit;
+
+  /// No description provided for @pdfPreviousReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous reports'**
+  String get pdfPreviousReports;
+
+  /// No description provided for @pdfReportsAttachedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached for {name}'**
+  String pdfReportsAttachedFor(String name);
+
+  /// No description provided for @pdfReportCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Report {number}'**
+  String pdfReportCaption(int number);
+
+  /// No description provided for @pdfComputerGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a computer-generated prescription'**
+  String get pdfComputerGenerated;
+
+  /// No description provided for @pdfFooterTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated by Rxvarta AI  |  Secure  |  Private'**
+  String get pdfFooterTagline;
 
   /// No description provided for @pdfAwaitingSignature.
   ///
@@ -2743,6 +2953,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No diagnosis — tap the pencil to add'**
   String get noDiagnosisTapPencil;
+
+  /// No description provided for @investigationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Investigations'**
+  String get investigationsTitle;
+
+  /// No description provided for @noInvestigationsTapPencil.
+  ///
+  /// In en, this message translates to:
+  /// **'No tests advised — tap the pencil to add'**
+  String get noInvestigationsTapPencil;
+
+  /// No description provided for @investigationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tests to be done — one per line'**
+  String get investigationsHint;
+
+  /// No description provided for @doctorNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor\'s notes'**
+  String get doctorNotesTitle;
+
+  /// No description provided for @doctorNotesNotPrinted.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept for your records; not printed on the prescription'**
+  String get doctorNotesNotPrinted;
+
+  /// No description provided for @noDoctorNotesTapPencil.
+  ///
+  /// In en, this message translates to:
+  /// **'No notes — tap the pencil to add'**
+  String get noDoctorNotesTapPencil;
+
+  /// No description provided for @doctorNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own notes about this consultation'**
+  String get doctorNotesHint;
 
   /// No description provided for @adviceTitle.
   ///

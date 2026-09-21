@@ -82,7 +82,6 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
     if (_busyVisitId != null) return;
     setState(() => _busyVisitId = visit.id);
     try {
-      final awaitingLabel = AppLocalizations.of(context)!.pdfAwaitingSignature;
       final signature = await ref
           .read(doctorProfileProvider.notifier)
           .signatureBytes();
@@ -93,7 +92,6 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
             patient: _patient,
             doctor: ref.read(doctorProfileValueProvider),
             signaturePng: signature,
-            awaitingSignatureLabel: awaitingLabel,
           );
     } catch (e) {
       if (mounted) {

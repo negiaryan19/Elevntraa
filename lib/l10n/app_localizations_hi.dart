@@ -559,7 +559,36 @@ class AppLocalizationsHi extends AppLocalizations {
   String get authPasswordRequired => 'अपना पासवर्ड डालें';
 
   @override
-  String get authPasswordRules => 'कम से कम 8 अक्षर';
+  String get authPasswordRules =>
+      'कम से कम 8 अक्षर, जिनमें एक बड़ा और एक छोटा अक्षर, एक अंक और एक चिह्न हो';
+
+  @override
+  String get authPasswordTooShort => 'कम से कम 8 अक्षर रखें';
+
+  @override
+  String get authPasswordTooLong => 'बहुत लंबा है — थोड़ा छोटा करें';
+
+  @override
+  String get authPasswordNeedsLowercase => 'एक छोटा अक्षर जोड़ें (a–z)';
+
+  @override
+  String get authPasswordNeedsUppercase => 'एक बड़ा अक्षर जोड़ें (A–Z)';
+
+  @override
+  String get authPasswordNeedsDigit => 'एक अंक जोड़ें (0–9)';
+
+  @override
+  String get authPasswordNeedsSymbol => 'एक चिह्न जोड़ें, जैसे ! या @';
+
+  @override
+  String authEmailDidYouMean(String suggestion) {
+    return 'क्या आपका मतलब $suggestion था?';
+  }
+
+  @override
+  String authEmailKeepAsTyped(String button) {
+    return 'जैसा लिखा है वैसा ही रखने के लिए “$button” फिर से दबाएँ।';
+  }
 
   @override
   String get authPasswordsDoNotMatch => 'पासवर्ड मेल नहीं खाते';
@@ -692,6 +721,10 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get authErrorRateLimited =>
       'बहुत ज़्यादा कोशिशें। एक मिनट रुककर दोबारा कोशिश करें।';
+
+  @override
+  String get authErrorEmailSendFailed =>
+      'अभी ईमेल नहीं भेजा जा सका। एक मिनट बाद दोबारा कोशिश करें।';
 
   @override
   String get authErrorNetwork =>
@@ -940,6 +973,101 @@ class AppLocalizationsHi extends AppLocalizations {
   String signGateMedicineNameBody(int n) {
     return 'दवा $n का कोई नाम नहीं है। साइन करने से पहले नाम डालें या उसे हटाएँ।';
   }
+
+  @override
+  String pdfDocumentTitle(String name) {
+    return 'प्रिस्क्रिप्शन — $name';
+  }
+
+  @override
+  String get pdfPatient => 'मरीज़';
+
+  @override
+  String get pdfDate => 'दिनांक';
+
+  @override
+  String get pdfAge => 'उम्र';
+
+  @override
+  String get pdfGender => 'लिंग';
+
+  @override
+  String get pdfPhone => 'फ़ोन';
+
+  @override
+  String pdfAgeYears(int age) {
+    return '$age वर्ष';
+  }
+
+  @override
+  String get pdfRegNo => 'पंजीकरण सं.';
+
+  @override
+  String get pdfDiagnosis => 'निदान';
+
+  @override
+  String get pdfNoMedicines => 'कोई दवा नहीं लिखी गई।';
+
+  @override
+  String get pdfColMedicine => 'दवा';
+
+  @override
+  String get pdfColDosage => 'खुराक';
+
+  @override
+  String get pdfColFrequency => 'कितनी बार';
+
+  @override
+  String get pdfColDuration => 'अवधि';
+
+  @override
+  String get pdfColTiming => 'समय';
+
+  @override
+  String get pdfInvestigations => 'सुझाई गई जाँचें';
+
+  @override
+  String get pdfInstructions => 'निर्देश';
+
+  @override
+  String get pdfAdvice => 'सलाह';
+
+  @override
+  String get pdfFollowUp => 'फ़ॉलो-अप';
+
+  @override
+  String pdfFollowUpAfter(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days दिन बाद',
+      one: '1 दिन बाद',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pdfNextVisit => 'अगली मुलाक़ात';
+
+  @override
+  String get pdfPreviousReports => 'पिछली रिपोर्टें';
+
+  @override
+  String pdfReportsAttachedFor(String name) {
+    return '$name के लिए संलग्न';
+  }
+
+  @override
+  String pdfReportCaption(int number) {
+    return 'रिपोर्ट $number';
+  }
+
+  @override
+  String get pdfComputerGenerated => 'यह कंप्यूटर से बना प्रिस्क्रिप्शन है';
+
+  @override
+  String get pdfFooterTagline =>
+      'Rxvarta AI द्वारा तैयार  |  सुरक्षित  |  निजी';
 
   @override
   String get pdfAwaitingSignature => 'हस्ताक्षर बाकी';
@@ -1473,6 +1601,30 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get noDiagnosisTapPencil =>
       'कोई निदान नहीं — जोड़ने के लिए पेंसिल दबाएँ';
+
+  @override
+  String get investigationsTitle => 'जाँचें';
+
+  @override
+  String get noInvestigationsTapPencil =>
+      'कोई जाँच नहीं — जोड़ने के लिए पेंसिल दबाएँ';
+
+  @override
+  String get investigationsHint => 'कराई जाने वाली जाँचें — प्रति पंक्ति एक';
+
+  @override
+  String get doctorNotesTitle => 'डॉक्टर के नोट्स';
+
+  @override
+  String get doctorNotesNotPrinted =>
+      'आपके रिकॉर्ड के लिए; प्रिस्क्रिप्शन पर नहीं छपते';
+
+  @override
+  String get noDoctorNotesTapPencil =>
+      'कोई नोट नहीं — जोड़ने के लिए पेंसिल दबाएँ';
+
+  @override
+  String get doctorNotesHint => 'इस परामर्श पर आपके अपने नोट्स';
 
   @override
   String get adviceTitle => 'सलाह';
