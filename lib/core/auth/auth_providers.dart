@@ -88,6 +88,10 @@ enum AuthErrorKind {
   otpExpired,
   otpInvalid,
   rateLimited,
+
+  /// The server could not hand the code e-mail (sign-up, reset) to its mail
+  /// relay. Nothing the doctor typed is wrong; a later retry can work.
+  emailSendFailed,
   network,
   signupDisabled,
   validation,
@@ -132,6 +136,11 @@ AuthErrorKind authErrorKind(Object error) {
         return AuthErrorKind.validation;
     }
     final msg = e.message.toLowerCase();
+    // GoTrue answers HTTP 500 "Error sending confirmation / recovery / magic
+    // link / email change email" when its SMTP relay refuses the message
+    // (e.g. Brevo "Unauthorized IP address"). gotrue-dart puts the raw JSON
+    // body in the message and sets no code, so the text is all there is.
+    if (msg.contains('error sending')) return AuthErrorKind.emailSendFailed;
     if (msg.contains('token has expired') || msg.contains('expired')) {
       return AuthErrorKind.otpExpired;
     }

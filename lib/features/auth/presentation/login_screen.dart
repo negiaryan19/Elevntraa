@@ -77,6 +77,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  /// The failure to show, plus "Did you mean …?" when the address that was
+  /// rejected looks like a typo of a common provider. A mistyped domain is
+  /// the usual reason a doctor's own e-mail is "not recognised", and saying
+  /// so here costs nothing — unlike blocking the form, which would strand
+  /// anyone whose real address our rules happen to dislike.
+  String _errorMessage(AppLocalizations t) {
+    final message = authErrorMessage(t, _error!);
+    if (authErrorKind(_error!) != AuthErrorKind.invalidCredentials) {
+      return message;
+    }
+    final hint = emailTypoHint(t, _emailCtrl.text);
+    return hint == null ? message : '$message $hint';
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
@@ -114,8 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.username],
                 enabled: !_busy,
-                validator: (v) =>
-                    isValidEmail(v ?? '') ? null : t.authEmailInvalid,
+                validator: (v) => existingEmailFieldError(t, v),
               ),
               const SizedBox(height: AppSpacing.md),
               AuthTextField(
@@ -146,7 +159,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               if (_error != null) ...[
                 const SizedBox(height: AppSpacing.md),
                 AuthErrorBanner(
-                  message: authErrorMessage(t, _error!),
+                  message: _errorMessage(t),
                   details: authErrorDetails(_error!),
                 ),
               ],

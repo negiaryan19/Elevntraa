@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
+import 'core/auth/secure_session_storage.dart';
 import 'core/config/app_config.dart';
 import 'core/prefs/shared_preferences_provider.dart';
 import 'core/utils/app_paths.dart';
@@ -20,7 +21,7 @@ Future<void> main() async {
   // Preload preferences once so locale/theme resolve on the first frame.
   final prefs = await SharedPreferences.getInstance();
 
-  await _initBackend();
+  await _initBackend(prefs);
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -39,7 +40,11 @@ Future<void> main() async {
 /// key (`--dart-define-from-file=config/app_config.json`). Nothing is read
 /// from a bundled `.env` and nobody is signed in automatically: the router
 /// sends a doctor without a session to Login (roadmap items 1, 8).
-Future<void> _initBackend() async {
+///
+/// The session (the tokens that keep a doctor signed in) is kept encrypted in
+/// the Android Keystore / iOS Keychain, not in plain SharedPreferences; see
+/// [SecureSessionStorage].
+Future<void> _initBackend(SharedPreferences prefs) async {
   if (!AppConfig.hasBackend) {
     debugPrint(
       '[config] SUPABASE_URL / SUPABASE_ANON_KEY are not set — sign-in is '
@@ -53,6 +58,12 @@ Future<void> _initBackend() async {
   await Supabase.initialize(
     url: AppConfig.supabaseUrl!,
     publishableKey: AppConfig.supabaseAnonKey!,
+    authOptions: FlutterAuthClientOptions(
+      localStorage: SecureSessionStorage.forThisDevice(
+        prefs: prefs,
+        supabaseUrl: AppConfig.supabaseUrl!,
+      ),
+    ),
   );
 
   // supabase_flutter restores the persisted session asynchronously after

@@ -93,9 +93,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   obscured: _obscure,
                   onToggle: () => setState(() => _obscure = !_obscure),
                 ),
-                validator: (v) => (v ?? '').length < kMinPasswordLength
-                    ? t.authPasswordRules
-                    : null,
+                validator: (v) => newPasswordFieldError(t, v),
               ),
               const SizedBox(height: AppSpacing.md),
               AuthTextField(

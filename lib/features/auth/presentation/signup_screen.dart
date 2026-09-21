@@ -29,6 +29,25 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _busy = false;
   Object? _error;
 
+  /// The address a "Did you mean …?" warning was last shown for. The first
+  /// Create account with a likely typo (`doctor@gmial.com`) stops and shows
+  /// the suggestion; a second one with the same address goes ahead, so a
+  /// doctor whose address really looks like that is never stuck.
+  String? _typoWarnedFor;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailCtrl.addListener(_dropStaleTypoWarning);
+  }
+
+  /// The warning is about one exact address: editing the field retires it.
+  void _dropStaleTypoWarning() {
+    if (_typoWarnedFor != null && _typoWarnedFor != _emailCtrl.text.trim()) {
+      setState(() => _typoWarnedFor = null);
+    }
+  }
+
   @override
   void dispose() {
     _emailCtrl.dispose();
@@ -42,11 +61,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
+    final email = _emailCtrl.text.trim();
+    // A well-formed typo passes validation, and the code e-mail would then go
+    // to a domain that cannot receive it. Say so once before sending.
+    if (suggestEmailFix(email) != null && _typoWarnedFor != email) {
+      setState(() {
+        _typoWarnedFor = email;
+        _error = null;
+      });
+      return;
+    }
+
     setState(() {
       _busy = true;
       _error = null;
     });
-    final email = _emailCtrl.text.trim();
     try {
       final outcome = await ref
           .read(authControllerProvider)
@@ -78,6 +107,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final userExists =
         error != null &&
         authErrorKind(error) == AuthErrorKind.userAlreadyExists;
+    final typoFor = _typoWarnedFor;
+    final suggestion = typoFor == null ? null : suggestEmailFix(typoFor);
 
     return AuthScaffold(
       title: t.authSignUpTitle,
@@ -104,8 +135,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.username],
                 enabled: !_busy,
-                validator: (v) =>
-                    isValidEmail(v ?? '') ? null : t.authEmailInvalid,
+                validator: (v) => emailFieldError(t, v),
               ),
               const SizedBox(height: AppSpacing.md),
               AuthTextField(
@@ -122,9 +152,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   obscured: _obscure,
                   onToggle: () => setState(() => _obscure = !_obscure),
                 ),
-                validator: (v) => (v ?? '').length < kMinPasswordLength
-                    ? t.authPasswordRules
-                    : null,
+                validator: (v) => newPasswordFieldError(t, v),
               ),
               const SizedBox(height: AppSpacing.md),
               AuthTextField(
@@ -140,6 +168,23 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     v != _passwordCtrl.text ? t.authPasswordsDoNotMatch : null,
                 onSubmitted: (_) => _submit(),
               ),
+              if (suggestion != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                AuthErrorBanner(
+                  message:
+                      '${t.authEmailDidYouMean(suggestion)} '
+                      '${t.authEmailKeepAsTyped(t.authCreateAccount)}',
+                  action: AuthLink(
+                    label: suggestion,
+                    onTap: () {
+                      // Replacing the text retires the warning through the
+                      // controller listener; the doctor taps Create account
+                      // again to go ahead with the corrected address.
+                      _emailCtrl.text = suggestion;
+                    },
+                  ),
+                ),
+              ],
               if (error != null) ...[
                 const SizedBox(height: AppSpacing.md),
                 AuthErrorBanner(

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auto Backup on Android 11 and older (data_extraction_rules.xml covers
+     Android 12+). Keeps flutter_secure_storage's encrypted session and its
+     wrapped key out of the backup: the Keystore key that unwraps them never
+     leaves this phone, so a restored copy could only fail to decrypt. -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="FlutterSecureStorage.xml" />
+    <exclude domain="sharedpref" path="FlutterSecureKeyStorage.xml" />
+</full-backup-content>

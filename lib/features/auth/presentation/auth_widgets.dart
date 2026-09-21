@@ -7,14 +7,70 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../l10n/app_localizations.dart';
+import '../auth_validation.dart';
 
-/// Minimum password length enforced client-side (matches the Supabase
-/// project setting so the doctor is told before a round-trip).
-const int kMinPasswordLength = 8;
+export '../auth_validation.dart'
+    show isValidEmail, looksLikeEmail, suggestEmailFix;
 
-final RegExp _emailRe = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
+/// The e-mail error for a NEW address (sign-up), or null when it is
+/// acceptable.
+///
+/// Only a malformed address gets an error here, with "Did you mean …?"
+/// appended when it is also near a common provider (`doctor@gmailcom`). A
+/// well-formed typo such as `doctor@gmial.com` passes: blocking it would
+/// strand the rare doctor whose address really is like that. The sign-up
+/// screen warns about those once instead, before the OTP e-mail is sent to
+/// a domain that cannot receive it.
+String? emailFieldError(AppLocalizations t, String? value) {
+  final text = value ?? '';
+  if (isValidEmail(text)) return null;
+  final suggestion = suggestEmailFix(text);
+  if (suggestion == null) return t.authEmailInvalid;
+  return '${t.authEmailInvalid}. ${t.authEmailDidYouMean(suggestion)}';
+}
 
-bool isValidEmail(String value) => _emailRe.hasMatch(value.trim());
+/// The e-mail error for an EXISTING account (log in, forgot password), or
+/// null when the field may be submitted.
+///
+/// Deliberately permissive: the address was accepted when the account was
+/// created, so the form must not be the thing that refuses it. Only input
+/// that cannot be an e-mail address at all is blocked. A near-miss of a
+/// common provider is surfaced after the attempt fails instead — see
+/// [emailTypoHint].
+String? existingEmailFieldError(AppLocalizations t, String? value) =>
+    looksLikeEmail(value ?? '') ? null : t.authEmailInvalid;
+
+/// "Did you mean …?" for an address that failed to sign in, or null.
+///
+/// Shown next to the error the server returned, where it explains a failure
+/// that has already happened rather than blocking the form.
+String? emailTypoHint(AppLocalizations t, String email) {
+  final suggestion = suggestEmailFix(email);
+  return suggestion == null ? null : t.authEmailDidYouMean(suggestion);
+}
+
+/// The new-password error for [value], or null when it meets every rule the
+/// Supabase project enforces (`lower_upper_letters_digits_symbols`).
+///
+/// Reports one rule at a time, in [PasswordRule] order, so the doctor is
+/// told the next thing to fix instead of the whole list at once. Sign-in does
+/// NOT use this: accounts made before the policy may have weaker passwords.
+String? newPasswordFieldError(AppLocalizations t, String? value) {
+  final issues = passwordIssues(value ?? '');
+  if (issues.isEmpty) return null;
+  for (final rule in PasswordRule.values) {
+    if (!issues.contains(rule)) continue;
+    return switch (rule) {
+      PasswordRule.minLength => t.authPasswordTooShort,
+      PasswordRule.maxLength => t.authPasswordTooLong,
+      PasswordRule.lowercase => t.authPasswordNeedsLowercase,
+      PasswordRule.uppercase => t.authPasswordNeedsUppercase,
+      PasswordRule.digit => t.authPasswordNeedsDigit,
+      PasswordRule.symbol => t.authPasswordNeedsSymbol,
+    };
+  }
+  return t.authPasswordRules;
+}
 
 /// Localized headline for any auth error. Raw exception text is never shown
 /// as the message; [authErrorDetails] exposes it only for unknown errors.
@@ -27,6 +83,7 @@ String authErrorMessage(AppLocalizations t, Object error) {
     AuthErrorKind.otpExpired => t.authErrorOtpExpired,
     AuthErrorKind.otpInvalid => t.authErrorOtpInvalid,
     AuthErrorKind.rateLimited => t.authErrorRateLimited,
+    AuthErrorKind.emailSendFailed => t.authErrorEmailSendFailed,
     AuthErrorKind.network => t.authErrorNetwork,
     AuthErrorKind.signupDisabled => t.authErrorSignupDisabled,
     AuthErrorKind.validation => t.authErrorValidation,
@@ -125,6 +182,11 @@ class AuthTextField extends StatelessWidget {
             hintText: hint,
             helperText: helper,
             helperMaxLines: 2,
+            // Flutter clips errorText to one line with an ellipsis unless
+            // told otherwise. The e-mail error ends with the suggested
+            // address and the translated password rules run long, so the
+            // part that got cut off was the part the doctor needed.
+            errorMaxLines: 3,
             hintStyle: AppTypography.bodyMedium.copyWith(
               color: scheme.onSurfaceVariant,
             ),

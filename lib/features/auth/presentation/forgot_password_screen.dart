@@ -81,8 +81,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               autofillHints: const [AutofillHints.username],
               enabled: !_busy,
               autofocus: true,
-              validator: (v) =>
-                  isValidEmail(v ?? '') ? null : t.authEmailInvalid,
+              validator: (v) => existingEmailFieldError(t, v),
               onSubmitted: (_) => _submit(),
             ),
             if (_error != null) ...[
