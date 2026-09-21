@@ -10,6 +10,7 @@ import {
   transcribeBatchSync,
   transcribeRest,
 } from "../_shared/pipeline.ts";
+import { isOwnStoragePath } from "../_shared/storage_path.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -71,8 +72,13 @@ serve(async (req: Request): Promise<Response> => {
       audioDurationSeconds: number | null;
       previousTranscript?: string | null;
     };
-    audioPath = json.audioPath;
-    languageCode = json.languageCode ?? "unknown";
+    // Runtime-guard the type, as for previousTranscript below: a non-string
+    // would survive the `as` cast and reach .split() further down, throwing a
+    // TypeError out of the handler — a bare 500 with no CORS headers.
+    audioPath = typeof json.audioPath === "string" ? json.audioPath : "";
+    languageCode = typeof json.languageCode === "string"
+      ? json.languageCode
+      : "unknown";
     audioDurationSeconds = json.audioDurationSeconds ?? null;
     // Runtime-guard the type: the client may send a non-string (or omit it).
     // Anything that isn't a non-empty string is treated as "no prior segment"
@@ -88,6 +94,19 @@ serve(async (req: Request): Promise<Response> => {
 
   if (!audioPath) {
     return corsResponse({ error: "audioPath is required" }, 400);
+  }
+
+  // The audio is downloaded below with the SERVICE ROLE key, which bypasses
+  // the bucket's per-user folder policies, so the path has to be checked
+  // here or any signed-in doctor could name another doctor's object and have
+  // it transcribed back to them (and deleted afterwards, as this function
+  // removes the audio when it is done). The client always uploads to
+  // `<uid>/<uuid>.<ext>` — see PipelineService.
+  if (!isOwnStoragePath(doctorId, audioPath)) {
+    console.warn(
+      `[process-consultation] doctor=${doctorId} rejected audioPath outside own folder`,
+    );
+    return corsResponse({ error: "Forbidden" }, 403);
   }
 
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
