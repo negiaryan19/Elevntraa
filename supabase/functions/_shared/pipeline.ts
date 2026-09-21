@@ -79,6 +79,77 @@ export function decideRouting(
   return "batch_async";
 }
 
+// ── Retrying transport ────────────────────────────────────────────────────
+
+/// Statuses worth another attempt: rate limiting, overload and gateway
+/// hiccups. Everything else (400 bad audio, 401/403 bad key, 404 retired
+/// model, 422) is a real answer that a retry cannot change, so it surfaces on
+/// the first response.
+const RETRY_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
+const RETRY_MAX_ATTEMPTS = 3;
+const RETRY_BACKOFF_MS = 1000;
+
+let _retryDelay: (ms: number) => Promise<void> = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Test hook: replace the backoff sleep (tests must not really wait). */
+export function setRetryDelayForTests(
+  delay: (ms: number) => Promise<void>,
+): void {
+  _retryDelay = delay;
+}
+
+/// Runs [request] up to three times, backing off 1 s then 2 s, and returns the
+/// first successful response. Used for every Sarvam and Gemini call.
+///
+/// Without it a single `503 "high demand"` from Gemini or a `504` from
+/// Sarvam's gateway fails the whole job, and the doctor loses a consultation
+/// they already recorded although nothing was wrong with it. Both were seen
+/// in production. [request] is a thunk so each attempt sends a fresh request.
+///
+/// Throws `<label> <status>: <body>` — the exact text callers threw before —
+/// or `<label> request failed: <reason>` for a network error. Logs the label,
+/// status and attempt only: never a transcript, a prompt or a prescription.
+export async function fetchWithRetry(
+  label: string,
+  request: () => Promise<Response>,
+): Promise<Response> {
+  let lastError = `${label} request failed`;
+
+  for (let attempt = 1; attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
+    const isLastAttempt = attempt === RETRY_MAX_ATTEMPTS;
+    let res: Response;
+
+    try {
+      res = await request();
+    } catch (err) {
+      // Connection reset / DNS / TLS — transient by nature.
+      lastError = `${label} request failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`;
+      if (isLastAttempt) throw new Error(lastError);
+      console.warn(
+        `[retry] ${label} network error on attempt ${attempt}/${RETRY_MAX_ATTEMPTS} — retrying`,
+      );
+      await _retryDelay(RETRY_BACKOFF_MS * 2 ** (attempt - 1));
+      continue;
+    }
+
+    if (res.ok) return res;
+
+    lastError = `${label} ${res.status}: ${await res.text()}`;
+    if (!RETRY_STATUSES.has(res.status) || isLastAttempt) {
+      throw new Error(lastError);
+    }
+    console.warn(
+      `[retry] ${label} ${res.status} on attempt ${attempt}/${RETRY_MAX_ATTEMPTS} — retrying`,
+    );
+    await _retryDelay(RETRY_BACKOFF_MS * 2 ** (attempt - 1));
+  }
+
+  throw new Error(lastError);
+}
+
 // ── Sarvam REST (< 28 s) ─────────────────────────────────────────────────
 
 export async function transcribeRest(
@@ -99,16 +170,15 @@ export async function transcribeRest(
   form.append("mode", mode);
   form.append("language_code", languageCode);
 
-  const res = await fetch(`${SARVAM_BASE}/speech-to-text`, {
-    method: "POST",
-    headers: { "API-Subscription-Key": key, Accept: "application/json" },
-    body: form,
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam REST ${res.status}: ${body}`);
-  }
+  const res = await fetchWithRetry(
+    "Sarvam REST",
+    () =>
+      fetch(`${SARVAM_BASE}/speech-to-text`, {
+        method: "POST",
+        headers: { "API-Subscription-Key": key, Accept: "application/json" },
+        body: form,
+      }),
+  );
 
   const body = (await res.json()) as Record<string, unknown>;
   const transcript = body["transcript"] as string | undefined;
@@ -131,27 +201,26 @@ export async function batchInitiate(
 ): Promise<string> {
   const mode = languageCode === "unknown" ? "transcribe" : "codemix";
 
-  const res = await fetch(`${SARVAM_BASE}/speech-to-text/job/v1`, {
-    method: "POST",
-    headers: {
-      "API-Subscription-Key": key,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      job_parameters: {
-        model: "saaras:v3",
-        mode,
-        language_code: languageCode,
-        with_diarization: true,
-        num_speakers: 2,
-      },
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam batch initiate ${res.status}: ${body}`);
-  }
+  const res = await fetchWithRetry(
+    "Sarvam batch initiate",
+    () =>
+      fetch(`${SARVAM_BASE}/speech-to-text/job/v1`, {
+        method: "POST",
+        headers: {
+          "API-Subscription-Key": key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          job_parameters: {
+            model: "saaras:v3",
+            mode,
+            language_code: languageCode,
+            with_diarization: true,
+            num_speakers: 2,
+          },
+        }),
+      }),
+  );
 
   const body = (await res.json()) as Record<string, unknown>;
   const jobId = body["job_id"] as string | undefined;
@@ -164,22 +233,18 @@ export async function batchGetUploadUrl(
   jobId: string,
   filename: string,
 ): Promise<string> {
-  const res = await fetch(
-    `${SARVAM_BASE}/speech-to-text/job/v1/upload-files`,
-    {
-      method: "POST",
-      headers: {
-        "API-Subscription-Key": key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ job_id: jobId, files: [filename] }),
-    },
+  const res = await fetchWithRetry(
+    "Sarvam get upload URL",
+    () =>
+      fetch(`${SARVAM_BASE}/speech-to-text/job/v1/upload-files`, {
+        method: "POST",
+        headers: {
+          "API-Subscription-Key": key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ job_id: jobId, files: [filename] }),
+      }),
   );
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam get upload URL ${res.status}: ${body}`);
-  }
 
   const body = (await res.json()) as Record<string, unknown>;
   const urls = body["upload_urls"] as
@@ -196,59 +261,48 @@ export async function batchUploadFile(
   uploadUrl: string,
   audioBytes: Uint8Array,
 ): Promise<void> {
-  const res = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "audio/mp4",
-      "x-ms-blob-type": "BlockBlob",
-    },
-    body: audioBytes as BodyInit,
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam file upload ${res.status}: ${body}`);
-  }
+  // A PUT to a presigned blob URL is idempotent, so it is safe to repeat.
+  await fetchWithRetry("Sarvam file upload", () =>
+    fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "audio/mp4",
+        "x-ms-blob-type": "BlockBlob",
+      },
+      body: audioBytes as BodyInit,
+    }));
 }
 
 export async function batchStartJob(
   key: string,
   jobId: string,
 ): Promise<void> {
-  const res = await fetch(
-    `${SARVAM_BASE}/speech-to-text/job/v1/${jobId}/start`,
-    {
-      method: "POST",
-      headers: {
-        "API-Subscription-Key": key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}),
-    },
+  await fetchWithRetry(
+    "Sarvam start job",
+    () =>
+      fetch(`${SARVAM_BASE}/speech-to-text/job/v1/${jobId}/start`, {
+        method: "POST",
+        headers: {
+          "API-Subscription-Key": key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      }),
   );
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam start job ${res.status}: ${body}`);
-  }
 }
 
 export async function batchCheckStatus(
   key: string,
   jobId: string,
 ): Promise<BatchStatus> {
-  const res = await fetch(
-    `${SARVAM_BASE}/speech-to-text/job/v1/${jobId}/status`,
-    {
-      method: "GET",
-      headers: { "API-Subscription-Key": key },
-    },
+  const res = await fetchWithRetry(
+    "Sarvam check status",
+    () =>
+      fetch(`${SARVAM_BASE}/speech-to-text/job/v1/${jobId}/status`, {
+        method: "GET",
+        headers: { "API-Subscription-Key": key },
+      }),
   );
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam check status ${res.status}: ${body}`);
-  }
 
   const body = (await res.json()) as Record<string, unknown>;
   const state = (body["job_state"] as string | undefined) ?? "Unknown";
@@ -281,22 +335,18 @@ export async function batchGetDownloadUrl(
   jobId: string,
   outputFilename: string,
 ): Promise<string> {
-  const res = await fetch(
-    `${SARVAM_BASE}/speech-to-text/job/v1/download-files`,
-    {
-      method: "POST",
-      headers: {
-        "API-Subscription-Key": key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ job_id: jobId, files: [outputFilename] }),
-    },
+  const res = await fetchWithRetry(
+    "Sarvam get download URL",
+    () =>
+      fetch(`${SARVAM_BASE}/speech-to-text/job/v1/download-files`, {
+        method: "POST",
+        headers: {
+          "API-Subscription-Key": key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ job_id: jobId, files: [outputFilename] }),
+      }),
   );
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Sarvam get download URL ${res.status}: ${body}`);
-  }
 
   const body = (await res.json()) as Record<string, unknown>;
   const urls = body["download_urls"] as
@@ -310,10 +360,10 @@ export async function batchGetDownloadUrl(
 export async function batchDownloadTranscript(
   downloadUrl: string,
 ): Promise<string> {
-  const res = await fetch(downloadUrl);
-  if (!res.ok) {
-    throw new Error(`Failed to download Sarvam transcript: ${res.status}`);
-  }
+  const res = await fetchWithRetry(
+    "Sarvam transcript download",
+    () => fetch(downloadUrl),
+  );
 
   const raw = await res.text();
   const json = JSON.parse(raw) as Record<string, unknown>;
@@ -932,70 +982,21 @@ export function validateExtraction(
 
 // ── Gemini transport ──────────────────────────────────────────────────────
 
-/// Statuses worth a second attempt: rate limiting, model overload ("high
-/// demand"), and gateway hiccups. Everything else (401 bad key, 400 bad
-/// request, 404 retired model) is a real error that retrying cannot fix, so it
-/// still throws on the first response and surfaces fast.
-const GEMINI_RETRY_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
-const GEMINI_MAX_ATTEMPTS = 3;
-const GEMINI_BACKOFF_MS = 1000;
-
-/// POSTs to Gemini, retrying transient failures with exponential backoff.
-///
-/// Without this a single `503 "This model is currently experiencing high
-/// demand"` fails the whole pipeline job, and the doctor loses a consultation
-/// they already recorded — the audio is gone from their point of view even
-/// though nothing was actually wrong with it. Observed in practice, so the
-/// retry is not theoretical.
-///
-/// Logs status codes and attempt counts only — never the transcript, the
-/// prompt, or the extracted prescription.
+/// POSTs to Gemini through [fetchWithRetry], so a transient `503 "This model
+/// is currently experiencing high demand"` is retried instead of failing the
+/// job. A 401 (bad key), 400 (bad request) or 404 (retired model) still
+/// throws on the first response.
 async function postGemini(
   url: string,
   body: unknown,
 ): Promise<Record<string, unknown>> {
-  let lastError = "Gemini request failed";
-
-  for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt++) {
-    const isLastAttempt = attempt === GEMINI_MAX_ATTEMPTS;
-    let res: Response;
-
-    try {
-      res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    } catch (err) {
-      // Connection reset / DNS / TLS — transient by nature.
-      lastError = `Gemini request failed: ${
-        err instanceof Error ? err.message : String(err)
-      }`;
-      if (isLastAttempt) throw new Error(lastError);
-      console.warn(
-        `[extractInsight] Gemini network error on attempt ${attempt}/${GEMINI_MAX_ATTEMPTS} — retrying`,
-      );
-      await delay(GEMINI_BACKOFF_MS * 2 ** (attempt - 1));
-      continue;
-    }
-
-    if (res.ok) return (await res.json()) as Record<string, unknown>;
-
-    lastError = `Gemini ${res.status}: ${await res.text()}`;
-    if (!GEMINI_RETRY_STATUSES.has(res.status) || isLastAttempt) {
-      throw new Error(lastError);
-    }
-    console.warn(
-      `[extractInsight] Gemini ${res.status} on attempt ${attempt}/${GEMINI_MAX_ATTEMPTS} — retrying`,
-    );
-    await delay(GEMINI_BACKOFF_MS * 2 ** (attempt - 1));
-  }
-
-  throw new Error(lastError);
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  const res = await fetchWithRetry("Gemini", () =>
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }));
+  return (await res.json()) as Record<string, unknown>;
 }
 
 export async function extractInsight(
