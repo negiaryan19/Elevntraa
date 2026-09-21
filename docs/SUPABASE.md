@@ -11,7 +11,7 @@ Project ref `excmhjpttqjfyodynfza` (ap-south-1, Mumbai), Postgres 17. Dashboard:
 Objects live under `<auth uid>/...`. RLS policies on `storage.objects` let the `authenticated` role select/insert/update/delete only objects whose first folder segment (`(storage.foldername(name))[1]`) equals `auth.uid()`; `service_role` (edge functions) bypasses RLS. Policy names follow `<bucket_snake>_<select|insert|update|delete>_own`.
 | Bucket | Purpose | Size limit | MIME |
 |---|---|---|---|
-| `consultation-audio` | recordings uploaded by the app, read by `process-consultation` | 50 MiB | audio/mp4, m4a, aac, mpeg, wav |
+| `consultation-audio` | recordings uploaded by the app, read by `process-consultation` | 50 MiB | audio/mp4, audio/x-m4a, audio/aac, audio/mpeg, audio/wav |
 | `doctor-signatures` | `<uid>/signature.png`, the letterhead signature (metadata in `public.doctors`) | 2 MiB | image/png, image/jpeg |
 | `backups` | `<uid>/<timestamp>.zip` exports of the local database, restored on a new phone | 200 MiB | application/zip, application/octet-stream |
 | `brand` | **public** — `rxvarta_logo.png`, loaded by the auth e-mail templates | 1 MiB | image/png, image/svg+xml |

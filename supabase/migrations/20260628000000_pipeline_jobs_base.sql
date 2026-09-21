@@ -10,21 +10,32 @@
 -- alter does not exist. This migration supplies it, dated just ahead of them
 -- so the sequence replays cleanly from an empty database.
 --
--- It is idempotent (`if not exists` throughout), so on a project where the
--- table already exists it changes nothing. The async columns added by the
--- later migrations are deliberately NOT repeated here: those migrations are
--- `add column if not exists` and remain the place they are defined.
+-- The columns, types, nullability and defaults mirror the table as it exists
+-- on rxvarta-prod (read from information_schema on 2026-09-21), so a project
+-- built from this repo ends up with the same table production has. That
+-- includes the three *_duration_ms columns: nothing ever added them in a
+-- migration, but process-consultation and check-job-status write them, and
+-- without them every successful job's final update would fail.
+--
+-- It is idempotent (`if not exists`), so on a project where the table already
+-- exists it changes nothing. The async columns (sarvam_job_id,
+-- audio_storage_path, cached_transcript, cached_insight,
+-- cached_previous_transcript) are deliberately NOT repeated here: the later
+-- `add column if not exists` migrations remain the place they are defined.
 --
 -- RLS lives in 20260921000000_pipeline_jobs_rls_and_audio_bucket.sql.
 
 create table if not exists public.pipeline_jobs (
   id uuid primary key default gen_random_uuid(),
-  doctor_id uuid not null references auth.users (id) on delete cascade,
-  status text not null default 'processing',
+  doctor_id uuid,
+  status text not null,
+  audio_duration_seconds integer,
   language text,
-  audio_duration_seconds double precision,
+  stt_duration_ms integer,
+  extraction_duration_ms integer,
+  total_duration_ms integer,
   error_code text,
-  created_at timestamptz not null default now(),
+  created_at timestamptz default now(),
   completed_at timestamptz
 );
 
@@ -36,8 +47,3 @@ comment on column public.pipeline_jobs.status is
   'processing | success | failed.';
 comment on column public.pipeline_jobs.error_code is
   'Short failure reason when status = failed; free text, cut to 255 chars by the caller.';
-
--- The functions look jobs up by id, but check-job-status also scans by doctor
--- when reporting, and the RLS policy filters on doctor_id.
-create index if not exists pipeline_jobs_doctor_id_created_at_idx
-  on public.pipeline_jobs (doctor_id, created_at desc);
