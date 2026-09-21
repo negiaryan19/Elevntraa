@@ -182,7 +182,9 @@ enable_manual_linking = false
 minimum_password_length = 8
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
 # are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
-password_requirements = ""
+# The app's sign-up and new-password forms check the same rule before calling Supabase, so the doctor
+# sees what is missing instead of a generic "weak password" error.
+password_requirements = "lower_upper_letters_digits_symbols"
 
 # Configure passkey sign-ins.
 # [auth.passkey]
@@ -243,16 +245,39 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded e-mails. The app never uses links: every template shows the 8-digit {{ .Token }} code
+# (valid for otp_expiry = 60 minutes, which the templates state). The hosted project does not read
+# this file; `python3 scripts/supabase/apply_remote.py auth-emails` pushes these subjects and files.
+# Paths: the CLI resolves template content_path from the project root but notification
+# content_path from this supabase/ directory, hence the two different prefixes.
+[auth.email.template.confirmation]
+subject = "{{ .Token }} is your Rxvarta verification code"
+content_path = "./supabase/templates/confirmation.html"
 
-# Uncomment to customize notification email template
-# [auth.email.notification.password_changed]
-# enabled = true
-# subject = "Your password has been changed"
-# content_path = "./templates/password_changed_notification.html"
+[auth.email.template.recovery]
+subject = "{{ .Token }} is your Rxvarta password reset code"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "{{ .Token }} is your Rxvarta sign-in code"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.email_change]
+subject = "{{ .Token }} is your code to change your Rxvarta e-mail"
+content_path = "./supabase/templates/email_change.html"
+
+[auth.email.template.reauthentication]
+subject = "{{ .Token }} is your Rxvarta confirmation code"
+content_path = "./supabase/templates/reauthentication.html"
+
+[auth.email.template.invite]
+subject = "{{ .Token }} is your Rxvarta invitation code"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.notification.password_changed]
+enabled = true
+subject = "Your Rxvarta password was changed"
+content_path = "./templates/password_changed_notification.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
@@ -434,3 +459,13 @@ entrypoint = "./functions/check-job-status/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/check-job-status/*.html" ]
+
+# One-time welcome e-mail after onboarding. Same pattern as the functions above: the platform JWT
+# check is off and the function verifies the caller itself (auth.getUser with the doctor's JWT),
+# which also gives it the verified user id and e-mail address it needs. The e-mail HTML is a TS
+# module, so the bundler includes it without static_files.
+[functions.send-welcome-email]
+enabled = true
+verify_jwt = false
+import_map = "./functions/send-welcome-email/deno.json"
+entrypoint = "./functions/send-welcome-email/index.ts"

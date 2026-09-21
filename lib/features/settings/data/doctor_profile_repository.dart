@@ -199,6 +199,17 @@ class DoctorProfileRepository {
     }
   }
 
+  /// Asks the backend to send the one-time welcome e-mail.
+  ///
+  /// Safe to call more than once: the edge function claims the send with a
+  /// conditional update on `doctors.welcome_email_sent_at`, so every call
+  /// after the first is a no-op. Must run after [pushRemote], which creates
+  /// the row the function claims.
+  Future<void> requestWelcomeEmail() async {
+    if (!_hasBackend) return;
+    await _supabase.functions.invoke('send-welcome-email');
+  }
+
   Future<void> uploadSignature(Uint8List png) async {
     if (!_hasBackend) throw const AuthFailure('Backend is not configured.');
     try {
@@ -384,6 +395,16 @@ class DoctorProfileController extends AsyncNotifier<DoctorProfile> {
     try {
       await repo.pushRemote(profile);
       await repo.saveLocal(profile, dirty: false);
+      // Best-effort and deliberately not awaited: the welcome e-mail must
+      // never hold up the save or fail it. The function is idempotent, so a
+      // later save simply tries again if this call never lands.
+      if (profile.onboardingCompletedAt != null) {
+        unawaited(
+          repo.requestWelcomeEmail().catchError(
+            (Object e) => debugPrint('[profile] welcome e-mail deferred: $e'),
+          ),
+        );
+      }
       return ProfileSaveResult(profile: profile, synced: true);
     } catch (e) {
       debugPrint('[profile] push deferred: $e');

@@ -171,6 +171,7 @@ The backend processing runs on Supabase Edge Functions. Deploy them with:
 ```bash
 supabase functions deploy process-consultation
 supabase functions deploy check-job-status
+supabase functions deploy send-welcome-email
 ```
 
 ### Set secrets for Edge Functions
@@ -181,6 +182,17 @@ The Edge Functions need your API keys. Set them as secrets in Supabase:
 supabase secrets set SARVAM_API_KEY=your_sarvam_key
 supabase secrets set GEMINI_API_KEY=your_gemini_key
 ```
+
+`send-welcome-email` sends the one-time welcome e-mail through Brevo. Set these
+two as well, or skip them and the function returns "Mailer not configured"
+without affecting anything else in the app:
+
+```bash
+supabase secrets set BREVO_API_KEY=your_brevo_key
+supabase secrets set WELCOME_EMAIL_SENDER=hello@your-domain.com
+```
+
+The sender address has to be a verified sender in your Brevo account.
 
 ---
 
