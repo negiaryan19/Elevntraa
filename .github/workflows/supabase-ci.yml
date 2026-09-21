@@ -44,6 +44,10 @@ jobs:
         if: ${{ hashFiles('supabase/functions/check-job-status/index.ts') != '' }}
         run: deno check supabase/functions/check-job-status/index.ts
 
+      - name: Type-check send-welcome-email/index.ts
+        if: ${{ hashFiles('supabase/functions/send-welcome-email/index.ts') != '' }}
+        run: deno check supabase/functions/send-welcome-email/index.ts
+
       - name: Lint Supabase functions
         if: ${{ hashFiles('supabase/functions/**') != '' }}
         run: deno lint supabase/functions/
@@ -51,6 +55,14 @@ jobs:
       - name: Format check Supabase functions
         if: ${{ hashFiles('supabase/functions/**') != '' }}
         run: deno fmt --check supabase/functions/
+
+      # Every *_test.ts under supabase/functions: the drug matcher, the
+      # extraction contract, the audio-path ownership check and the welcome
+      # e-mail's escaping. No permission flags on purpose: the tests are pure
+      # logic, so one that reaches for the network or the disk fails loudly.
+      - name: Test Supabase functions
+        if: ${{ hashFiles('supabase/functions/**/*_test.ts') != '' }}
+        run: deno test supabase/functions/
 
       - name: Validate SQL migrations
         if: ${{ hashFiles('supabase/migrations/*.sql') != '' }}

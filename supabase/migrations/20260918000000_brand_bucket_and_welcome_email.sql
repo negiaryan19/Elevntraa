@@ -21,9 +21,10 @@
 --                                 their whole row. Without this trigger a client could
 --                                 reset the flag and make the function send again and
 --                                 again, draining the Brevo quota the sign-up and
---                                 password-reset codes share. The app's roles cannot
---                                 change the column; edge functions and the SQL
---                                 editor can (set it to null to resend by hand).
+--                                 password-reset codes share. Only service_role (edge
+--                                 functions) and postgres (the SQL editor) can change
+--                                 the column — set it to null to resend by hand. Every
+--                                 other role, including any added later, cannot.
 --
 -- How it is applied: like every migration here, as ONE query string through the
 -- Management API (python3 scripts/supabase/apply_remote.py migrate <this file>; see
@@ -58,9 +59,14 @@ language plpgsql
 set search_path = ''
 as $$
 begin
-  -- The app reaches this table as authenticated (anon has no grant). Edge
-  -- functions (service_role) and the SQL editor (postgres) may change it.
-  if current_user in ('authenticated', 'anon') then
+  -- Default-deny: name the roles that MAY change the flag, not the ones that
+  -- may not. Listing authenticated/anon instead would fail open for any
+  -- app-facing role added later.
+  --   service_role  send-welcome-email claims and releases the send
+  --   postgres      the SQL editor and the Management API, for a manual
+  --                 resend. It is NOT a superuser on hosted Supabase, so a
+  --                 rolsuper check would not let it through.
+  if current_user not in ('service_role', 'postgres') then
     new.welcome_email_sent_at := old.welcome_email_sent_at;
   end if;
   return new;
@@ -68,7 +74,7 @@ end;
 $$;
 
 comment on function public.doctors_keep_welcome_email_sent_at() is
-  'Keeps doctors.welcome_email_sent_at unchanged when the app (authenticated/anon) writes the row.';
+  'Keeps doctors.welcome_email_sent_at unchanged unless service_role or postgres writes the row.';
 
 drop trigger if exists doctors_keep_welcome_email_sent_at on public.doctors;
 create trigger doctors_keep_welcome_email_sent_at

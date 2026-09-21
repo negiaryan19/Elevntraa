@@ -5,14 +5,21 @@
 // same mail clients render both: tables for layout, inline styles only, no
 // <style> block, no web fonts, explicit bgcolor next to every background-color.
 
-const LOGO_URL =
-  "https://excmhjpttqjfyodynfza.supabase.co/storage/v1/object/public/brand/rxvarta_logo.png";
+/// Where the logo is served from: the public `brand` bucket of whichever
+/// project runs this function. Built from SUPABASE_URL rather than a pasted
+/// project ref, so a fresh project from this repo mails its own logo.
+export function brandLogoUrl(supabaseUrl: string): string {
+  return `${
+    supabaseUrl.replace(/\/+$/, "")
+  }/storage/v1/object/public/brand/rxvarta_logo.png`;
+}
 
 const SANS =
   "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
 
-/// Minimal HTML-escape for the one value that comes from user input (the
-/// doctor's own name). Without it a name containing `<` would break the markup.
+/// Minimal HTML-escape for the values interpolated from outside this file: the
+/// doctor's own name (user input — a `<` in it would break the markup) and
+/// the logo URL. `&` goes first so the entities added after it survive.
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -47,8 +54,9 @@ function step(number: string, title: string, body: string): string {
 }
 
 /// Renders the welcome e-mail. [name] is the doctor's full name; when it is
-/// blank the greeting falls back to a plain "Welcome to Rxvarta!".
-export function welcomeEmailHtml(name: string): string {
+/// blank the greeting falls back to a plain "Welcome to Rxvarta!". [logoUrl]
+/// comes from [brandLogoUrl].
+export function welcomeEmailHtml(name: string, logoUrl: string): string {
   const trimmed = name.trim();
   const greeting = trimmed === ""
     ? "Welcome to Rxvarta!"
@@ -75,7 +83,9 @@ export function welcomeEmailHtml(name: string): string {
               <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center" bgcolor="#FFFFFF" style="background-color:#FFFFFF;border-radius:14px;padding:6px;">
-                    <img src="${LOGO_URL}" width="56" height="56" alt="Rxvarta" style="display:block;width:56px;height:56px;border:0;outline:none;text-decoration:none;border-radius:10px;">
+                    <img src="${
+    escapeHtml(logoUrl)
+  }" width="56" height="56" alt="Rxvarta" style="display:block;width:56px;height:56px;border:0;outline:none;text-decoration:none;border-radius:10px;">
                   </td>
                 </tr>
               </table>

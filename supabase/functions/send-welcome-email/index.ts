@@ -17,7 +17,11 @@
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { welcomeEmailHtml, welcomeEmailText } from "./welcome_email.ts";
+import {
+  brandLogoUrl,
+  welcomeEmailHtml,
+  welcomeEmailText,
+} from "./welcome_email.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -130,13 +134,16 @@ serve(async (req: Request): Promise<Response> => {
           fullName.trim() === "" ? { email } : { email, name: fullName.trim() },
         ],
         subject: "Welcome to Rxvarta",
-        htmlContent: welcomeEmailHtml(fullName),
+        htmlContent: welcomeEmailHtml(fullName, brandLogoUrl(supabaseUrl)),
         textContent: welcomeEmailText(fullName),
       }),
     });
     ok = response.ok;
     if (!ok) {
-      failure = `${response.status} ${await response.text()}`;
+      // Brevo's error bodies are short JSON, but an upstream body is not
+      // ours to trust: cap it before it reaches the log.
+      const body = await response.text();
+      failure = `${response.status} ${body.slice(0, 500)}`;
     }
   } catch (e) {
     failure = e instanceof Error ? e.message : String(e);
