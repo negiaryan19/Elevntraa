@@ -69,7 +69,9 @@ const FREQUENCY_SYNONYMS: SynonymMap = {
 
   "three times a day": "tds",
   "thrice a day": "tds",
+  "thrice daily": "tds",
   "three times daily": "tds",
+  "3 times a day": "tds",
   "tds": "tds",
   "tid": "tds",
   "1-1-1": "tds",
@@ -86,6 +88,9 @@ const FREQUENCY_SYNONYMS: SynonymMap = {
   "hafte mein ek baar": "weekly",
 
   "as needed": "prn",
+  // The extraction prompt itself asks for this exact phrase; punctuation is
+  // stripped before lookup, so "as needed (SOS)" arrives as "as needed sos".
+  "as needed sos": "prn",
   "when required": "prn",
   "sos": "prn",
   "prn": "prn",
@@ -181,11 +186,40 @@ export function fieldsMatch(
   const ca = canonical(map, actual);
   if (ce === ca) return true;
 
-  // Absorb minor STT/formatting drift on the raw normalized strings.
-  const ne = normalize(expected);
-  const na = normalize(actual);
+  // Absorb minor STT/formatting drift on the raw normalized strings — but
+  // never in the numbers. One edit separates "5 days" from "3 days", "5 ml"
+  // from "2 ml" and "1 tablet" from "2 tablet", and this fallback used to pass
+  // all three: the wrong-number error, the one a prescription eval exists to
+  // catch, was the one it forgave. The numbers must agree exactly; only the
+  // words around them may drift ("5ml" / "5 ml", "tablet" / "tablets").
+  const ne = numberWords(normalize(expected));
+  const na = numberWords(normalize(actual));
   if (ne === na) return true;
+  if (numbersIn(ne) !== numbersIn(na)) return false;
   return levenshtein(ne, na) <= 1;
+}
+
+const NUMBER_WORDS: Record<string, string> = {
+  one: "1",
+  two: "2",
+  three: "3",
+  four: "4",
+  five: "5",
+  six: "6",
+  seven: "7",
+  eight: "8",
+  nine: "9",
+  ten: "10",
+};
+
+/** "two drops" -> "2 drops", so a spelled-out count compares as a number. */
+function numberWords(s: string): string {
+  return s.split(" ").map((w) => NUMBER_WORDS[w] ?? w).join(" ");
+}
+
+/** Every number in [s], in order: "250 mg 5 ml" -> "250,5". */
+function numbersIn(s: string): string {
+  return (s.match(/\d+(?:\.\d+)?/g) ?? []).join(",");
 }
 
 /**
@@ -199,6 +233,18 @@ export function nameMatches(
 ): boolean {
   const na = normalize(actual);
   if (na === "") return false;
+  // A strength that is present and wrong is never a match. Without this,
+  // "Dolo 500" passed for "Dolo 650" (two edits), and "Azithromycin 501" — a
+  // mis-heard "500 ek tablet" — passed through the bare alias "azithromycin".
+  // A name with NO strength still matches: the key's aliases allow that.
+  const expectedNumbers = numbersIn(normalize(candidates[0] ?? ""));
+  const actualNumbers = numbersIn(na);
+  if (
+    expectedNumbers !== "" && actualNumbers !== "" &&
+    expectedNumbers !== actualNumbers
+  ) {
+    return false;
+  }
   for (const cand of candidates) {
     const nc = normalize(cand);
     if (nc === "") continue;

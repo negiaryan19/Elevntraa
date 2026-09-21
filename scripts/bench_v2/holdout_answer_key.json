@@ -1,0 +1,180 @@
+{
+  "meta": {
+    "language": "hinglish",
+    "total_scripts": 6,
+    "categories": ["easy", "medium", "hard", "trap"],
+    "_purpose": "Held-out set. The extraction prompt was revised on 2026-09-22 after reading every failure on the 12 scripts in rxvarta_answer_key.json, so a good score there proves less than it looks. These scripts were written BEFORE any post-fix result was seen and use medicines and phrasings that appear neither in that key nor in the prompt's own examples. Do not tune the prompt against them: add new held-out scripts instead. Clinical content drafted by an AI assistant; to be confirmed by a clinician."
+  },
+  "scripts": [
+    {
+      "id": "holdout_01",
+      "category": "easy",
+      "_tests": "strength + unit count on a brand; '150 ek tablet' can be heard as '151 tablet'",
+      "text": "PATIENT: Doctor, pet mein jalan aur khatti dakaar aa rahi hai. DOCTOR: Kab se? PATIENT: Teen chaar din se. DOCTOR: Acidity hai. Rantac 150 ek tablet din mein do baar khane se pehle, saat din tak. Mirch masala band karo.",
+      "expected": {
+        "medications": [
+          {
+            "name": "Rantac 150",
+            "accept_name": [
+              "rantac 150",
+              "rantac",
+              "ranitidine 150",
+              "ranitidine"
+            ],
+            "dosage": "1 tablet",
+            "frequency": "twice a day",
+            "duration": "7 days",
+            "timing": "Before food"
+          }
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "holdout_02",
+      "category": "medium",
+      "_tests": "half tablet and two tablets: a unit count that is not 1 must never be lost to the strength",
+      "text": "PATIENT: Doctor, BP ki dawai se chakkar aate hain aur khane ke baad gas banti hai. DOCTOR: BP thoda low ja raha hai. Atenolol 50 ab aadhi goli subah lena, poori nahi. Gas ke liye Digene do tablet khane ke baad din mein teen baar, paanch din. Do hafte baad BP check karwana.",
+      "expected": {
+        "medications": [
+          {
+            "name": "Atenolol 50",
+            "accept_name": ["atenolol 50", "atenolol"],
+            "dosage": "half tablet",
+            "frequency": "once daily",
+            "duration": "",
+            "timing": ""
+          },
+          {
+            "name": "Digene",
+            "accept_name": ["digene"],
+            "dosage": "2 tablets",
+            "frequency": "three times a day",
+            "duration": "5 days",
+            "timing": "After food"
+          }
+        ],
+        "followUpDays": 14,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "holdout_03",
+      "category": "medium",
+      "_tests": "liquid volume and drops as the amount per dose",
+      "text": "PATIENT: Doctor, bachche ko sardi khaansi hai, naak band rehti hai. DOCTOR: Bukhar hai? PATIENT: Nahi. DOCTOR: Cheston cold syrup paanch ml din mein teen baar, teen din. Aur Nasivion drops do boond dono naak mein din mein do baar. Bhaap dilao.",
+      "expected": {
+        "medications": [
+          {
+            "name": "Cheston cold syrup",
+            "accept_name": ["cheston cold syrup", "cheston cold", "cheston"],
+            "dosage": "5 ml",
+            "frequency": "three times a day",
+            "duration": "3 days",
+            "timing": ""
+          },
+          {
+            "name": "Nasivion drops",
+            "accept_name": [
+              "nasivion drops",
+              "nasivion",
+              "nasivion nasal drops"
+            ],
+            "dosage": "2 drops",
+            "frequency": "twice a day",
+            "duration": "",
+            "timing": ""
+          }
+        ],
+        "followUpDays": null,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "holdout_04",
+      "category": "hard",
+      "_tests": "a strength is spoken but NO amount per dose: dosage must stay empty (no assumed '1 tablet'); a cream has no dosage; a conditional return that names a timeframe",
+      "text": "PATIENT: Doctor, cholesterol badha hua aaya hai report mein, aur pair pe daad jaisa ho gaya hai. DOCTOR: Atorva 10 raat ko sone se pehle, ek mahine tak. Pair pe Clotrimazole cream din mein do baar lagao, do hafte. Tel ghee kam karo. Chaar din mein daad kam na ho to dikha dena.",
+      "expected": {
+        "medications": [
+          {
+            "name": "Atorva 10",
+            "accept_name": [
+              "atorva 10",
+              "atorva",
+              "atorvastatin 10",
+              "atorvastatin"
+            ],
+            "dosage": "",
+            "frequency": "once daily",
+            "duration": "1 month",
+            "timing": "Before bed"
+          },
+          {
+            "name": "Clotrimazole cream",
+            "accept_name": ["clotrimazole cream", "clotrimazole"],
+            "dosage": "",
+            "frequency": "twice a day",
+            "duration": "2 weeks",
+            "timing": ""
+          }
+        ],
+        "followUpDays": 4,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "holdout_05",
+      "category": "hard",
+      "_tests": "a generic with its strength in mg plus a capsule count; a sachet",
+      "text": "PATIENT: Doctor, peshab mein jalan ho rahi hai aur baar baar jaana padta hai. DOCTOR: Urine infection lag raha hai. Nitrofurantoin sau mg ek capsule din mein do baar khane ke baad, paanch din. Cital ek sachet ek glass paani mein din mein teen baar. Paani khoob piyo. Teen din baad urine test karwa ke dikhana.",
+      "expected": {
+        "medications": [
+          {
+            "name": "Nitrofurantoin 100 mg",
+            "accept_name": [
+              "nitrofurantoin 100 mg",
+              "nitrofurantoin 100mg",
+              "nitrofurantoin 100",
+              "nitrofurantoin"
+            ],
+            "dosage": "1 capsule",
+            "frequency": "twice a day",
+            "duration": "5 days",
+            "timing": "After food"
+          },
+          {
+            "name": "Cital",
+            "accept_name": ["cital", "cital sachet"],
+            "dosage": "1 sachet",
+            "frequency": "three times a day",
+            "duration": "",
+            "timing": ""
+          }
+        ],
+        "followUpDays": 3,
+        "icdConfidence_allowed": ["high", "medium", null]
+      }
+    },
+    {
+      "id": "holdout_06",
+      "category": "trap",
+      "_trap_purpose": "Advice only, no medicine. The app must not invent one.",
+      "text": "PATIENT: Doctor, aankhon mein thakaan rehti hai, computer pe kaam zyada hai. DOCTOR: Number check karwaya? PATIENT: Pichhle saal karwaya tha, theek tha. DOCTOR: Ye screen ki wajah se hai, dawai ki zaroorat nahi. Har bees minute mein screen se nazar hatao, aankhon pe thande paani ke chheente maro. Aaram na mile to dikhana.",
+      "expected": {
+        "medications": [],
+        "assert_medications_empty": true,
+        "followUpDays": null,
+        "assert_icd_is_null": true
+      }
+    }
+  ],
+  "grading_rules": {
+    "medicine_name": "case-insensitive; match against name + accept_name array; fuzzy allowed (Levenshtein <= 2) to absorb STT spelling drift",
+    "dosage_frequency_duration_timing": "normalize before compare: lowercase, strip punctuation, map synonyms. Count as correct if normalized strings match.",
+    "followUpDays": "exact integer match; null must match null",
+    "trap_assertions": "assert_medications_empty and assert_icd_is_null are PASS only if app returns empty/null.",
+    "per_field_score": "report accuracy separately for: medicine_name, dosage, frequency, duration, timing, followUp, icd, trap_safety"
+  }
+}

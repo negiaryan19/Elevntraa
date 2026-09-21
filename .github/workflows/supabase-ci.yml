@@ -6,6 +6,8 @@ on:
     paths:
       - "supabase/**"
       - "scripts/ci/**"
+      # The eval grader decides what counts as a correct extraction.
+      - "scripts/bench_v2/**"
       # The Flutter-side copy of the drug dictionary — kept in sync with the
       # Supabase copy by check_drug_dict_sync.sh below.
       - "assets/data/drug_dictionary.json"
@@ -63,6 +65,12 @@ jobs:
       - name: Test Supabase functions
         if: ${{ hashFiles('supabase/functions/**/*_test.ts') != '' }}
         run: deno test supabase/functions/
+
+      # A lenient grader hides the errors the eval exists to find: these pin the
+      # rule that spelling may drift but a number may not.
+      - name: Test the eval grader
+        if: ${{ hashFiles('scripts/bench_v2/lib/*_test.ts') != '' }}
+        run: deno test scripts/bench_v2/lib/
 
       - name: Validate SQL migrations
         if: ${{ hashFiles('supabase/migrations/*.sql') != '' }}
