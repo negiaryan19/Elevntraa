@@ -1142,6 +1142,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patientDetails => 'Patient Details';
 
   @override
+  String get editPatientDetails => 'Edit patient details';
+
+  @override
   String get enterBasicInfo => 'Enter basic patient information';
 
   @override
@@ -1336,6 +1339,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get offlineNotice =>
       'No internet connection. Recording needs internet to transcribe and process the consultation.';
+
+  @override
+  String get offlineWillQueue =>
+      'You\'re offline. The recording will be saved on this phone and processed when the internet is back.';
+
+  @override
+  String get consultationQueued =>
+      'Saved on this phone. It will be processed when the internet is back.';
+
+  @override
+  String get processLater => 'Process later';
+
+  @override
+  String get pendingTitle => 'Waiting to be processed';
+
+  @override
+  String get pendingQueued => 'Waiting for internet';
+
+  @override
+  String get pendingProcessing => 'Processing…';
+
+  @override
+  String get pendingReady => 'Ready to review';
+
+  @override
+  String get pendingFailed => 'Could not be processed';
+
+  @override
+  String get pendingDismiss => 'Dismiss';
 
   @override
   String get checkingConnectionRetry =>

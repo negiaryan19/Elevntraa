@@ -19,6 +19,12 @@ String failureText(AppLocalizations t, Object error) {
     FileSystemException() => FailureCode.storage,
     _ => FailureCode.unknown,
   };
+  return failureCodeText(t, code);
+}
+
+/// The same sentence for a [FailureCode] that was stored rather than thrown
+/// (a queued consultation remembers why it failed by code name).
+String failureCodeText(AppLocalizations t, FailureCode code) {
   return switch (code) {
     FailureCode.network => t.errorOffline,
     FailureCode.auth => t.errorSessionExpired,

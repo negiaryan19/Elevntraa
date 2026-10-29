@@ -66,7 +66,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get securityFooter =>
-      'સુરક્ષિત - HIPAA સુસંગત - એન્ડ-ટુ-એન્ડ એન્ક્રિપ્ટેડ';
+      'મોકલતી વખતે એન્ક્રિપ્ટેડ - ભારતમાં હોસ્ટ - તમારા રેકોર્ડ તમારા નિયંત્રણમાં';
 
   @override
   String get male => 'પુરુષ';
@@ -1141,6 +1141,9 @@ class AppLocalizationsGu extends AppLocalizations {
   String get patientDetails => 'દર્દીની વિગતો';
 
   @override
+  String get editPatientDetails => 'દર્દીની વિગતો સંપાદિત કરો';
+
+  @override
   String get enterBasicInfo => 'દર્દીની મૂળભૂત માહિતી દાખલ કરો';
 
   @override
@@ -1334,6 +1337,35 @@ class AppLocalizationsGu extends AppLocalizations {
   @override
   String get offlineNotice =>
       'ઇન્ટરનેટ કનેક્શન નથી. પરામર્શ ટ્રાન્સક્રાઇબ અને પ્રોસેસ કરવા ઇન્ટરનેટ જરૂરી છે.';
+
+  @override
+  String get offlineWillQueue =>
+      'તમે ઑફલાઇન છો. રેકોર્ડિંગ આ ફોન પર સેવ રહેશે અને ઇન્ટરનેટ આવે ત્યારે પ્રોસેસ થશે.';
+
+  @override
+  String get consultationQueued =>
+      'આ ફોન પર સેવ થયું. ઇન્ટરનેટ આવે ત્યારે પ્રોસેસ થશે.';
+
+  @override
+  String get processLater => 'પછી પ્રોસેસ કરો';
+
+  @override
+  String get pendingTitle => 'પ્રોસેસ થવાનું બાકી';
+
+  @override
+  String get pendingQueued => 'ઇન્ટરનેટની રાહ';
+
+  @override
+  String get pendingProcessing => 'પ્રોસેસ થઈ રહ્યું છે…';
+
+  @override
+  String get pendingReady => 'સમીક્ષા માટે તૈયાર';
+
+  @override
+  String get pendingFailed => 'પ્રોસેસ થઈ શક્યું નહીં';
+
+  @override
+  String get pendingDismiss => 'દૂર કરો';
 
   @override
   String get checkingConnectionRetry =>

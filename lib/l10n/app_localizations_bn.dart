@@ -66,7 +66,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get securityFooter =>
-      'সুরক্ষিত - HIPAA সম্মত - এন্ড-টু-এন্ড এনক্রিপ্টেড';
+      'পাঠানোর সময় এনক্রিপ্টেড - ভারতে হোস্ট করা - আপনার রেকর্ড আপনার নিয়ন্ত্রণে';
 
   @override
   String get male => 'পুরুষ';
@@ -1144,6 +1144,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get patientDetails => 'রোগীর বিবরণ';
 
   @override
+  String get editPatientDetails => 'রোগীর বিবরণ সম্পাদনা';
+
+  @override
   String get enterBasicInfo => 'রোগীর মৌলিক তথ্য দিন';
 
   @override
@@ -1338,6 +1341,35 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get offlineNotice =>
       'ইন্টারনেট সংযোগ নেই। পরামর্শ প্রতিলিপি ও প্রক্রিয়া করতে ইন্টারনেট প্রয়োজন।';
+
+  @override
+  String get offlineWillQueue =>
+      'আপনি অফলাইনে আছেন। রেকর্ডিং এই ফোনে সেভ থাকবে এবং ইন্টারনেট ফিরলে প্রসেস হবে।';
+
+  @override
+  String get consultationQueued =>
+      'এই ফোনে সেভ হয়েছে। ইন্টারনেট ফিরলে প্রসেস হবে।';
+
+  @override
+  String get processLater => 'পরে প্রসেস করুন';
+
+  @override
+  String get pendingTitle => 'প্রসেস হওয়ার অপেক্ষায়';
+
+  @override
+  String get pendingQueued => 'ইন্টারনেটের অপেক্ষায়';
+
+  @override
+  String get pendingProcessing => 'প্রসেস হচ্ছে…';
+
+  @override
+  String get pendingReady => 'পর্যালোচনার জন্য প্রস্তুত';
+
+  @override
+  String get pendingFailed => 'প্রসেস করা যায়নি';
+
+  @override
+  String get pendingDismiss => 'সরান';
 
   @override
   String get checkingConnectionRetry =>

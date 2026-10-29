@@ -39,6 +39,17 @@ class VisitRepository {
     ];
   }
 
+  /// Consultations waiting to be processed, processed-but-unopened, or
+  /// failed — oldest first.
+  Future<List<VisitRecord>> pending() async {
+    final rows = await _db.pendingVisits();
+    return rows.map(_toRecord).toList();
+  }
+
+  /// Live version of [pending].
+  Stream<List<VisitRecord>> watchPending() =>
+      _db.watchPendingVisits().map((rows) => rows.map(_toRecord).toList());
+
   Future<void> upsert(VisitRecord v) {
     return _db.upsertVisit(
       VisitsCompanion(
@@ -61,6 +72,8 @@ class VisitRepository {
         signedAt: Value(v.signedAt),
         patientConsent: Value(v.patientConsent),
         consentAt: Value(v.consentAt),
+        pendingState: Value(v.pendingState?.name),
+        pendingError: Value(v.pendingError),
       ),
     );
   }
@@ -104,6 +117,12 @@ class VisitRepository {
       signedAt: row.signedAt,
       patientConsent: row.patientConsent,
       consentAt: row.consentAt,
+      // An unknown value (a newer build's state in a restored backup) reads
+      // as "not pending" rather than crashing the list.
+      pendingState: PendingState.values
+          .where((s) => s.name == row.pendingState)
+          .firstOrNull,
+      pendingError: row.pendingError,
     );
   }
 }

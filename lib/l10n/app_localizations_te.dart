@@ -66,7 +66,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get securityFooter =>
-      'సురక్షితం - HIPAA అనుకూలం - ఎండ్-టు-ఎండ్ ఎన్‌క్రిప్టెడ్';
+      'పంపేటప్పుడు ఎన్‌క్రిప్ట్ అవుతుంది - భారతదేశంలో హోస్ట్ - మీ రికార్డులు మీ నియంత్రణలో';
 
   @override
   String get male => 'పురుషుడు';
@@ -1151,6 +1151,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get patientDetails => 'రోగి వివరాలు';
 
   @override
+  String get editPatientDetails => 'రోగి వివరాలను సవరించండి';
+
+  @override
   String get enterBasicInfo => 'రోగి ప్రాథమిక సమాచారం నమోదు చేయండి';
 
   @override
@@ -1346,6 +1349,35 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get offlineNotice =>
       'ఇంటర్నెట్ కనెక్షన్ లేదు. సంప్రదింపును లిప్యంతరీకరించి ప్రాసెస్ చేయడానికి ఇంటర్నెట్ అవసరం.';
+
+  @override
+  String get offlineWillQueue =>
+      'మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. రికార్డింగ్ ఈ ఫోన్‌లో సేవ్ అవుతుంది; ఇంటర్నెట్ వచ్చినప్పుడు ప్రాసెస్ అవుతుంది.';
+
+  @override
+  String get consultationQueued =>
+      'ఈ ఫోన్‌లో సేవ్ అయింది. ఇంటర్నెట్ వచ్చినప్పుడు ప్రాసెస్ అవుతుంది.';
+
+  @override
+  String get processLater => 'తర్వాత ప్రాసెస్ చేయండి';
+
+  @override
+  String get pendingTitle => 'ప్రాసెస్ కావాల్సినవి';
+
+  @override
+  String get pendingQueued => 'ఇంటర్నెట్ కోసం వేచి ఉంది';
+
+  @override
+  String get pendingProcessing => 'ప్రాసెస్ అవుతోంది…';
+
+  @override
+  String get pendingReady => 'సమీక్షకు సిద్ధం';
+
+  @override
+  String get pendingFailed => 'ప్రాసెస్ చేయలేకపోయాం';
+
+  @override
+  String get pendingDismiss => 'తొలగించు';
 
   @override
   String get checkingConnectionRetry =>

@@ -66,7 +66,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get securityFooter =>
-      'பாதுகாப்பானது - HIPAA இணக்கம் - எண்ட்-டு-எண்ட் என்க்ரிப்ஷன்';
+      'அனுப்பும்போது என்க்ரிப்ட் செய்யப்படும் - இந்தியாவில் ஹோஸ்ட் - உங்கள் பதிவுகள் உங்கள் கட்டுப்பாட்டில்';
 
   @override
   String get male => 'ஆண்';
@@ -1159,6 +1159,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get patientDetails => 'நோயாளி விவரங்கள்';
 
   @override
+  String get editPatientDetails => 'நோயாளி விவரங்களைத் திருத்து';
+
+  @override
   String get enterBasicInfo => 'நோயாளியின் அடிப்படைத் தகவலை உள்ளிடவும்';
 
   @override
@@ -1355,6 +1358,35 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get offlineNotice =>
       'இணைய இணைப்பு இல்லை. ஆலோசனையைப் படியெடுத்து செயலாக்க இணையம் தேவை.';
+
+  @override
+  String get offlineWillQueue =>
+      'நீங்கள் ஆஃப்லைனில் உள்ளீர்கள். பதிவு இந்த ஃபோனில் சேமிக்கப்படும்; இணையம் வந்ததும் செயலாக்கப்படும்.';
+
+  @override
+  String get consultationQueued =>
+      'இந்த ஃபோனில் சேமிக்கப்பட்டது. இணையம் வந்ததும் செயலாக்கப்படும்.';
+
+  @override
+  String get processLater => 'பிறகு செயலாக்கு';
+
+  @override
+  String get pendingTitle => 'செயலாக்கக் காத்திருக்கிறது';
+
+  @override
+  String get pendingQueued => 'இணையத்திற்காகக் காத்திருக்கிறது';
+
+  @override
+  String get pendingProcessing => 'செயலாக்கப்படுகிறது…';
+
+  @override
+  String get pendingReady => 'மதிப்பாய்வுக்குத் தயார்';
+
+  @override
+  String get pendingFailed => 'செயலாக்க முடியவில்லை';
+
+  @override
+  String get pendingDismiss => 'நீக்கு';
 
   @override
   String get checkingConnectionRetry =>

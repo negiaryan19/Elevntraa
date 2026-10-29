@@ -58,6 +58,16 @@ class Visits extends Table {
   /// DPDP consent — must be true before recording.
   BoolColumn get patientConsent =>
       boolean().withDefault(const Constant(false))();
+
+  /// Where a consultation recorded without internet stands: `queued` (waiting
+  /// to be processed), `ready` (processed, not opened yet) or `failed`
+  /// (processing cannot succeed; see [pendingError]). Null for every visit
+  /// that was processed straight away. Kept on the visit, in the doctor's own
+  /// database, so it survives a restart and never crosses doctors.
+  TextColumn get pendingState => text().nullable()();
+
+  /// Why a queued consultation ended up `failed` (a FailureCode name).
+  TextColumn get pendingError => text().nullable()();
   DateTimeColumn get consentAt => dateTime().nullable()();
 
   @override
@@ -77,7 +87,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -86,6 +96,11 @@ class AppDatabase extends _$AppDatabase {
       // v2: store attached previous-report images on the visit.
       if (from < 2) {
         await m.addColumn(visits, visits.attachmentsJson);
+      }
+      // v3: consultations recorded offline wait in a queue on the visit row.
+      if (from < 3) {
+        await m.addColumn(visits, visits.pendingState);
+        await m.addColumn(visits, visits.pendingError);
       }
     },
   );
@@ -144,6 +159,23 @@ class AppDatabase extends _$AppDatabase {
 
   Future<Visit?> visitById(String id) {
     return (select(visits)..where((v) => v.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Visits with a pending state, oldest first: the order they are
+  /// processed in.
+  Future<List<Visit>> pendingVisits() {
+    return (select(visits)
+          ..where((v) => v.pendingState.isNotNull())
+          ..orderBy([(v) => OrderingTerm.asc(v.createdAt)]))
+        .get();
+  }
+
+  /// Live version of [pendingVisits].
+  Stream<List<Visit>> watchPendingVisits() {
+    return (select(visits)
+          ..where((v) => v.pendingState.isNotNull())
+          ..orderBy([(v) => OrderingTerm.asc(v.createdAt)]))
+        .watch();
   }
 
   Future<void> upsertVisit(VisitsCompanion row) {

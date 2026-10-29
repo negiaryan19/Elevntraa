@@ -1,0 +1,247 @@
+diff --git a/scripts/ci/prompt_hashes.txt b/scripts/ci/prompt_hashes.txt
+index 32dcacb..d28f554 100644
+--- a/scripts/ci/prompt_hashes.txt
++++ b/scripts/ci/prompt_hashes.txt
+@@ -1,2 +1,2 @@
+-PLAIN_INSTRUCTION 644c0ca32103785acd613cf9808dae2e5c3c5d3c48c51170e7368afe3befea4f
+-DIARIZED_INSTRUCTION ad28daf2826811d15a499667042f05f0d9509e270286c0fa6322e621f1e2b335
++PLAIN_INSTRUCTION 183406a152762738ffd7dbdd86b626083c4e7d29dde1a7ba23ecc13bb57178b6
++DIARIZED_INSTRUCTION 1b2cdcb57846931337594f5429e552674eb0882c3cde855d4be8028f5b2cea36
+diff --git a/supabase/functions/_shared/pipeline.ts b/supabase/functions/_shared/pipeline.ts
+index bf6757b..0c1c727 100644
+--- a/supabase/functions/_shared/pipeline.ts
++++ b/supabase/functions/_shared/pipeline.ts
+@@ -446,7 +446,10 @@ export const PLAIN_INSTRUCTION =
+   'aana", "check-up ke liye aana", or any indication of a return visit with ' +
+   "a timeframe, extract the followUpDays as a number. If a timeframe is " +
+   'mentioned but vague (e.g. "come back if not better"), set followUpDays to ' +
+-  "null but include the instruction in the instructions field. " +
++  "null but include the instruction in the instructions field. A conditional " +
++  'return that still names a timeframe ("das din baad dikhana agar zaroorat ' +
++  'ho" -> 10, "do din mein aaram na mile to aana" -> 2) has followUpDays set ' +
++  "to that timeframe. " +
+   "When the doctor specifies a duration that applies to multiple medicines " +
+   '(e.g. "take both for 5 days", "teen din tak dono lena", "sab medicine ' +
+   'paanch din tak"), apply that duration to ALL the medicines it refers to, ' +
+@@ -463,11 +466,37 @@ export const PLAIN_INSTRUCTION =
+   "to take it. Do not put timing information only in instructions — it must " +
+   "be in the medication's timing field. " +
+   // Structured field mapping (few-shot).
+-  "STRUCTURED FIELDS: when a medicine's frequency, duration, or timing is " +
+-  "spoken, it MUST be placed in that medicine's structured fields (frequency, " +
+-  "duration, timing) — not only in instructions. Instructions may repeat it, " +
+-  "but the structured fields are mandatory whenever the detail is spoken. Map " +
+-  "spoken Hindi/Hinglish to fields like this: " +
++  "STRUCTURED FIELDS: when a medicine's dosage, frequency, duration, or " +
++  "timing is spoken, it MUST be placed in that medicine's structured fields " +
++  "(dosage, frequency, duration, timing) — not only in instructions. " +
++  "Instructions may repeat it, but the structured fields are mandatory " +
++  "whenever the detail is spoken. " +
++  // Dosage: what it is, and where a strength goes. Without this the model's
++  // only notion of dosage was "a strength I must not guess", so a spoken
++  // "ek tablet" was left empty, or replaced by the strength and lost.
++  "DOSAGE is the amount taken each time, exactly as spoken: a count of units " +
++  "(tablet, capsule, spoon, sachet, packet, drop, puff) or a liquid volume. " +
++  "A STRENGTH (a number, with or without mg/mcg/g, that identifies the " +
++  "product) belongs in the medicine NAME, not in dosage: " +
++  '"Ecosprin 75 ek tablet" -> name "Ecosprin 75", dosage "1 tablet"; ' +
++  '"Amlodipine paanch mg ek goli" -> name "Amlodipine 5 mg", dosage ' +
++  '"1 tablet". Never drop a spoken unit count in favour of the strength: ' +
++  '"Calpol 500 do tablet" is dosage "2 tablets", never "500mg". If no amount ' +
++  "per dose was spoken, dosage is an empty string even when a strength was " +
++  "— do not assume one tablet. Creams, ointments, gargles and drops with no " +
++  'spoken amount have an empty dosage, and the word "ek" directly before a ' +
++  'product name ("ek gargle") is an article, not a dosage. ' +
++  // Hindi number merging: "500 ek tablet" is heard as "501 tablet".
++  'NUMBERS: in spoken Hindi a strength followed by "ek" can be transcribed ' +
++  'as a single number — "500 ek tablet" heard as "501 tablet", "650 ek" as ' +
++  '"651". A strength ending in 1 that no real product has (501, 651, 251, ' +
++  '41) means that strength followed by "ek": put the real strength in the ' +
++  'name, set dosage "1 tablet", and set needsReview true. ' +
++  "Map spoken Hindi/Hinglish to fields like this: " +
++  '"ek tablet" / "ek goli" -> dosage "1 tablet"; ' +
++  '"do tablet" -> dosage "2 tablets"; "aadhi goli" -> dosage "half tablet"; ' +
++  '"do chammach" -> dosage "2 spoons"; "paanch ml" -> dosage "5 ml"; ' +
++  '"ek sachet" / "ek packet" -> dosage "1 sachet" / "1 packet"; ' +
+   '"din mein do baar" -> frequency "twice daily"; ' +
+   '"raat ko" -> frequency "once daily", timing "Before bed"; ' +
+   '"subah khali pet" -> frequency "once daily" (morning), timing ' +
+@@ -475,12 +504,16 @@ export const PLAIN_INSTRUCTION =
+   '"khane ke baad" -> timing "After food"; ' +
+   '"teen din" / "paanch din" / "do hafte" -> duration "3 days" / "5 days" / ' +
+   '"2 weeks"; ' +
+-  '"dard hone par" -> frequency "as needed (SOS)". ' +
++  '"dard hone par" -> frequency "as needed (SOS)"; ' +
++  '"continue karo" / "chalu rakho" / "lete raho" -> duration "continue". ' +
+   // Drug-name guidance: best clinical interpretation, no invention.
+   "DRUG NAMES: output each medicine under your best clinical interpretation of " +
+   "what the doctor said. If a brand was clearly spoken, prefer that brand. Never " +
+   "substitute a category for a product (for example, B-Complex must never become " +
+-  "Multivitamins). Never invent a medicine that was not mentioned. " +
++  "Multivitamins). Never replace a spoken brand with a different brand or " +
++  "with its generic, even when they contain the same drug (a spoken " +
++  '"Shelcal 500" must not become "Calcimax" or "Calcium carbonate"). Never ' +
++  "invent a medicine that was not mentioned. " +
+   // Distractor robustness.
+   "DISTRACTORS: the transcript may contain unrelated conversation (other " +
+   "people, a TV or radio, a phone call). Extract only the medical consultation " +
+@@ -539,7 +572,10 @@ export const DIARIZED_INSTRUCTION =
+   'aana", "check-up ke liye aana", or any indication of a return visit with ' +
+   "a timeframe, extract the followUpDays as a number. If a timeframe is " +
+   'mentioned but vague (e.g. "come back if not better"), set followUpDays to ' +
+-  "null but include the instruction in the instructions field. " +
++  "null but include the instruction in the instructions field. A conditional " +
++  'return that still names a timeframe ("das din baad dikhana agar zaroorat ' +
++  'ho" -> 10, "do din mein aaram na mile to aana" -> 2) has followUpDays set ' +
++  "to that timeframe. " +
+   "When the doctor specifies a duration that applies to multiple medicines " +
+   '(e.g. "take both for 5 days", "teen din tak dono lena", "sab medicine ' +
+   'paanch din tak"), apply that duration to ALL the medicines it refers to, ' +
+@@ -556,11 +592,37 @@ export const DIARIZED_INSTRUCTION =
+   "to take it. Do not put timing information only in instructions — it must " +
+   "be in the medication's timing field. " +
+   // Structured field mapping (few-shot).
+-  "STRUCTURED FIELDS: when a medicine's frequency, duration, or timing is " +
+-  "spoken, it MUST be placed in that medicine's structured fields (frequency, " +
+-  "duration, timing) — not only in instructions. Instructions may repeat it, " +
+-  "but the structured fields are mandatory whenever the detail is spoken. Map " +
+-  "spoken Hindi/Hinglish to fields like this: " +
++  "STRUCTURED FIELDS: when a medicine's dosage, frequency, duration, or " +
++  "timing is spoken, it MUST be placed in that medicine's structured fields " +
++  "(dosage, frequency, duration, timing) — not only in instructions. " +
++  "Instructions may repeat it, but the structured fields are mandatory " +
++  "whenever the detail is spoken. " +
++  // Dosage: what it is, and where a strength goes. Without this the model's
++  // only notion of dosage was "a strength I must not guess", so a spoken
++  // "ek tablet" was left empty, or replaced by the strength and lost.
++  "DOSAGE is the amount taken each time, exactly as spoken: a count of units " +
++  "(tablet, capsule, spoon, sachet, packet, drop, puff) or a liquid volume. " +
++  "A STRENGTH (a number, with or without mg/mcg/g, that identifies the " +
++  "product) belongs in the medicine NAME, not in dosage: " +
++  '"Ecosprin 75 ek tablet" -> name "Ecosprin 75", dosage "1 tablet"; ' +
++  '"Amlodipine paanch mg ek goli" -> name "Amlodipine 5 mg", dosage ' +
++  '"1 tablet". Never drop a spoken unit count in favour of the strength: ' +
++  '"Calpol 500 do tablet" is dosage "2 tablets", never "500mg". If no amount ' +
++  "per dose was spoken, dosage is an empty string even when a strength was " +
++  "— do not assume one tablet. Creams, ointments, gargles and drops with no " +
++  'spoken amount have an empty dosage, and the word "ek" directly before a ' +
++  'product name ("ek gargle") is an article, not a dosage. ' +
++  // Hindi number merging: "500 ek tablet" is heard as "501 tablet".
++  'NUMBERS: in spoken Hindi a strength followed by "ek" can be transcribed ' +
++  'as a single number — "500 ek tablet" heard as "501 tablet", "650 ek" as ' +
++  '"651". A strength ending in 1 that no real product has (501, 651, 251, ' +
++  '41) means that strength followed by "ek": put the real strength in the ' +
++  'name, set dosage "1 tablet", and set needsReview true. ' +
++  "Map spoken Hindi/Hinglish to fields like this: " +
++  '"ek tablet" / "ek goli" -> dosage "1 tablet"; ' +
++  '"do tablet" -> dosage "2 tablets"; "aadhi goli" -> dosage "half tablet"; ' +
++  '"do chammach" -> dosage "2 spoons"; "paanch ml" -> dosage "5 ml"; ' +
++  '"ek sachet" / "ek packet" -> dosage "1 sachet" / "1 packet"; ' +
+   '"din mein do baar" -> frequency "twice daily"; ' +
+   '"raat ko" -> frequency "once daily", timing "Before bed"; ' +
+   '"subah khali pet" -> frequency "once daily" (morning), timing ' +
+@@ -568,12 +630,16 @@ export const DIARIZED_INSTRUCTION =
+   '"khane ke baad" -> timing "After food"; ' +
+   '"teen din" / "paanch din" / "do hafte" -> duration "3 days" / "5 days" / ' +
+   '"2 weeks"; ' +
+-  '"dard hone par" -> frequency "as needed (SOS)". ' +
++  '"dard hone par" -> frequency "as needed (SOS)"; ' +
++  '"continue karo" / "chalu rakho" / "lete raho" -> duration "continue". ' +
+   // Drug-name guidance: best clinical interpretation, no invention.
+   "DRUG NAMES: output each medicine under your best clinical interpretation of " +
+   "what the doctor said. If a brand was clearly spoken, prefer that brand. Never " +
+   "substitute a category for a product (for example, B-Complex must never become " +
+-  "Multivitamins). Never invent a medicine that was not mentioned. " +
++  "Multivitamins). Never replace a spoken brand with a different brand or " +
++  "with its generic, even when they contain the same drug (a spoken " +
++  '"Shelcal 500" must not become "Calcimax" or "Calcium carbonate"). Never ' +
++  "invent a medicine that was not mentioned. " +
+   // Distractor robustness.
+   "DISTRACTORS: the transcript may contain unrelated conversation (other " +
+   "people, a TV or radio, a phone call). Extract only the medical consultation " +
+@@ -597,12 +663,36 @@ export const DIARIZED_SCHEMA: Record<string, unknown> = {
+       items: {
+         type: "OBJECT",
+         properties: {
+-          name: { type: "STRING" },
+-          dosage: { type: "STRING" },
+-          frequency: { type: "STRING" },
+-          duration: { type: "STRING" },
+-          timing: { type: "STRING" },
+-          needsReview: { type: "BOOLEAN" },
++          name: {
++            type: "STRING",
++            description:
++              "Medicine as spoken: brand or generic, including a strength that identifies the product (e.g. 'Ecosprin 75', 'Amlodipine 5 mg').",
++          },
++          dosage: {
++            type: "STRING",
++            description:
++              "Amount taken each time, as spoken: '1 tablet', '2 tablets', 'half tablet', '2 spoons', '5 ml', '1 sachet'. Never the strength. Empty string if no amount per dose was spoken.",
++          },
++          frequency: {
++            type: "STRING",
++            description:
++              "How often: 'once daily', 'twice daily', 'three times a day', 'once weekly', 'as needed (SOS)'. Empty string if not spoken.",
++          },
++          duration: {
++            type: "STRING",
++            description:
++              "For how long: '3 days', '2 weeks', '1 month', or 'continue' for an ongoing medicine. Empty string if not spoken.",
++          },
++          timing: {
++            type: "STRING",
++            description:
++              "Exactly one of: Before food, After food, With food, Empty stomach, Before bed, As directed. Empty string if not spoken.",
++          },
++          needsReview: {
++            type: "BOOLEAN",
++            description:
++              "True when the name or strength was unclear or had to be reconstructed.",
++          },
+         },
+         required: ["name"],
+       },
+@@ -640,12 +730,36 @@ export const PLAIN_SCHEMA: Record<string, unknown> = {
+       items: {
+         type: "OBJECT",
+         properties: {
+-          name: { type: "STRING" },
+-          dosage: { type: "STRING" },
+-          frequency: { type: "STRING" },
+-          duration: { type: "STRING" },
+-          timing: { type: "STRING" },
+-          needsReview: { type: "BOOLEAN" },
++          name: {
++            type: "STRING",
++            description:
++              "Medicine as spoken: brand or generic, including a strength that identifies the product (e.g. 'Ecosprin 75', 'Amlodipine 5 mg').",
++          },
++          dosage: {
++            type: "STRING",
++            description:
++              "Amount taken each time, as spoken: '1 tablet', '2 tablets', 'half tablet', '2 spoons', '5 ml', '1 sachet'. Never the strength. Empty string if no amount per dose was spoken.",
++          },
++          frequency: {
++            type: "STRING",
++            description:
++              "How often: 'once daily', 'twice daily', 'three times a day', 'once weekly', 'as needed (SOS)'. Empty string if not spoken.",
++          },
++          duration: {
++            type: "STRING",
++            description:
++              "For how long: '3 days', '2 weeks', '1 month', or 'continue' for an ongoing medicine. Empty string if not spoken.",
++          },
++          timing: {
++            type: "STRING",
++            description:
++              "Exactly one of: Before food, After food, With food, Empty stomach, Before bed, As directed. Empty string if not spoken.",
++          },
++          needsReview: {
++            type: "BOOLEAN",
++            description:
++              "True when the name or strength was unclear or had to be reconstructed.",
++          },
+         },
+         required: ["name"],
+       },

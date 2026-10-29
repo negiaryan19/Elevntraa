@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/locale/locale_provider.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_provider.dart';
+import '../features/consultation/data/pending_consultations.dart';
 import '../l10n/app_localizations.dart';
 import 'router.dart';
 
@@ -15,6 +16,11 @@ class RxvartaApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final themeAsync = ref.watch(themeModeProvider);
     final locale = ref.watch(appLocaleProvider);
+
+    // Consultations recorded without internet are processed when it returns,
+    // whichever screen the doctor is on. Listening (not watching) keeps the
+    // queue alive for the whole session without rebuilding the app for it.
+    ref.listen(pendingConsultationsProvider, (_, _) {});
 
     // While prefs load, show a blank screen in system theme — no flash
     final themeMode = themeAsync.value ?? ThemeMode.system;

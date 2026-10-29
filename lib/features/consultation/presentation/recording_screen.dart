@@ -142,15 +142,10 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   }
 
   Future<void> _onStartPressed() async {
-    // Recording only makes sense if we can reach the STT/Gemini backend when
-    // the doctor taps Done. Fail closed: block unless connectivity is
-    // *confirmed* online — a still-checking or offline status must not let the
-    // doctor record audio that can never be processed.
-    if (ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
-      _showBlockedMessage();
-      return;
-    }
-
+    // No connectivity check: a clinic's internet comes and goes, and the
+    // patient in front of the doctor cannot wait for it. A consultation
+    // recorded offline is kept on the phone and processed later (roadmap
+    // items 13, 14; see PendingConsultations).
     final granted = await MicPermission.isGranted();
     if (!granted) {
       final result = await MicPermission.request();
@@ -213,14 +208,6 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     );
     final willPause = !_isPaused;
 
-    // Resuming captures more audio that must ultimately be uploaded — refuse to
-    // resume while still offline so we don't accumulate un-processable audio.
-    if (!willPause &&
-        ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
-      _showBlockedMessage();
-      return;
-    }
-
     setState(() => _isPaused = willPause);
     if (willPause) {
       // Bank what we've recorded so far so elapsed doesn't grow while paused.
@@ -238,13 +225,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
   }
 
   Future<void> _onDone() async {
-    // Processing uploads audio to Sarvam/Gemini — refuse unless connectivity is
-    // confirmed online so the recording stays intact (paused) instead of
-    // failing mid-upload.
-    if (ref.read(connectivityStatusProvider) != ConnectivityStatus.online) {
-      _showBlockedMessage();
-      return;
-    }
+    // Done used to refuse without internet, which held the doctor on this
+    // screen, with the next patient waiting, until the connection came back.
+    // Offline, the recording is saved and queued instead, and they move on.
+    final online =
+        ref.read(connectivityStatusProvider) == ConnectivityStatus.online;
 
     HapticFeedback.heavyImpact();
     _ticker?.cancel();
@@ -258,8 +243,43 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     final controller = ref.read(
       consultationControllerProvider(widget.visitId).notifier,
     );
-    await controller.stopAndProcess();
-    _openReviewIfDone();
+    if (online) {
+      await controller.stopAndProcess();
+      _openReviewIfDone();
+    } else {
+      await controller.stopAndQueue();
+      _leaveIfQueued();
+    }
+  }
+
+  /// "Process later" after a failed attempt: the recording already on the
+  /// phone joins the queue instead of being retried now.
+  Future<void> _onProcessLater() async {
+    HapticFeedback.mediumImpact();
+    await ref
+        .read(consultationControllerProvider(widget.visitId).notifier)
+        .queueForLater();
+    _leaveIfQueued();
+  }
+
+  /// The recording is safe and queued: tell the doctor, and get out of their
+  /// way. The messenger sits above the navigator, so the message is still
+  /// showing on Home.
+  void _leaveIfQueued() {
+    if (!mounted ||
+        ref.read(consultationControllerProvider(widget.visitId)).stage !=
+            ConsultationStage.queued) {
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.consultationQueued),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    context.go(AppRoute.home.path);
   }
 
   /// Processing failed: run the recording already on the phone through it
@@ -504,7 +524,6 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
     // Fail closed: server-dependent actions are only allowed once reachability
     // is *confirmed* online. 'checking' (first probe in flight) is blocked too.
     final canReachServer = connectivity == ConnectivityStatus.online;
-    final isChecking = connectivity == ConnectivityStatus.checking;
 
     final isRecording = state.stage == ConsultationStage.recording;
     final isBusy =
@@ -1016,25 +1035,23 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen>
                             ),
                             const SizedBox(height: AppSpacing.s),
                             TextButton.icon(
+                              key: const Key('process_later_button'),
+                              onPressed: _onProcessLater,
+                              icon: const Icon(Icons.schedule_send_rounded),
+                              label: Text(t.processLater),
+                            ),
+                            TextButton.icon(
                               onPressed: _onStartPressed,
                               icon: const Icon(Icons.mic_rounded),
                               label: Text(t.recordAgain),
                             ),
                           ] else
                             _GradientCta(
-                              label: canReachServer
-                                  ? t.startConsultation
-                                  : isChecking
-                                  ? t.checkingConnection
-                                  : t.offlineReconnect,
-                              leadingIcon: canReachServer
-                                  ? Icons.record_voice_over_rounded
-                                  : isChecking
-                                  ? Icons.wifi_find_rounded
-                                  : Icons.wifi_off_rounded,
-                              enabled: canReachServer,
-                              // Still fires when blocked so the tap explains why
-                              // nothing happened via a snackbar.
+                              label: t.startConsultation,
+                              leadingIcon: Icons.record_voice_over_rounded,
+                              // Usable with or without internet: offline, the
+                              // notice above says what will happen instead.
+                              enabled: true,
                               onTap: _onStartPressed,
                             ),
                         ] else if (isRecording)
@@ -1339,33 +1356,36 @@ class _GradientCta extends StatelessWidget {
 
 /// Inline banner shown on the recording screen while the device is offline,
 /// making it obvious *before* the doctor taps why recording is unavailable.
+/// Shown while offline. Not an error any more: the consultation can go ahead,
+/// and this says what happens to the recording.
 class _OfflineNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
+      key: const Key('offline_notice'),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.s,
       ),
       decoration: BoxDecoration(
-        color: scheme.errorContainer,
+        color: scheme.secondaryContainer,
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: scheme.error.withValues(alpha: 0.5)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.wifi_off_rounded,
-            color: scheme.onErrorContainer,
+            Icons.cloud_off_rounded,
+            color: scheme.onSecondaryContainer,
             size: 18,
           ),
           const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Text(
-              AppLocalizations.of(context)!.offlineNotice,
+              AppLocalizations.of(context)!.offlineWillQueue,
               style: AppTypography.bodySmall.copyWith(
-                color: scheme.onErrorContainer,
+                color: scheme.onSecondaryContainer,
               ),
             ),
           ),

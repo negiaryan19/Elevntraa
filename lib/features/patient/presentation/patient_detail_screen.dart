@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,16 +8,20 @@ import '../../../app/router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/app_paths.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../data/db/database_provider.dart';
 import '../../../data/repositories/patient_repository.dart';
 import '../../../data/repositories/visit_repository.dart';
 import '../../../domain/models/medical_insight.dart';
 import '../../../domain/models/patient.dart';
+import '../../../domain/models/report_attachment.dart';
 import '../../../domain/models/visit.dart';
 import '../../../core/errors/failure_text.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../prescription/data/prescription_pdf_service.dart';
 import '../../settings/data/doctor_profile_repository.dart';
+import 'edit_patient_sheet.dart';
 import 'view_prescription_screen.dart';
 
 const _kBlue600 = Color(0xFF2563EB);
@@ -60,6 +66,15 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
         _loading = false;
       });
     }
+  }
+
+  /// Edits the patient's own details. Visits are left alone: the sheet saves
+  /// the patient row only, and the header is refreshed from what it returns.
+  Future<void> _editPatient() async {
+    final patient = _patient;
+    if (patient == null) return;
+    final saved = await EditPatientSheet.show(context, patient);
+    if (saved != null && mounted) setState(() => _patient = saved);
   }
 
   Future<void> _openPdf(VisitRecord visit) async {
@@ -123,6 +138,15 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
           _patient?.name ?? t.patientFallback,
           style: AppTypography.titleMedium.copyWith(color: scheme.onSurface),
         ),
+        actions: [
+          if (_patient != null)
+            IconButton(
+              key: const Key('edit_patient_button'),
+              tooltip: t.editPatientDetails,
+              icon: const Icon(Icons.edit_rounded),
+              onPressed: _editPatient,
+            ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -168,6 +192,7 @@ class _PatientDetailScreenState extends ConsumerState<PatientDetailScreen> {
                     for (final v in _visits) ...[
                       _VisitCard(
                         visit: v,
+                        attachmentsDir: ref.watch(attachmentsDirProvider),
                         busy: _busyVisitId == v.id,
                         onView: () => _openPdf(v),
                         onShare: () => _sharePdf(v),
@@ -328,12 +353,16 @@ class _PatientHeader extends StatelessWidget {
 class _VisitCard extends StatelessWidget {
   const _VisitCard({
     required this.visit,
+    required this.attachmentsDir,
     required this.busy,
     required this.onView,
     required this.onShare,
   });
 
   final VisitRecord visit;
+
+  /// The signed-in doctor's report folder; null when nobody is signed in.
+  final String? attachmentsDir;
   final bool busy;
   final VoidCallback onView;
   final VoidCallback onShare;
@@ -365,13 +394,18 @@ class _VisitCard extends StatelessWidget {
             children: [
               Icon(Icons.calendar_today_rounded, size: 14, color: _kBlue600),
               const SizedBox(width: AppSpacing.xs),
-              Text(
-                _formatDateTime(visit.createdAt),
-                style: AppTypography.bodySmall.copyWith(
-                  color: scheme.onSurfaceVariant,
+              // Expanded, not Text + Spacer: a long date beside the Signed
+              // chip overflowed the row on narrow phones.
+              Expanded(
+                child: Text(
+                  _formatDateTime(visit.createdAt),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-              const Spacer(),
               if (visit.signed)
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -478,6 +512,10 @@ class _VisitCard extends StatelessWidget {
                   : t.afterDaysMany(insight.followUpDays!),
             ),
           ],
+          _ReportsStrip(
+            attachments: visit.attachments,
+            attachmentsDir: attachmentsDir,
+          ),
           const SizedBox(height: AppSpacing.md),
           // Actions
           Row(
@@ -556,6 +594,143 @@ class _VisitCard extends StatelessWidget {
   }
 }
 
+// ── Reports attached to a visit ─────────────────────────────────────────────
+
+/// The report photos attached to a visit (roadmap item 17). They were printed
+/// in the prescription PDF but invisible in the history, so checking last
+/// month's blood report meant opening that visit's PDF and paging to the end.
+///
+/// A photo whose file is gone (restored backup without it, cleared storage) is
+/// left out, as the PDF does; with none left the strip takes no space.
+class _ReportsStrip extends StatelessWidget {
+  const _ReportsStrip({
+    required this.attachments,
+    required this.attachmentsDir,
+  });
+
+  final List<ReportAttachment> attachments;
+  final String? attachmentsDir;
+
+  @override
+  Widget build(BuildContext context) {
+    final dir = attachmentsDir;
+    final reports = <({File file, String caption})>[];
+    for (var i = 0; i < attachments.length; i++) {
+      final a = attachments[i];
+      final file = File(
+        dir == null
+            ? a.path
+            : AppPaths.resolveAttachment(a.path, attachmentsDir: dir),
+      );
+      if (!file.existsSync()) continue;
+      final t = AppLocalizations.of(context)!;
+      reports.add((
+        file: file,
+        caption: a.caption.trim().isEmpty
+            ? t.pdfReportCaption(i + 1)
+            : a.caption.trim(),
+      ));
+    }
+    if (reports.isEmpty) return const SizedBox.shrink();
+
+    final scheme = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.s),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t.pdfPreviousReports,
+            style: AppTypography.labelSmall.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          SizedBox(
+            height: 72,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: reports.length,
+              separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.s),
+              itemBuilder: (context, i) {
+                final r = reports[i];
+                return Semantics(
+                  button: true,
+                  label: r.caption,
+                  child: GestureDetector(
+                    key: Key('report_thumb_$i'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            _ReportViewer(file: r.file, caption: r.caption),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: AppSpacing.radiusMd,
+                      child: Image.file(
+                        r.file,
+                        width: 72,
+                        height: 72,
+                        fit: BoxFit.cover,
+                        // Decode at thumbnail size: a phone photo is several
+                        // thousand pixels wide and the list may hold many.
+                        cacheWidth: 216,
+                        errorBuilder: (_, _, _) => Container(
+                          width: 72,
+                          height: 72,
+                          color: scheme.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One report, full screen, with pinch to zoom.
+class _ReportViewer extends StatelessWidget {
+  const _ReportViewer({required this.file, required this.caption});
+
+  final File file;
+  final String caption;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Text(caption, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          maxScale: 6,
+          child: Image.file(
+            file,
+            errorBuilder: (_, _, _) => const Icon(
+              Icons.broken_image_outlined,
+              color: Colors.white54,
+              size: 48,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _PdfButton extends StatelessWidget {
   const _PdfButton({
     required this.label,
@@ -593,6 +768,10 @@ class _PdfButton extends StatelessWidget {
                   ),
           ),
           child: Row(
+            // min + a loose Flexible label: legal both when the button is
+            // Expanded (bounded, the label may ellipsize) and when it sizes
+            // itself to its content (unbounded, the label takes what it needs).
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -603,12 +782,19 @@ class _PdfButton extends StatelessWidget {
                     : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: AppSpacing.s),
-              Text(
-                label,
-                style: AppTypography.titleSmall.copyWith(
-                  color: filled
-                      ? Colors.white
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
+              // Two buttons share the row, so each label has about 90 dp on
+              // a 360 dp phone: "Share on WhatsApp" and its translations did
+              // not fit and were clipped mid-letter.
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.titleSmall.copyWith(
+                    color: filled
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],

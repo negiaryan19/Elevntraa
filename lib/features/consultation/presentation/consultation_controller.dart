@@ -5,33 +5,15 @@ import 'package:flutter_riverpod/legacy.dart';
 import '../../../core/auth/auth_providers.dart';
 import '../../../core/errors/failure.dart';
 import '../../../data/repositories/visit_repository.dart';
-import '../../../domain/models/medical_insight.dart';
 import '../../../services/differential_engine.dart';
-import '../../../services/icd10_local_mapper.dart';
-import '../../../services/drug_name_corrector.dart';
-import '../data/pipeline_service.dart';
+import '../data/consultation_processor.dart';
+import '../data/pending_consultations.dart';
 import '../data/recording_service.dart';
 
-/// On-device WHO ICD-10 lookup table, loaded once from the bundled asset and
-/// cached for the app's lifetime. The LLM extracts the diagnosis TEXT only;
-/// this deterministic mapper assigns the code. See [Icd10LocalMapper].
-final icd10MapperProvider = FutureProvider<Icd10LocalMapper>(
-  (ref) => Icd10LocalMapper.load(),
-);
-
-/// Loads the romanization-aware drug-name corrector. Maps mangled / romanized
-/// STT drug names to their canonical forms on-device, so mangled names get
-/// fixed regardless of which STT produced them. See [DrugNameCorrector].
-final drugCorrectorProvider = FutureProvider<DrugNameCorrector>(
-  (ref) => DrugNameCorrector.load(),
-);
-
-/// On-device differential-diagnosis engine, loaded once from the bundled
-/// rules asset. Turns the extracted symptoms into ranked, doctor-only
-/// decision-support suggestions. See [DifferentialEngine].
-final differentialEngineProvider = FutureProvider<DifferentialEngine>(
-  (ref) => DifferentialEngine.load(),
-);
+// These lived here before the processing moved to ConsultationProcessor;
+// screens and tests still import them from this file.
+export '../data/consultation_processor.dart'
+    show icd10MapperProvider, drugCorrectorProvider, differentialEngineProvider;
 
 enum ConsultationStage {
   idle,
@@ -40,6 +22,10 @@ enum ConsultationStage {
   extracting,
   done,
   error,
+
+  /// Recorded without internet (or the doctor chose "process later"): the
+  /// recording is safe on the phone and waits in the queue.
+  queued,
 }
 
 /// Transcript accumulated across one consultation's recording sessions — the
@@ -156,27 +142,59 @@ class ConsultationController extends Notifier<ConsultationState> {
   }
 
   Future<void> stopAndProcess() async {
-    final String path;
+    final path = await _stopAndSaveRecording();
+    if (path != null) await _process(path);
+  }
+
+  /// Finishes a consultation recorded without internet: the recording is kept
+  /// on the phone and the visit joins the queue, to be processed when the
+  /// connection is back (roadmap items 13, 14). The doctor is free to see the
+  /// next patient instead of being held on this screen.
+  Future<void> stopAndQueue() async {
+    final path = await _stopAndSaveRecording();
+    if (path != null) await _queue();
+  }
+
+  /// "Process later" after a failed attempt: the recording already saved
+  /// joins the queue instead of being retried now.
+  Future<void> queueForLater() async {
+    if (state.audioPath == null || state.stage != ConsultationStage.error) {
+      return;
+    }
+    await _queue();
+  }
+
+  Future<void> _queue() async {
+    try {
+      await ref.read(pendingConsultationsProvider.notifier).enqueue(visitId);
+      state = state.copyWith(stage: ConsultationStage.queued, clearError: true);
+    } catch (e) {
+      _fail(e, 'Could not save the recording for later');
+    }
+  }
+
+  /// Stops the recorder and stores the file on the visit. Returns null (with
+  /// the state already in `error`) when that fails.
+  Future<String?> _stopAndSaveRecording() async {
     try {
       final stopped = await _recorder.stop();
       if (stopped == null) {
         throw const StorageFailure('No audio was captured.');
       }
-      path = stopped;
       state = state.copyWith(stage: ConsultationStage.transcribing);
       final visit = await _visits.byId(visitId);
       if (visit == null) {
         throw const StorageFailure('Visit record missing from local DB.');
       }
       await _visits.upsert(
-        visit.copyWith(audioPath: path, languageCode: state.languageCode),
+        visit.copyWith(audioPath: stopped, languageCode: state.languageCode),
       );
-      state = state.copyWith(audioPath: path);
+      state = state.copyWith(audioPath: stopped);
+      return stopped;
     } catch (e) {
       _fail(e, 'Could not save the recording');
-      return;
+      return null;
     }
-    await _process(path);
   }
 
   /// Processes the recording that failed last time again, without recording
@@ -196,95 +214,30 @@ class ConsultationController extends Notifier<ConsultationState> {
 
       final probed = await _recorder.probeDuration(path);
       final fallback = state.elapsed > Duration.zero ? state.elapsed : null;
-      final effectiveDuration = probed ?? fallback;
 
-      // Single unified call — the backend pipeline handles STT + extraction and,
-      // when a prior transcript is supplied, the "Add More" accumulation too.
-      // The returned result already contains the full combined transcript plus
-      // the re-extracted insight, so there is no client-side combining left.
-      final previous = ref.read(cumulativeTranscriptProvider);
-      final result = await ref
-          .read(pipelineServiceProvider)
-          .processConsultation(
+      // Pipeline + on-device post-processing, shared with the offline queue
+      // so both produce the same prescription. On "nothing heard" it throws
+      // and leaves the stored visit and transcript as they were, so an
+      // "Add More" consultation keeps what it already had.
+      final processed = await ref
+          .read(consultationProcessorProvider)
+          .process(
+            visitId: visitId,
             audioPath: path,
             languageCode: state.languageCode,
-            audioDuration: effectiveDuration,
-            previousTranscript: previous.trim().isEmpty ? null : previous,
+            audioDuration: probed ?? fallback,
+            previousTranscript: ref.read(cumulativeTranscriptProvider),
           );
-
-      // Nothing clinical came back: the microphone caught no consultation
-      // (muted, blocked, or only noise that speech-to-text turned into a
-      // stray sentence). Stay here and say so, rather than open Review with a
-      // blank prescription. The stored visit and transcript are left as they
-      // were, so an "Add More" consultation keeps what it already had.
-      if (!result.insight.hasClinicalContent) {
-        state = state.copyWith(
-          stage: ConsultationStage.error,
-          error: 'No consultation was heard in this recording.',
-          errorCode: FailureCode.invalidAudio,
-        );
-        return;
-      }
-
-      // NOTE: There is no validateExtraction() step in this controller, so
-      // POINT B does not exist — data cannot be lost to validation here.
-
-      // ICD-10 is assigned on-device from a curated WHO map, not by the LLM.
-      // The mapper output ALWAYS overwrites the extractor's ICD fields —
-      // including clearing all three when there is no confident match — so the
-      // doctor never sees a guessed code. On IcdMatch.none the field is left
-      // null for the doctor to fill, exactly like today.
-      // Correct mangled / romanized drug names to canonical forms on-device.
-      // Same matching engine the backend validateExtraction uses, so a name
-      // gets fixed no matter which STT produced it.
-      final corrector = await ref.read(drugCorrectorProvider.future);
-      final correctedMeds = [
-        for (final med in result.insight.medications)
-          () {
-            final corrected = corrector.correct(med.name);
-            return corrected != null && corrected.canonical != med.name
-                ? med.copyWith(
-                    name: corrected.canonical,
-                    originalName: med.name,
-                  )
-                : med;
-          }(),
-      ];
-
-      final mapper = await ref.read(icd10MapperProvider.future);
-      final icd = mapper.lookup(result.insight.diagnosis);
-      final insight = result.insight.copyWith(
-        medications: correctedMeds,
-        icdCode: icd.code,
-        icdDescription: icd.description,
-        icdConfidence: icd.confidence,
-      );
-
-      // Differential-diagnosis decision support — computed on-device from the
-      // extracted symptoms. Doctor-only: held on transient state, never written
-      // to the visit/insight and never rendered on the patient PDF, and it
-      // never auto-fills the diagnosis field.
-      final diffEngine = await ref.read(differentialEngineProvider.future);
-      final suggestions = diffEngine.suggest(result.insight.symptoms);
-
-      final current = await _visits.byId(visitId);
-      if (current == null) {
-        throw const StorageFailure('Visit record missing from local DB.');
-      }
-      final updated = current.copyWith(
-        transcript: result.transcript,
-        insight: insight,
-      );
-      await _visits.upsert(updated);
 
       // Commit the accumulated transcript only after the DB write succeeds —
       // prevents a failed segment from polluting future "Add More" runs. The
       // backend returns the full combined transcript, so store that verbatim.
-      ref.read(cumulativeTranscriptProvider.notifier).state = result.transcript;
+      ref.read(cumulativeTranscriptProvider.notifier).state =
+          processed.visit.transcript ?? '';
 
       state = state.copyWith(
         stage: ConsultationStage.done,
-        differentialSuggestions: suggestions,
+        differentialSuggestions: processed.suggestions,
       );
     } catch (e) {
       _fail(e, 'Processing failed');

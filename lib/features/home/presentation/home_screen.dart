@@ -17,6 +17,7 @@ import '../../../domain/models/patient.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../settings/data/doctor_profile_repository.dart';
 import '../../settings/presentation/doctor_profile_form.dart';
+import 'pending_consultations_card.dart';
 
 /// The five most recent patients, straight from the database: finishing a
 /// consultation updates this list without a pull-to-refresh (roadmap item
@@ -106,6 +107,10 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       ),
                     ],
+                    // Consultations recorded offline; nothing when there are
+                    // none. Above the hero: a prescription a patient is
+                    // waiting for matters more than starting the next one.
+                    const PendingConsultationsCard(),
                     const SizedBox(height: AppSpacing.xl),
                     _Reveal(
                       delayMs: 180,

@@ -265,11 +265,18 @@ class _PatientsScreenState extends ConsumerState<PatientsScreen> {
                           behavior: HitTestBehavior.opaque,
                           onTap: group.patient == null
                               ? null
-                              : () => context.push(
-                                  AppRoute.patient.build(
-                                    params: {'patientId': group.patient!.id},
-                                  ),
-                                ),
+                              : () async {
+                                  await context.push(
+                                    AppRoute.patient.build(
+                                      params: {'patientId': group.patient!.id},
+                                    ),
+                                  );
+                                  // The list is loaded once, so a name or
+                                  // number edited on the patient's page (or
+                                  // a new visit started from it) would stay
+                                  // stale here until the tab was rebuilt.
+                                  if (mounted) await _load();
+                                },
                           child: _PatientCard(group: group),
                         );
                       },

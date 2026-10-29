@@ -2090,6 +2090,12 @@ abstract class AppLocalizations {
   /// **'Patient Details'**
   String get patientDetails;
 
+  /// No description provided for @editPatientDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit patient details'**
+  String get editPatientDetails;
+
   /// No description provided for @enterBasicInfo.
   ///
   /// In en, this message translates to:
@@ -2449,6 +2455,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No internet connection. Recording needs internet to transcribe and process the consultation.'**
   String get offlineNotice;
+
+  /// No description provided for @offlineWillQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. The recording will be saved on this phone and processed when the internet is back.'**
+  String get offlineWillQueue;
+
+  /// No description provided for @consultationQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this phone. It will be processed when the internet is back.'**
+  String get consultationQueued;
+
+  /// No description provided for @processLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Process later'**
+  String get processLater;
+
+  /// No description provided for @pendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to be processed'**
+  String get pendingTitle;
+
+  /// No description provided for @pendingQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for internet'**
+  String get pendingQueued;
+
+  /// No description provided for @pendingProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing…'**
+  String get pendingProcessing;
+
+  /// No description provided for @pendingReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to review'**
+  String get pendingReady;
+
+  /// No description provided for @pendingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not be processed'**
+  String get pendingFailed;
+
+  /// No description provided for @pendingDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get pendingDismiss;
 
   /// No description provided for @checkingConnectionRetry.
   ///
