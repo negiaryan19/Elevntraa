@@ -1,6 +1,6 @@
-# Rxvarta
+# Elevntraa
 
-Rxvarta is an AI-powered prescription dictation app for Indian doctors. A doctor records a consultation, the audio gets transcribed (supporting Indian languages), and the app generates a structured prescription that can be reviewed, signed, exported as PDF, and shared via WhatsApp.
+Elevntraa is an AI-powered prescription dictation app for Indian doctors. A doctor records a consultation, the audio gets transcribed (supporting Indian languages), and the app generates a structured prescription that can be reviewed, signed, exported as PDF, and shared via WhatsApp.
 
 ---
 
