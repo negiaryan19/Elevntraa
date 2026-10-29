@@ -50,7 +50,7 @@ dependencies:
   json_annotation: ^4.12.0
 
   # UI
-  google_fonts: ^8.2.1
+  google_fonts: ^9.0.0
   shimmer: ^3.0.0
   intl: ^0.20.2
 
